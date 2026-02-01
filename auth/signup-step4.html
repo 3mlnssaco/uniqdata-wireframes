@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>회원가입 Step 4 - 패스키 안내 - Wireframe</title>
+  <title>회원가입 Step 4 - 패스키 등록 - Wireframe</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: -apple-system, sans-serif; background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 100%); min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+    body { font-family: -apple-system, sans-serif; background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 100%); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
 
-    .container { display: flex; width: 900px; min-height: 600px; background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 25px 50px rgba(0,0,0,0.3); }
+    .container { display: flex; width: 950px; min-height: 750px; background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 25px 50px rgba(0,0,0,0.3); }
 
     .left-panel { width: 320px; background: linear-gradient(180deg, #1e40af 0%, #1e3a8a 100%); color: white; padding: 40px; display: flex; flex-direction: column; }
     .logo { font-size: 24px; font-weight: bold; margin-bottom: 40px; }
@@ -26,82 +26,195 @@
     .step-v.active .label { opacity: 1; font-weight: 600; }
     .step-v.done .label { opacity: 0.9; }
 
-    .right-panel { flex: 1; padding: 48px; display: flex; flex-direction: column; }
-    .form-header { margin-bottom: 24px; }
+    .right-panel { flex: 1; padding: 32px; display: flex; flex-direction: column; overflow-y: auto; }
+    .form-header { margin-bottom: 16px; }
     .form-header h1 { font-size: 24px; font-weight: 700; margin-bottom: 8px; color: #111827; }
     .form-header p { font-size: 14px; color: #6b7280; }
 
-    .info-card { background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 16px; padding: 28px; margin-bottom: 20px; text-align: center; }
-    .info-card .icon { font-size: 56px; margin-bottom: 16px; }
-    .info-card h3 { font-size: 18px; font-weight: 600; margin-bottom: 10px; color: #0c4a6e; }
-    .info-card p { font-size: 14px; color: #475569; line-height: 1.7; }
+    /* 패스키 소개 카드 */
+    .intro-card { background: linear-gradient(135deg, #f0f9ff, #e0f2fe); border: 1px solid #bae6fd; border-radius: 16px; padding: 20px; margin-bottom: 16px; text-align: center; }
+    .intro-card .icon { font-size: 40px; margin-bottom: 10px; }
+    .intro-card h3 { font-size: 16px; font-weight: 600; margin-bottom: 8px; color: #0c4a6e; }
+    .intro-card p { font-size: 13px; color: #475569; line-height: 1.6; }
 
-    .benefits { display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px; }
-    .benefit-item { display: flex; align-items: center; gap: 12px; padding: 14px 16px; background: #f9fafb; border-radius: 10px; }
-    .benefit-item .icon { width: 36px; height: 36px; background: #dbeafe; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
-    .benefit-item .text { font-size: 14px; color: #374151; }
-    .benefit-item .text strong { color: #111827; }
+    /* 장점 요약 */
+    .benefits-mini { display: flex; gap: 10px; margin-bottom: 16px; }
+    .benefit-mini { flex: 1; display: flex; align-items: center; gap: 8px; padding: 10px 12px; background: #f9fafb; border-radius: 8px; }
+    .benefit-mini .icon { font-size: 18px; }
+    .benefit-mini .text { font-size: 12px; color: #374151; }
+    .benefit-mini .text strong { display: block; color: #111827; font-size: 13px; }
+
+    /* 아코디언 (자세히 보기) */
+    .accordion { margin-bottom: 16px; }
+    .accordion-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background: #f1f5f9; border-radius: 10px; cursor: pointer; transition: background 0.2s; }
+    .accordion-header:hover { background: #e2e8f0; }
+    .accordion-header span { font-size: 13px; color: #475569; font-weight: 500; }
+    .accordion-header .arrow { font-size: 12px; transition: transform 0.2s; }
+    .accordion.open .accordion-header .arrow { transform: rotate(180deg); }
+    .accordion-content { display: none; padding: 16px; background: #f8fafc; border-radius: 0 0 10px 10px; margin-top: -6px; }
+    .accordion.open .accordion-content { display: block; }
+    .accordion-content p { font-size: 12px; color: #64748b; line-height: 1.7; margin-bottom: 10px; }
+    .accordion-content ul { font-size: 12px; color: #64748b; line-height: 1.7; padding-left: 20px; }
+    .accordion-content li { margin-bottom: 6px; }
+
+    /* 프로세스 타임라인 */
+    .process-timeline { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+    .process-step { display: flex; gap: 14px; align-items: flex-start; padding: 14px; border-radius: 10px; background: #f8fafc; border: 2px solid #e2e8f0; transition: all 0.3s; }
+    .process-step.active { background: #eff6ff; border-color: #3b82f6; }
+    .process-step.done { background: #f0fdf4; border-color: #22c55e; }
+    .process-step.pending { opacity: 0.6; }
+
+    .step-indicator { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; background: #e2e8f0; color: #64748b; }
+    .process-step.active .step-indicator { background: #3b82f6; color: white; }
+    .process-step.done .step-indicator { background: #22c55e; color: white; }
+
+    .step-content { flex: 1; }
+    .step-content h4 { font-size: 13px; font-weight: 600; margin-bottom: 3px; color: #1e293b; }
+    .step-content p { font-size: 11px; color: #64748b; line-height: 1.4; }
+
+    .process-step.active .step-content h4 { color: #1e40af; }
+    .process-step.done .step-content h4 { color: #166534; }
+
+    /* 현재 상태 카드 */
+    .status-card { background: linear-gradient(135deg, #1e40af, #3b82f6); border-radius: 14px; padding: 18px; color: white; margin-bottom: 14px; }
+    .status-card h3 { font-size: 12px; opacity: 0.8; margin-bottom: 6px; }
+    .status-card .main { font-size: 16px; font-weight: 600; display: flex; align-items: center; gap: 10px; }
+    .status-card .main .icon { font-size: 22px; }
+    .status-card .sub { font-size: 11px; opacity: 0.7; margin-top: 6px; }
+
+    .register-btn { width: 100%; padding: 16px; background: linear-gradient(135deg, #8b5cf6, #6366f1); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 14px; transition: all 0.2s; }
+    .register-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(139, 92, 246, 0.3); }
+    .register-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    .security-note { display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; margin-bottom: 14px; }
+    .security-note .icon { font-size: 16px; flex-shrink: 0; }
+    .security-note .text { font-size: 11px; color: #166534; line-height: 1.5; }
 
     .btn-row { display: flex; gap: 12px; margin-top: auto; }
     .btn { flex: 1; padding: 14px 24px; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; text-align: center; text-decoration: none; transition: all 0.2s; }
     .btn-secondary { background: white; border: 1px solid #e5e7eb; color: #374151; }
-    .btn-secondary:hover { background: #f9fafb; }
     .btn-primary { background: #3b82f6; border: none; color: white; }
-    .btn-primary:hover { background: #2563eb; }
 
-    .note { background: #fef3c7; border: 1px solid #fcd34d; padding: 10px 12px; border-radius: 8px; font-size: 11px; margin-top: 20px; }
-
-    .nav-links { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; justify-content: center; }
+    .nav-links { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
     .nav-links a { padding: 6px 12px; background: #f1f5f9; border-radius: 6px; text-decoration: none; color: #64748b; font-size: 12px; }
     .nav-links a:hover { background: #e2e8f0; }
+
+    /* 디자이너 노트 */
+    .designer-note { background: linear-gradient(135deg, #fdf4ff, #fae8ff); border: 2px solid #d946ef; border-radius: 12px; padding: 16px; margin-top: 14px; }
+    .designer-note h3 { color: #a21caf; margin-bottom: 10px; font-size: 13px; }
+    .designer-note .content { font-size: 11px; color: #374151; line-height: 1.6; }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="left-panel">
       <div class="logo">UniQdata</div>
-      <div class="left-title">안전한 인증 설정</div>
-      <div class="left-desc">비밀번호 없이 안전하게 로그인하고 블록체인 지갑을 생성합니다.</div>
+      <div class="left-title">패스키 + 지갑 등록</div>
+      <div class="left-desc">생체인증으로 안전하게 로그인하고 XRPL 지갑을 보호합니다.</div>
 
       <div class="steps-vertical">
         <div class="step-v done"><div class="num">✓</div><div class="label">회원 유형</div></div>
         <div class="step-v done"><div class="num">✓</div><div class="label">이메일 인증</div></div>
         <div class="step-v done"><div class="num">✓</div><div class="label">비밀번호</div></div>
-        <div class="step-v active"><div class="num">4</div><div class="label">패스키 안내</div></div>
-        <div class="step-v"><div class="num">5</div><div class="label">패스키 등록</div></div>
-        <div class="step-v"><div class="num">6</div><div class="label">블록체인 연동</div></div>
-        <div class="step-v"><div class="num">7</div><div class="label">완료</div></div>
+        <div class="step-v active"><div class="num">4</div><div class="label">패스키 등록</div></div>
+        <div class="step-v"><div class="num">5</div><div class="label">블록체인 연동</div></div>
+        <div class="step-v"><div class="num">6</div><div class="label">완료</div></div>
       </div>
     </div>
 
     <div class="right-panel">
       <div class="form-header">
-        <h1>패스키란?</h1>
-        <p>비밀번호를 대체하는 새로운 인증 방식입니다</p>
+        <h1>패스키 등록</h1>
+        <p>지문/Face ID로 로그인하고 블록체인 지갑을 안전하게 보호합니다</p>
       </div>
 
-      <div class="info-card">
+      <!-- 패스키 소개 -->
+      <div class="intro-card">
         <div class="icon">🔐</div>
-        <h3>지문 / Face ID로 안전하게 로그인</h3>
-        <p>
-          패스키는 생체인증을 사용해 비밀번호 없이 로그인합니다.<br>
-          Google, Apple, Microsoft가 만든 국제 표준입니다.
-        </p>
+        <h3>패스키란?</h3>
+        <p>비밀번호 없이 지문/Face ID로 로그인하는 국제 표준 인증 방식입니다.<br>Google, Apple, Microsoft가 함께 만들었습니다.</p>
       </div>
 
-      <div class="benefits">
-        <div class="benefit-item">
-          <div class="icon">🛡️</div>
-          <div class="text"><strong>피싱 불가</strong> — 비밀번호처럼 도용당하지 않습니다</div>
+      <!-- 장점 요약 -->
+      <div class="benefits-mini">
+        <div class="benefit-mini">
+          <span class="icon">🛡️</span>
+          <div class="text"><strong>피싱 불가</strong>도용 위험 없음</div>
         </div>
-        <div class="benefit-item">
-          <div class="icon">⚡</div>
-          <div class="text"><strong>1초 로그인</strong> — 지문이나 Face ID로 즉시 인증</div>
+        <div class="benefit-mini">
+          <span class="icon">⚡</span>
+          <div class="text"><strong>1초 로그인</strong>즉시 인증</div>
         </div>
-        <div class="benefit-item">
-          <div class="icon">🔗</div>
-          <div class="text"><strong>지갑 자동 생성</strong> — 패스키로 XRPL 지갑 키 생성</div>
+        <div class="benefit-mini">
+          <span class="icon">🔗</span>
+          <div class="text"><strong>지갑 보호</strong>시드 암호화</div>
         </div>
+      </div>
+
+      <!-- 자세히 보기 아코디언 -->
+      <div class="accordion" id="detailAccordion">
+        <div class="accordion-header" onclick="toggleAccordion()">
+          <span>🔍 왜 패스키로 지갑을 보호하나요?</span>
+          <span class="arrow">▼</span>
+        </div>
+        <div class="accordion-content">
+          <p><strong>PRF (Pseudo Random Function)</strong>: 패스키에서만 추출 가능한 고유 암호화 키</p>
+          <ul>
+            <li>XRPL 지갑 시드를 PRF 키로 암호화</li>
+            <li>패스키 없이는 시드 복호화 불가</li>
+            <li>서버 해킹되어도 암호화된 시드만 유출 (쓸모없음)</li>
+            <li>사용자는 패스키 하나만 관리하면 됨</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- 프로세스 타임라인 -->
+      <div class="process-timeline">
+        <div class="process-step done">
+          <div class="step-indicator">✓</div>
+          <div class="step-content">
+            <h4>1. XRPL 지갑 생성</h4>
+            <p>새 지갑 주소와 시드(개인키) 자동 생성</p>
+          </div>
+        </div>
+
+        <div class="process-step active">
+          <div class="step-indicator">2</div>
+          <div class="step-content">
+            <h4>2. 생체인증 + PRF 추출</h4>
+            <p>패스키 등록 시 암호화 키 추출</p>
+          </div>
+        </div>
+
+        <div class="process-step pending">
+          <div class="step-indicator">3</div>
+          <div class="step-content">
+            <h4>3. 시드 암호화 & 저장</h4>
+            <p>PRF 키로 암호화 후 서버 저장 (평문 전송 X)</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 현재 상태 -->
+      <div class="status-card">
+        <h3>현재 상태</h3>
+        <div class="main">
+          <span class="icon">👆</span>
+          <span>생체인증 대기 중</span>
+        </div>
+        <div class="sub">버튼을 클릭하면 지문/Face ID로 인증합니다</div>
+      </div>
+
+      <button class="register-btn" onclick="startRegistration()">
+        <span>🔐</span> 패스키 등록하기
+      </button>
+
+      <div class="security-note">
+        <span class="icon">🔒</span>
+        <span class="text">
+          <strong>보안 보장:</strong> 평문 시드는 브라우저 밖으로 절대 전송되지 않습니다.
+          서버에는 암호화된 시드만 저장됩니다.
+        </span>
       </div>
 
       <div class="btn-row">
@@ -111,31 +224,28 @@
 
       <div class="nav-links">
         <a href="../index.html">← 와이어프레임 목록</a>
-        <a href="signup-step3.html">← Step 3</a>
+        <a href="signup.html">Step 1</a>
         <a href="signup-step5.html">Step 5 →</a>
       </div>
 
       <!-- 디자이너 노트 -->
-      <div style="background: linear-gradient(135deg, #fdf4ff, #fae8ff); border: 2px solid #d946ef; border-radius: 12px; padding: 16px; margin-top: 20px;">
-        <h3 style="color: #a21caf; margin-bottom: 12px; font-size: 14px;">📋 디자이너 노트: 패스키 안내</h3>
+      <div class="designer-note">
+        <h3>📋 디자이너 노트: 패스키 등록 (통합)</h3>
+        <div class="content">
+          <strong>기존 Step 4 + 5 통합:</strong><br>
+          • 패스키 설명과 등록을 하나로 합쳐 UX 개선<br>
+          • 간략한 소개 → 자세히 보기 아코디언 → 등록 버튼<br>
+          • 정보 과부하 방지 + 필요시 상세 정보 제공<br><br>
 
-        <div style="font-size: 12px; color: #374151; line-height: 1.6;">
-          <strong style="color: #86198f;">페이지 목적:</strong> 패스키가 뭔지 설명. 실제 등록 전 교육 단계.<br><br>
+          <strong>처리 순서:</strong><br>
+          1. XRPL 지갑 생성 (주소+시드)<br>
+          2. 생체인증 + PRF 키 추출<br>
+          3. 시드 암호화 (AES-256-GCM) + 서버 저장<br><br>
 
-          <strong style="color: #86198f;">왜 이 단계가 필요한가:</strong><br>
-          • 패스키는 아직 생소한 기술<br>
-          • 갑자기 생체인증 팝업 뜨면 당황할 수 있음<br>
-          • 미리 설명하고 → 다음 단계에서 실제 등록<br><br>
-
-          <strong style="color: #86198f;">핵심 메시지:</strong><br>
-          • 피싱 불가 (비밀번호처럼 도용 안 됨)<br>
-          • 1초 로그인 (생체인증으로 즉시)<br>
-          • 지갑 자동 생성 (PRF로 XRPL 키 생성)<br><br>
-
-          <strong style="color: #86198f;">디자인 포인트:</strong><br>
-          • 큰 아이콘(🔐)으로 시각적 임팩트<br>
-          • 장점 3개를 카드 형태로 나열<br>
-          • 안내 페이지이므로 "다음" 버튼만
+          <strong>보안 원칙:</strong><br>
+          • 평문 시드: 브라우저 밖으로 절대 전송 안 함<br>
+          • PRF 키: 서버로 전송 안 함 (클라이언트만)<br>
+          • 서버 저장: 암호화된 blob만
         </div>
       </div>
 
@@ -144,31 +254,74 @@
         <h3 style="color: #047857; margin-bottom: 12px; font-size: 14px;">⚙️ 기능 명세</h3>
         <div style="font-size: 12px; color: #374151; line-height: 1.8;">
           <strong>핵심 기능:</strong><br>
-          • 패스키(Passkey) 개념 설명<br>
-          • 주요 장점 3가지 안내<br>
-          • 다음 단계 예고 (생체인증 팝업)<br><br>
+          • 패스키 개념 설명 (간략 + 상세 아코디언)<br>
+          • XRPL 지갑 생성 (Testnet/Mainnet)<br>
+          • WebAuthn 패스키 등록 + PRF 확장<br>
+          • PRF 키로 지갑 시드 암호화 (AES-256-GCM)<br>
+          • 암호화된 시드 서버 저장<br><br>
 
-          <strong>안내 내용:</strong><br>
-          • 피싱 완벽 차단 (도메인 바인딩)<br>
-          • 1초 로그인 (Face ID/Touch ID)<br>
-          • XRPL 지갑 자동 생성 (PRF 키 파생)
+          <strong>처리 순서:</strong><br>
+          1. XRPL 지갑 생성 → 주소 + 시드 획득<br>
+          2. 서버에서 WebAuthn 등록 옵션 요청<br>
+          3. navigator.credentials.create() + PRF extension<br>
+          4. PRF 결과에서 32바이트 암호화 키 추출<br>
+          5. AES-256-GCM으로 시드 암호화<br>
+          6. credential + encrypted_seed 서버 전송
         </div>
       </div>
 
       <!-- 백엔드 호출 -->
       <div style="background: linear-gradient(135deg, #f5f3ff, #ede9fe); border: 2px solid #8b5cf6; border-radius: 12px; padding: 16px; margin-top: 12px;">
         <h3 style="color: #6d28d9; margin-bottom: 12px; font-size: 14px;">🔗 백엔드 호출</h3>
-        <div style="font-size: 12px; font-family: 'SF Mono', Monaco, monospace; color: #374151; line-height: 1.8;">
-          <code style="background: #f3f4f6; padding: 2px 6px; border-radius: 4px; color: #6b7280;">없음 (안내 페이지)</code><br><br>
+        <div style="font-size: 11px; font-family: 'SF Mono', Monaco, monospace; color: #374151; line-height: 1.8;">
 
-          <strong style="font-family: -apple-system, sans-serif;">참고:</strong><br>
-          <span style="font-family: -apple-system, sans-serif; font-size: 11px; color: #6b7280;">
-            이 페이지는 패스키 등록 전 사용자 교육 목적.<br>
-            실제 WebAuthn API 호출은 Step 5에서 진행.
-          </span>
+          <strong style="font-family: -apple-system, sans-serif;">1. XRPL 지갑 생성 (클라이언트):</strong><br>
+          <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
+// xrpl.js 사용 (클라이언트)<br>
+const wallet = xrpl.Wallet.generate()<br>
+→ { classicAddress: "rN7n3...", seed: "sn3nxiW9v..." }
+          </code>
+
+          <strong style="font-family: -apple-system, sans-serif;">2. WebAuthn 등록 옵션:</strong><br>
+          <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
+POST /api/v2/auth/webauthn/register-options<br>
+{ "user_id": "temp_xxx", "email": "user@example.com" }<br>
+→ { "challenge": "...", "rp": {...}, "extensions": { "prf": {} } }
+          </code>
+
+          <strong style="font-family: -apple-system, sans-serif;">3. 패스키 등록 + PRF:</strong><br>
+          <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
+// navigator.credentials.create() with PRF<br>
+const prfKey = credential.getClientExtensionResults().prf.results.first
+          </code>
+
+          <strong style="font-family: -apple-system, sans-serif;">4. 시드 암호화 + 등록 완료:</strong><br>
+          <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
+POST /api/v2/auth/webauthn/register<br>
+{<br>
+&nbsp;&nbsp;"credential": {...},<br>
+&nbsp;&nbsp;"xrpl_wallet": {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"address": "rN7n3...",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"encrypted_seed": "base64...",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"encryption_iv": "base64..."<br>
+&nbsp;&nbsp;}<br>
+}<br>
+→ { "success": true, "credential_id": "xxx" }
+          </code>
         </div>
       </div>
     </div>
   </div>
+
+  <script>
+    function toggleAccordion() {
+      document.getElementById('detailAccordion').classList.toggle('open');
+    }
+
+    function startRegistration() {
+      // 실제 구현 시 WebAuthn API 호출
+      alert('생체인증 팝업이 표시됩니다 (실제 구현 시)');
+    }
+  </script>
 </body>
 </html>
