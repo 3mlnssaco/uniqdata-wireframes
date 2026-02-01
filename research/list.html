@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>연구 관리 - Wireframe</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, sans-serif; background: #f5f5f5; }
+    .layout { display: flex; min-height: 100vh; }
+    /* 사이드바 - 계층적 네비게이션 */
+    .sidebar {
+      width: 260px;
+      background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+    }
+    .logo {
+      padding: 20px 24px;
+      font-size: 20px;
+      font-weight: 700;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .logo-icon {
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+    .nav-section {
+      padding: 16px 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .nav-section-title {
+      font-size: 11px;
+      text-transform: uppercase;
+      color: #64748b;
+      padding: 8px 12px;
+      letter-spacing: 0.5px;
+    }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      color: #94a3b8;
+      cursor: pointer;
+      font-size: 14px;
+      text-decoration: none;
+      transition: all 0.15s;
+    }
+    .nav-item:hover { background: rgba(255,255,255,0.05); color: #e2e8f0; }
+    .nav-item.active { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
+    .nav-item .icon { width: 20px; text-align: center; }
+    .nav-item .badge {
+      margin-left: auto;
+      background: #ef4444;
+      color: white;
+      font-size: 11px;
+      padding: 2px 6px;
+      border-radius: 10px;
+    }
+    /* AI 허브 하이라이트 */
+    .ai-hub-link {
+      margin: 12px;
+      padding: 16px;
+      background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(59, 130, 246, 0.2));
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      border-radius: 12px;
+      text-decoration: none;
+      display: block;
+      transition: all 0.2s;
+    }
+    .ai-hub-link:hover {
+      background: linear-gradient(135deg, rgba(139, 92, 246, 0.3), rgba(59, 130, 246, 0.3));
+      transform: translateY(-2px);
+    }
+    .ai-hub-link .title {
+      color: #a78bfa;
+      font-weight: 600;
+      font-size: 14px;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .ai-hub-link .desc {
+      color: #94a3b8;
+      font-size: 12px;
+    }
+    .sidebar-footer {
+      margin-top: auto;
+      padding: 16px;
+      border-top: 1px solid rgba(255,255,255,0.05);
+    }
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .user-info:hover { background: rgba(255,255,255,0.05); }
+    .user-avatar {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      color: white;
+    }
+    .user-name { font-size: 14px; color: #e2e8f0; }
+    .user-org { font-size: 12px; color: #64748b; }
+
+    /* 연구 네비게이션 */
+    .research-nav-item {
+      margin-bottom: 4px;
+    }
+    .research-nav-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.15s;
+      font-size: 13px;
+      color: #94a3b8;
+    }
+    .research-nav-header:hover {
+      background: rgba(255,255,255,0.05);
+      color: #e2e8f0;
+    }
+    .research-nav-item.expanded .research-nav-header {
+      background: rgba(59, 130, 246, 0.1);
+      color: #60a5fa;
+    }
+    .folder-icon { font-size: 14px; }
+    .research-title { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .status-dot.active { background: #22c55e; }
+    .status-dot.recruiting { background: #3b82f6; }
+    .status-dot.draft { background: #6b7280; }
+    .expand-icon {
+      font-size: 10px;
+      color: #64748b;
+      transition: transform 0.2s;
+    }
+    .research-nav-item.expanded .expand-icon {
+      transform: rotate(0deg);
+    }
+    .research-nav-item:not(.expanded) .expand-icon {
+      transform: rotate(-90deg);
+    }
+    .research-nav-sub {
+      display: none;
+      padding-left: 24px;
+      margin-top: 4px;
+      border-left: 2px solid #334155;
+      margin-left: 18px;
+    }
+    .research-nav-item.expanded .research-nav-sub {
+      display: block;
+    }
+    .nav-sub-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px;
+      border-radius: 6px;
+      color: #64748b;
+      font-size: 12px;
+      text-decoration: none;
+      transition: all 0.15s;
+      margin-bottom: 2px;
+    }
+    .nav-sub-item:hover {
+      background: rgba(255,255,255,0.05);
+      color: #94a3b8;
+    }
+    .nav-sub-item.active {
+      background: rgba(59, 130, 246, 0.15);
+      color: #60a5fa;
+    }
+    .nav-sub-item .dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: currentColor;
+      opacity: 0.5;
+    }
+    .nav-sub-item.ai {
+      color: #a78bfa;
+    }
+    .nav-sub-item.ai:hover {
+      background: rgba(139, 92, 246, 0.1);
+      color: #c4b5fd;
+    }
+    .nav-sub-divider {
+      height: 1px;
+      background: #334155;
+      margin: 8px 0;
+    }
+    .main { flex: 1; overflow-x: hidden; }
+    .header { background: white; padding: 20px 24px; border-bottom: 1px solid #e5e7eb; }
+    .content { padding: 24px; }
+
+    /* 페이지 헤더 */
+    .page-header { display: flex; justify-content: space-between; align-items: flex-start; }
+    .page-header h1 { font-size: 26px; font-weight: 700; margin-bottom: 4px; }
+    .page-header .subtitle { color: #6b7280; font-size: 14px; }
+    .btn-primary { padding: 12px 24px; background: #3b82f6; color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; text-decoration: none; }
+    .btn-primary:hover { background: #2563eb; }
+
+    /* 전체 KPI 요약 */
+    .kpi-summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+    .kpi-card { background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 20px; }
+    .kpi-card .label { font-size: 13px; color: #6b7280; margin-bottom: 8px; }
+    .kpi-card .value { font-size: 28px; font-weight: 700; color: #111827; }
+    .kpi-card .change { font-size: 13px; margin-top: 4px; }
+    .kpi-card .change.up { color: #16a34a; }
+    .kpi-card .change.down { color: #dc2626; }
+    .kpi-card .icon { float: right; font-size: 24px; opacity: 0.5; }
+
+    /* 필터 바 */
+    .filter-bar { display: flex; gap: 12px; margin-bottom: 20px; align-items: center; flex-wrap: wrap; }
+    .search-box { width: 300px; height: 42px; border: 1px solid #e5e7eb; border-radius: 8px; padding: 0 16px; font-size: 14px; }
+    .filter-group { display: flex; gap: 4px; background: #f3f4f6; padding: 4px; border-radius: 8px; }
+    .filter-btn { padding: 8px 16px; border: none; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; background: transparent; color: #6b7280; }
+    .filter-btn.active { background: white; color: #111827; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+    .view-toggle { display: flex; gap: 4px; margin-left: auto; }
+    .view-btn { width: 36px; height: 36px; border: 1px solid #e5e7eb; border-radius: 6px; background: white; cursor: pointer; font-size: 16px; }
+    .view-btn.active { background: #3b82f6; color: white; border-color: #3b82f6; }
+    .sort-select { height: 42px; border: 1px solid #e5e7eb; border-radius: 8px; padding: 0 12px; font-size: 14px; }
+
+    /* 프로젝트 그리드 */
+    .project-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+    @media (max-width: 1200px) { .project-grid { grid-template-columns: 1fr; } }
+
+    /* 프로젝트 카드 - 대폭 개선 */
+    .project-card { background: white; border: 1px solid #e5e7eb; border-radius: 16px; overflow: hidden; transition: all 0.2s; text-decoration: none; color: inherit; display: block; }
+    .project-card:hover { border-color: #3b82f6; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15); transform: translateY(-2px); }
+
+    .card-header { padding: 20px 20px 16px; border-bottom: 1px solid #f3f4f6; }
+    .card-title-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+    .card-title { font-size: 18px; font-weight: 700; color: #111827; display: flex; align-items: center; gap: 10px; }
+    .card-badges { display: flex; gap: 6px; }
+    .badge { padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; }
+    .badge-green { background: #dcfce7; color: #166534; }
+    .badge-blue { background: #dbeafe; color: #1e40af; }
+    .badge-yellow { background: #fef3c7; color: #92400e; }
+    .badge-gray { background: #f3f4f6; color: #4b5563; }
+    .badge-purple { background: #f3e8ff; color: #6b21a8; }
+    .card-desc { font-size: 14px; color: #6b7280; line-height: 1.5; }
+    .card-menu { width: 32px; height: 32px; border: none; background: transparent; cursor: pointer; font-size: 18px; color: #9ca3af; border-radius: 6px; }
+    .card-menu:hover { background: #f3f4f6; }
+
+    /* 메트릭 그리드 */
+    .card-metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; padding: 16px 20px; background: #f9fafb; }
+    .metric { text-align: center; }
+    .metric .label { font-size: 11px; color: #6b7280; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .metric .value { font-size: 20px; font-weight: 700; color: #111827; }
+    .metric .sub { font-size: 11px; color: #6b7280; margin-top: 2px; }
+    .metric .sub.up { color: #16a34a; }
+    .metric .sub.down { color: #dc2626; }
+    .metric .progress { height: 4px; background: #e5e7eb; border-radius: 2px; margin-top: 6px; overflow: hidden; }
+    .metric .progress-fill { height: 100%; border-radius: 2px; }
+    .metric .progress-fill.green { background: #22c55e; }
+    .metric .progress-fill.blue { background: #3b82f6; }
+    .metric .progress-fill.yellow { background: #f59e0b; }
+
+    /* 데이터 수집 항목 */
+    .card-data { padding: 16px 20px; border-bottom: 1px solid #f3f4f6; }
+    .data-label { font-size: 12px; color: #6b7280; margin-bottom: 10px; font-weight: 600; }
+    .data-items { display: flex; gap: 8px; flex-wrap: wrap; }
+    .data-item { display: flex; align-items: center; gap: 6px; padding: 6px 12px; background: #f3f4f6; border-radius: 20px; font-size: 12px; color: #374151; }
+    .data-item .icon { font-size: 14px; }
+
+    /* 트렌드 + 알림 */
+    .card-status { display: flex; gap: 16px; padding: 16px 20px; border-bottom: 1px solid #f3f4f6; }
+    .trend-section { flex: 1; }
+    .trend-label { font-size: 12px; color: #6b7280; margin-bottom: 8px; }
+    .sparkline { height: 40px; background: linear-gradient(90deg,
+      rgba(59,130,246,0.1) 0%,
+      rgba(59,130,246,0.3) 30%,
+      rgba(59,130,246,0.2) 50%,
+      rgba(59,130,246,0.4) 70%,
+      rgba(59,130,246,0.3) 100%);
+      border-radius: 6px;
+      position: relative;
+    }
+    .sparkline::after { content: ''; position: absolute; bottom: 10px; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, #3b82f6 0%, #3b82f6 30%, #3b82f6 50%, #22c55e 70%, #22c55e 100%); border-radius: 1px; }
+    .alert-section { width: 200px; }
+    .alert-label { font-size: 12px; color: #6b7280; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+    .alert-count { background: #fef2f2; color: #dc2626; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; }
+    .alert-list { font-size: 12px; color: #6b7280; }
+    .alert-item { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
+    .alert-item .dot { width: 6px; height: 6px; border-radius: 50%; }
+    .alert-item .dot.red { background: #dc2626; }
+    .alert-item .dot.yellow { background: #f59e0b; }
+
+    /* 카드 푸터 */
+    .card-footer { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; }
+    .footer-info { display: flex; gap: 20px; font-size: 13px; color: #6b7280; }
+    .footer-info .item { display: flex; align-items: center; gap: 6px; }
+    .footer-info .item .icon { font-size: 14px; }
+    .footer-actions { display: flex; gap: 8px; }
+    .action-btn { padding: 8px 14px; border: 1px solid #e5e7eb; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; background: white; color: #374151; transition: all 0.2s; }
+    .action-btn:hover { border-color: #3b82f6; color: #3b82f6; }
+    .action-btn.primary { background: #3b82f6; color: white; border-color: #3b82f6; }
+    .action-btn.primary:hover { background: #2563eb; }
+
+    /* 팀 아바타 */
+    .team-avatars { display: flex; }
+    .avatar { width: 28px; height: 28px; border-radius: 50%; background: #e5e7eb; border: 2px solid white; margin-left: -8px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: #6b7280; }
+    .avatar:first-child { margin-left: 0; }
+    .avatar.blue { background: #dbeafe; color: #1e40af; }
+    .avatar.green { background: #dcfce7; color: #166534; }
+    .avatar.purple { background: #f3e8ff; color: #6b21a8; }
+
+    /* 디자이너 노트 */
+    .designer-note { background: linear-gradient(135deg, #fdf4ff, #fae8ff); border: 2px solid #d946ef; border-radius: 12px; padding: 20px; margin-top: 24px; }
+    .designer-note h3 { color: #a21caf; margin-bottom: 16px; font-size: 16px; }
+    .designer-note-section { margin-bottom: 16px; }
+    .designer-note-section:last-child { margin-bottom: 0; }
+    .designer-note-section strong { color: #86198f; display: block; margin-bottom: 4px; }
+    .designer-note-section p, .designer-note-section ul { font-size: 13px; color: #374151; line-height: 1.6; }
+    .designer-note-section ul { padding-left: 20px; }
+
+    .step-nav { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
+    .step-nav a { padding: 8px 16px; background: #eee; border-radius: 6px; text-decoration: none; color: #333; font-size: 14px; }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <div class="sidebar">
+      <div class="logo">
+        <div class="logo-icon">U</div>
+        UniQdata
+      </div>
+
+      <div class="nav-section">
+        <a href="list.html" class="nav-item active">
+          <span class="icon">🏠</span>
+          연구 허브
+        </a>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-section-title">연구</div>
+        <a href="create.html" class="nav-item">
+          <span class="icon">➕</span>
+          새 연구
+        </a>
+      </div>
+
+      <!-- 내 연구들 -->
+      <div class="nav-section" style="flex: 1; overflow-y: auto;">
+        <div class="nav-section-title">내 연구 <span style="background: #3b82f6; color: white; padding: 1px 6px; border-radius: 8px; font-size: 10px; margin-left: 4px;">3</span></div>
+
+        <!-- 연구 1: 펼쳐진 상태 -->
+        <div class="research-nav-item expanded">
+          <div class="research-nav-header" onclick="this.parentElement.classList.toggle('expanded')">
+            <span class="folder-icon">📁</span>
+            <span class="research-title">당뇨병 복약 순응도</span>
+            <span class="status-dot active"></span>
+            <span class="expand-icon">▼</span>
+          </div>
+          <div class="research-nav-sub">
+            <a href="data-overview.html" class="nav-sub-item"><span class="dot"></span> 개요</a>
+            <a href="data-table.html" class="nav-sub-item"><span class="dot"></span> 테이블</a>
+            <a href="analysis-discovery.html" class="nav-sub-item"><span class="dot"></span> 인과발견</a>
+            <a href="analysis-importance.html" class="nav-sub-item"><span class="dot"></span> SHAP</a>
+            <a href="analysis-personalized.html" class="nav-sub-item"><span class="dot"></span> CATE</a>
+            <a href="analysis-whatif.html" class="nav-sub-item"><span class="dot"></span> What-If</a>
+            <a href="analysis-rootcause.html" class="nav-sub-item"><span class="dot"></span> 이상추적</a>
+          </div>
+        </div>
+
+        <!-- 연구 2: 접힌 상태 -->
+        <div class="research-nav-item">
+          <div class="research-nav-header" onclick="this.parentElement.classList.toggle('expanded')">
+            <span class="folder-icon">📁</span>
+            <span class="research-title">노인 수면 패턴</span>
+            <span class="status-dot recruiting"></span>
+            <span class="expand-icon">▶</span>
+          </div>
+          <div class="research-nav-sub">
+            <a href="data-overview.html" class="nav-sub-item"><span class="dot"></span> 개요</a>
+            <a href="data-table.html" class="nav-sub-item"><span class="dot"></span> 테이블</a>
+            <a href="analysis-discovery.html" class="nav-sub-item"><span class="dot"></span> 인과발견</a>
+            <a href="analysis-importance.html" class="nav-sub-item"><span class="dot"></span> SHAP</a>
+            <a href="analysis-personalized.html" class="nav-sub-item"><span class="dot"></span> CATE</a>
+            <a href="analysis-whatif.html" class="nav-sub-item"><span class="dot"></span> What-If</a>
+            <a href="analysis-rootcause.html" class="nav-sub-item"><span class="dot"></span> 이상추적</a>
+          </div>
+        </div>
+
+        <!-- 연구 3: 접힌 상태 (초안) -->
+        <div class="research-nav-item">
+          <div class="research-nav-header" onclick="this.parentElement.classList.toggle('expanded')">
+            <span class="folder-icon">📄</span>
+            <span class="research-title">ADHD 생활습관</span>
+            <span class="status-dot draft"></span>
+            <span class="expand-icon">▶</span>
+          </div>
+          <div class="research-nav-sub">
+            <a href="data-overview.html" class="nav-sub-item"><span class="dot"></span> 개요</a>
+            <a href="data-table.html" class="nav-sub-item"><span class="dot"></span> 테이블</a>
+            <a href="analysis-discovery.html" class="nav-sub-item"><span class="dot"></span> 인과발견</a>
+            <a href="analysis-importance.html" class="nav-sub-item"><span class="dot"></span> SHAP</a>
+            <a href="analysis-personalized.html" class="nav-sub-item"><span class="dot"></span> CATE</a>
+            <a href="analysis-whatif.html" class="nav-sub-item"><span class="dot"></span> What-If</a>
+            <a href="analysis-rootcause.html" class="nav-sub-item"><span class="dot"></span> 이상추적</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-section-title">관리</div>
+        <a href="../team.html" class="nav-item">
+          <span class="icon">👥</span>
+          팀
+        </a>
+        <a href="../billing.html" class="nav-item">
+          <span class="icon">💳</span>
+          결제
+        </a>
+        <a href="#" class="nav-item">
+          <span class="icon">⚙️</span>
+          설정
+        </a>
+      </div>
+
+      <div class="sidebar-footer">
+        <div class="user-info">
+          <div class="user-avatar">김</div>
+          <div>
+            <div class="user-name">김연구</div>
+            <div class="user-org">서울대학교병원</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="main">
+      <div class="header">
+        <div class="page-header">
+          <div>
+            <h1>연구 관리</h1>
+            <p class="subtitle">진행 중인 연구 프로젝트를 관리하고 데이터를 분석합니다</p>
+          </div>
+          <a href="create.html" class="btn-primary">
+            <span>+</span> 새 연구 시작
+          </a>
+        </div>
+      </div>
+
+      <div class="content">
+        <!-- 전체 KPI 요약 -->
+        <div class="kpi-summary">
+          <div class="kpi-card">
+            <span class="icon">📋</span>
+            <div class="label">전체 연구</div>
+            <div class="value">5</div>
+            <div class="change up">진행 중 3 · 모집 중 1 · 초안 1</div>
+          </div>
+          <div class="kpi-card">
+            <span class="icon">👥</span>
+            <div class="label">총 참여자</div>
+            <div class="value">1,430</div>
+            <div class="change up">▲ 156 이번 주</div>
+          </div>
+          <div class="kpi-card">
+            <span class="icon">📊</span>
+            <div class="label">수집 데이터</div>
+            <div class="value">2.8M</div>
+            <div class="change up">▲ 340K 이번 주</div>
+          </div>
+          <div class="kpi-card">
+            <span class="icon">💰</span>
+            <div class="label">에스크로 총액</div>
+            <div class="value">65,000 XRP</div>
+            <div class="change">지급완료 12,000 XRP</div>
+          </div>
+        </div>
+
+        <!-- 필터 바 -->
+        <div class="filter-bar">
+          <input type="text" class="search-box" placeholder="연구명, 설명, 데이터 유형으로 검색...">
+          <div class="filter-group">
+            <button class="filter-btn active">전체</button>
+            <button class="filter-btn">진행 중</button>
+            <button class="filter-btn">모집 중</button>
+            <button class="filter-btn">초안</button>
+            <button class="filter-btn">완료</button>
+          </div>
+          <select class="sort-select">
+            <option>최근 활동순</option>
+            <option>마감일순</option>
+            <option>참여자순</option>
+            <option>데이터량순</option>
+          </select>
+          <div class="view-toggle">
+            <button class="view-btn active" title="그리드">▦</button>
+            <button class="view-btn" title="리스트">☰</button>
+          </div>
+        </div>
+
+        <!-- 프로젝트 그리드 -->
+        <div class="project-grid">
+          <!-- 카드 1: 당뇨병 연구 (진행 중) -->
+          <a href="data-overview.html" class="project-card">
+            <div class="card-header">
+              <div class="card-title-row">
+                <div class="card-title">
+                  당뇨병 환자 복약 순응도 연구
+                </div>
+                <button class="card-menu">⋮</button>
+              </div>
+              <div class="card-badges">
+                <span class="badge badge-green">진행 중</span>
+                <span class="badge badge-purple">관찰 연구</span>
+              </div>
+              <p class="card-desc">2형 당뇨 환자의 복약 패턴과 혈당 변화 상관관계 분석. DoWhy 인과추론으로 복약 순응도의 혈당 관리 효과 추정.</p>
+            </div>
+
+            <div class="card-metrics">
+              <div class="metric">
+                <div class="label">참여자</div>
+                <div class="value">450<span style="font-size: 14px; color: #6b7280;">/500</span></div>
+                <div class="sub up">▲ 23 이번주</div>
+                <div class="progress"><div class="progress-fill green" style="width: 90%;"></div></div>
+              </div>
+              <div class="metric">
+                <div class="label">데이터 품질</div>
+                <div class="value">92%</div>
+                <div class="sub">우수</div>
+                <div class="progress"><div class="progress-fill blue" style="width: 92%;"></div></div>
+              </div>
+              <div class="metric">
+                <div class="label">수집률</div>
+                <div class="value">87%</div>
+                <div class="sub">정상</div>
+                <div class="progress"><div class="progress-fill blue" style="width: 87%;"></div></div>
+              </div>
+              <div class="metric">
+                <div class="label">마감까지</div>
+                <div class="value">D-43</div>
+                <div class="sub">2026-03-15</div>
+              </div>
+            </div>
+
+            <div class="card-data">
+              <div class="data-label">수집 데이터 (5종)</div>
+              <div class="data-items">
+                <span class="data-item"><span class="icon">❤️</span> 심박수</span>
+                <span class="data-item"><span class="icon">🩸</span> 혈당</span>
+                <span class="data-item"><span class="icon">💊</span> 복약</span>
+                <span class="data-item"><span class="icon">😴</span> 수면</span>
+                <span class="data-item"><span class="icon">😊</span> 기분</span>
+              </div>
+            </div>
+
+            <div class="card-status">
+              <div class="trend-section">
+                <div class="trend-label">최근 7일 데이터 수집 트렌드</div>
+                <div class="sparkline"></div>
+              </div>
+              <div class="alert-section">
+                <div class="alert-label">알림 <span class="alert-count">2</span></div>
+                <div class="alert-list">
+                  <div class="alert-item"><span class="dot red"></span> P023 3일 연속 미제출</div>
+                  <div class="alert-item"><span class="dot yellow"></span> 혈당 이상치 5건</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card-footer">
+              <div class="footer-info">
+                <div class="item">
+                  <div class="team-avatars">
+                    <div class="avatar blue">김</div>
+                    <div class="avatar green">박</div>
+                    <div class="avatar purple">+1</div>
+                  </div>
+                </div>
+                <div class="item"><span class="icon">📊</span> 1.2M 포인트</div>
+                <div class="item"><span class="icon">💰</span> 25,000 XRP</div>
+              </div>
+              <div class="footer-actions">
+                <button class="action-btn">참여자</button>
+                <button class="action-btn primary">데이터 →</button>
+              </div>
+            </div>
+          </a>
+
+          <!-- 카드 2: 노인 수면 연구 (모집 중) -->
+          <a href="data-overview.html" class="project-card">
+            <div class="card-header">
+              <div class="card-title-row">
+                <div class="card-title">노인 수면 패턴 분석</div>
+                <button class="card-menu">⋮</button>
+              </div>
+              <div class="card-badges">
+                <span class="badge badge-blue">모집 중</span>
+                <span class="badge badge-purple">관찰 연구</span>
+              </div>
+              <p class="card-desc">65세 이상 노인층의 수면 품질과 일상 활동 연관성 분석. 보답 앱 사용자 대상.</p>
+            </div>
+
+            <div class="card-metrics">
+              <div class="metric">
+                <div class="label">참여자</div>
+                <div class="value">180<span style="font-size: 14px; color: #6b7280;">/300</span></div>
+                <div class="sub up">▲ 12 이번주</div>
+                <div class="progress"><div class="progress-fill yellow" style="width: 60%;"></div></div>
+              </div>
+              <div class="metric">
+                <div class="label">데이터 품질</div>
+                <div class="value">88%</div>
+                <div class="sub">양호</div>
+                <div class="progress"><div class="progress-fill blue" style="width: 88%;"></div></div>
+              </div>
+              <div class="metric">
+                <div class="label">수집률</div>
+                <div class="value">91%</div>
+                <div class="sub">우수</div>
+                <div class="progress"><div class="progress-fill green" style="width: 91%;"></div></div>
+              </div>
+              <div class="metric">
+                <div class="label">모집 마감</div>
+                <div class="value">D-14</div>
+                <div class="sub">2026-02-14</div>
+              </div>
+            </div>
+
+            <div class="card-data">
+              <div class="data-label">수집 데이터 (4종)</div>
+              <div class="data-items">
+                <span class="data-item"><span class="icon">😴</span> 수면</span>
+                <span class="data-item"><span class="icon">🚶</span> 활동량</span>
+                <span class="data-item"><span class="icon">❤️</span> 심박수</span>
+                <span class="data-item"><span class="icon">😊</span> 컨디션</span>
+              </div>
+            </div>
+
+            <div class="card-status">
+              <div class="trend-section">
+                <div class="trend-label">최근 7일 모집 트렌드</div>
+                <div class="sparkline"></div>
+              </div>
+              <div class="alert-section">
+                <div class="alert-label">알림 <span class="alert-count" style="background: #fef3c7; color: #92400e;">1</span></div>
+                <div class="alert-list">
+                  <div class="alert-item"><span class="dot yellow"></span> 모집률 60% - 홍보 필요</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card-footer">
+              <div class="footer-info">
+                <div class="item">
+                  <div class="team-avatars">
+                    <div class="avatar blue">이</div>
+                    <div class="avatar green">최</div>
+                  </div>
+                </div>
+                <div class="item"><span class="icon">📊</span> 340K 포인트</div>
+                <div class="item"><span class="icon">💰</span> 15,000 XRP</div>
+              </div>
+              <div class="footer-actions">
+                <button class="action-btn">모집 관리</button>
+                <button class="action-btn primary">데이터 →</button>
+              </div>
+            </div>
+          </a>
+
+          <!-- 카드 3: ADHD 연구 (초안) -->
+          <a href="create.html" class="project-card" style="opacity: 0.7;">
+            <div class="card-header">
+              <div class="card-title-row">
+                <div class="card-title">ADHD 청년층 생활습관 연구</div>
+                <button class="card-menu">⋮</button>
+              </div>
+              <div class="card-badges">
+                <span class="badge badge-gray">초안</span>
+              </div>
+              <p class="card-desc">ADHD 진단 청년의 루틴 수행과 집중력 변화 추적. ready-Q 앱 사용자 대상.</p>
+            </div>
+
+            <div class="card-metrics">
+              <div class="metric">
+                <div class="label">참여자</div>
+                <div class="value">0<span style="font-size: 14px; color: #6b7280;">/200</span></div>
+                <div class="sub">미시작</div>
+                <div class="progress"><div class="progress-fill" style="width: 0%;"></div></div>
+              </div>
+              <div class="metric">
+                <div class="label">설정 완료</div>
+                <div class="value">4/6</div>
+                <div class="sub">에스크로 미예치</div>
+                <div class="progress"><div class="progress-fill yellow" style="width: 66%;"></div></div>
+              </div>
+              <div class="metric">
+                <div class="label">예상 비용</div>
+                <div class="value">~20K</div>
+                <div class="sub">XRP</div>
+              </div>
+              <div class="metric">
+                <div class="label">예정일</div>
+                <div class="value">5/1</div>
+                <div class="sub">2026</div>
+              </div>
+            </div>
+
+            <div class="card-data">
+              <div class="data-label">수집 예정 데이터 (6종)</div>
+              <div class="data-items">
+                <span class="data-item"><span class="icon">📋</span> 루틴</span>
+                <span class="data-item"><span class="icon">🎯</span> 집중도</span>
+                <span class="data-item"><span class="icon">😴</span> 수면</span>
+                <span class="data-item"><span class="icon">💊</span> 복약</span>
+                <span class="data-item"><span class="icon">😊</span> 기분</span>
+                <span class="data-item"><span class="icon">⚡</span> 에너지</span>
+              </div>
+            </div>
+
+            <div class="card-footer" style="border-top: 1px solid #f3f4f6;">
+              <div class="footer-info">
+                <div class="item">
+                  <div class="team-avatars">
+                    <div class="avatar blue">김</div>
+                  </div>
+                </div>
+                <div class="item"><span class="icon">⚠️</span> 에스크로 필요</div>
+              </div>
+              <div class="footer-actions">
+                <button class="action-btn primary">설정 계속 →</button>
+              </div>
+            </div>
+          </a>
+        </div>
+
+        <!-- 디자이너 노트 -->
+        <div class="designer-note">
+          <h3>📋 디자이너 노트: 연구 허브</h3>
+
+          <div class="designer-note-section">
+            <strong>페이지 목적</strong>
+            <p>진행 중인 모든 연구를 한눈에 파악. 각 연구의 핵심 지표와 상태를 빠르게 확인.</p>
+          </div>
+
+          <div class="designer-note-section">
+            <strong>상단 KPI 요약</strong>
+            <ul>
+              <li>전체 연구 수 (상태별 breakdown)</li>
+              <li>총 참여자 수 (주간 증감)</li>
+              <li>수집 데이터량 (주간 증감)</li>
+              <li>에스크로 총액 (지급 완료분)</li>
+            </ul>
+          </div>
+
+          <div class="designer-note-section">
+            <strong>연구 카드 구성 (개선됨)</strong>
+            <ul>
+              <li><strong>헤더</strong>: 제목, 상태 뱃지, 연구 유형, 설명</li>
+              <li><strong>메트릭 (4개)</strong>: 참여자, 데이터 품질, 수집률, 마감/모집 D-day</li>
+              <li><strong>수집 데이터</strong>: 아이콘+이름으로 한눈에 파악</li>
+              <li><strong>트렌드+알림</strong>: 최근 7일 스파크라인, 주의 필요 알림</li>
+              <li><strong>푸터</strong>: 담당 팀, 데이터량, 예산, 빠른 액션 버튼</li>
+            </ul>
+          </div>
+
+          <div class="designer-note-section">
+            <strong>상태별 카드 스타일</strong>
+            <ul>
+              <li><strong>진행 중</strong>: 초록 뱃지, 모든 정보 표시</li>
+              <li><strong>모집 중</strong>: 파랑 뱃지, 모집 진행률 강조</li>
+              <li><strong>초안</strong>: 회색 뱃지, 투명도 70%, 설정 완료도 표시</li>
+              <li><strong>완료</strong>: 회색, 결과 다운로드 버튼</li>
+            </ul>
+          </div>
+
+          <div class="designer-note-section">
+            <strong>인터랙션</strong>
+            <ul>
+              <li>카드 호버 → 파란 테두리 + 살짝 위로</li>
+              <li>카드 클릭 → 연구 상세 페이지</li>
+              <li>액션 버튼 → 해당 탭으로 바로 이동</li>
+              <li>⋮ 메뉴 → 복제, 보관, 삭제</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- 기능 명세 -->
+        <div style="background: linear-gradient(135deg, #ecfdf5, #d1fae5); border: 2px solid #10b981; border-radius: 12px; padding: 20px; margin-top: 20px;">
+          <h3 style="color: #047857; margin-bottom: 12px; font-size: 14px;">⚙️ 기능 명세</h3>
+          <div style="font-size: 12px; color: #374151; line-height: 1.8;">
+            <strong>핵심 기능:</strong><br>
+            • 연구 프로젝트 목록 조회 (상태별 필터)<br>
+            • KPI 요약 (총 연구, 참여자, 데이터, 에스크로)<br>
+            • 연구 카드별 상세 정보 표시<br>
+            • 빠른 액션 (데이터 보기, 모집 관리, 설정 계속)<br>
+            • 새 연구 생성 진입점<br><br>
+
+            <strong>연구 상태:</strong><br>
+            • draft: 초안 (에스크로 미예치)<br>
+            • recruiting: 참여자 모집 중<br>
+            • collecting: 데이터 수집 중<br>
+            • analyzing: 분석 중<br>
+            • completed: 완료
+          </div>
+        </div>
+
+        <!-- 백엔드 호출 -->
+        <div style="background: linear-gradient(135deg, #f5f3ff, #ede9fe); border: 2px solid #8b5cf6; border-radius: 12px; padding: 20px; margin-top: 12px;">
+          <h3 style="color: #6d28d9; margin-bottom: 12px; font-size: 14px;">🔗 백엔드 호출</h3>
+          <div style="font-size: 11px; font-family: 'SF Mono', Monaco, monospace; color: #374151; line-height: 1.8;">
+            <strong style="font-family: -apple-system, sans-serif;">1. 프로젝트 목록:</strong><br>
+            <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
+GET /api/v2/projects?status=all&limit=20&offset=0<br>
+→ { "projects": [...], "total": 5, "kpi": {...} }
+            </code>
+
+            <strong style="font-family: -apple-system, sans-serif;">2. KPI 요약:</strong><br>
+            <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
+GET /api/v2/dashboard/summary<br>
+→ {<br>
+&nbsp;&nbsp;"total_projects": 5,<br>
+&nbsp;&nbsp;"total_participants": 1430,<br>
+&nbsp;&nbsp;"total_datapoints": 2340000,<br>
+&nbsp;&nbsp;"escrow_balance": 45000<br>
+}
+            </code>
+          </div>
+        </div>
+
+        <div class="step-nav">
+          <a href="list.html">← 연구 허브</a>
+          <a href="create.html">연구 생성 →</a>
+          <a href="data-overview.html">연구 상세 →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="page-spec.js"></script>
+</body>
+</html>

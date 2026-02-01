@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>연구 생성 Step 2 - 설계 확인 - Wireframe</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, sans-serif; background: #f5f5f5; }
+    .layout { display: flex; min-height: 100vh; }
+    .sidebar { width: 240px; background: #1a1a1a; color: white; padding: 20px; flex-shrink: 0; }
+    .logo { font-size: 18px; font-weight: bold; margin-bottom: 30px; padding: 10px; }
+    .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 8px; margin-bottom: 4px; color: #9ca3af; }
+    .nav-item.active { background: #3b82f6; color: white; }
+
+    .main { flex: 1; padding: 32px; max-width: 900px; margin: 0 auto; }
+    .main h1 { font-size: 28px; margin-bottom: 8px; }
+    .main .subtitle { color: #6b7280; margin-bottom: 32px; }
+
+    /* 스텝 인디케이터 */
+    .steps { display: flex; justify-content: space-between; margin-bottom: 32px; }
+    .step { display: flex; flex-direction: column; align-items: center; flex: 1; }
+    .step-num { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; margin-bottom: 8px; font-size: 14px; }
+    .step-num.done { background: #22c55e; color: white; }
+    .step-num.active { background: #8b5cf6; color: white; }
+    .step-num.pending { background: #e5e7eb; color: #9ca3af; }
+    .step-label { font-size: 12px; color: #6b7280; text-align: center; }
+    .step-line { flex: 1; height: 2px; background: #e5e7eb; margin: 20px 8px 0; }
+    .step-line.done { background: #22c55e; }
+
+    /* 카드 */
+    .card { background: white; border: 1px solid #e5e7eb; border-radius: 12px; margin-bottom: 20px; overflow: hidden; }
+    .card-header { background: #f9fafb; padding: 16px 20px; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center; }
+    .card-header h3 { font-size: 16px; font-weight: 600; }
+    .ai-badge { font-size: 11px; color: #7c3aed; background: #f3e8ff; padding: 4px 10px; border-radius: 12px; }
+    .card-body { padding: 20px; }
+
+    /* 연구 방법론 그리드 */
+    .methodology-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .methodology-item { padding: 16px; border: 2px solid #e5e7eb; border-radius: 12px; cursor: pointer; transition: all 0.2s; }
+    .methodology-item:hover { border-color: #c4b5fd; }
+    .methodology-item.selected { border-color: #8b5cf6; background: #faf5ff; }
+    .methodology-item h4 { font-size: 14px; margin-bottom: 4px; }
+    .methodology-item p { font-size: 12px; color: #6b7280; margin-bottom: 8px; }
+    .methodology-item .tags { display: flex; flex-wrap: wrap; gap: 4px; }
+    .methodology-item .tag { font-size: 10px; background: #f3f4f6; padding: 2px 6px; border-radius: 4px; color: #6b7280; }
+
+    /* 폼 요소 */
+    label { display: block; font-size: 14px; font-weight: 500; margin-bottom: 8px; color: #374151; }
+    .input { width: 100%; height: 44px; border: 1px solid #e5e7eb; border-radius: 8px; padding: 0 12px; font-size: 14px; }
+    .input.ai-filled { border-color: #8b5cf6; background: #faf5ff; }
+    .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+
+    /* 참여조건 */
+    .condition-row { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+    .condition-row span { color: #6b7280; }
+    .input-small { width: 80px; height: 40px; border: 1px solid #e5e7eb; border-radius: 8px; padding: 0 12px; text-align: center; }
+    .input-small.ai-filled { border-color: #8b5cf6; background: #faf5ff; }
+
+    .chip-group { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+    .chip { padding: 8px 16px; border: 1px solid #e5e7eb; border-radius: 20px; font-size: 13px; cursor: pointer; transition: all 0.2s; }
+    .chip:hover { border-color: #8b5cf6; }
+    .chip.selected { background: #8b5cf6; color: white; border-color: #8b5cf6; }
+
+    .info-box { background: #eff6ff; border: 1px solid #bfdbfe; padding: 12px 16px; border-radius: 8px; font-size: 13px; color: #1e40af; display: flex; align-items: center; gap: 8px; }
+
+    /* 버튼 */
+    .btn-row { display: flex; justify-content: space-between; margin-top: 24px; padding-top: 24px; border-top: 1px solid #e5e7eb; }
+    .btn { padding: 12px 28px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; text-decoration: none; display: inline-block; }
+    .btn-secondary { background: white; border: 1px solid #e5e7eb; color: #374151; }
+    .btn-primary { background: #8b5cf6; border: none; color: white; }
+    .btn-primary:hover { background: #7c3aed; }
+
+    /* 스텝 네비게이션 */
+    .step-nav { display: flex; gap: 10px; margin-top: 24px; flex-wrap: wrap; }
+    .step-nav a { padding: 8px 16px; background: #eee; border-radius: 6px; text-decoration: none; color: #333; font-size: 14px; }
+
+    /* 디자이너 노트 */
+    .designer-note { background: linear-gradient(135deg, #fdf4ff, #fae8ff); border: 2px solid #d946ef; border-radius: 12px; padding: 20px; margin-top: 24px; }
+    .designer-note h3 { color: #a21caf; margin-bottom: 12px; font-size: 14px; }
+    .designer-note .content { font-size: 12px; color: #374151; line-height: 1.7; }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <div class="sidebar">
+      <div class="logo">UniQdata</div>
+      <a href="list.html" class="nav-item">🏠 홈</a>
+      <a href="list.html" class="nav-item active">📊 연구 관리</a>
+      <a href="../data-pool.html" class="nav-item">🗄️ Data Pool</a>
+      <a href="../team.html" class="nav-item">👥 팀</a>
+      <a href="../billing.html" class="nav-item">💳 결제/에스크로</a>
+    </div>
+
+    <div class="main">
+      <h1>AI 연구 설계 제안</h1>
+      <p class="subtitle">각 항목을 확인하고 필요시 수정하세요</p>
+
+      <!-- 스텝 인디케이터 -->
+      <div class="steps">
+        <div class="step"><div class="step-num done">✓</div><div class="step-label">AI 설계</div></div>
+        <div class="step-line done"></div>
+        <div class="step"><div class="step-num active">2</div><div class="step-label">설계 확인</div></div>
+        <div class="step-line"></div>
+        <div class="step"><div class="step-num pending">3</div><div class="step-label">데이터 수집</div></div>
+        <div class="step-line"></div>
+        <div class="step"><div class="step-num pending">4</div><div class="step-label">AI 도구</div></div>
+        <div class="step-line"></div>
+        <div class="step"><div class="step-num pending">5</div><div class="step-label">예산</div></div>
+        <div class="step-line"></div>
+        <div class="step"><div class="step-num pending">6</div><div class="step-label">에스크로</div></div>
+      </div>
+
+      <!-- 연구 방법론 -->
+      <div class="card">
+        <div class="card-header">
+          <h3>📋 연구 방법론</h3>
+          <span class="ai-badge">AI 추천</span>
+        </div>
+        <div class="card-body">
+          <div class="methodology-grid">
+            <div class="methodology-item">
+              <h4>전향적 코호트</h4>
+              <p>시간에 따른 추적 관찰</p>
+              <div class="tags"><span class="tag">시계열 분석</span><span class="tag">트렌드 예측</span></div>
+            </div>
+            <div class="methodology-item selected">
+              <h4>RCT</h4>
+              <p>무작위 대조 시험</p>
+              <div class="tags"><span class="tag">그룹 비교</span><span class="tag">효과 크기</span></div>
+            </div>
+            <div class="methodology-item">
+              <h4>SMART</h4>
+              <p>적응형 다단계 배정</p>
+              <div class="tags"><span class="tag">적응형 분석</span><span class="tag">최적 경로</span></div>
+            </div>
+            <div class="methodology-item">
+              <h4>MRT</h4>
+              <p>마이크로 무작위 시험</p>
+              <div class="tags"><span class="tag">JITAI</span><span class="tag">순간 효과</span></div>
+            </div>
+            <div class="methodology-item">
+              <h4>N-of-1</h4>
+              <p>단일 피험자 반복 측정</p>
+              <div class="tags"><span class="tag">개인화</span><span class="tag">맞춤 치료</span></div>
+            </div>
+            <div class="methodology-item">
+              <h4>횡단 조사</h4>
+              <p>한 시점 스냅샷</p>
+              <div class="tags"><span class="tag">분포 분석</span><span class="tag">세그먼트</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 기본 정보 -->
+      <div class="card">
+        <div class="card-header">
+          <h3>📝 기본 정보</h3>
+        </div>
+        <div class="card-body">
+          <label>프로젝트명</label>
+          <input type="text" class="input ai-filled" value="저탄수화물 식단의 혈당 변동 개선 효과 연구">
+
+          <div class="input-row" style="margin-top: 16px;">
+            <div>
+              <label>연구 기간 (일)</label>
+              <input type="number" class="input ai-filled" value="56">
+            </div>
+            <div>
+              <label>목표 참여자</label>
+              <input type="number" class="input ai-filled" value="100">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 참여자 조건 -->
+      <div class="card">
+        <div class="card-header">
+          <h3>👥 참여자 조건 (ZKP 검증)</h3>
+          <span class="ai-badge">AI 추천</span>
+        </div>
+        <div class="card-body">
+          <label>연령</label>
+          <div class="condition-row">
+            <input type="number" class="input-small ai-filled" value="30">
+            <span>세 ~</span>
+            <input type="number" class="input-small ai-filled" value="60">
+            <span>세</span>
+          </div>
+
+          <label>건강 조건</label>
+          <div class="chip-group">
+            <div class="chip selected">제2형 당뇨</div>
+            <div class="chip">고혈압</div>
+            <div class="chip">고지혈증</div>
+            <div class="chip">비만</div>
+            <div class="chip selected">CGM 사용자</div>
+          </div>
+
+          <div class="info-box">
+            📊 예상 모집 가능 인원: <strong>2,847명</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- 버튼 -->
+      <div class="btn-row">
+        <a href="create.html" class="btn btn-secondary">← 이전</a>
+        <a href="create-step3.html" class="btn btn-primary">다음 →</a>
+      </div>
+
+      <!-- 스텝 네비게이션 -->
+      <div class="step-nav">
+        <a href="create.html">← Step 1</a>
+        <a href="create-step3.html">Step 3 →</a>
+      </div>
+
+      <!-- 디자이너 노트 -->
+      <div class="designer-note">
+        <h3>📋 디자이너 노트: Step 2 - 설계 확인</h3>
+        <div class="content">
+          <strong>핵심:</strong> AI가 Step 1에서 생성한 설계를 보여주고, 연구자가 확인/수정<br><br>
+
+          <strong>연구 방법론:</strong><br>
+          • 전향적 코호트 - 시계열 분석, 트렌드 예측<br>
+          • RCT - 그룹 비교 통계, 효과 크기<br>
+          • SMART - 적응형 분석, 최적 경로<br>
+          • MRT - JITAI, 순간 효과 분석<br>
+          • N-of-1 - 개인 내 비교, 개인화 모델<br>
+          • 횡단조사 - 분포 분석, 세그먼테이션<br><br>
+
+          <strong>AI 추천 표시:</strong><br>
+          • 보라색 테두리 = AI가 채운 필드<br>
+          • AI 추천 뱃지로 명확히 표시
+        </div>
+      </div>
+
+      <!-- 기능 명세 -->
+      <div style="background: linear-gradient(135deg, #ecfdf5, #d1fae5); border: 2px solid #10b981; border-radius: 12px; padding: 16px; margin-top: 12px;">
+        <h3 style="color: #047857; margin-bottom: 12px; font-size: 14px;">⚙️ 기능 명세</h3>
+        <div style="font-size: 12px; color: #374151; line-height: 1.8;">
+          <strong>핵심 기능:</strong><br>
+          • AI 생성 설계 검토/수정<br>
+          • 연구 방법론 선택 (6종): 전향적 코호트, RCT, SMART, MRT, N-of-1, 횡단조사<br>
+          • 기본 정보 입력 (제목, 목적, 기간, IRB)<br>
+          • 참여자 조건 설정 (연령, 성별, 질환, 제외조건)<br><br>
+
+          <strong>ZKP 기반 타겟팅 (핵심):</strong><br>
+          • 모든 참여자 조건은 <strong>ZKP Circuit</strong>으로 검증<br>
+          • 연구자는 참여자의 구체적 정보(이름, 연락처 등)를 볼 수 없음<br>
+          • "조건 충족 여부"만 yes/no로 확인<br>
+          • 지원 ZKP Circuit:<br>
+          &nbsp;&nbsp;- <strong>AgeRange</strong>: age ∈ [min, max] 검증<br>
+          &nbsp;&nbsp;- <strong>ConditionMatch</strong>: 질환코드 포함 여부 검증<br>
+          &nbsp;&nbsp;- <strong>DataAvailability</strong>: 필수 데이터 보유 여부 검증<br>
+          &nbsp;&nbsp;- <strong>ExclusionCheck</strong>: 제외조건 미해당 검증<br><br>
+
+          <strong>예상 매칭 시뮬레이션:</strong><br>
+          • ZKP 조건 조합 시 Data Pool에서 매칭 가능 인원 실시간 계산<br>
+          • 개인 정보 노출 없이 집계 수만 표시 (k≥5 적용)
+        </div>
+      </div>
+
+      <!-- 백엔드 호출 -->
+      <div style="background: linear-gradient(135deg, #f5f3ff, #ede9fe); border: 2px solid #8b5cf6; border-radius: 12px; padding: 16px; margin-top: 12px;">
+        <h3 style="color: #6d28d9; margin-bottom: 12px; font-size: 14px;">🔗 백엔드 호출</h3>
+        <div style="font-size: 11px; font-family: 'SF Mono', Monaco, monospace; color: #374151; line-height: 1.8;">
+
+          <strong style="font-family: -apple-system, sans-serif;">1. 프로젝트 초안 저장 (Step 2 완료 시)</strong><br>
+          <code style="background: #1f2937; color: #a5b4fc; padding: 8px 12px; border-radius: 6px; display: block; margin: 6px 0;">
+POST /api/v2/projects  // 신규<br>
+PATCH /api/v2/projects/:id  // 수정<br>
+Headers: Authorization: Bearer {jwt}<br><br>
+
+Request Body:<br>
+{<br>
+&nbsp;&nbsp;"title": "당뇨 환자 혈당-식단 상관관계 연구",<br>
+&nbsp;&nbsp;"methodology": "prospective_cohort",<br>
+&nbsp;&nbsp;"duration": {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"start": "2026-03-01",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"end": "2026-04-30",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"days": 60<br>
+&nbsp;&nbsp;},<br>
+&nbsp;&nbsp;"irb_number": "IRB-2026-001",  // optional<br>
+&nbsp;&nbsp;"target_participants": 100,<br>
+&nbsp;&nbsp;"eligibility": {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"zkp_circuits": [  // ZKP 회로 정의<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"circuit": "AgeRange",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"params": { "min": 30, "max": 50 }<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;},<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"circuit": "ConditionMatch",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"params": { "codes": ["E11"] }  // ICD-10: 제2형 당뇨<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;},<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"circuit": "DataAvailability",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"params": { "required": ["cgm"] }<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;],<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"exclusions": [<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ "circuit": "ConditionMatch", "params": { "codes": ["O80"] } }  // 임신<br>
+&nbsp;&nbsp;&nbsp;&nbsp;]<br>
+&nbsp;&nbsp;}<br>
+}<br><br>
+
+→ 201 Created<br>
+{<br>
+&nbsp;&nbsp;"project_id": "uuid",<br>
+&nbsp;&nbsp;"status": "draft",<br>
+&nbsp;&nbsp;"zkp_circuits_compiled": true,<br>
+&nbsp;&nbsp;"created_at": "2026-01-31T10:00:00Z"<br>
+}
+          </code>
+
+          <strong style="font-family: -apple-system, sans-serif;">2. ZKP 조건으로 매칭 가능 인원 시뮬레이션</strong><br>
+          <code style="background: #1f2937; color: #a5b4fc; padding: 8px 12px; border-radius: 6px; display: block; margin: 6px 0;">
+POST /api/v2/pool/simulate<br>
+Headers: Authorization: Bearer {jwt}<br><br>
+
+Request Body:<br>
+{<br>
+&nbsp;&nbsp;"zkp_circuits": [<br>
+&nbsp;&nbsp;&nbsp;&nbsp;{ "circuit": "AgeRange", "params": { "min": 30, "max": 50 } },<br>
+&nbsp;&nbsp;&nbsp;&nbsp;{ "circuit": "ConditionMatch", "params": { "codes": ["E11"] } },<br>
+&nbsp;&nbsp;&nbsp;&nbsp;{ "circuit": "DataAvailability", "params": { "required": ["cgm"] } }<br>
+&nbsp;&nbsp;]<br>
+}<br><br>
+
+→ 200 OK<br>
+{<br>
+&nbsp;&nbsp;"estimated_matches": 2847,  // k≥5 충족 시에만 표시<br>
+&nbsp;&nbsp;"k_anonymity_check": "pass",<br>
+&nbsp;&nbsp;"confidence": "high",  // low/medium/high<br>
+&nbsp;&nbsp;"breakdown": {  // 조건별 필터링 결과<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"age_filter": 15420,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"condition_filter": 4230,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"data_filter": 2847<br>
+&nbsp;&nbsp;},<br>
+&nbsp;&nbsp;"warning": null  // k<5면 "표본 부족" 메시지<br>
+}
+          </code>
+
+          <strong style="font-family: -apple-system, sans-serif;">3. ZKP Circuit 유효성 검증 (AI 추천 검증)</strong><br>
+          <code style="background: #1f2937; color: #a5b4fc; padding: 8px 12px; border-radius: 6px; display: block; margin: 6px 0;">
+POST /api/v2/zkp/validate-circuits<br>
+Headers: Authorization: Bearer {jwt}<br><br>
+
+Request Body:<br>
+{<br>
+&nbsp;&nbsp;"circuits": [<br>
+&nbsp;&nbsp;&nbsp;&nbsp;{ "circuit": "AgeRange", "params": { "min": 30, "max": 50 } }<br>
+&nbsp;&nbsp;]<br>
+}<br><br>
+
+→ 200 OK<br>
+{<br>
+&nbsp;&nbsp;"valid": true,<br>
+&nbsp;&nbsp;"circuits": [<br>
+&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"circuit": "AgeRange",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"status": "compiled",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"proof_size_bytes": 256,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"verification_time_ms": 15<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;]<br>
+}
+          </code>
+
+          <strong style="font-family: -apple-system, sans-serif;">4. 사전 섭외 초대 링크 생성 (PSI 기반)</strong><br>
+          <code style="background: #1f2937; color: #a5b4fc; padding: 8px 12px; border-radius: 6px; display: block; margin: 6px 0;">
+POST /api/v2/projects/:id/invites<br>
+Headers: Authorization: Bearer {jwt}<br><br>
+
+Request Body:<br>
+{<br>
+&nbsp;&nbsp;"type": "psi_link",  // Private Set Intersection<br>
+&nbsp;&nbsp;"expires_at": "2026-02-28T23:59:59Z",<br>
+&nbsp;&nbsp;"max_uses": 50<br>
+}<br><br>
+
+→ 201 Created<br>
+{<br>
+&nbsp;&nbsp;"invite_id": "uuid",<br>
+&nbsp;&nbsp;"link": "https://app.uniqdata.com/join/abc123",<br>
+&nbsp;&nbsp;"psi_public_key": "base64...",  // PSI 매칭용 공개키<br>
+&nbsp;&nbsp;"expires_at": "2026-02-28T23:59:59Z"<br>
+}<br><br>
+
+// PSI: 연구자가 알고 있는 이메일 목록과 Data Pool 교집합을 <br>
+// 양측 모두 원본 데이터 노출 없이 매칭
+          </code>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="page-spec.js"></script>
+</body>
+</html>

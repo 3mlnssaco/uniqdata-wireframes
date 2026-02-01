@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>회원가입 Step 6 - 블록체인 연동 - Wireframe</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, sans-serif; background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 100%); min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+
+    .container { display: flex; width: 900px; min-height: 700px; background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 25px 50px rgba(0,0,0,0.3); }
+
+    .left-panel { width: 320px; background: linear-gradient(180deg, #1e40af 0%, #1e3a8a 100%); color: white; padding: 40px; display: flex; flex-direction: column; }
+    .logo { font-size: 24px; font-weight: bold; margin-bottom: 40px; }
+    .left-title { font-size: 26px; font-weight: 700; line-height: 1.3; margin-bottom: 16px; }
+    .left-desc { font-size: 14px; opacity: 0.8; line-height: 1.6; margin-bottom: 40px; }
+
+    .steps-vertical { display: flex; flex-direction: column; gap: 0; margin-top: auto; }
+    .step-v { display: flex; align-items: center; gap: 12px; padding: 10px 0; position: relative; }
+    .step-v::before { content: ''; position: absolute; left: 14px; top: 36px; width: 2px; height: calc(100% - 6px); background: rgba(255,255,255,0.2); }
+    .step-v:last-child::before { display: none; }
+    .step-v .num { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; background: rgba(255,255,255,0.2); position: relative; z-index: 1; }
+    .step-v.done .num { background: #22c55e; }
+    .step-v.active .num { background: white; color: #1e40af; }
+    .step-v .label { font-size: 13px; opacity: 0.7; }
+    .step-v.active .label { opacity: 1; font-weight: 600; }
+    .step-v.done .label { opacity: 0.9; }
+
+    .right-panel { flex: 1; padding: 40px; display: flex; flex-direction: column; overflow-y: auto; }
+    .form-header { margin-bottom: 20px; }
+    .form-header h1 { font-size: 24px; font-weight: 700; margin-bottom: 8px; color: #111827; }
+    .form-header p { font-size: 14px; color: #6b7280; }
+
+    /* 지갑 카드 */
+    .wallet-card { background: linear-gradient(135deg, #1f2937, #111827); color: white; padding: 16px; border-radius: 12px; margin-bottom: 16px; }
+    .wallet-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .wallet-label { font-size: 11px; color: #9ca3af; }
+    .wallet-badge { background: #22c55e; font-size: 10px; padding: 3px 6px; border-radius: 4px; }
+    .wallet-address { font-family: monospace; font-size: 13px; background: rgba(255,255,255,0.1); padding: 8px 10px; border-radius: 6px; }
+
+    /* 앵커링 상세 단계 */
+    .anchor-flow { margin-bottom: 20px; }
+    .anchor-step-detail { display: flex; gap: 12px; padding: 14px; border: 1px solid #e5e7eb; border-radius: 10px; margin-bottom: 8px; transition: all 0.3s; }
+    .anchor-step-detail.active { border-color: #3b82f6; background: #eff6ff; }
+    .anchor-step-detail.done { border-color: #22c55e; background: #f0fdf4; }
+    .anchor-step-detail.pending { opacity: 0.5; }
+
+    .anchor-step-num { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; flex-shrink: 0; }
+    .anchor-step-detail.pending .anchor-step-num { background: #e5e7eb; color: #9ca3af; }
+    .anchor-step-detail.active .anchor-step-num { background: #3b82f6; color: white; }
+    .anchor-step-detail.done .anchor-step-num { background: #22c55e; color: white; }
+
+    .anchor-step-content { flex: 1; }
+    .anchor-step-content h4 { font-size: 14px; font-weight: 600; color: #1e293b; margin-bottom: 4px; }
+    .anchor-step-content p { font-size: 12px; color: #64748b; line-height: 1.5; }
+    .anchor-step-content .detail { font-family: monospace; font-size: 11px; color: #6b7280; background: #f1f5f9; padding: 6px 8px; border-radius: 4px; margin-top: 6px; word-break: break-all; }
+
+    .anchor-step-status { font-size: 11px; color: #9ca3af; display: flex; align-items: center; gap: 4px; }
+    .anchor-step-status .spinner { width: 14px; height: 14px; border: 2px solid #e5e7eb; border-top-color: #3b82f6; border-radius: 50%; animation: spin 1s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* 버튼 */
+    .anchor-btn { width: 100%; padding: 14px; background: #3b82f6; color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 16px; }
+    .anchor-btn:hover { background: #2563eb; }
+    .anchor-btn:disabled { background: #cbd5e1; cursor: not-allowed; }
+
+    /* TX 결과 */
+    .tx-result { background: #f0fdf4; border: 1px solid #22c55e; border-radius: 10px; padding: 14px; margin-bottom: 16px; display: none; }
+    .tx-result.show { display: block; }
+    .tx-result h4 { font-size: 13px; font-weight: 600; color: #166534; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+    .tx-result .hash { font-family: monospace; font-size: 11px; background: white; padding: 8px; border-radius: 6px; word-break: break-all; color: #374151; }
+    .tx-result a { font-size: 12px; color: #3b82f6; display: block; margin-top: 8px; }
+
+    .info-box { display: flex; align-items: flex-start; gap: 8px; padding: 10px 12px; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; margin-bottom: 16px; }
+    .info-box .icon { font-size: 14px; flex-shrink: 0; }
+    .info-box .text { font-size: 11px; color: #1e40af; line-height: 1.5; }
+
+    .btn-row { display: flex; gap: 12px; margin-top: auto; }
+    .btn { flex: 1; padding: 14px 24px; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; text-align: center; text-decoration: none; }
+    .btn-secondary { background: white; border: 1px solid #e5e7eb; color: #374151; }
+    .btn-primary { background: #3b82f6; border: none; color: white; }
+
+    /* 디자이너 노트 */
+    .designer-note { background: linear-gradient(135deg, #fdf4ff, #fae8ff); border: 2px solid #d946ef; border-radius: 12px; padding: 16px; margin-top: 16px; }
+    .designer-note h3 { color: #a21caf; margin-bottom: 10px; font-size: 13px; }
+    .designer-note .content { font-size: 11px; color: #374151; line-height: 1.6; }
+
+    .nav-links { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; justify-content: center; }
+    .nav-links a { padding: 6px 12px; background: #f1f5f9; border-radius: 6px; text-decoration: none; color: #64748b; font-size: 12px; }
+    .nav-links a:hover { background: #e2e8f0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="left-panel">
+      <div class="logo">UniQdata</div>
+      <div class="left-title">블록체인 앵커링</div>
+      <div class="left-desc">패스키-지갑 바인딩을 XRPL에 영구 기록합니다.</div>
+
+      <div class="steps-vertical">
+        <div class="step-v done"><div class="num">✓</div><div class="label">회원 유형</div></div>
+        <div class="step-v done"><div class="num">✓</div><div class="label">이메일 인증</div></div>
+        <div class="step-v done"><div class="num">✓</div><div class="label">비밀번호</div></div>
+        <div class="step-v done"><div class="num">✓</div><div class="label">패스키 안내</div></div>
+        <div class="step-v done"><div class="num">✓</div><div class="label">패스키 등록</div></div>
+        <div class="step-v active"><div class="num">6</div><div class="label">블록체인 연동</div></div>
+        <div class="step-v"><div class="num">7</div><div class="label">완료</div></div>
+      </div>
+    </div>
+
+    <div class="right-panel">
+      <div class="form-header">
+        <h1>XRPL 블록체인 앵커링</h1>
+        <p>패스키-지갑 바인딩을 투명하게 증명합니다</p>
+      </div>
+
+      <!-- 지갑 카드 -->
+      <div class="wallet-card">
+        <div class="wallet-header">
+          <span class="wallet-label">XRPL Testnet</span>
+          <span class="wallet-badge">연결됨</span>
+        </div>
+        <div class="wallet-label">지갑 주소</div>
+        <div class="wallet-address">rN7n3473xo9ck8Wp...Kx9PmZ</div>
+      </div>
+
+      <!-- 앵커링 상세 단계 -->
+      <div class="anchor-flow">
+        <div class="anchor-step-detail done">
+          <div class="anchor-step-num">✓</div>
+          <div class="anchor-step-content">
+            <h4>1. 챌린지 생성</h4>
+            <p>서버에서 서명할 데이터 생성</p>
+            <div class="detail">challenge: 0x7f2a...3b4c</div>
+          </div>
+          <div class="anchor-step-status">완료</div>
+        </div>
+
+        <div class="anchor-step-detail active">
+          <div class="anchor-step-num">2</div>
+          <div class="anchor-step-content">
+            <h4>2. 패스키 서명</h4>
+            <p>생체인증으로 트랜잭션에 서명 (PRF 키 사용)</p>
+          </div>
+          <div class="anchor-step-status">
+            <div class="spinner"></div>
+            대기 중
+          </div>
+        </div>
+
+        <div class="anchor-step-detail pending">
+          <div class="anchor-step-num">3</div>
+          <div class="anchor-step-content">
+            <h4>3. TX 전송</h4>
+            <p>서명된 트랜잭션을 XRPL 네트워크에 제출</p>
+          </div>
+          <div class="anchor-step-status">대기</div>
+        </div>
+
+        <div class="anchor-step-detail pending">
+          <div class="anchor-step-num">4</div>
+          <div class="anchor-step-content">
+            <h4>4. 블록 확인</h4>
+            <p>트랜잭션이 블록에 포함될 때까지 대기 (~3-5초)</p>
+          </div>
+          <div class="anchor-step-status">대기</div>
+        </div>
+
+        <div class="anchor-step-detail pending">
+          <div class="anchor-step-num">5</div>
+          <div class="anchor-step-content">
+            <h4>5. 앵커링 완료</h4>
+            <p>TX Hash 발급 및 기록 완료</p>
+          </div>
+          <div class="anchor-step-status">대기</div>
+        </div>
+      </div>
+
+      <button class="anchor-btn">
+        <span>⚡</span> 앵커링 시작
+      </button>
+
+      <!-- TX 결과 (성공 시 표시) -->
+      <div class="tx-result">
+        <h4>✓ 앵커링 완료</h4>
+        <div class="hash">TX: A1B2C3D4E5F6789012345678...ABCDEF123456</div>
+        <a href="#">XRPL Explorer에서 확인 →</a>
+      </div>
+
+      <div class="info-box">
+        <span class="icon">ℹ️</span>
+        <span class="text">
+          이 기록은 법적 증거로 활용 가능하며, 누가 언제 어떤 패스키로 지갑을 등록했는지 투명하게 증명합니다.
+        </span>
+      </div>
+
+      <div class="btn-row">
+        <a href="signup-step5.html" class="btn btn-secondary">이전</a>
+        <a href="signup-step7.html" class="btn btn-primary">다음 →</a>
+      </div>
+
+      <div class="nav-links">
+        <a href="../index.html">← 와이어프레임 목록</a>
+        <a href="signup-step5.html">← Step 5</a>
+        <a href="signup-step7.html">Step 7 →</a>
+      </div>
+
+      <!-- 디자이너 노트 -->
+      <div class="designer-note">
+        <h3>📋 디자이너 노트: 블록체인 앵커링</h3>
+        <div class="content">
+          <strong>페이지 목적:</strong> 패스키-지갑 바인딩을 XRPL에 영구 기록. 법적 증거력 확보.<br><br>
+
+          <strong>앵커링 5단계:</strong><br>
+          1. <strong>챌린지 생성</strong>: 서버가 랜덤 challenge 생성<br>
+          2. <strong>패스키 서명</strong>: 사용자 생체인증 → PRF 키로 서명<br>
+          3. <strong>TX 전송</strong>: 서명된 Payment TX를 XRPL에 제출<br>
+          4. <strong>블록 확인</strong>: ~3-5초 대기 (ledger close)<br>
+          5. <strong>완료</strong>: TX Hash 발급, DB에 저장<br><br>
+
+          <strong>사용자 경험:</strong><br>
+          • "앵커링 시작" 버튼 클릭<br>
+          • 생체인증 팝업 → 서명<br>
+          • 각 단계가 순서대로 완료 표시<br>
+          • 완료 시 TX Hash와 Explorer 링크 표시<br><br>
+
+          <strong>디자인 포인트:</strong><br>
+          • 각 단계를 카드로 명확히 구분<br>
+          • 현재 단계는 파란색, 완료는 초록색<br>
+          • 스피너로 진행 중 표시<br>
+          • TX Hash는 모노스페이스로 표시
+        </div>
+      </div>
+
+      <!-- 기능 명세 -->
+      <div style="background: linear-gradient(135deg, #ecfdf5, #d1fae5); border: 2px solid #10b981; border-radius: 12px; padding: 16px; margin-top: 12px;">
+        <h3 style="color: #047857; margin-bottom: 12px; font-size: 14px;">⚙️ 기능 명세</h3>
+        <div style="font-size: 12px; color: #374151; line-height: 1.8;">
+          <strong>핵심 기능:</strong><br>
+          • 패스키-지갑 바인딩 XRPL 앵커링<br>
+          • 법적 증거력 있는 영구 기록 생성<br>
+          • TX Hash 발급 및 저장<br><br>
+
+          <strong>앵커링 5단계:</strong><br>
+          1. 챌린지 생성 (서버)<br>
+          2. 패스키 서명 (생체인증)<br>
+          3. Payment TX 전송 (XRPL)<br>
+          4. 블록 확인 (~3-5초)<br>
+          5. TX Hash 발급 완료
+        </div>
+      </div>
+
+      <!-- 백엔드 호출 -->
+      <div style="background: linear-gradient(135deg, #f5f3ff, #ede9fe); border: 2px solid #8b5cf6; border-radius: 12px; padding: 16px; margin-top: 12px;">
+        <h3 style="color: #6d28d9; margin-bottom: 12px; font-size: 14px;">🔗 백엔드 호출</h3>
+        <div style="font-size: 11px; font-family: 'SF Mono', Monaco, monospace; color: #374151; line-height: 1.8;">
+          <strong style="font-family: -apple-system, sans-serif;">1. 앵커링 챌린지 요청:</strong><br>
+          <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
+POST /api/v2/xrpl/anchor/challenge<br>
+{ "wallet_address": "rN7n3...", "credential_id": "xxx" }<br>
+→ { "challenge": "random32bytes", "memo_data": "..." }
+          </code>
+
+          <strong style="font-family: -apple-system, sans-serif;">2. 서명된 TX 제출:</strong><br>
+          <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
+POST /api/v2/xrpl/anchor/submit<br>
+{ "signed_tx": "1200002280..." }<br>
+→ { "tx_hash": "A1B2C3...", "ledger_index": 12345678 }
+          </code>
+
+          <strong style="font-family: -apple-system, sans-serif;">3. 앵커링 확인:</strong><br>
+          <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
+GET /api/v2/xrpl/anchor/verify/{tx_hash}<br>
+→ { "verified": true, "timestamp": "2026-02-01T10:00:00Z" }
+          </code>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

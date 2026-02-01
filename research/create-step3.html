@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>연구 생성 Step 3 - 데이터 수집 - Wireframe</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, sans-serif; background: #f5f5f5; }
+    .layout { display: flex; min-height: 100vh; width: 100%; flex-wrap: nowrap; align-items: stretch; }
+    .sidebar { width: 240px; background: #1a1a1a; color: white; padding: 20px; flex-shrink: 0; }
+    .logo { font-size: 18px; font-weight: bold; margin-bottom: 30px; padding: 10px; }
+    .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 8px; margin-bottom: 4px; color: #9ca3af; }
+    .nav-item.active { background: #3b82f6; color: white; }
+
+    .main { flex: 1 1 auto; padding: 32px; min-width: 0; }
+    .main h1 { font-size: 28px; margin-bottom: 8px; }
+    .main .subtitle { color: #6b7280; margin-bottom: 32px; }
+
+    /* 스텝 인디케이터 */
+    .steps { display: flex; justify-content: space-between; margin-bottom: 32px; }
+    .step { display: flex; flex-direction: column; align-items: center; flex: 1; }
+    .step-num { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; margin-bottom: 8px; font-size: 14px; }
+    .step-num.done { background: #22c55e; color: white; }
+    .step-num.active { background: #8b5cf6; color: white; }
+    .step-num.pending { background: #e5e7eb; color: #9ca3af; }
+    .step-label { font-size: 12px; color: #6b7280; text-align: center; }
+    .step-line { flex: 1; height: 2px; background: #e5e7eb; margin: 20px 8px 0; }
+    .step-line.done { background: #22c55e; }
+
+    /* 카드 */
+    .card { background: white; border: 1px solid #e5e7eb; border-radius: 12px; margin-bottom: 20px; overflow: hidden; }
+    .card-header { background: #f9fafb; padding: 16px 20px; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center; }
+    .card-header h3 { font-size: 16px; font-weight: 600; }
+    .ai-badge { font-size: 11px; color: #7c3aed; background: #f3e8ff; padding: 4px 10px; border-radius: 12px; }
+    .card-body { padding: 20px; }
+
+    /* 데이터 카테고리 섹션 */
+    .data-category { margin-bottom: 24px; }
+    .data-category-title { font-size: 14px; font-weight: 600; color: #374151; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+    .data-category-title .icon { font-size: 18px; }
+    .data-category-desc { font-size: 12px; color: #6b7280; margin-bottom: 12px; }
+
+    /* 데이터 항목 그리드 */
+    .data-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .data-item { padding: 14px 16px; border: 2px solid #e5e7eb; border-radius: 10px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 12px; }
+    .data-item:hover { border-color: #c4b5fd; }
+    .data-item.selected { border-color: #8b5cf6; background: #faf5ff; }
+    .data-item .icon { font-size: 20px; }
+    .data-item .info { flex: 1; }
+    .data-item .name { font-size: 14px; font-weight: 500; margin-bottom: 2px; }
+    .data-item .desc { font-size: 11px; color: #6b7280; }
+    .data-item .check {
+      width: 36px;
+      height: 20px;
+      border-radius: 999px;
+      background: #e5e7eb;
+      position: relative;
+      flex-shrink: 0;
+    }
+    .data-item .check::after {
+      content: "";
+      width: 16px;
+      height: 16px;
+      background: #fff;
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      border-radius: 50%;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+      transition: all 0.2s;
+    }
+    .data-item.selected .check { background: #8b5cf6; }
+    .data-item.selected .check::after { left: 18px; }
+
+    /* EMA 설정 */
+    .ema-settings { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 16px; margin-top: 12px; }
+    .ema-settings h4 { font-size: 13px; font-weight: 600; margin-bottom: 12px; }
+    .ema-row { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+    .ema-row label { font-size: 13px; color: #374151; min-width: 100px; }
+    .ema-select { padding: 8px 12px; border: 1px solid #e5e7eb; border-radius: 6px; font-size: 13px; }
+    .ema-select.ai-filled { border-color: #8b5cf6; background: #faf5ff; }
+
+    /* 정성 데이터 설정 */
+    .qual-settings { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 16px; margin-top: 12px; }
+    .qual-settings h4 { font-size: 13px; font-weight: 600; margin-bottom: 12px; }
+    .qual-row { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+    .qual-row label { font-size: 13px; color: #374151; min-width: 100px; }
+
+    /* 맥락/정성 섹션 */
+    .context-section { background: #f8fafc; border: 1px dashed #cbd5f5; border-radius: 8px; padding: 12px; margin-top: 12px; }
+    .context-section h4 { font-size: 13px; font-weight: 600; margin-bottom: 10px; color: #334155; }
+
+    /* AI 어시스턴트 (우측 도킹) */
+    .ai-panel {
+      width: 320px;
+      background: #0f172a;
+      color: #e5e7eb;
+      border-left: 1px solid #1e293b;
+      padding: 16px 16px 24px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      flex-shrink: 0;
+      align-self: stretch;
+    }
+    .ai-title { font-size: 14px; font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+    .ai-sub { font-size: 12px; color: #94a3b8; margin-bottom: 12px; }
+    .ai-card { background: #1e293b; border-radius: 10px; padding: 12px; margin-bottom: 12px; }
+    .ai-card .title { font-size: 12px; color: #93c5fd; margin-bottom: 8px; }
+    .ai-chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 8px; border-radius: 999px; background: #334155; color: #e2e8f0; font-size: 11px; margin: 4px 4px 0 0; }
+    .ai-reason { font-size: 12px; color: #cbd5f5; line-height: 1.5; }
+    .ai-actions { display: flex; gap: 8px; margin-top: 10px; }
+    .ai-btn { flex: 1; padding: 8px 10px; border-radius: 8px; border: none; cursor: pointer; font-size: 12px; }
+    .ai-btn.primary { background: #3b82f6; color: #fff; }
+    .ai-btn.ghost { background: #334155; color: #cbd5f5; }
+
+
+    /* 요약 박스 */
+    .summary-box { background: #eff6ff; border: 1px solid #bfdbfe; padding: 16px; border-radius: 8px; margin-top: 20px; }
+    .summary-box h4 { font-size: 14px; margin-bottom: 12px; color: #1d4ed8; }
+    .summary-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+    .summary-item { text-align: center; }
+    .summary-item .value { font-size: 24px; font-weight: 700; color: #1e40af; }
+    .summary-item .label { font-size: 11px; color: #6b7280; }
+
+    /* 버튼 */
+    .btn-row { display: flex; justify-content: space-between; margin-top: 24px; padding-top: 24px; border-top: 1px solid #e5e7eb; }
+    .btn { padding: 12px 28px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; text-decoration: none; display: inline-block; }
+    .btn-secondary { background: white; border: 1px solid #e5e7eb; color: #374151; }
+    .btn-primary { background: #8b5cf6; border: none; color: white; }
+    .btn-primary:hover { background: #7c3aed; }
+
+    /* 스텝 네비게이션 */
+    .step-nav { display: flex; gap: 10px; margin-top: 24px; flex-wrap: wrap; }
+    .step-nav a { padding: 8px 16px; background: #eee; border-radius: 6px; text-decoration: none; color: #333; font-size: 14px; }
+
+    /* 디자이너 노트 */
+    .designer-note { background: linear-gradient(135deg, #fdf4ff, #fae8ff); border: 2px solid #d946ef; border-radius: 12px; padding: 20px; margin-top: 24px; }
+    .designer-note h3 { color: #a21caf; margin-bottom: 12px; font-size: 14px; }
+    .designer-note .content { font-size: 12px; color: #374151; line-height: 1.7; }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <div class="sidebar">
+      <div class="logo">UniQdata</div>
+      <a href="list.html" class="nav-item">🏠 홈</a>
+      <a href="list.html" class="nav-item active">📊 연구 관리</a>
+      <a href="../data-pool.html" class="nav-item">🗄️ Data Pool</a>
+      <a href="../team.html" class="nav-item">👥 팀</a>
+      <a href="../billing.html" class="nav-item">💳 결제/에스크로</a>
+    </div>
+
+    <div class="main">
+      <h1>데이터 수집 설계</h1>
+      <p class="subtitle">연구에 필요한 데이터 항목을 선택하세요</p>
+
+      <!-- 스텝 인디케이터 -->
+      <div class="steps">
+        <div class="step"><div class="step-num done">✓</div><div class="step-label">AI 설계</div></div>
+        <div class="step-line done"></div>
+        <div class="step"><div class="step-num done">✓</div><div class="step-label">설계 확인</div></div>
+        <div class="step-line done"></div>
+        <div class="step"><div class="step-num active">3</div><div class="step-label">데이터 수집</div></div>
+        <div class="step-line"></div>
+        <div class="step"><div class="step-num pending">4</div><div class="step-label">AI 도구</div></div>
+        <div class="step-line"></div>
+        <div class="step"><div class="step-num pending">5</div><div class="step-label">예산</div></div>
+        <div class="step-line"></div>
+        <div class="step"><div class="step-num pending">6</div><div class="step-label">에스크로</div></div>
+      </div>
+
+      <div>
+      <!-- 패시브 데이터 -->
+      <div class="card">
+        <div class="card-header">
+          <h3>📱 패시브 데이터 (자동 수집)</h3>
+          <span class="ai-badge">AI 추천</span>
+        </div>
+        <div class="card-body">
+          <p class="data-category-desc">앱 백그라운드에서 자동으로 수집되는 데이터입니다. 참여자 부담이 거의 없습니다.</p>
+
+          <div class="data-grid">
+            <div class="data-item selected" data-group="passive" data-ai="true">
+              <span class="icon">📈</span>
+              <div class="info">
+                <div class="name">CGM (연속혈당)</div>
+                <div class="desc">5분 간격 혈당 데이터</div>
+              </div>
+              <div class="check"></div>
+            </div>
+            <div class="data-item selected" data-group="passive" data-ai="true">
+              <span class="icon">❤️</span>
+              <div class="info">
+                <div class="name">심박수</div>
+                <div class="desc">웨어러블 기기 연동</div>
+              </div>
+              <div class="check"></div>
+            </div>
+            <div class="data-item selected" data-group="passive">
+              <span class="icon">🚶</span>
+              <div class="info">
+                <div class="name">활동량/걸음수</div>
+                <div class="desc">일일 활동 데이터</div>
+              </div>
+              <div class="check"></div>
+            </div>
+            <div class="data-item selected" data-group="passive" data-ai="true">
+              <span class="icon">😴</span>
+              <div class="info">
+                <div class="name">수면</div>
+                <div class="desc">수면 시간, 품질, 단계</div>
+              </div>
+              <div class="check"></div>
+            </div>
+            <div class="data-item" data-group="passive">
+              <span class="icon">🌡️</span>
+              <div class="info">
+                <div class="name">체온</div>
+                <div class="desc">웨어러블 체온 측정</div>
+              </div>
+              <div class="check"></div>
+            </div>
+            <div class="data-item" data-group="passive">
+              <span class="icon">📍</span>
+              <div class="info">
+                <div class="name">위치/이동</div>
+                <div class="desc">활동 패턴 분석용</div>
+              </div>
+              <div class="check"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 능동 데이터 (EMA) -->
+      <div class="card">
+        <div class="card-header">
+          <h3>✍️ 능동 데이터 (EMA/설문)</h3>
+          <span class="ai-badge">AI 추천</span>
+        </div>
+        <div class="card-body">
+          <p class="data-category-desc">참여자가 직접 입력하는 데이터입니다. 빈도를 적절히 설정해 부담을 줄이세요.</p>
+
+          <div class="data-grid">
+            <div class="data-item selected" data-group="active" data-ai="true">
+              <span class="icon">🍽️</span>
+              <div class="info">
+                <div class="name">식단 기록</div>
+                <div class="desc">탄수화물/식사 유형</div>
+              </div>
+              <div class="check"></div>
+            </div>
+            <div class="data-item selected" data-group="active" data-ai="true">
+              <span class="icon">💊</span>
+              <div class="info">
+                <div class="name">복약 기록</div>
+                <div class="desc">복용 시간, 순응도</div>
+              </div>
+              <div class="check"></div>
+            </div>
+            <div class="data-item selected" data-group="active" data-ai="true">
+              <span class="icon">😊</span>
+              <div class="info">
+                <div class="name">기분/컨디션</div>
+                <div class="desc">1-5점 스케일</div>
+              </div>
+              <div class="check"></div>
+            </div>
+            <div class="data-item" data-group="active">
+              <span class="icon">🏃</span>
+              <div class="info">
+                <div class="name">운동 기록</div>
+                <div class="desc">운동 종류, 시간</div>
+              </div>
+              <div class="check"></div>
+            </div>
+            <div class="data-item" data-group="active">
+              <span class="icon">💧</span>
+              <div class="info">
+                <div class="name">수분 섭취</div>
+                <div class="desc">일일 물 섭취량</div>
+              </div>
+              <div class="check"></div>
+            </div>
+            <div class="data-item" data-group="active">
+              <span class="icon">😓</span>
+              <div class="info">
+                <div class="name">증상 기록</div>
+                <div class="desc">저혈당, 피로 등</div>
+              </div>
+              <div class="check"></div>
+            </div>
+          </div>
+
+          <!-- EMA 빈도 설정 -->
+          <div class="ema-settings">
+            <h4>📊 EMA 빈도 설정</h4>
+            <div class="ema-row">
+              <label>식단 기록:</label>
+              <select class="ema-select ai-filled">
+                <option>매 식사 후 (1일 3회)</option>
+                <option>1일 1회 (저녁)</option>
+                <option>1일 2회 (점심/저녁)</option>
+              </select>
+            </div>
+            <div class="ema-row">
+              <label>기분/컨디션:</label>
+              <select class="ema-select ai-filled">
+                <option>1일 2회 (아침/저녁)</option>
+                <option>1일 1회</option>
+                <option>1일 3회</option>
+              </select>
+            </div>
+            <div class="ema-row">
+              <label>복약 기록:</label>
+              <select class="ema-select ai-filled">
+                <option>복용 시마다</option>
+                <option>1일 1회 요약</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="context-section">
+            <h4>📝 맥락/정성 입력 (선택)</h4>
+            <div class="data-grid">
+              <div class="data-item" data-group="qual" data-ai="true">
+                <span class="icon">📷</span>
+                <div class="info">
+                  <div class="name">식사 사진</div>
+                  <div class="desc">실제 식사/구성 기록</div>
+                </div>
+                <div class="check"></div>
+              </div>
+              <div class="data-item" data-group="qual">
+                <span class="icon">🗒️</span>
+                <div class="info">
+                  <div class="name">일기/자유서술</div>
+                  <div class="desc">오늘의 상태, 이유, 맥락</div>
+                </div>
+                <div class="check"></div>
+              </div>
+              <div class="data-item" data-group="qual">
+                <span class="icon">🧩</span>
+                <div class="info">
+                  <div class="name">생활 사건 로그</div>
+                  <div class="desc">스트레스/변화 이벤트</div>
+                </div>
+                <div class="check"></div>
+              </div>
+              <div class="data-item" data-group="qual">
+                <span class="icon">🎙️</span>
+                <div class="info">
+                  <div class="name">음성 메모 (선택)</div>
+                  <div class="desc">주 1회 1~2분 요약</div>
+                </div>
+                <div class="check"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 바이오마커 -->
+      <div class="card">
+        <div class="card-header">
+          <h3>🔬 바이오마커 (고급)</h3>
+        </div>
+        <div class="card-body">
+          <p class="data-category-desc">AI 분석을 위한 고급 바이오마커 데이터입니다. 특수 장비나 검사가 필요할 수 있습니다.</p>
+
+          <div class="data-grid">
+            <div class="data-item" data-group="biomarker">
+              <span class="icon">🎤</span>
+              <div class="info">
+                <div class="name">음성 바이오마커</div>
+                <div class="desc">음성 패턴 AI 분석</div>
+              </div>
+              <div class="check"></div>
+            </div>
+            <div class="data-item" data-group="biomarker">
+              <span class="icon">🧠</span>
+              <div class="info">
+                <div class="name">인지 기능 테스트</div>
+                <div class="desc">반응속도, 기억력</div>
+              </div>
+              <div class="check"></div>
+            </div>
+            <div class="data-item" data-group="biomarker">
+              <span class="icon">🩸</span>
+              <div class="info">
+                <div class="name">HbA1c</div>
+                <div class="desc">당화혈색소 (연구 전후)</div>
+              </div>
+              <div class="check"></div>
+            </div>
+            <div class="data-item" data-group="biomarker">
+              <span class="icon">📊</span>
+              <div class="info">
+                <div class="name">혈액 검사</div>
+                <div class="desc">지질, 간기능 등</div>
+              </div>
+              <div class="check"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 요약 -->
+  <div class="summary-box">
+        <h4>선택된 데이터 요약</h4>
+        <div class="summary-grid">
+          <div class="summary-item">
+            <div class="value" id="summary-passive">4</div>
+            <div class="label">패시브 데이터</div>
+          </div>
+          <div class="summary-item">
+            <div class="value" id="summary-active">3</div>
+            <div class="label">능동 데이터</div>
+          </div>
+          <div class="summary-item">
+            <div class="value" id="summary-qual">1</div>
+            <div class="label">맥락 데이터</div>
+          </div>
+          <div class="summary-item">
+            <div class="value" id="summary-frequency">~9회/일</div>
+            <div class="label">예상 입력 빈도</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 버튼 -->
+      <div class="btn-row">
+        <a href="create-step2.html" class="btn btn-secondary">← 이전</a>
+        <a href="create-step4.html" class="btn btn-primary">다음 →</a>
+      </div>
+
+      <!-- 스텝 네비게이션 -->
+      <div class="step-nav">
+        <a href="create-step2.html">← Step 2</a>
+        <a href="create-step4.html">Step 4 →</a>
+      </div>
+
+      <!-- 디자이너 노트 -->
+      <div class="designer-note">
+        <h3>📋 디자이너 노트: Step 3 - 데이터 수집</h3>
+        <div class="content">
+          <strong>데이터 분류:</strong><br>
+          • <strong>패시브</strong>: 자동 수집 (CGM, 활동량, 수면, 심박수) - 참여자 부담 최소<br>
+          • <strong>능동 (EMA)</strong>: 직접 입력 (식단, 복약, 기분) - 빈도 설정 중요<br>
+          • <strong>맥락 (Qual)</strong>: 식사 사진/일기/사건 로그 등 (정량 해석 보완)<br>
+          • <strong>바이오마커</strong>: 고급 분석용 (음성, 인지, 혈액검사)<br><br>
+
+          <strong>EMA 빈도 설정:</strong><br>
+          • 연구 방법론에 따라 AI가 적정 빈도 추천<br>
+          • MRT: 하루 여러 번 무작위<br>
+          • 코호트: 하루 1-2회 고정<br><br>
+
+          <strong>참여자 부담 계산:</strong><br>
+          • 예상 일일 입력 횟수 표시<br>
+          • 너무 많으면 완료율 하락 경고
+        </div>
+      </div>
+
+      <!-- 기능 명세 -->
+      <div style="background: linear-gradient(135deg, #ecfdf5, #d1fae5); border: 2px solid #10b981; border-radius: 12px; padding: 16px; margin-top: 12px;">
+        <h3 style="color: #047857; margin-bottom: 12px; font-size: 14px;">⚙️ 기능 명세</h3>
+        <div style="font-size: 12px; color: #374151; line-height: 1.8;">
+          <strong>핵심 기능:</strong><br>
+          • 수집 데이터 항목 선택 (토글)<br>
+          • 4개 카테고리: 패시브/능동(EMA)/맥락/바이오마커<br>
+          • EMA 빈도 설정 (하루 N회)<br>
+          • 참여자 부담 점수 실시간 계산<br><br>
+
+          <strong>데이터 민감도 레벨 (L1-L4):</strong><br>
+          • <strong>L1 (Public)</strong>: app_id, 타임스탬프 - At Rest 암호화<br>
+          • <strong>L2 (Internal)</strong>: 연령대, 성별 - At Rest 암호화<br>
+          • <strong>L3 (Confidential)</strong>: 이메일, 전화 - At Rest + 필드 암호화<br>
+          • <strong>L4 (Restricted)</strong>: 진단코드, 처방, 바이오마커 - At Rest + 필드 암호화 + 접근 로그<br><br>
+
+          <strong>동의 스코프 (Consent Scope):</strong><br>
+          • 형식: <code>{domain}:{metric}:{permission}:{range}</code><br>
+          • 예시: <code>health:heart_rate:read:30d</code><br>
+          • 예시: <code>med:medication:write:7d</code><br>
+          • 수집 항목별로 필요한 동의 스코프 자동 생성<br><br>
+
+          <strong>AI 어시스턴트:</strong><br>
+          • 연구 목적 기반 추천 항목 표시<br>
+          • "추천 적용" 버튼으로 일괄 선택<br>
+          • 인과 연결 예상 설명
+        </div>
+      </div>
+
+      <!-- 백엔드 호출 -->
+      <div style="background: linear-gradient(135deg, #f5f3ff, #ede9fe); border: 2px solid #8b5cf6; border-radius: 12px; padding: 16px; margin-top: 12px;">
+        <h3 style="color: #6d28d9; margin-bottom: 12px; font-size: 14px;">🔗 백엔드 호출</h3>
+        <div style="font-size: 11px; font-family: 'SF Mono', Monaco, monospace; color: #374151; line-height: 1.8;">
+
+          <strong style="font-family: -apple-system, sans-serif;">1. 데이터 수집 설정 저장 (민감도 레벨 포함)</strong><br>
+          <code style="background: #1f2937; color: #a5b4fc; padding: 8px 12px; border-radius: 6px; display: block; margin: 6px 0;">
+PATCH /api/v2/projects/:id<br>
+Headers: Authorization: Bearer {jwt}<br><br>
+
+Request Body:<br>
+{<br>
+&nbsp;&nbsp;"data_collection": {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"passive": [<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"type": "cgm",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"sensitivity_level": "L4",  // Restricted<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"consent_scope": "health:blood_glucose:read:60d",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"frequency": "5min"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;},<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"type": "heart_rate",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"sensitivity_level": "L2",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"consent_scope": "health:heart_rate:read:60d",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"frequency": "continuous"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;},<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"type": "sleep",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"sensitivity_level": "L2",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"consent_scope": "health:sleep:read:60d",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"frequency": "daily"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;},<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"type": "steps",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"sensitivity_level": "L1",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"consent_scope": "health:activity:read:60d",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"frequency": "daily"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;],<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"active": [<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"type": "medication",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"sensitivity_level": "L4",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"consent_scope": "med:medication:read:60d",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"ema_frequency": "per_dose"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;},<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"type": "mood",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"sensitivity_level": "L2",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"consent_scope": "health:mood:read:60d",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"ema_frequency": "2_per_day"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;},<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"type": "diet",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"sensitivity_level": "L2",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"consent_scope": "health:nutrition:read:60d",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"ema_frequency": "3_per_day"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;],<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"qualitative": [<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"type": "meal_photo",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"sensitivity_level": "L3",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"consent_scope": "media:photo:read:60d"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;]<br>
+&nbsp;&nbsp;}<br>
+}<br><br>
+
+→ 200 OK<br>
+{<br>
+&nbsp;&nbsp;"project_id": "uuid",<br>
+&nbsp;&nbsp;"data_collection_updated": true,<br>
+&nbsp;&nbsp;"required_consent_scopes": [<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"health:blood_glucose:read:60d",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"health:heart_rate:read:60d",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"health:sleep:read:60d",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"health:activity:read:60d",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"med:medication:read:60d",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"health:mood:read:60d",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"health:nutrition:read:60d",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"media:photo:read:60d"<br>
+&nbsp;&nbsp;],<br>
+&nbsp;&nbsp;"estimated_burden_score": 7.5,  // 1-10 참여자 부담도<br>
+&nbsp;&nbsp;"l4_data_included": true  // L4 데이터 포함 경고<br>
+}
+          </code>
+
+          <strong style="font-family: -apple-system, sans-serif;">2. AI 추천 데이터 항목 조회</strong><br>
+          <code style="background: #1f2937; color: #a5b4fc; padding: 8px 12px; border-radius: 6px; display: block; margin: 6px 0;">
+POST /api/v2/ai/recommend-data-collection<br>
+Headers: Authorization: Bearer {jwt}<br><br>
+
+Request Body:<br>
+{<br>
+&nbsp;&nbsp;"project_id": "uuid",<br>
+&nbsp;&nbsp;"research_question": "복약 순응도와 혈당 변동의 상관관계",<br>
+&nbsp;&nbsp;"methodology": "prospective_cohort"<br>
+}<br><br>
+
+→ 200 OK<br>
+{<br>
+&nbsp;&nbsp;"recommendations": [<br>
+&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"type": "cgm",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"priority": "required",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"reason": "혈당 변동 측정에 필수"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;},<br>
+&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"type": "medication",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"priority": "required",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"reason": "복약 순응도 추적에 필수"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;},<br>
+&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"type": "diet",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"priority": "recommended",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"reason": "혈당 변동 해석에 맥락 제공"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;},<br>
+&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"type": "meal_photo",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"priority": "optional",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"reason": "이상치 원인 파악에 유용"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;],<br>
+&nbsp;&nbsp;"causal_graph_preview": {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"edges": [<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ "from": "medication", "to": "blood_glucose" },<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ "from": "diet", "to": "blood_glucose" },<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ "from": "sleep", "to": "blood_glucose" }<br>
+&nbsp;&nbsp;&nbsp;&nbsp;]<br>
+&nbsp;&nbsp;}<br>
+}
+          </code>
+
+          <strong style="font-family: -apple-system, sans-serif;">3. 참여자 부담 점수 계산</strong><br>
+          <code style="background: #1f2937; color: #a5b4fc; padding: 8px 12px; border-radius: 6px; display: block; margin: 6px 0;">
+POST /api/v2/projects/:id/calculate-burden<br>
+Headers: Authorization: Bearer {jwt}<br><br>
+
+→ 200 OK<br>
+{<br>
+&nbsp;&nbsp;"burden_score": 7.5,  // 1-10<br>
+&nbsp;&nbsp;"breakdown": {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"passive_items": 4,  // 부담 없음<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"active_items": 3,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"daily_prompts": 9,  // 하루 예상 입력 횟수<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"time_per_day_minutes": 12<br>
+&nbsp;&nbsp;},<br>
+&nbsp;&nbsp;"warning": "daily_prompts > 8: 완료율 하락 위험",<br>
+&nbsp;&nbsp;"recommendation": "식단 기록을 1일 1회로 줄이면 부담 점수 5.2로 개선"<br>
+}
+          </code>
+
+          <strong style="font-family: -apple-system, sans-serif;">4. 동의서 템플릿 미리보기 생성</strong><br>
+          <code style="background: #1f2937; color: #a5b4fc; padding: 8px 12px; border-radius: 6px; display: block; margin: 6px 0;">
+POST /api/v2/projects/:id/consent-preview<br>
+Headers: Authorization: Bearer {jwt}<br><br>
+
+→ 200 OK<br>
+{<br>
+&nbsp;&nbsp;"consent_template": {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"title": "연구 참여 동의서",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"sections": [<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"title": "수집되는 데이터",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"items": ["연속혈당(CGM)", "심박수", "수면", "복약기록", "식단", "기분"]<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;},<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"title": "데이터 사용 기간",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"content": "연구 기간 동안 (60일) + 분석 기간 (90일)"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;},<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"title": "보상",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"content": "1일 500원 + 완료 보너스 5,000원"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;],<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"passkey_required": true  // 참여자 Passkey 서명 필수<br>
+&nbsp;&nbsp;}<br>
+}
+          </code>
+        </div>
+      </div>
+    </div>
+
+    <aside class="ai-panel">
+          <div class="ai-title">🤖 AI 어시스턴트</div>
+          <div class="ai-sub">현재 연구 목적에 맞는 추천을 제공합니다</div>
+
+          <div class="ai-card">
+            <div class="title">연구 요약</div>
+            <div class="ai-reason">
+              당뇨 복약 순응도 연구<br>
+              핵심 변수: 복약 · 혈당 · 식사 · 수면
+            </div>
+          </div>
+
+          <div class="ai-card">
+            <div class="title">추천 수집 항목</div>
+            <div>
+              <span class="ai-chip">CGM</span>
+              <span class="ai-chip">심박</span>
+              <span class="ai-chip">수면</span>
+              <span class="ai-chip">복약</span>
+              <span class="ai-chip">식단</span>
+              <span class="ai-chip">기분</span>
+              <span class="ai-chip">식사 사진</span>
+            </div>
+            <div class="ai-reason" style="margin-top: 8px;">
+              복약 → 혈당 변화 해석에 식사 맥락이 필요합니다. 사진/서술은 이상치 원인 파악에 유리합니다.
+            </div>
+            <div class="ai-actions">
+              <button class="ai-btn primary" id="apply-ai">추천 적용</button>
+              <button class="ai-btn ghost" id="clear-selection">전체 해제</button>
+            </div>
+          </div>
+
+          <div class="ai-card">
+            <div class="title">인과 연결 (예상)</div>
+            <div class="ai-reason">
+              복약 미순응 → 혈당 상승<br>
+              식사 사진 → 탄수 패턴 추정 → 혈당 변동 설명
+            </div>
+          </div>
+    </aside>
+  </div>
+  <script src="page-spec.js"></script>
+<script>
+  const items = document.querySelectorAll('.data-item');
+
+  function updateSummary() {
+    const counts = { passive: 0, active: 0, qual: 0 };
+    items.forEach((item) => {
+      const group = item.getAttribute('data-group');
+      if (item.classList.contains('selected') && counts[group] !== undefined) {
+        counts[group] += 1;
+      }
+    });
+
+    const passive = document.getElementById('summary-passive');
+    const active = document.getElementById('summary-active');
+    const qual = document.getElementById('summary-qual');
+
+    if (passive) passive.textContent = String(counts.passive);
+    if (active) active.textContent = String(counts.active);
+    if (qual) qual.textContent = String(counts.qual);
+  }
+
+  function setSelected(item, selected) {
+    item.classList.toggle('selected', selected);
+    item.setAttribute('aria-pressed', selected ? 'true' : 'false');
+  }
+
+  items.forEach((item) => {
+    item.setAttribute('role', 'button');
+    item.setAttribute('aria-pressed', item.classList.contains('selected') ? 'true' : 'false');
+    item.addEventListener('click', () => {
+      setSelected(item, !item.classList.contains('selected'));
+      updateSummary();
+    });
+  });
+
+  const applyBtn = document.getElementById('apply-ai');
+  const clearBtn = document.getElementById('clear-selection');
+
+  if (applyBtn) {
+    applyBtn.addEventListener('click', () => {
+      items.forEach((item) => {
+        if (item.getAttribute('data-ai') === 'true') setSelected(item, true);
+      });
+      updateSummary();
+    });
+  }
+
+  if (clearBtn) {
+    clearBtn.addEventListener('click', () => {
+      items.forEach((item) => setSelected(item, false));
+      updateSummary();
+    });
+  }
+
+  updateSummary();
+</script>
+</body>
+</html>

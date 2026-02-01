@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>이상 원인 추적 - Wireframe</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f0f0f; color: #e5e5e5; }
+
+    .layout { display: flex; min-height: 100vh; }
+    .sidebar { width: 260px; background: #1a1a1a; border-right: 1px solid #2a2a2a; padding: 16px 12px; flex-shrink: 0; display: flex; flex-direction: column; }
+    .logo { font-size: 17px; font-weight: 700; padding: 8px 12px; margin-bottom: 16px; color: #fff; }
+    .nav-section { margin-bottom: 8px; }
+    .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 8px; margin-bottom: 2px; color: #888; font-size: 13px; cursor: pointer; transition: all 0.15s; text-decoration: none; }
+    .nav-item:hover { background: #252525; color: #ccc; }
+    .nav-item.active { background: #2563eb; color: #fff; }
+    .nav-item .icon { width: 18px; text-align: center; font-size: 14px; }
+    .nav-project { margin-top: 8px; padding-top: 12px; border-top: 1px solid #2a2a2a; }
+    .nav-project-header { display: flex; align-items: center; gap: 8px; padding: 8px 12px; color: #666; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+    .nav-project-name { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 8px; background: #252525; margin-bottom: 8px; color: #fff; font-size: 12px; font-weight: 500; cursor: pointer; border: 1px solid #333; }
+    .nav-project-name:hover { border-color: #3b82f6; }
+    .nav-project-name .folder { color: #3b82f6; }
+    .nav-sub { padding-left: 12px; border-left: 2px solid #2a2a2a; margin-left: 20px; }
+    .nav-sub-item { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 6px; color: #777; font-size: 12px; cursor: pointer; transition: all 0.15s; text-decoration: none; margin-bottom: 2px; }
+    .nav-sub-item:hover { background: #252525; color: #ccc; }
+    .nav-sub-item.active { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border-left: 2px solid #3b82f6; margin-left: -2px; padding-left: 14px; }
+    .nav-sub-item .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; opacity: 0.5; }
+    .nav-sub-item.active .dot { background: #3b82f6; opacity: 1; }
+    .nav-divider { height: 1px; background: #2a2a2a; margin: 12px 12px; }
+    .nav-sub-label { font-size: 10px; color: #555; font-weight: 600; padding: 6px 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+    /* 연구 네비게이션 */
+    .research-nav-item { margin-bottom: 2px; }
+    .research-nav-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 12px;
+      color: #888;
+      transition: all 0.15s;
+    }
+    .research-nav-header:hover { background: #252525; color: #ccc; }
+    .research-nav-item.expanded .research-nav-header { background: rgba(59, 130, 246, 0.1); color: #60a5fa; }
+    .folder-icon { font-size: 13px; }
+    .research-title { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .status-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+    .status-dot.active { background: #22c55e; }
+    .status-dot.recruiting { background: #3b82f6; }
+    .status-dot.draft { background: #6b7280; }
+    .research-nav-sub {
+      display: none;
+      padding-left: 20px;
+      margin-top: 4px;
+      border-left: 2px solid #333;
+      margin-left: 18px;
+    }
+    .research-nav-item.expanded .research-nav-sub { display: block; }
+    .research-nav-item.collapsed .research-nav-sub { display: none; }
+    .nav-sub-divider { height: 1px; background: #333; margin: 8px 0; }
+
+    .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+    .header { padding: 16px 24px; border-bottom: 1px solid #2a2a2a; display: flex; justify-content: space-between; align-items: center; }
+    .header-left h1 { font-size: 18px; font-weight: 600; display: flex; align-items: center; gap: 10px; }
+    .header-left .sub { font-size: 13px; color: #666; margin-top: 4px; }
+    .header-badge { padding: 6px 12px; background: rgba(239, 68, 68, 0.2); border: 1px solid #ef4444; border-radius: 8px; font-size: 12px; color: #f87171; display: flex; align-items: center; gap: 6px; }
+    .header-badge .dot { width: 8px; height: 8px; background: #ef4444; border-radius: 50%; animation: blink 1s infinite; }
+    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+    .content { flex: 1; display: flex; overflow: hidden; }
+
+    /* 좌측: 이상 목록 */
+    .anomaly-panel { width: 320px; background: #1a1a1a; border-right: 1px solid #2a2a2a; display: flex; flex-direction: column; flex-shrink: 0; }
+
+    .anomaly-header { padding: 16px 20px; border-bottom: 1px solid #2a2a2a; }
+    .anomaly-header .title { font-size: 14px; font-weight: 600; margin-bottom: 8px; }
+    .anomaly-filter { display: flex; gap: 6px; }
+    .filter-btn { padding: 6px 12px; background: #252525; border: 1px solid #333; border-radius: 6px; font-size: 12px; color: #888; cursor: pointer; }
+    .filter-btn.active { background: #ef4444; border-color: #ef4444; color: white; }
+
+    .anomaly-list { flex: 1; overflow-y: auto; padding: 12px; }
+
+    .anomaly-item { background: #252525; border: 1px solid #333; border-radius: 10px; padding: 14px; margin-bottom: 10px; cursor: pointer; transition: all 0.15s; }
+    .anomaly-item:hover { border-color: #ef4444; }
+    .anomaly-item.selected { border-color: #ef4444; background: rgba(239, 68, 68, 0.1); }
+    .anomaly-item .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+    .anomaly-item .type { font-size: 13px; font-weight: 600; }
+    .anomaly-item .severity { padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: 600; }
+    .anomaly-item .severity.high { background: #ef4444; color: white; }
+    .anomaly-item .severity.medium { background: #f59e0b; color: #1a1a1a; }
+    .anomaly-item .severity.low { background: #6b7280; color: white; }
+    .anomaly-item .details { font-size: 12px; color: #888; margin-bottom: 8px; }
+    .anomaly-item .meta { display: flex; justify-content: space-between; font-size: 11px; color: #666; }
+    .anomaly-item .status { display: flex; align-items: center; gap: 4px; }
+    .anomaly-item .status.resolved { color: #10b981; }
+    .anomaly-item .status.investigating { color: #f59e0b; }
+    .anomaly-item .status.new { color: #ef4444; }
+
+    /* 중앙: 상세 분석 */
+    .detail-area { flex: 1; display: flex; flex-direction: column; padding: 20px; background: #151515; overflow-y: auto; }
+
+    /* 이상 요약 */
+    .anomaly-summary { background: linear-gradient(135deg, #7f1d1d, #991b1b); border-radius: 16px; padding: 24px; margin-bottom: 20px; }
+    .anomaly-summary .label { font-size: 12px; opacity: 0.8; margin-bottom: 8px; }
+    .anomaly-summary .main { font-size: 20px; font-weight: 600; margin-bottom: 12px; }
+    .anomaly-summary .stats { display: flex; gap: 24px; }
+    .anomaly-summary .stat .value { font-size: 24px; font-weight: 700; }
+    .anomaly-summary .stat .label { font-size: 11px; opacity: 0.7; margin-top: 2px; }
+
+    /* 근본 원인 분석 결과 */
+    .rootcause-section { background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+    .rootcause-section .title { font-size: 14px; font-weight: 600; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+
+    .cause-chain { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+    .cause-node { padding: 12px 16px; border-radius: 8px; font-size: 13px; font-weight: 500; position: relative; }
+    .cause-node.root { background: linear-gradient(135deg, #ef4444, #dc2626); color: white; }
+    .cause-node.intermediate { background: rgba(245, 158, 11, 0.2); border: 1px solid #f59e0b; color: #fbbf24; }
+    .cause-node.effect { background: rgba(59, 130, 246, 0.2); border: 1px solid #3b82f6; color: #60a5fa; }
+    .cause-arrow { font-size: 20px; color: #666; }
+
+    .cause-detail { background: #252525; border-radius: 8px; padding: 14px; margin-bottom: 10px; }
+    .cause-detail .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .cause-detail .name { font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+    .cause-detail .confidence { font-size: 12px; color: #10b981; }
+    .cause-detail .explanation { font-size: 13px; color: #888; line-height: 1.5; }
+    .cause-detail .evidence { margin-top: 10px; padding-top: 10px; border-top: 1px solid #333; font-size: 12px; color: #666; }
+
+    /* 타임라인 */
+    .timeline-section { background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+    .timeline-section .title { font-size: 14px; font-weight: 600; margin-bottom: 16px; }
+
+    .timeline { position: relative; padding-left: 24px; }
+    .timeline::before { content: ''; position: absolute; left: 8px; top: 0; bottom: 0; width: 2px; background: #333; }
+
+    .timeline-item { position: relative; margin-bottom: 16px; }
+    .timeline-item:last-child { margin-bottom: 0; }
+    .timeline-item .dot { position: absolute; left: -20px; top: 4px; width: 12px; height: 12px; border-radius: 50%; border: 2px solid; }
+    .timeline-item .dot.trigger { background: #ef4444; border-color: #ef4444; }
+    .timeline-item .dot.change { background: #f59e0b; border-color: #f59e0b; }
+    .timeline-item .dot.detected { background: #3b82f6; border-color: #3b82f6; }
+    .timeline-item .time { font-size: 11px; color: #666; margin-bottom: 4px; }
+    .timeline-item .content { font-size: 13px; }
+    .timeline-item .value-change { font-size: 12px; color: #f87171; margin-top: 4px; }
+
+    /* 권장 조치 */
+    .action-section { background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 12px; padding: 20px; }
+    .action-section .title { font-size: 14px; font-weight: 600; margin-bottom: 16px; }
+
+    .action-item { display: flex; gap: 12px; padding: 14px; background: #252525; border-radius: 8px; margin-bottom: 10px; cursor: pointer; transition: all 0.15s; }
+    .action-item:hover { background: #333; }
+    .action-item .icon { width: 40px; height: 40px; background: rgba(16, 185, 129, 0.2); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+    .action-item .info { flex: 1; }
+    .action-item .name { font-size: 14px; font-weight: 500; margin-bottom: 4px; }
+    .action-item .desc { font-size: 12px; color: #888; }
+    .action-item .impact { font-size: 11px; color: #10b981; margin-top: 6px; }
+
+    /* 우측: AI 인사이트 */
+    .insight-panel { width: 300px; background: #1a1a1a; border-left: 1px solid #2a2a2a; display: flex; flex-direction: column; flex-shrink: 0; }
+    .insight-header { padding: 16px 20px; border-bottom: 1px solid #2a2a2a; }
+    .insight-header h2 { font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+    .insight-header .dot { width: 8px; height: 8px; background: #ef4444; border-radius: 50%; }
+
+    .insight-body { flex: 1; overflow-y: auto; padding: 16px; }
+
+    .insight-card { background: #252525; border-radius: 10px; padding: 14px; margin-bottom: 12px; }
+    .insight-card .label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+    .insight-card .label.critical { color: #ef4444; }
+    .insight-card .label.analysis { color: #f59e0b; }
+    .insight-card .label.pattern { color: #8b5cf6; }
+    .insight-card .text { font-size: 13px; line-height: 1.6; color: #ccc; }
+    .insight-card .highlight { color: #f87171; font-weight: 600; }
+
+    .similar-cases { margin-top: 12px; }
+    .similar-case { display: flex; justify-content: space-between; padding: 8px 10px; background: #1a1a1a; border-radius: 6px; margin-bottom: 6px; font-size: 12px; }
+    .similar-case .match { color: #10b981; }
+
+    .insight-footer { padding: 16px; border-top: 1px solid #2a2a2a; }
+    .ask-input { display: flex; gap: 8px; }
+    .ask-input input { flex: 1; padding: 10px 14px; background: #252525; border: 1px solid #333; border-radius: 8px; color: #fff; font-size: 13px; }
+    .ask-input button { padding: 10px 14px; background: #ef4444; border: none; border-radius: 8px; color: white; cursor: pointer; }
+
+    .nav-links { display: flex; gap: 10px; padding: 16px 24px; border-top: 1px solid #2a2a2a; }
+    .nav-links a { padding: 6px 12px; background: #252525; border-radius: 6px; text-decoration: none; color: #888; font-size: 12px; }
+    .nav-links a:hover { background: #333; color: #fff; }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <div class="sidebar">
+      <div class="logo" style="display: flex; align-items: center; gap: 10px;">
+        <div style="width: 32px; height: 32px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px;">U</div>
+        UniQdata
+      </div>
+
+      <div class="nav-section">
+        <a href="list.html" class="nav-item"><span class="icon">🏠</span> 연구 허브</a>
+        <a href="create.html" class="nav-item"><span class="icon">➕</span> 새 연구</a>
+      </div>
+
+      <!-- 내 연구들 -->
+      <div class="nav-section" style="flex: 1; overflow-y: auto; padding-top: 8px; border-top: 1px solid #2a2a2a;">
+        <div style="font-size: 10px; color: #64748b; padding: 6px 12px; text-transform: uppercase; letter-spacing: 0.5px;">내 연구 <span style="background: #3b82f6; color: white; padding: 1px 6px; border-radius: 8px; font-size: 9px; margin-left: 4px;">3</span></div>
+
+        <!-- 연구 1: 당뇨병 - 현재 선택됨, 펼쳐진 상태 -->
+        <div class="research-nav-item expanded">
+          <div class="research-nav-header">
+            <span class="folder-icon">📁</span>
+            <span class="research-title">당뇨병 복약 순응도</span>
+            <span class="status-dot active"></span>
+          </div>
+          <div class="research-nav-sub">
+            <a href="data-overview.html" class="nav-sub-item"><span class="dot"></span> 개요</a>
+            <a href="data-table.html" class="nav-sub-item"><span class="dot"></span> 테이블</a>
+            <a href="analysis-discovery.html" class="nav-sub-item"><span class="dot"></span> 인과발견</a>
+            <a href="analysis-importance.html" class="nav-sub-item"><span class="dot"></span> SHAP</a>
+            <a href="analysis-personalized.html" class="nav-sub-item"><span class="dot"></span> CATE</a>
+            <a href="analysis-whatif.html" class="nav-sub-item"><span class="dot"></span> What-If</a>
+            <a href="analysis-rootcause.html" class="nav-sub-item active"><span class="dot"></span> 이상추적</a>
+          </div>
+        </div>
+
+        <!-- 연구 2: 접힌 상태 -->
+        <div class="research-nav-item collapsed">
+          <div class="research-nav-header">
+            <span class="folder-icon">📁</span>
+            <span class="research-title">노인 수면 패턴</span>
+            <span class="status-dot recruiting"></span>
+          </div>
+        </div>
+
+        <!-- 연구 3: 초안 -->
+        <div class="research-nav-item collapsed">
+          <div class="research-nav-header">
+            <span class="folder-icon">📄</span>
+            <span class="research-title">ADHD 생활습관</span>
+            <span class="status-dot draft"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="nav-section">
+        <a href="../team.html" class="nav-item"><span class="icon">👥</span> 팀</a>
+        <a href="../billing.html" class="nav-item"><span class="icon">💳</span> 결제</a>
+        <a href="#" class="nav-item"><span class="icon">⚙️</span> 설정</a>
+      </div>
+
+      <!-- 유저 프로필 -->
+      <div style="padding: 12px; border-top: 1px solid #2a2a2a;">
+        <div style="display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: 8px; cursor: pointer;" onmouseover="this.style.background='#252525'" onmouseout="this.style.background='transparent'">
+          <div style="width: 32px; height: 32px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; color: white;">김</div>
+          <div>
+            <div style="font-size: 13px; color: #e2e8f0;">김연구</div>
+            <div style="font-size: 11px; color: #64748b;">서울대학교병원</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="main">
+      <div class="header">
+        <div class="header-left">
+          <h1>🔍 이상 원인 추적</h1>
+          <div class="sub">이상 징후의 근본 원인을 AI가 자동으로 추적합니다 (RootCLAM 알고리즘)</div>
+        </div>
+        <div class="header-badge">
+          <span class="dot"></span>
+          12건 감지됨
+        </div>
+      </div>
+
+      <div class="content">
+        <!-- 좌측: 이상 목록 -->
+        <div class="anomaly-panel">
+          <div class="anomaly-header">
+            <div class="title">감지된 이상</div>
+            <div class="anomaly-filter">
+              <button class="filter-btn active">전체</button>
+              <button class="filter-btn">미해결</button>
+              <button class="filter-btn">고위험</button>
+            </div>
+          </div>
+
+          <div class="anomaly-list">
+            <div class="anomaly-item selected">
+              <div class="header">
+                <span class="type">혈당 급등</span>
+                <span class="severity high">고위험</span>
+              </div>
+              <div class="details">156 → 245 mg/dL (+57%)</div>
+              <div class="meta">
+                <span>환자 P-1247</span>
+                <span class="status new">● 분석 중</span>
+              </div>
+            </div>
+
+            <div class="anomaly-item">
+              <div class="header">
+                <span class="type">복약 중단</span>
+                <span class="severity high">고위험</span>
+              </div>
+              <div class="details">7일 연속 미복약</div>
+              <div class="meta">
+                <span>환자 P-0892</span>
+                <span class="status investigating">● 조사 중</span>
+              </div>
+            </div>
+
+            <div class="anomaly-item">
+              <div class="header">
+                <span class="type">이상 패턴</span>
+                <span class="severity medium">중위험</span>
+              </div>
+              <div class="details">야간 혈당 변동 증가</div>
+              <div class="meta">
+                <span>환자 P-2103</span>
+                <span class="status new">● 신규</span>
+              </div>
+            </div>
+
+            <div class="anomaly-item">
+              <div class="header">
+                <span class="type">급격한 체중 변화</span>
+                <span class="severity medium">중위험</span>
+              </div>
+              <div class="details">2주간 -4.2kg</div>
+              <div class="meta">
+                <span>환자 P-1589</span>
+                <span class="status resolved">● 해결됨</span>
+              </div>
+            </div>
+
+            <div class="anomaly-item">
+              <div class="header">
+                <span class="type">저혈당 빈발</span>
+                <span class="severity low">저위험</span>
+              </div>
+              <div class="details">주 3회 이상</div>
+              <div class="meta">
+                <span>환자 P-0456</span>
+                <span class="status resolved">● 해결됨</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 중앙: 상세 분석 -->
+        <div class="detail-area">
+          <!-- 이상 요약 -->
+          <div class="anomaly-summary">
+            <div class="label">선택된 이상</div>
+            <div class="main">환자 P-1247 | 혈당 급등 (+57%)</div>
+            <div class="stats">
+              <div class="stat">
+                <div class="value">156 → 245</div>
+                <div class="label">혈당 변화 (mg/dL)</div>
+              </div>
+              <div class="stat">
+                <div class="value">2일 전</div>
+                <div class="label">감지 시점</div>
+              </div>
+              <div class="stat">
+                <div class="value">89%</div>
+                <div class="label">원인 식별 신뢰도</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 근본 원인 분석 -->
+          <div class="rootcause-section">
+            <div class="title">🎯 근본 원인 분석 결과</div>
+
+            <div class="cause-chain">
+              <div class="cause-node root">스트레스 급증</div>
+              <span class="cause-arrow">→</span>
+              <div class="cause-node intermediate">코르티솔 상승</div>
+              <span class="cause-arrow">→</span>
+              <div class="cause-node intermediate">인슐린 저항성 증가</div>
+              <span class="cause-arrow">→</span>
+              <div class="cause-node effect">혈당 급등</div>
+            </div>
+
+            <div class="cause-detail">
+              <div class="header">
+                <span class="name">🔴 1순위 원인: 스트레스 급증</span>
+                <span class="confidence">신뢰도 89%</span>
+              </div>
+              <div class="explanation">
+                환자의 스트레스 지표가 3일 전부터 급격히 상승했습니다. 주관적 스트레스 점수 4→8, 수면 질 저하 동반.
+              </div>
+              <div class="evidence">
+                <strong>근거:</strong> 과거 유사 패턴 12회 발견 | 스트레스↔혈당 인과계수 β=0.34
+              </div>
+            </div>
+
+            <div class="cause-detail">
+              <div class="header">
+                <span class="name">🟡 2순위 원인: 복약 불규칙</span>
+                <span class="confidence">신뢰도 67%</span>
+              </div>
+              <div class="explanation">
+                최근 3일간 복약 시간 불규칙 (±3시간 변동). 직접적 원인은 아니나 혈당 조절 악화에 기여.
+              </div>
+            </div>
+          </div>
+
+          <!-- 타임라인 -->
+          <div class="timeline-section">
+            <div class="title">📅 이벤트 타임라인</div>
+            <div class="timeline">
+              <div class="timeline-item">
+                <div class="dot trigger"></div>
+                <div class="time">3일 전 09:00</div>
+                <div class="content">스트레스 지표 급상승 시작</div>
+                <div class="value-change">스트레스 점수: 4 → 7</div>
+              </div>
+              <div class="timeline-item">
+                <div class="dot change"></div>
+                <div class="time">3일 전 18:00</div>
+                <div class="content">수면 질 저하 시작</div>
+                <div class="value-change">수면 점수: 78 → 52</div>
+              </div>
+              <div class="timeline-item">
+                <div class="dot change"></div>
+                <div class="time">2일 전 07:00</div>
+                <div class="content">공복 혈당 상승 시작</div>
+                <div class="value-change">공복 혈당: 142 → 168</div>
+              </div>
+              <div class="timeline-item">
+                <div class="dot detected"></div>
+                <div class="time">2일 전 14:00</div>
+                <div class="content"><strong>이상 감지: 혈당 급등</strong></div>
+                <div class="value-change">혈당: 156 → 245 mg/dL</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 권장 조치 -->
+          <div class="action-section">
+            <div class="title">💊 권장 조치</div>
+            <div class="action-item">
+              <div class="icon">🧘</div>
+              <div class="info">
+                <div class="name">스트레스 관리 개입</div>
+                <div class="desc">심리 상담 또는 이완 요법 권장</div>
+                <div class="impact">예상 효과: 혈당 -15~20 mg/dL</div>
+              </div>
+            </div>
+            <div class="action-item">
+              <div class="icon">💊</div>
+              <div class="info">
+                <div class="name">복약 알림 강화</div>
+                <div class="desc">복약 시간 고정 및 알림 설정</div>
+                <div class="impact">예상 효과: 혈당 안정화</div>
+              </div>
+            </div>
+            <div class="action-item">
+              <div class="icon">📞</div>
+              <div class="info">
+                <div class="name">담당의 알림</div>
+                <div class="desc">고위험 상태 - 담당의에게 즉시 알림</div>
+                <div class="impact">권장: 24시간 내 연락</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 우측: AI 인사이트 -->
+        <div class="insight-panel">
+          <div class="insight-header">
+            <h2><span class="dot"></span> AI 분석</h2>
+          </div>
+
+          <div class="insight-body">
+            <div class="insight-card">
+              <div class="label critical">🚨 긴급</div>
+              <div class="text">
+                이 환자의 혈당 급등은 <span class="highlight">스트레스가 주 원인</span>입니다.
+                <br><br>
+                단순 복약 문제가 아니므로, <strong>심리적 개입</strong>이 우선 필요합니다.
+              </div>
+            </div>
+
+            <div class="insight-card">
+              <div class="label analysis">🔍 인과 분석</div>
+              <div class="text">
+                RootCLAM 알고리즘이 5개의 잠재 원인을 검토했습니다:
+                <br><br>
+                ✓ 스트레스 (89%)<br>
+                ✓ 복약 불규칙 (67%)<br>
+                ✗ 식이 변화 (23%)<br>
+                ✗ 운동 부족 (12%)<br>
+                ✗ 센서 오류 (4%)
+              </div>
+            </div>
+
+            <div class="insight-card">
+              <div class="label pattern">📊 유사 케이스</div>
+              <div class="text">과거 유사 패턴 발견:</div>
+              <div class="similar-cases">
+                <div class="similar-case">
+                  <span>P-0892 (2023.11)</span>
+                  <span class="match">94% 일치</span>
+                </div>
+                <div class="similar-case">
+                  <span>P-1456 (2024.02)</span>
+                  <span class="match">87% 일치</span>
+                </div>
+                <div class="similar-case">
+                  <span>P-0234 (2024.05)</span>
+                  <span class="match">82% 일치</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="insight-card">
+              <div class="label analysis">📈 예후 예측</div>
+              <div class="text">
+                개입 없을 시: 혈당 <span class="highlight">260+ 유지</span> 예상
+                <br><br>
+                스트레스 관리 시: 1주 내 <span style="color: #34d399;">180 이하</span> 회복 예상 (78% 확률)
+              </div>
+            </div>
+          </div>
+
+          <div class="insight-footer">
+            <div class="ask-input">
+              <input type="text" placeholder="원인 분석에 대해 질문...">
+              <button>→</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="nav-links">
+        <a href="../index.html">← 와이어프레임 목록</a>
+        <a href="analysis-whatif.html">← What-If 시뮬레이션</a>
+        <a href="data-overview.html">개요 →</a>
+      </div>
+    </div>
+  </div>
+  <!-- 기능 명세 -->
+  <div style="background: linear-gradient(135deg, #ecfdf5, #d1fae5); border: 2px solid #10b981; border-radius: 12px; padding: 16px; margin: 20px 24px;">
+    <h3 style="color: #047857; margin-bottom: 12px; font-size: 14px;">⚙️ 기능 명세</h3>
+    <div style="font-size: 12px; color: #374151; line-height: 1.8;">
+      <strong>핵심 기능:</strong><br>
+      • RootCLAM 알고리즘 기반 이상 원인 자동 추적<br>
+      • 실시간 이상 징후 감지 및 알림<br>
+      • 근본 원인 체인 시각화 (Root → Intermediate → Effect)<br>
+      • 이벤트 타임라인 표시<br>
+      • 권장 조치 자동 생성<br><br>
+
+      <strong>이상 탐지 유형:</strong><br>
+      • 급격한 변화 (혈당 급등/급락)<br>
+      • 패턴 이상 (야간 변동 증가)<br>
+      • 행동 변화 (복약 중단, 운동 감소)<br>
+      • 예측 이탈 (예상 범위 초과)<br><br>
+
+      <strong>비즈니스 로직:</strong><br>
+      • 위험도별 우선순위 자동 정렬 (고/중/저)<br>
+      • 유사 과거 케이스 자동 매칭<br>
+      • 담당의 자동 알림 (고위험 시)<br>
+      • 개입 후 결과 추적 및 학습
+    </div>
+  </div>
+
+  <!-- 백엔드 호출 -->
+  <div style="background: linear-gradient(135deg, #f5f3ff, #ede9fe); border: 2px solid #8b5cf6; border-radius: 12px; padding: 16px; margin: 12px 24px 20px;">
+    <h3 style="color: #6d28d9; margin-bottom: 12px; font-size: 14px;">🔗 백엔드 호출</h3>
+    <div style="font-size: 11px; font-family: 'SF Mono', Monaco, monospace; color: #374151; line-height: 1.8;">
+      <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
+GET /api/v2/analysis/projects/:id/anomalies?status=all|new|investigating|resolved&severity=high|medium|low<br>
+→ { "anomalies": [{ "id", "type", "patient_id", "severity", "status", "detected_at", "details" }], "total": 12 }
+      </code>
+
+      <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
+GET /api/v2/analysis/projects/:id/anomalies/:anomalyId/rootcause<br>
+→ { "cause_chain": [{ "node", "type": "root|intermediate|effect", "confidence" }], "causes": [{ "rank", "name", "confidence", "explanation", "evidence" }] }
+      </code>
+
+      <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
+GET /api/v2/analysis/projects/:id/anomalies/:anomalyId/timeline<br>
+→ { "events": [{ "timestamp", "type": "trigger|change|detected", "description", "value_change" }] }
+      </code>
+
+      <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
+GET /api/v2/analysis/projects/:id/anomalies/:anomalyId/recommendations<br>
+→ { "actions": [{ "priority", "type", "name", "description", "expected_impact" }], "similar_cases": [...], "prognosis": { "without_intervention", "with_intervention" } }
+      </code>
+
+      <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
+PATCH /api/v2/analysis/projects/:id/anomalies/:anomalyId<br>
+{ "status": "investigating|resolved", "resolution_notes": "..." }<br>
+→ { "updated": true }
+      </code>
+    </div>
+  </div>
+
+  <script src="page-spec.js"></script>
+</body>
+</html>

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>결제/에스크로 - Wireframe</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, sans-serif; background: #f5f5f5; }
+    .layout { display: flex; min-height: 100vh; }
+    .sidebar { width: 240px; background: #1a1a1a; color: white; padding: 20px; }
+    .logo { font-size: 18px; font-weight: bold; margin-bottom: 30px; padding: 10px; }
+    .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 8px; margin-bottom: 4px; color: #9ca3af; }
+    .nav-item.active { background: #3b82f6; color: white; }
+    .main { flex: 1; }
+    .content { padding: 24px; }
+    h1 { font-size: 24px; margin-bottom: 8px; }
+    .subtitle { color: #6b7280; margin-bottom: 24px; }
+
+    .wallet-card {
+      background: linear-gradient(135deg, #1f2937, #111827);
+      color: white;
+      padding: 24px;
+      border-radius: 16px;
+      margin-bottom: 24px;
+    }
+    .wallet-label { font-size: 12px; color: #9ca3af; }
+    .wallet-balance { font-size: 32px; font-weight: bold; margin: 8px 0; }
+    .wallet-usd { font-size: 14px; color: #9ca3af; }
+    .wallet-address { font-family: monospace; font-size: 14px; color: #9ca3af; margin-top: 16px; }
+    .wallet-status { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+    .status-dot { width: 8px; height: 8px; background: #4ade80; border-radius: 50%; }
+
+    .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+    .action-btn { background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 20px; cursor: pointer; text-align: left; }
+    .action-btn:hover { border-color: #3b82f6; }
+    .action-icon { width: 40px; height: 40px; border-radius: 8px; margin-bottom: 12px; }
+
+    .card { background: white; border: 1px solid #e5e7eb; border-radius: 12px; }
+    .card-header { padding: 16px 20px; border-bottom: 1px solid #e5e7eb; font-weight: 600; }
+    .tx-row { display: flex; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid #f3f4f6; }
+    .tx-row:last-child { border: none; }
+    .tx-desc { font-weight: 500; }
+    .tx-time { font-size: 14px; color: #6b7280; }
+    .tx-amount { font-weight: 600; }
+    .tx-amount.positive { color: #16a34a; }
+
+    .note { background: #fef3c7; border: 1px solid #fcd34d; padding: 12px; border-radius: 8px; font-size: 13px; margin-top: 24px; }
+    .step-nav { display: flex; gap: 10px; margin-top: 20px; }
+    .step-nav a { padding: 8px 16px; background: #eee; border-radius: 6px; text-decoration: none; color: #333; font-size: 14px; }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <div class="sidebar">
+      <div class="logo">UniQdata</div>
+      <a href="research/list.html" class="nav-item">🏠 연구 허브</a>
+      <a href="research/list.html" class="nav-item">📊 연구 관리</a>
+      <a href="data-pool.html" class="nav-item">🗄️ Data Pool</a>
+      <a href="team.html" class="nav-item">👥 팀</a>
+      <a href="billing.html" class="nav-item active">💳 결제/에스크로</a>
+    </div>
+
+    <div class="main">
+      <div class="content">
+        <h1>결제/에스크로</h1>
+        <p class="subtitle">XRPL 지갑과 에스크로 관리</p>
+
+        <!-- 지갑 카드 -->
+        <div class="wallet-card">
+          <div class="wallet-label">XRPL 지갑</div>
+          <div class="wallet-balance">45,000 XRP</div>
+          <div class="wallet-usd">≈ $22,500 USD</div>
+          <div class="wallet-address">rKx7vN...3pQm</div>
+          <div class="wallet-status">
+            <span class="status-dot"></span>
+            <span style="font-size: 14px;">연결됨</span>
+          </div>
+        </div>
+
+        <!-- 액션 -->
+        <div class="actions">
+          <div class="action-btn">
+            <div class="action-icon" style="background: #dcfce7;"></div>
+            <div style="font-weight: 600;">충전</div>
+            <div style="font-size: 14px; color: #6b7280;">XRP 입금</div>
+          </div>
+          <div class="action-btn">
+            <div class="action-icon" style="background: #dbeafe;"></div>
+            <div style="font-weight: 600;">출금</div>
+            <div style="font-size: 14px; color: #6b7280;">외부 지갑으로 전송</div>
+          </div>
+        </div>
+
+        <!-- 거래 내역 -->
+        <div class="card">
+          <div class="card-header">최근 거래</div>
+          <div class="tx-row">
+            <div>
+              <div class="tx-desc">에스크로 예치 - 당뇨병 연구</div>
+              <div class="tx-time">2시간 전</div>
+            </div>
+            <div class="tx-amount">-5,000 XRP</div>
+          </div>
+          <div class="tx-row">
+            <div>
+              <div class="tx-desc">참여자 정산 (10명)</div>
+              <div class="tx-time">5시간 전</div>
+            </div>
+            <div class="tx-amount">-500 XRP</div>
+          </div>
+          <div class="tx-row">
+            <div>
+              <div class="tx-desc">XRP 입금</div>
+              <div class="tx-time">어제</div>
+            </div>
+            <div class="tx-amount positive">+10,000 XRP</div>
+          </div>
+        </div>
+
+        <div class="note">
+          <strong>결제/에스크로</strong> - XRPL 지갑 잔액, 충전/출금, 거래 내역. Phase 2.
+        </div>
+
+        <!-- 기능 명세 -->
+        <div style="background: linear-gradient(135deg, #ecfdf5, #d1fae5); border: 2px solid #10b981; border-radius: 12px; padding: 16px; margin-top: 20px;">
+          <h3 style="color: #047857; margin-bottom: 12px; font-size: 14px;">⚙️ 기능 명세</h3>
+          <div style="font-size: 12px; color: #374151; line-height: 1.8;">
+            <strong>핵심 기능:</strong><br>
+            • XRPL 지갑 잔액 표시<br>
+            • XRP 충전 (외부 지갑에서 송금)<br>
+            • XRP 출금 (외부 지갑으로 송금)<br>
+            • 거래 내역 조회<br>
+            • 에스크로 상태 확인<br><br>
+
+            <strong>에스크로 타입:</strong><br>
+            • 예치: 연구 생성 시<br>
+            • 정산: 참여자 보상 지급<br>
+            • 반환: 연구 종료 시 잔액
+          </div>
+        </div>
+
+        <!-- 백엔드 호출 -->
+        <div style="background: linear-gradient(135deg, #f5f3ff, #ede9fe); border: 2px solid #8b5cf6; border-radius: 12px; padding: 16px; margin-top: 12px;">
+          <h3 style="color: #6d28d9; margin-bottom: 12px; font-size: 14px;">🔗 백엔드 호출</h3>
+          <div style="font-size: 11px; font-family: 'SF Mono', Monaco, monospace; color: #374151; line-height: 1.8;">
+            <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
+GET /api/v2/xrpl/wallet<br>
+→ { "address": "rKx7vN...", "balance_xrp": 45000 }
+            </code>
+
+            <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
+GET /api/v2/xrpl/transactions?limit=20<br>
+→ { "transactions": [{ "type", "amount", "timestamp", "tx_hash" }] }
+            </code>
+
+            <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
+POST /api/v2/xrpl/withdraw<br>
+{ "destination": "rXXX...", "amount_xrp": 1000 }<br>
+→ { "tx_hash": "A1B2C3...", "status": "pending" }
+            </code>
+          </div>
+        </div>
+
+        <div class="step-nav">
+          <a href="index.html">← 목록</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

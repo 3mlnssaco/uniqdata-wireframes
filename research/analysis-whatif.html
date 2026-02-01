@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>What-If 시뮬레이션 - Wireframe</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f0f0f; color: #e5e5e5; }
+
+    .layout { display: flex; min-height: 100vh; }
+    .sidebar { width: 260px; background: #1a1a1a; border-right: 1px solid #2a2a2a; padding: 16px 12px; flex-shrink: 0; display: flex; flex-direction: column; }
+    .logo { font-size: 17px; font-weight: 700; padding: 8px 12px; margin-bottom: 16px; color: #fff; }
+    .nav-section { margin-bottom: 8px; }
+    .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 8px; margin-bottom: 2px; color: #888; font-size: 13px; cursor: pointer; transition: all 0.15s; text-decoration: none; }
+    .nav-item:hover { background: #252525; color: #ccc; }
+    .nav-item.active { background: #2563eb; color: #fff; }
+    .nav-item .icon { width: 18px; text-align: center; font-size: 14px; }
+    .nav-project { margin-top: 8px; padding-top: 12px; border-top: 1px solid #2a2a2a; }
+    .nav-project-header { display: flex; align-items: center; gap: 8px; padding: 8px 12px; color: #666; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+    .nav-project-name { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 8px; background: #252525; margin-bottom: 8px; color: #fff; font-size: 12px; font-weight: 500; cursor: pointer; border: 1px solid #333; }
+    .nav-project-name:hover { border-color: #3b82f6; }
+    .nav-project-name .folder { color: #3b82f6; }
+    .nav-sub { padding-left: 12px; border-left: 2px solid #2a2a2a; margin-left: 20px; }
+    .nav-sub-item { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 6px; color: #777; font-size: 12px; cursor: pointer; transition: all 0.15s; text-decoration: none; margin-bottom: 2px; }
+    .nav-sub-item:hover { background: #252525; color: #ccc; }
+    .nav-sub-item.active { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border-left: 2px solid #3b82f6; margin-left: -2px; padding-left: 14px; }
+    .nav-sub-item .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; opacity: 0.5; }
+    .nav-sub-item.active .dot { background: #3b82f6; opacity: 1; }
+    .nav-divider { height: 1px; background: #2a2a2a; margin: 12px 12px; }
+    .nav-sub-label { font-size: 10px; color: #555; font-weight: 600; padding: 6px 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+    /* 연구 네비게이션 */
+    .research-nav-item { margin-bottom: 2px; }
+    .research-nav-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 12px;
+      color: #888;
+      transition: all 0.15s;
+    }
+    .research-nav-header:hover { background: #252525; color: #ccc; }
+    .research-nav-item.expanded .research-nav-header { background: rgba(59, 130, 246, 0.1); color: #60a5fa; }
+    .folder-icon { font-size: 13px; }
+    .research-title { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .status-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+    .status-dot.active { background: #22c55e; }
+    .status-dot.recruiting { background: #3b82f6; }
+    .status-dot.draft { background: #6b7280; }
+    .research-nav-sub {
+      display: none;
+      padding-left: 20px;
+      margin-top: 4px;
+      border-left: 2px solid #333;
+      margin-left: 18px;
+    }
+    .research-nav-item.expanded .research-nav-sub { display: block; }
+    .research-nav-item.collapsed .research-nav-sub { display: none; }
+    .nav-sub-divider { height: 1px; background: #333; margin: 8px 0; }
+
+    .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+    .header { padding: 16px 24px; border-bottom: 1px solid #2a2a2a; }
+    .header h1 { font-size: 18px; font-weight: 600; display: flex; align-items: center; gap: 10px; }
+    .header .sub { font-size: 13px; color: #666; margin-top: 4px; }
+
+    .content { flex: 1; display: flex; overflow: hidden; }
+
+    /* 좌측: 시뮬레이션 설정 */
+    .sim-panel { width: 340px; background: #1a1a1a; border-right: 1px solid #2a2a2a; display: flex; flex-direction: column; flex-shrink: 0; }
+
+    .sim-header { padding: 16px 20px; border-bottom: 1px solid #2a2a2a; }
+    .sim-header .title { font-size: 14px; font-weight: 600; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+    .sim-header .desc { font-size: 12px; color: #666; line-height: 1.5; }
+
+    .sim-body { flex: 1; overflow-y: auto; padding: 16px; }
+
+    /* 현재 상태 */
+    .current-state { background: #252525; border-radius: 12px; padding: 16px; margin-bottom: 16px; }
+    .current-state .label { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; }
+    .state-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #333; }
+    .state-item:last-child { border-bottom: none; }
+    .state-item .name { font-size: 13px; }
+    .state-item .value { font-size: 14px; font-weight: 600; }
+    .state-item .value.bad { color: #f87171; }
+    .state-item .value.ok { color: #fbbf24; }
+    .state-item .value.good { color: #34d399; }
+
+    /* 개입 슬라이더 */
+    .intervention-section { margin-bottom: 20px; }
+    .intervention-section .title { font-size: 12px; font-weight: 600; color: #3b82f6; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
+
+    .intervention-item { background: #252525; border-radius: 10px; padding: 14px; margin-bottom: 10px; }
+    .intervention-item .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .intervention-item .name { font-size: 13px; font-weight: 500; }
+    .intervention-item .change { padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; }
+    .intervention-item .change.positive { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+    .intervention-item .change.negative { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+    .intervention-item .change.neutral { background: rgba(107, 114, 128, 0.2); color: #9ca3af; }
+
+    .slider-row { display: flex; align-items: center; gap: 12px; }
+    .slider-row .from { font-size: 12px; color: #888; width: 50px; }
+    .slider-row input[type="range"] { flex: 1; height: 6px; -webkit-appearance: none; background: #333; border-radius: 3px; }
+    .slider-row input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; background: #3b82f6; border-radius: 50%; cursor: pointer; }
+    .slider-row .to { font-size: 14px; font-weight: 600; color: #3b82f6; width: 50px; text-align: right; }
+
+    .quick-presets { display: flex; gap: 6px; margin-top: 10px; }
+    .preset-btn { padding: 6px 10px; background: #333; border: none; border-radius: 6px; font-size: 11px; color: #888; cursor: pointer; }
+    .preset-btn:hover { background: #3b82f6; color: white; }
+
+    .run-sim-btn { width: 100%; padding: 14px; background: linear-gradient(135deg, #3b82f6, #2563eb); border: none; border-radius: 10px; font-size: 14px; font-weight: 600; color: white; cursor: pointer; margin-top: 16px; }
+    .run-sim-btn:hover { opacity: 0.9; }
+
+    /* 중앙: 결과 시각화 */
+    .result-area { flex: 1; display: flex; flex-direction: column; padding: 20px; background: #151515; overflow-y: auto; }
+
+    /* 예측 결과 카드 */
+    .prediction-card { background: linear-gradient(135deg, #065f46, #047857); border-radius: 16px; padding: 24px; margin-bottom: 20px; }
+    .prediction-card .label { font-size: 12px; opacity: 0.8; margin-bottom: 8px; }
+    .prediction-card .main-value { display: flex; align-items: baseline; gap: 8px; }
+    .prediction-card .value { font-size: 48px; font-weight: 700; }
+    .prediction-card .unit { font-size: 20px; opacity: 0.8; }
+    .prediction-card .sub { margin-top: 12px; font-size: 14px; opacity: 0.9; }
+    .prediction-card .confidence { margin-top: 8px; font-size: 12px; opacity: 0.7; }
+
+    /* Before/After 비교 */
+    .comparison-grid { display: grid; grid-template-columns: 1fr auto 1fr; gap: 16px; align-items: center; margin-bottom: 24px; }
+
+    .comparison-card { background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 12px; padding: 20px; }
+    .comparison-card.before { border-color: #4b5563; }
+    .comparison-card.after { border-color: #10b981; }
+    .comparison-card .label { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; }
+    .comparison-card .metric { margin-bottom: 12px; }
+    .comparison-card .metric:last-child { margin-bottom: 0; }
+    .comparison-card .metric .name { font-size: 13px; color: #888; margin-bottom: 4px; }
+    .comparison-card .metric .value { font-size: 20px; font-weight: 600; }
+    .comparison-card.before .metric .value { color: #9ca3af; }
+    .comparison-card.after .metric .value { color: #34d399; }
+
+    .comparison-arrow { font-size: 24px; color: #3b82f6; }
+
+    /* 변화 요인 분해 */
+    .decomposition { background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+    .decomposition .title { font-size: 14px; font-weight: 600; margin-bottom: 16px; }
+    .decomp-item { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+    .decomp-item:last-child { margin-bottom: 0; }
+    .decomp-item .name { width: 120px; font-size: 13px; }
+    .decomp-item .bar-container { flex: 1; height: 24px; background: #252525; border-radius: 6px; overflow: hidden; display: flex; align-items: center; }
+    .decomp-item .bar { height: 100%; border-radius: 6px; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; font-size: 11px; font-weight: 600; }
+    .decomp-item .bar.positive { background: linear-gradient(90deg, #10b981, #34d399); color: #065f46; }
+    .decomp-item .bar.negative { background: linear-gradient(90deg, #ef4444, #f87171); color: #7f1d1d; }
+    .decomp-item .contribution { width: 60px; text-align: right; font-size: 13px; font-weight: 600; }
+    .decomp-item .contribution.positive { color: #34d399; }
+    .decomp-item .contribution.negative { color: #f87171; }
+
+    /* 시간 경과 예측 */
+    .timeline-chart { background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 12px; padding: 20px; }
+    .timeline-chart .title { font-size: 14px; font-weight: 600; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; }
+    .timeline-chart .chart-area { height: 180px; background: #252525; border-radius: 8px; position: relative; overflow: hidden; }
+    /* 간단한 선 차트 시뮬레이션 */
+    .chart-line { position: absolute; bottom: 0; left: 0; right: 0; height: 100%; }
+    .chart-line.current { border-bottom: 2px dashed #6b7280; height: 60%; }
+    .chart-line.predicted {
+      background: linear-gradient(to bottom, transparent, rgba(16, 185, 129, 0.1));
+      clip-path: polygon(0 60%, 20% 58%, 40% 52%, 60% 45%, 80% 40%, 100% 35%, 100% 100%, 0 100%);
+    }
+    .chart-labels { display: flex; justify-content: space-between; margin-top: 8px; font-size: 11px; color: #666; }
+
+    /* 우측: AI 인사이트 */
+    .insight-panel { width: 300px; background: #1a1a1a; border-left: 1px solid #2a2a2a; display: flex; flex-direction: column; flex-shrink: 0; }
+    .insight-header { padding: 16px 20px; border-bottom: 1px solid #2a2a2a; }
+    .insight-header h2 { font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+    .insight-header .dot { width: 8px; height: 8px; background: #10b981; border-radius: 50%; }
+
+    .insight-body { flex: 1; overflow-y: auto; padding: 16px; }
+
+    .insight-card { background: #252525; border-radius: 10px; padding: 14px; margin-bottom: 12px; }
+    .insight-card .label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+    .insight-card .label.recommend { color: #10b981; }
+    .insight-card .label.warning { color: #f59e0b; }
+    .insight-card .label.info { color: #3b82f6; }
+    .insight-card .text { font-size: 13px; line-height: 1.6; color: #ccc; }
+    .insight-card .highlight { color: #34d399; font-weight: 600; }
+
+    .action-buttons { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+    .action-btn { padding: 10px 12px; background: #333; border: 1px solid #444; border-radius: 8px; font-size: 12px; color: #ccc; cursor: pointer; text-align: left; }
+    .action-btn:hover { border-color: #3b82f6; color: #60a5fa; }
+
+    .insight-footer { padding: 16px; border-top: 1px solid #2a2a2a; }
+    .ask-input { display: flex; gap: 8px; }
+    .ask-input input { flex: 1; padding: 10px 14px; background: #252525; border: 1px solid #333; border-radius: 8px; color: #fff; font-size: 13px; }
+    .ask-input button { padding: 10px 14px; background: #3b82f6; border: none; border-radius: 8px; color: white; cursor: pointer; }
+
+    .nav-links { display: flex; gap: 10px; padding: 16px 24px; border-top: 1px solid #2a2a2a; }
+    .nav-links a { padding: 6px 12px; background: #252525; border-radius: 6px; text-decoration: none; color: #888; font-size: 12px; }
+    .nav-links a:hover { background: #333; color: #fff; }
+
+    .spec-section { display: grid; gap: 12px; margin-top: 24px; }
+    .spec-card { background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 12px; padding: 16px; }
+    .spec-card h3 { font-size: 13px; margin-bottom: 10px; }
+    .spec-card .spec-text { font-size: 12px; color: #cbd5f5; line-height: 1.7; }
+    .spec-card code { background: #0f172a; color: #a5b4fc; padding: 8px 10px; border-radius: 6px; display: block; margin-top: 8px; font-size: 11px; }
+    .spec-card details { margin-top: 10px; }
+    .spec-card summary { cursor: pointer; font-weight: 600; color: #e2e8f0; }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <div class="sidebar">
+      <div class="logo" style="display: flex; align-items: center; gap: 10px;">
+        <div style="width: 32px; height: 32px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px;">U</div>
+        UniQdata
+      </div>
+
+      <div class="nav-section">
+        <a href="list.html" class="nav-item"><span class="icon">🏠</span> 연구 허브</a>
+        <a href="create.html" class="nav-item"><span class="icon">➕</span> 새 연구</a>
+      </div>
+
+      <!-- 내 연구들 -->
+      <div class="nav-section" style="flex: 1; overflow-y: auto; padding-top: 8px; border-top: 1px solid #2a2a2a;">
+        <div style="font-size: 10px; color: #64748b; padding: 6px 12px; text-transform: uppercase; letter-spacing: 0.5px;">내 연구 <span style="background: #3b82f6; color: white; padding: 1px 6px; border-radius: 8px; font-size: 9px; margin-left: 4px;">3</span></div>
+
+        <!-- 연구 1: 당뇨병 - 현재 선택됨, 펼쳐진 상태 -->
+        <div class="research-nav-item expanded">
+          <div class="research-nav-header">
+            <span class="folder-icon">📁</span>
+            <span class="research-title">당뇨병 복약 순응도</span>
+            <span class="status-dot active"></span>
+          </div>
+          <div class="research-nav-sub">
+            <a href="data-overview.html" class="nav-sub-item"><span class="dot"></span> 개요</a>
+            <a href="data-table.html" class="nav-sub-item"><span class="dot"></span> 테이블</a>
+            <a href="analysis-discovery.html" class="nav-sub-item"><span class="dot"></span> 인과발견</a>
+            <a href="analysis-importance.html" class="nav-sub-item"><span class="dot"></span> SHAP</a>
+            <a href="analysis-personalized.html" class="nav-sub-item"><span class="dot"></span> CATE</a>
+            <a href="analysis-whatif.html" class="nav-sub-item active"><span class="dot"></span> What-If</a>
+            <a href="analysis-rootcause.html" class="nav-sub-item"><span class="dot"></span> 이상추적</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="main">
+      <div class="header">
+        <h1>🔮 What-If 시뮬레이션</h1>
+        <div class="sub">개입 시나리오를 조정해 예상 결과를 비교합니다.</div>
+      </div>
+
+      <div class="content">
+        <div class="sim-panel">
+          <div class="sim-header">
+            <div class="title">🧪 시뮬레이션 설정</div>
+            <div class="desc">현재 상태를 기준으로 개입 변수를 조정하고 예측 결과를 확인합니다.</div>
+          </div>
+          <div class="sim-body">
+            <div class="current-state">
+              <div class="label">현재 상태</div>
+              <div class="state-item">
+                <div class="name">복약 순응도</div>
+                <div class="value ok">0.65</div>
+              </div>
+              <div class="state-item">
+                <div class="name">평균 혈당</div>
+                <div class="value bad">178 mg/dL</div>
+              </div>
+              <div class="state-item">
+                <div class="name">수면 시간</div>
+                <div class="value ok">5.6h</div>
+              </div>
+              <div class="state-item">
+                <div class="name">스트레스</div>
+                <div class="value bad">7 / 10</div>
+              </div>
+            </div>
+
+            <div class="intervention-section">
+              <div class="title">⚙️ 개입 변수</div>
+              <div class="intervention-item">
+                <div class="header">
+                  <div class="name">복약 순응도</div>
+                  <div class="change positive">+0.25</div>
+                </div>
+                <div class="slider-row">
+                  <div class="from">0.65</div>
+                  <input type="range" min="0" max="1" value="90">
+                  <div class="to">0.90</div>
+                </div>
+                <div class="quick-presets">
+                  <button class="preset-btn">최소</button>
+                  <button class="preset-btn">보통</button>
+                  <button class="preset-btn">적극</button>
+                </div>
+              </div>
+
+              <div class="intervention-item">
+                <div class="header">
+                  <div class="name">스트레스 레벨</div>
+                  <div class="change positive">-3</div>
+                </div>
+                <div class="slider-row">
+                  <div class="from">7</div>
+                  <input type="range" min="0" max="10" value="4">
+                  <div class="to">4</div>
+                </div>
+              </div>
+
+              <div class="intervention-item">
+                <div class="header">
+                  <div class="name">수면 시간</div>
+                  <div class="change positive">+1.4h</div>
+                </div>
+                <div class="slider-row">
+                  <div class="from">5.6h</div>
+                  <input type="range" min="0" max="10" value="7">
+                  <div class="to">7.0h</div>
+                </div>
+              </div>
+            </div>
+
+            <button class="run-sim-btn">시뮬레이션 실행</button>
+          </div>
+        </div>
+
+        <div class="result-area">
+          <div class="prediction-card">
+            <div class="label">예측 결과 (복약 개선 시나리오)</div>
+            <div class="main-value">
+              <div class="value">142</div>
+              <div class="unit">mg/dL</div>
+            </div>
+            <div class="sub">현재 대비 -36 mg/dL 감소</div>
+            <div class="confidence">신뢰구간: 135 ~ 149 (95%)</div>
+          </div>
+
+          <div class="comparison-grid">
+            <div class="comparison-card before">
+              <div class="label">Before</div>
+              <div class="metric">
+                <div class="name">평균 혈당</div>
+                <div class="value">178</div>
+              </div>
+              <div class="metric">
+                <div class="name">변동성</div>
+                <div class="value">+22%</div>
+              </div>
+            </div>
+            <div class="comparison-arrow">➡️</div>
+            <div class="comparison-card after">
+              <div class="label">After</div>
+              <div class="metric">
+                <div class="name">예측 혈당</div>
+                <div class="value">142</div>
+              </div>
+              <div class="metric">
+                <div class="name">변동성</div>
+                <div class="value">-12%</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="decomposition">
+            <div class="title">변화 요인 분해</div>
+            <div class="decomp-item">
+              <div class="name">복약 순응</div>
+              <div class="bar-container">
+                <div class="bar positive" style="width: 60%;">+22</div>
+              </div>
+              <div class="contribution positive">+22</div>
+            </div>
+            <div class="decomp-item">
+              <div class="name">스트레스</div>
+              <div class="bar-container">
+                <div class="bar positive" style="width: 35%;">+9</div>
+              </div>
+              <div class="contribution positive">+9</div>
+            </div>
+            <div class="decomp-item">
+              <div class="name">수면</div>
+              <div class="bar-container">
+                <div class="bar positive" style="width: 20%;">+5</div>
+              </div>
+              <div class="contribution positive">+5</div>
+            </div>
+            <div class="decomp-item">
+              <div class="name">기타 요인</div>
+              <div class="bar-container">
+                <div class="bar negative" style="width: 10%;">-2</div>
+              </div>
+              <div class="contribution negative">-2</div>
+            </div>
+          </div>
+
+          <div class="timeline-chart">
+            <div class="title">
+              <span>예측 추이 (12주)</span>
+              <span style="font-size: 11px; color: #6b7280;">주간 평균</span>
+            </div>
+            <div class="chart-area">
+              <div class="chart-line current"></div>
+              <div class="chart-line predicted"></div>
+            </div>
+            <div class="chart-labels">
+              <span>Week 1</span>
+              <span>Week 4</span>
+              <span>Week 8</span>
+              <span>Week 12</span>
+            </div>
+          </div>
+
+          <div class="spec-section">
+            <div class="spec-card">
+              <h3>⚙️ 기능 명세</h3>
+              <div class="spec-text">
+                <strong>핵심 기능:</strong><br>
+                • 인과 모델 기반 What-If 시뮬레이션<br>
+                • 개입 변수 슬라이더로 실시간 조절<br>
+                • Before/After 비교 시각화<br>
+                • 변화 요인 분해 (기여도별 막대 차트)<br>
+                • 시간 경과에 따른 예측 추이<br><br>
+
+                <strong>시뮬레이션 기능:</strong><br>
+                • 현재 상태 기반 개입 시나리오 생성<br>
+                • 복수 변수 동시 조절 가능<br>
+                • 프리셋 시나리오 제공 (적극적/보통/최소)<br>
+                • 신뢰구간 포함 예측 결과
+              </div>
+            </div>
+
+            <div class="spec-card">
+              <h3>🔗 백엔드 호출</h3>
+              <code>
+POST /api/v2/analysis/projects/:id/whatif<br>
+{ "patient_id": "P-1247", "interventions": [{ "var": "medication_adherence", "from": 0.65, "to": 0.90 }, { "var": "stress_level", "from": 7, "to": 4 }] }<br>
+→ { "simulation_id": "sim_xxx", "status": "complete" }
+              </code>
+              <details>
+                <summary>응답/추가 호출</summary>
+                <code>
+GET /api/v2/analysis/projects/:id/whatif/:simulation_id<br>
+→ { "before": { "glucose": 178 }, "after": { "glucose": 142, "ci": [135, 149] }, "decomposition": [{ "var", "contribution" }], "timeline": [...] }
+                </code>
+                <code>
+POST /api/v2/analysis/projects/:id/whatif/:simulation_id/save<br>
+→ { "saved": true, "scenario_id": "scen_xxx" }
+                </code>
+              </details>
+            </div>
+          </div>
+        </div>
+
+        <div class="insight-panel">
+          <div class="insight-header">
+            <h2><span class="dot"></span> AI 인사이트</h2>
+          </div>
+          <div class="insight-body">
+            <div class="insight-card">
+              <div class="label recommend">핵심 제안</div>
+              <div class="text">복약 순응도를 <span class="highlight">0.9 이상</span>으로 유지하면 평균 혈당이 유의하게 감소합니다.</div>
+            </div>
+            <div class="insight-card">
+              <div class="label warning">주의</div>
+              <div class="text">스트레스 레벨이 높을 경우 감소 효과가 <span class="highlight">-15%</span>까지 약화됩니다.</div>
+            </div>
+            <div class="insight-card">
+              <div class="label info">추가 실험</div>
+              <div class="text">수면 시간을 7시간 이상으로 고정했을 때의 반사실 추정치를 비교해 보세요.</div>
+              <div class="action-buttons">
+                <button class="action-btn">수면 최적화 시나리오</button>
+                <button class="action-btn">복약+운동 병행</button>
+              </div>
+            </div>
+          </div>
+          <div class="insight-footer">
+            <div class="ask-input">
+              <input type="text" placeholder="시나리오 질문하기...">
+              <button>요청</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="page-spec.js"></script>
+</body>
+</html>

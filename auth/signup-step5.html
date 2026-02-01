@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>회원가입 Step 5 - 패스키 등록 - Wireframe</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, sans-serif; background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 100%); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+
+    .container { display: flex; width: 950px; min-height: 700px; background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 25px 50px rgba(0,0,0,0.3); }
+
+    .left-panel { width: 320px; background: linear-gradient(180deg, #1e40af 0%, #1e3a8a 100%); color: white; padding: 40px; display: flex; flex-direction: column; }
+    .logo { font-size: 24px; font-weight: bold; margin-bottom: 40px; }
+    .left-title { font-size: 26px; font-weight: 700; line-height: 1.3; margin-bottom: 16px; }
+    .left-desc { font-size: 14px; opacity: 0.8; line-height: 1.6; margin-bottom: 40px; }
+
+    .steps-vertical { display: flex; flex-direction: column; gap: 0; margin-top: auto; }
+    .step-v { display: flex; align-items: center; gap: 12px; padding: 10px 0; position: relative; }
+    .step-v::before { content: ''; position: absolute; left: 14px; top: 36px; width: 2px; height: calc(100% - 6px); background: rgba(255,255,255,0.2); }
+    .step-v:last-child::before { display: none; }
+    .step-v .num { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; background: rgba(255,255,255,0.2); position: relative; z-index: 1; }
+    .step-v.done .num { background: #22c55e; }
+    .step-v.active .num { background: white; color: #1e40af; }
+    .step-v .label { font-size: 13px; opacity: 0.7; }
+    .step-v.active .label { opacity: 1; font-weight: 600; }
+    .step-v.done .label { opacity: 0.9; }
+
+    .right-panel { flex: 1; padding: 32px; display: flex; flex-direction: column; overflow-y: auto; }
+    .form-header { margin-bottom: 16px; }
+    .form-header h1 { font-size: 24px; font-weight: 700; margin-bottom: 8px; color: #111827; }
+    .form-header p { font-size: 14px; color: #6b7280; }
+
+    /* 프로세스 타임라인 */
+    .process-timeline { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
+    .process-step { display: flex; gap: 16px; align-items: flex-start; padding: 16px; border-radius: 12px; background: #f8fafc; border: 2px solid #e2e8f0; transition: all 0.3s; }
+    .process-step.active { background: #eff6ff; border-color: #3b82f6; }
+    .process-step.done { background: #f0fdf4; border-color: #22c55e; }
+    .process-step.pending { opacity: 0.6; }
+
+    .step-indicator { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; background: #e2e8f0; color: #64748b; }
+    .process-step.active .step-indicator { background: #3b82f6; color: white; }
+    .process-step.done .step-indicator { background: #22c55e; color: white; }
+
+    .step-content { flex: 1; }
+    .step-content h4 { font-size: 14px; font-weight: 600; margin-bottom: 4px; color: #1e293b; }
+    .step-content p { font-size: 12px; color: #64748b; line-height: 1.5; }
+    .step-content .detail { font-size: 11px; color: #94a3b8; margin-top: 6px; font-family: monospace; background: #f1f5f9; padding: 6px 8px; border-radius: 4px; }
+
+    .process-step.active .step-content h4 { color: #1e40af; }
+    .process-step.done .step-content h4 { color: #166534; }
+
+    /* 현재 상태 카드 */
+    .status-card { background: linear-gradient(135deg, #1e40af, #3b82f6); border-radius: 16px; padding: 20px; color: white; margin-bottom: 16px; }
+    .status-card h3 { font-size: 14px; opacity: 0.8; margin-bottom: 8px; }
+    .status-card .main { font-size: 18px; font-weight: 600; display: flex; align-items: center; gap: 10px; }
+    .status-card .main .icon { font-size: 24px; }
+    .status-card .sub { font-size: 12px; opacity: 0.7; margin-top: 8px; }
+
+    .register-btn { width: 100%; padding: 16px; background: linear-gradient(135deg, #8b5cf6, #6366f1); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 16px; transition: all 0.2s; }
+    .register-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(139, 92, 246, 0.3); }
+    .register-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    /* PRF 설명 */
+    .prf-section { background: linear-gradient(135deg, #faf5ff, #f3e8ff); border: 1px solid #c4b5fd; border-radius: 12px; padding: 16px; margin-bottom: 16px; }
+    .prf-section h4 { font-size: 14px; font-weight: 600; color: #6b21a8; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+    .prf-section p { font-size: 12px; color: #7c3aed; line-height: 1.6; }
+
+    /* 기술 상세 */
+    .tech-details { background: #f1f5f9; border-radius: 12px; padding: 16px; margin-bottom: 16px; }
+    .tech-details h4 { font-size: 13px; font-weight: 600; color: #334155; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+    .tech-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e2e8f0; font-size: 12px; }
+    .tech-row:last-child { border: none; }
+    .tech-row .label { color: #64748b; }
+    .tech-row .value { color: #1e293b; font-family: monospace; font-weight: 500; }
+    .tech-row .value.success { color: #22c55e; }
+    .tech-row .value.pending { color: #f59e0b; }
+
+    .security-note { display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; margin-bottom: 16px; }
+    .security-note .icon { font-size: 18px; flex-shrink: 0; }
+    .security-note .text { font-size: 12px; color: #166534; line-height: 1.5; }
+
+    .btn-row { display: flex; gap: 12px; margin-top: auto; }
+    .btn { flex: 1; padding: 14px 24px; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; text-align: center; text-decoration: none; transition: all 0.2s; }
+    .btn-secondary { background: white; border: 1px solid #e5e7eb; color: #374151; }
+    .btn-primary { background: #3b82f6; border: none; color: white; }
+
+    .nav-links { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+    .nav-links a { padding: 6px 12px; background: #f1f5f9; border-radius: 6px; text-decoration: none; color: #64748b; font-size: 12px; }
+    .nav-links a:hover { background: #e2e8f0; }
+
+    /* 디자이너 노트 */
+    .designer-note { background: linear-gradient(135deg, #fdf4ff, #fae8ff); border: 2px solid #d946ef; border-radius: 12px; padding: 16px; margin-top: 16px; }
+    .designer-note h3 { color: #a21caf; margin-bottom: 10px; font-size: 13px; }
+    .designer-note .content { font-size: 11px; color: #374151; line-height: 1.6; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="left-panel">
+      <div class="logo">UniQdata</div>
+      <div class="left-title">지갑 생성 + 패스키 등록</div>
+      <div class="left-desc">XRPL 지갑을 먼저 생성하고, 패스키의 PRF로 시드를 암호화합니다.</div>
+
+      <div class="steps-vertical">
+        <div class="step-v done"><div class="num">✓</div><div class="label">회원 유형</div></div>
+        <div class="step-v done"><div class="num">✓</div><div class="label">이메일 인증</div></div>
+        <div class="step-v done"><div class="num">✓</div><div class="label">비밀번호</div></div>
+        <div class="step-v done"><div class="num">✓</div><div class="label">패스키 안내</div></div>
+        <div class="step-v active"><div class="num">5</div><div class="label">패스키 등록</div></div>
+        <div class="step-v"><div class="num">6</div><div class="label">블록체인 연동</div></div>
+        <div class="step-v"><div class="num">7</div><div class="label">완료</div></div>
+      </div>
+    </div>
+
+    <div class="right-panel">
+      <div class="form-header">
+        <h1>지갑 + 패스키 등록</h1>
+        <p>XRPL 지갑 생성 → PRF 추출 → 시드 암호화 순서로 진행됩니다</p>
+      </div>
+
+      <!-- 프로세스 타임라인 (올바른 순서) -->
+      <div class="process-timeline">
+        <div class="process-step done">
+          <div class="step-indicator">✓</div>
+          <div class="step-content">
+            <h4>1. XRPL 지갑 생성</h4>
+            <p>테스트넷에서 새로운 XRPL 지갑 주소와 시드(개인키) 생성</p>
+            <div class="detail">Address: rN7n3...Kx9Pm | Seed: sn3nxiW9v...생성됨</div>
+          </div>
+        </div>
+
+        <div class="process-step active">
+          <div class="step-indicator">2</div>
+          <div class="step-content">
+            <h4>2. 생체인증 + PRF 추출</h4>
+            <p>패스키 등록 시 PRF 확장으로 32바이트 암호화 키 추출</p>
+            <div class="detail">PRF Key: 생체인증 후 추출 대기...</div>
+          </div>
+        </div>
+
+        <div class="process-step pending">
+          <div class="step-indicator">3</div>
+          <div class="step-content">
+            <h4>3. 시드 암호화 (AES-256-GCM)</h4>
+            <p>PRF 키로 지갑 시드를 암호화하여 서버 저장</p>
+            <div class="detail">Encrypted Seed: 대기 중...</div>
+          </div>
+        </div>
+
+        <div class="process-step pending">
+          <div class="step-indicator">4</div>
+          <div class="step-content">
+            <h4>4. 암호화된 시드 저장</h4>
+            <p>암호화된 시드만 서버에 저장 (평문 시드는 저장 안 함)</p>
+            <div class="detail">Server: 암호화된 데이터 대기 중...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 현재 상태 -->
+      <div class="status-card">
+        <h3>현재 상태</h3>
+        <div class="main">
+          <span class="icon">👆</span>
+          <span>생체인증 대기 중</span>
+        </div>
+        <div class="sub">버튼을 클릭하면 지문/Face ID로 인증하고 PRF 키를 추출합니다</div>
+      </div>
+
+      <button class="register-btn">
+        <span>🔐</span> 패스키 등록 + 시드 암호화
+      </button>
+
+      <!-- PRF 설명 -->
+      <div class="prf-section">
+        <h4>🔑 왜 PRF로 암호화하나요?</h4>
+        <p>
+          <strong>PRF (Pseudo Random Function)</strong>: 패스키에서만 추출 가능한 고유 키<br>
+          • 패스키 없이는 시드 복호화 불가<br>
+          • 서버가 해킹당해도 암호화된 시드만 유출 (쓸모없음)<br>
+          • 사용자는 패스키 하나만 관리하면 됨
+        </p>
+      </div>
+
+      <!-- 기술 상세 -->
+      <div class="tech-details">
+        <h4>⚙️ 기술 상세</h4>
+        <div class="tech-row">
+          <span class="label">XRPL 네트워크</span>
+          <span class="value">Testnet (devnet.xrpl.org)</span>
+        </div>
+        <div class="tech-row">
+          <span class="label">지갑 생성</span>
+          <span class="value success">✓ 완료</span>
+        </div>
+        <div class="tech-row">
+          <span class="label">PRF 지원</span>
+          <span class="value success">✓ 가능 (Chrome 120)</span>
+        </div>
+        <div class="tech-row">
+          <span class="label">암호화 알고리즘</span>
+          <span class="value">AES-256-GCM</span>
+        </div>
+        <div class="tech-row">
+          <span class="label">PRF 추출</span>
+          <span class="value pending">대기 중...</span>
+        </div>
+      </div>
+
+      <div class="security-note">
+        <span class="icon">🔒</span>
+        <span class="text">
+          <strong>보안 보장:</strong> 평문 시드는 브라우저 밖으로 전송되지 않습니다.
+          PRF 키는 패스키 인증 시에만 추출되며, 서버에는 암호화된 시드만 저장됩니다.
+        </span>
+      </div>
+
+      <div class="btn-row">
+        <a href="signup-step4.html" class="btn btn-secondary">이전</a>
+        <a href="signup-step6.html" class="btn btn-primary">다음 →</a>
+      </div>
+
+      <div class="nav-links">
+        <a href="../index.html">← 와이어프레임 목록</a>
+        <a href="signup.html">Step 1</a>
+        <a href="signup-step6.html">Step 6 →</a>
+      </div>
+
+      <!-- 디자이너 노트 -->
+      <div class="designer-note">
+        <h3>📋 디자이너 노트: 지갑 + 패스키 등록</h3>
+        <div class="content">
+          <strong>올바른 순서 (수정됨):</strong><br>
+          1. <strong>XRPL 지갑 생성</strong>: 테스트넷에서 주소+시드 생성<br>
+          2. <strong>생체인증 + PRF 추출</strong>: 패스키 등록 시 PRF 키 추출<br>
+          3. <strong>시드 암호화</strong>: PRF 키로 시드를 AES-256-GCM 암호화<br>
+          4. <strong>암호화된 시드 저장</strong>: 서버에 암호화된 데이터만 전송<br><br>
+
+          <strong>왜 이 순서인가?</strong><br>
+          • 지갑(시드)이 먼저 있어야 암호화할 대상이 있음<br>
+          • PRF는 암호화 "키"를 제공하는 역할<br>
+          • 순서: 데이터(시드) → 키(PRF) → 암호화 → 저장<br><br>
+
+          <strong>보안 포인트:</strong><br>
+          • 평문 시드는 절대 서버로 전송 안 함<br>
+          • PRF 키도 서버로 전송 안 함<br>
+          • 서버에는 암호화된 blob만 저장
+        </div>
+      </div>
+
+      <!-- 기능 명세 -->
+      <div style="background: linear-gradient(135deg, #ecfdf5, #d1fae5); border: 2px solid #10b981; border-radius: 12px; padding: 16px; margin-top: 12px;">
+        <h3 style="color: #047857; margin-bottom: 12px; font-size: 14px;">⚙️ 기능 명세</h3>
+        <div style="font-size: 12px; color: #374151; line-height: 1.8;">
+          <strong>핵심 기능:</strong><br>
+          • XRPL 지갑 생성 (Testnet/Mainnet)<br>
+          • WebAuthn 패스키 등록 + PRF 확장 (prf extension)<br>
+          • PRF 키로 지갑 시드 암호화 (AES-256-GCM)<br>
+          • 암호화된 시드 서버 저장 (평문 시드는 전송 안 함)<br><br>
+
+          <strong>처리 순서:</strong><br>
+          1. XRPL 지갑 생성 → 주소(rAddress) + 시드(sXXX...) 획득<br>
+          2. 서버에서 WebAuthn 등록 옵션 요청 (challenge 포함)<br>
+          3. navigator.credentials.create() 호출 + PRF extension<br>
+          4. PRF 결과에서 32바이트 암호화 키 추출<br>
+          5. 클라이언트에서 AES-256-GCM으로 시드 암호화<br>
+          6. credential + encrypted_seed + iv + wallet_address 서버 전송<br><br>
+
+          <strong>보안 원칙:</strong><br>
+          • 평문 시드는 브라우저 밖으로 절대 전송 안 함<br>
+          • PRF 키도 서버로 전송 안 함 (클라이언트에서만 사용)<br>
+          • 서버에는 암호화된 blob만 저장<br>
+          • 복호화는 패스키 인증 시에만 가능
+        </div>
+      </div>
+
+      <!-- 백엔드 호출 -->
+      <div style="background: linear-gradient(135deg, #f5f3ff, #ede9fe); border: 2px solid #8b5cf6; border-radius: 12px; padding: 16px; margin-top: 12px;">
+        <h3 style="color: #6d28d9; margin-bottom: 12px; font-size: 14px;">🔗 백엔드 호출</h3>
+        <div style="font-size: 11px; font-family: 'SF Mono', Monaco, monospace; color: #374151; line-height: 1.8;">
+
+          <strong style="font-family: -apple-system, sans-serif;">1. XRPL 지갑 생성 (클라이언트):</strong><br>
+          <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
+// xrpl.js 라이브러리 사용 (클라이언트 사이드)<br>
+const wallet = xrpl.Wallet.generate()<br>
+→ { classicAddress: "rN7n3...Kx9Pm", seed: "sn3nxiW9v..." }<br>
+// 시드는 메모리에만 보관, 서버 전송 X
+          </code>
+
+          <strong style="font-family: -apple-system, sans-serif;">2. WebAuthn 등록 옵션 요청:</strong><br>
+          <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
+POST /api/v2/auth/webauthn/register-options<br>
+{ "user_id": "temp_xxx", "email": "user@example.com", "display_name": "김연구" }<br>
+→ {<br>
+&nbsp;&nbsp;"challenge": "base64url...",<br>
+&nbsp;&nbsp;"rp": { "name": "UniQdata", "id": "uniqdata.io" },<br>
+&nbsp;&nbsp;"user": { "id": "base64url...", "name": "user@example.com", "displayName": "김연구" },<br>
+&nbsp;&nbsp;"pubKeyCredParams": [{ "type": "public-key", "alg": -7 }, { "alg": -257 }],<br>
+&nbsp;&nbsp;"authenticatorSelection": { "residentKey": "required", "userVerification": "required" },<br>
+&nbsp;&nbsp;"extensions": { "prf": {} }<br>
+}
+          </code>
+
+          <strong style="font-family: -apple-system, sans-serif;">3. 클라이언트: 패스키 등록 + PRF 추출:</strong><br>
+          <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
+// navigator.credentials.create() 호출<br>
+const credential = await navigator.credentials.create({<br>
+&nbsp;&nbsp;publicKey: {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;...options,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;extensions: {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;prf: { eval: { first: new TextEncoder().encode("uniqdata-wallet-encryption") } }<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;}<br>
+})<br>
+<br>
+// PRF 결과에서 암호화 키 추출<br>
+const prfResult = credential.getClientExtensionResults().prf<br>
+const encryptionKey = prfResult.results.first // 32 bytes
+          </code>
+
+          <strong style="font-family: -apple-system, sans-serif;">4. 클라이언트: 시드 암호화 (AES-256-GCM):</strong><br>
+          <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
+// Web Crypto API 사용<br>
+const iv = crypto.getRandomValues(new Uint8Array(12)) // 12 bytes IV<br>
+const key = await crypto.subtle.importKey("raw", encryptionKey, "AES-GCM", false, ["encrypt"])<br>
+const encrypted = await crypto.subtle.encrypt(<br>
+&nbsp;&nbsp;{ name: "AES-GCM", iv },<br>
+&nbsp;&nbsp;key,<br>
+&nbsp;&nbsp;new TextEncoder().encode(wallet.seed)<br>
+)<br>
+// encrypted = 암호화된 시드, iv = 초기화 벡터
+          </code>
+
+          <strong style="font-family: -apple-system, sans-serif;">5. 패스키 + 암호화된 시드 등록 완료:</strong><br>
+          <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
+POST /api/v2/auth/webauthn/register<br>
+{<br>
+&nbsp;&nbsp;"credential": {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"id": "base64url...",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"rawId": "base64url...",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"type": "public-key",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"response": {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"clientDataJSON": "base64url...",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"attestationObject": "base64url..."<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;},<br>
+&nbsp;&nbsp;"xrpl_wallet": {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"address": "rN7n3...Kx9Pm",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"encrypted_seed": "base64...",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"encryption_iv": "base64...",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"encryption_algo": "AES-256-GCM"<br>
+&nbsp;&nbsp;},<br>
+&nbsp;&nbsp;"prf_salt": "uniqdata-wallet-encryption"<br>
+}<br>
+→ {<br>
+&nbsp;&nbsp;"success": true,<br>
+&nbsp;&nbsp;"credential_id": "cred_xxx",<br>
+&nbsp;&nbsp;"wallet_address": "rN7n3...Kx9Pm",<br>
+&nbsp;&nbsp;"user_id": "user_xxx"<br>
+}
+          </code>
+
+          <strong style="font-family: -apple-system, sans-serif;">6. 서버 저장 구조:</strong><br>
+          <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
+// DB 저장 (users 테이블)<br>
+{<br>
+&nbsp;&nbsp;user_id, email, password_hash,<br>
+&nbsp;&nbsp;xrpl_address: "rN7n3...Kx9Pm",<br>
+&nbsp;&nbsp;encrypted_seed: "base64...",  // PRF 없으면 복호화 불가<br>
+&nbsp;&nbsp;encryption_iv: "base64...",<br>
+&nbsp;&nbsp;prf_salt: "uniqdata-wallet-encryption"<br>
+}<br>
+<br>
+// DB 저장 (passkeys 테이블)<br>
+{<br>
+&nbsp;&nbsp;credential_id, user_id, public_key,<br>
+&nbsp;&nbsp;sign_count, transports, created_at<br>
+}
+          </code>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

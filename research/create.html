@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>연구 생성 Step 1 - AI 연구 설계 - Wireframe</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, sans-serif; background: #f5f5f5; }
+    .layout { display: flex; min-height: 100vh; }
+    .sidebar { width: 240px; background: #1a1a1a; color: white; padding: 20px; flex-shrink: 0; }
+    .logo { font-size: 18px; font-weight: bold; margin-bottom: 30px; padding: 10px; }
+    .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 8px; margin-bottom: 4px; color: #9ca3af; }
+    .nav-item.active { background: #3b82f6; color: white; }
+
+    .main { flex: 1; padding: 32px; max-width: 900px; margin: 0 auto; }
+    .main h1 { font-size: 28px; margin-bottom: 8px; }
+    .main .subtitle { color: #6b7280; margin-bottom: 32px; }
+
+    /* 스텝 인디케이터 */
+    .steps { display: flex; justify-content: space-between; margin-bottom: 32px; }
+    .step { display: flex; flex-direction: column; align-items: center; flex: 1; }
+    .step-num { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; margin-bottom: 8px; font-size: 14px; }
+    .step-num.done { background: #22c55e; color: white; }
+    .step-num.active { background: #8b5cf6; color: white; }
+    .step-num.pending { background: #e5e7eb; color: #9ca3af; }
+    .step-label { font-size: 12px; color: #6b7280; text-align: center; }
+    .step-line { flex: 1; height: 2px; background: #e5e7eb; margin: 20px 8px 0; }
+    .step-line.done { background: #22c55e; }
+
+    /* AI 설계 카드 */
+    .ai-design-card { background: white; border: 1px solid #e5e7eb; border-radius: 16px; padding: 48px; text-align: center; }
+    .ai-icon { width: 80px; height: 80px; background: linear-gradient(135deg, #8b5cf6, #6366f1); border-radius: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px; font-size: 40px; }
+    .ai-design-card h2 { font-size: 24px; margin-bottom: 12px; color: #1f2937; }
+    .ai-design-card .desc { color: #6b7280; margin-bottom: 32px; font-size: 16px; }
+
+    .ai-input-area { max-width: 700px; margin: 0 auto; }
+    .ai-textarea { width: 100%; height: 160px; border: 2px solid #e5e7eb; border-radius: 12px; padding: 20px; font-size: 16px; resize: none; font-family: inherit; line-height: 1.6; }
+    .ai-textarea:focus { outline: none; border-color: #8b5cf6; }
+    .ai-textarea::placeholder { color: #9ca3af; }
+
+    .ai-generate-btn { width: 100%; padding: 18px 32px; background: linear-gradient(135deg, #8b5cf6, #6366f1); border: none; border-radius: 12px; color: white; font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 20px; display: flex; align-items: center; justify-content: center; gap: 10px; }
+    .ai-generate-btn:hover { background: linear-gradient(135deg, #7c3aed, #4f46e5); }
+
+    .or-divider { display: flex; align-items: center; gap: 16px; margin: 24px 0; color: #9ca3af; font-size: 14px; }
+    .or-divider::before, .or-divider::after { content: ''; flex: 1; height: 1px; background: #e5e7eb; }
+
+    .manual-link { color: #8b5cf6; font-size: 14px; text-decoration: none; }
+    .manual-link:hover { text-decoration: underline; }
+
+    /* 예시 프롬프트 */
+    .example-prompts { margin-top: 32px; text-align: left; }
+    .example-prompts h4 { font-size: 14px; color: #6b7280; margin-bottom: 12px; }
+    .prompt-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+    .prompt-chip { padding: 10px 16px; background: #f3f4f6; border: 1px solid #e5e7eb; border-radius: 20px; font-size: 13px; color: #374151; cursor: pointer; }
+    .prompt-chip:hover { background: #ede9fe; border-color: #8b5cf6; color: #7c3aed; }
+
+    /* 스텝 네비게이션 */
+    .step-nav { display: flex; gap: 10px; margin-top: 32px; flex-wrap: wrap; }
+    .step-nav a { padding: 8px 16px; background: #eee; border-radius: 6px; text-decoration: none; color: #333; font-size: 14px; }
+
+    /* 디자이너 노트 */
+    .designer-note { background: linear-gradient(135deg, #fdf4ff, #fae8ff); border: 2px solid #d946ef; border-radius: 12px; padding: 20px; margin-top: 32px; }
+    .designer-note h3 { color: #a21caf; margin-bottom: 12px; font-size: 14px; }
+    .designer-note .content { font-size: 12px; color: #374151; line-height: 1.7; }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <div class="sidebar">
+      <div class="logo">UniQdata</div>
+      <a href="list.html" class="nav-item">🏠 홈</a>
+      <a href="list.html" class="nav-item active">📊 연구 관리</a>
+      <a href="../data-pool.html" class="nav-item">🗄️ Data Pool</a>
+      <a href="../team.html" class="nav-item">👥 팀</a>
+      <a href="../billing.html" class="nav-item">💳 결제/에스크로</a>
+    </div>
+
+    <div class="main">
+      <h1>새 연구 프로젝트</h1>
+      <p class="subtitle">AI가 연구 설계를 도와드립니다</p>
+
+      <!-- 스텝 인디케이터 (새로운 6단계) -->
+      <div class="steps">
+        <div class="step"><div class="step-num active">1</div><div class="step-label">AI 설계</div></div>
+        <div class="step-line"></div>
+        <div class="step"><div class="step-num pending">2</div><div class="step-label">설계 확인</div></div>
+        <div class="step-line"></div>
+        <div class="step"><div class="step-num pending">3</div><div class="step-label">데이터 수집</div></div>
+        <div class="step-line"></div>
+        <div class="step"><div class="step-num pending">4</div><div class="step-label">AI 도구</div></div>
+        <div class="step-line"></div>
+        <div class="step"><div class="step-num pending">5</div><div class="step-label">예산</div></div>
+        <div class="step-line"></div>
+        <div class="step"><div class="step-num pending">6</div><div class="step-label">에스크로</div></div>
+      </div>
+
+      <!-- AI 연구 설계 카드 -->
+      <div class="ai-design-card">
+        <div class="ai-icon">🤖</div>
+        <h2>어떤 연구를 하고 싶으신가요?</h2>
+        <p class="desc">연구 목적, 대상, 알고 싶은 것을 자유롭게 설명해주세요.<br>AI가 최적의 연구 설계를 제안해드립니다.</p>
+
+        <div class="ai-input-area">
+          <textarea class="ai-textarea" placeholder="예: 제2형 당뇨 환자들에서 식단이 혈당 변동에 어떤 영향을 주는지 알고 싶습니다. 특히 저탄수화물 식단과 일반 식단의 차이를 비교하고 싶어요."></textarea>
+
+          <a href="create-step2.html" class="ai-generate-btn">
+            <span>⚡</span>
+            AI 연구 설계 생성
+          </a>
+
+          <div class="or-divider">또는</div>
+          <a href="create-step2.html" class="manual-link">직접 설계하기 →</a>
+
+          <!-- 예시 프롬프트 -->
+          <div class="example-prompts">
+            <h4>예시 연구 주제</h4>
+            <div class="prompt-chips">
+              <div class="prompt-chip">복약 순응도가 혈당 관리에 미치는 영향</div>
+              <div class="prompt-chip">수면 패턴과 혈압 변동 상관관계</div>
+              <div class="prompt-chip">운동 습관이 체중 감량에 미치는 효과</div>
+              <div class="prompt-chip">식단 기록과 혈당 변화 추적</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 스텝 네비게이션 -->
+      <div class="step-nav">
+        <a href="list.html">← 목록</a>
+        <a href="create-step2.html">Step 2 (설계 확인) →</a>
+        <a href="create-step3.html">Step 3 (데이터 수집) →</a>
+        <a href="create-step4.html">Step 4 (AI 도구) →</a>
+        <a href="create-step5.html">Step 5 (예산) →</a>
+        <a href="create-step6.html">Step 6 (에스크로) →</a>
+      </div>
+
+      <!-- 디자이너 노트 -->
+      <div class="designer-note">
+        <h3>📋 디자이너 노트: Step 1 - AI 연구 설계</h3>
+        <div class="content">
+          <strong>핵심 변화:</strong><br>
+          • 기존: 폼 하나하나 채워가는 방식<br>
+          • 신규: AI에게 자연어로 연구 목적 설명 → AI가 전체 설계 생성<br><br>
+
+          <strong>플로우:</strong><br>
+          1. 연구자가 텍스트로 연구 목적 입력<br>
+          2. "AI 연구 설계 생성" 클릭<br>
+          3. AI가 방법론/참여조건/데이터/AI도구 전체 설계<br>
+          4. Step 2에서 AI가 채운 값 확인/수정<br><br>
+
+          <strong>새로운 6단계:</strong><br>
+          1. AI 설계 (자연어 입력)<br>
+          2. 설계 확인 (방법론 + 기본정보 + 참여조건)<br>
+          3. 데이터 수집 (패시브/능동/바이오마커)<br>
+          4. AI 분석 도구 선택<br>
+          5. 예산 설정<br>
+          6. 에스크로 예치<br><br>
+
+          <strong>연구 방법론 옵션:</strong><br>
+          • 전향적 코호트, RCT, SMART, MRT, N-of-1, 횡단조사 등
+        </div>
+      </div>
+
+      <!-- 기능 명세 -->
+      <div style="background: linear-gradient(135deg, #ecfdf5, #d1fae5); border: 2px solid #10b981; border-radius: 12px; padding: 16px; margin-top: 12px;">
+        <h3 style="color: #047857; margin-bottom: 12px; font-size: 14px;">⚙️ 기능 명세</h3>
+        <div style="font-size: 12px; color: #374151; line-height: 1.8;">
+          <strong>핵심 기능:</strong><br>
+          • 자연어로 연구 목적 입력<br>
+          • AI 연구 설계 생성 요청<br>
+          • 예시 프롬프트 선택 기능<br>
+          • 수동 입력 옵션 (AI 없이 직접)<br><br>
+
+          <strong>AI 생성 결과물:</strong><br>
+          • 추천 연구 방법론<br>
+          • 참여자 조건 (연령, 질환, 데이터)<br>
+          • 수집 데이터 항목<br>
+          • 추천 AI 분석 도구
+        </div>
+      </div>
+
+      <!-- 백엔드 호출 -->
+      <div style="background: linear-gradient(135deg, #f5f3ff, #ede9fe); border: 2px solid #8b5cf6; border-radius: 12px; padding: 16px; margin-top: 12px;">
+        <h3 style="color: #6d28d9; margin-bottom: 12px; font-size: 14px;">🔗 백엔드 호출</h3>
+        <div style="font-size: 11px; font-family: 'SF Mono', Monaco, monospace; color: #374151; line-height: 1.8;">
+          <strong style="font-family: -apple-system, sans-serif;">AI 연구 설계 생성:</strong><br>
+          <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
+POST /api/v2/ai/research-design<br>
+{ "prompt": "당뇨 환자의 혈당 변동과 식단 패턴의 인과관계 분석" }<br>
+→ {<br>
+&nbsp;&nbsp;"methodology": "prospective_cohort",<br>
+&nbsp;&nbsp;"participants": { "age_min": 30, "conditions": ["diabetes_t2"] },<br>
+&nbsp;&nbsp;"data_collection": ["cgm", "meal_photo", "sleep"],<br>
+&nbsp;&nbsp;"ai_tools": ["causal_discovery", "shap"]<br>
+}
+          </code>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="page-spec.js"></script>
+</body>
+</html>

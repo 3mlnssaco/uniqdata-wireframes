@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>인과적 영향 요인 - Wireframe</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f0f0f; color: #e5e5e5; }
+
+    .layout { display: flex; min-height: 100vh; }
+    .sidebar { width: 260px; background: #1a1a1a; border-right: 1px solid #2a2a2a; padding: 16px 12px; flex-shrink: 0; display: flex; flex-direction: column; }
+    .logo { font-size: 17px; font-weight: 700; padding: 8px 12px; margin-bottom: 16px; color: #fff; }
+    .nav-section { margin-bottom: 8px; }
+    .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 8px; margin-bottom: 2px; color: #888; font-size: 13px; cursor: pointer; transition: all 0.15s; text-decoration: none; }
+    .nav-item:hover { background: #252525; color: #ccc; }
+    .nav-item.active { background: #2563eb; color: #fff; }
+    .nav-item .icon { width: 18px; text-align: center; font-size: 14px; }
+    .nav-project { margin-top: 8px; padding-top: 12px; border-top: 1px solid #2a2a2a; }
+    .nav-project-header { display: flex; align-items: center; gap: 8px; padding: 8px 12px; color: #666; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+    .nav-project-name { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 8px; background: #252525; margin-bottom: 8px; color: #fff; font-size: 12px; font-weight: 500; cursor: pointer; border: 1px solid #333; }
+    .nav-project-name:hover { border-color: #3b82f6; }
+    .nav-project-name .folder { color: #3b82f6; }
+    .nav-sub { padding-left: 12px; border-left: 2px solid #2a2a2a; margin-left: 20px; }
+    .nav-sub-item { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 6px; color: #777; font-size: 12px; cursor: pointer; transition: all 0.15s; text-decoration: none; margin-bottom: 2px; }
+    .nav-sub-item:hover { background: #252525; color: #ccc; }
+    .nav-sub-item.active { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border-left: 2px solid #3b82f6; margin-left: -2px; padding-left: 14px; }
+    .nav-sub-item .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; opacity: 0.5; }
+    .nav-sub-item.active .dot { background: #3b82f6; opacity: 1; }
+    .nav-divider { height: 1px; background: #2a2a2a; margin: 12px 12px; }
+    .nav-sub-label { font-size: 10px; color: #555; font-weight: 600; padding: 6px 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+    /* 연구 네비게이션 */
+    .research-nav-item { margin-bottom: 2px; }
+    .research-nav-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 12px;
+      color: #888;
+      transition: all 0.15s;
+    }
+    .research-nav-header:hover { background: #252525; color: #ccc; }
+    .research-nav-item.expanded .research-nav-header { background: rgba(59, 130, 246, 0.1); color: #60a5fa; }
+    .folder-icon { font-size: 13px; }
+    .research-title { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .status-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+    .status-dot.active { background: #22c55e; }
+    .status-dot.recruiting { background: #3b82f6; }
+    .status-dot.draft { background: #6b7280; }
+    .research-nav-sub {
+      display: none;
+      padding-left: 20px;
+      margin-top: 4px;
+      border-left: 2px solid #333;
+      margin-left: 18px;
+    }
+    .research-nav-item.expanded .research-nav-sub { display: block; }
+    .research-nav-item.collapsed .research-nav-sub { display: none; }
+    .nav-sub-divider { height: 1px; background: #333; margin: 8px 0; }
+
+    .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+    .header { padding: 16px 24px; border-bottom: 1px solid #2a2a2a; display: flex; align-items: center; justify-content: space-between; }
+    .header-left h1 { font-size: 18px; font-weight: 600; display: flex; align-items: center; gap: 10px; }
+    .header-left .sub { font-size: 13px; color: #666; margin-top: 4px; }
+    .header-actions { display: flex; gap: 8px; }
+    .header-btn { padding: 8px 14px; border-radius: 8px; font-size: 13px; cursor: pointer; border: 1px solid #333; background: #1a1a1a; color: #ccc; }
+    .header-btn:hover { border-color: #3b82f6; }
+    .header-btn.primary { background: #2563eb; border-color: #2563eb; color: white; }
+
+    .content { flex: 1; display: flex; overflow: hidden; }
+
+    /* 좌측: 결과 변수 선택 */
+    .target-panel { width: 260px; background: #1a1a1a; border-right: 1px solid #2a2a2a; padding: 20px; overflow-y: auto; flex-shrink: 0; }
+    .panel-title { font-size: 12px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; }
+
+    .target-select { background: #252525; border: 2px solid #3b82f6; border-radius: 10px; padding: 16px; margin-bottom: 20px; }
+    .target-select .label { font-size: 11px; color: #3b82f6; margin-bottom: 8px; font-weight: 600; }
+    .target-select select { width: 100%; padding: 10px; background: #1a1a1a; border: 1px solid #333; border-radius: 6px; color: #fff; font-size: 14px; }
+
+    .method-info { background: #252525; border-radius: 10px; padding: 14px; margin-bottom: 16px; }
+    .method-info .title { font-size: 13px; font-weight: 600; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+    .method-info .title .badge { background: #8b5cf6; padding: 2px 6px; border-radius: 4px; font-size: 10px; }
+    .method-info .desc { font-size: 12px; color: #888; line-height: 1.5; }
+
+    .comparison-toggle { background: #252525; border-radius: 10px; padding: 14px; }
+    .comparison-toggle .title { font-size: 12px; color: #888; margin-bottom: 10px; }
+    .toggle-options { display: flex; flex-direction: column; gap: 8px; }
+    .toggle-option { display: flex; align-items: center; gap: 10px; font-size: 13px; cursor: pointer; }
+    .toggle-option input { accent-color: #3b82f6; }
+    .toggle-option.disabled { opacity: 0.5; }
+
+    /* 중앙: 영향 요인 차트 */
+    .chart-area { flex: 1; display: flex; flex-direction: column; overflow: hidden; padding: 20px; background: #151515; }
+
+    .chart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .chart-header h2 { font-size: 16px; font-weight: 600; }
+    .chart-header .meta { font-size: 12px; color: #666; }
+
+    /* 영향 요인 바 차트 */
+    .importance-list { flex: 1; overflow-y: auto; }
+
+    .importance-item { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid #252525; }
+    .importance-item:hover { background: rgba(59, 130, 246, 0.05); margin: 0 -12px; padding: 12px; border-radius: 8px; }
+
+    .importance-rank { width: 28px; height: 28px; background: #252525; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+    .importance-rank.top { background: linear-gradient(135deg, #f59e0b, #d97706); color: #1a1a1a; }
+
+    .importance-info { flex: 1; min-width: 0; }
+    .importance-info .name { font-size: 14px; font-weight: 500; margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }
+    .importance-info .name .type { font-size: 10px; padding: 2px 6px; border-radius: 4px; }
+    .importance-info .name .type.treatment { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
+    .importance-info .name .type.confounder { background: rgba(139, 92, 246, 0.2); color: #a78bfa; }
+    .importance-info .name .type.mediator { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+
+    .importance-bar-container { height: 8px; background: #252525; border-radius: 4px; overflow: hidden; margin-top: 6px; }
+    .importance-bar { height: 100%; border-radius: 4px; transition: width 0.3s; }
+    .importance-bar.positive { background: linear-gradient(90deg, #10b981, #34d399); }
+    .importance-bar.negative { background: linear-gradient(90deg, #ef4444, #f87171); }
+
+    .importance-values { text-align: right; flex-shrink: 0; width: 100px; }
+    .importance-values .effect { font-size: 16px; font-weight: 700; }
+    .importance-values .effect.positive { color: #10b981; }
+    .importance-values .effect.negative { color: #ef4444; }
+    .importance-values .ci { font-size: 11px; color: #666; margin-top: 2px; }
+
+    /* SHAP vs Causal 비교 */
+    .comparison-bars { display: flex; gap: 8px; align-items: center; margin-top: 6px; }
+    .comparison-bar { height: 6px; border-radius: 3px; flex: 1; }
+    .comparison-bar.shap { background: #6b7280; }
+    .comparison-bar.causal { background: #3b82f6; }
+    .comparison-label { font-size: 10px; color: #666; width: 50px; }
+
+    /* 우측: AI 해석 */
+    .insight-panel { width: 320px; background: #1a1a1a; border-left: 1px solid #2a2a2a; display: flex; flex-direction: column; flex-shrink: 0; }
+    .insight-header { padding: 16px 20px; border-bottom: 1px solid #2a2a2a; }
+    .insight-header h2 { font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+    .insight-header .dot { width: 8px; height: 8px; background: #10b981; border-radius: 50%; }
+
+    .insight-body { flex: 1; overflow-y: auto; padding: 16px; }
+
+    .insight-card { background: #252525; border-radius: 10px; padding: 14px; margin-bottom: 12px; }
+    .insight-card .label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+    .insight-card .label.key { color: #f59e0b; }
+    .insight-card .label.warning { color: #ef4444; }
+    .insight-card .label.tip { color: #10b981; }
+    .insight-card .text { font-size: 13px; line-height: 1.6; color: #ccc; }
+    .insight-card .highlight { color: #60a5fa; font-weight: 600; }
+
+    .factor-detail { background: #1a1a1a; border-radius: 8px; padding: 12px; margin-top: 10px; }
+    .factor-detail .row { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px; }
+    .factor-detail .row:last-child { margin-bottom: 0; }
+    .factor-detail .row .label { color: #666; }
+    .factor-detail .row .value { font-weight: 600; }
+
+    .action-card { background: linear-gradient(135deg, #1e3a5f, #1a2744); border: 1px solid #3b82f6; border-radius: 10px; padding: 14px; margin-bottom: 12px; }
+    .action-card .title { font-size: 13px; font-weight: 600; margin-bottom: 8px; color: #60a5fa; }
+    .action-card .actions { display: flex; flex-direction: column; gap: 8px; }
+    .action-btn { padding: 10px 12px; background: rgba(59, 130, 246, 0.2); border: 1px solid #3b82f6; border-radius: 8px; font-size: 12px; color: #93c5fd; cursor: pointer; text-align: left; }
+    .action-btn:hover { background: rgba(59, 130, 246, 0.3); }
+
+    .insight-footer { padding: 16px; border-top: 1px solid #2a2a2a; }
+    .ask-input { display: flex; gap: 8px; }
+    .ask-input input { flex: 1; padding: 10px 14px; background: #252525; border: 1px solid #333; border-radius: 8px; color: #fff; font-size: 13px; }
+    .ask-input input::placeholder { color: #666; }
+    .ask-input button { padding: 10px 14px; background: #3b82f6; border: none; border-radius: 8px; color: white; cursor: pointer; }
+
+    .nav-links { display: flex; gap: 10px; padding: 16px 24px; border-top: 1px solid #2a2a2a; }
+    .nav-links a { padding: 6px 12px; background: #252525; border-radius: 6px; text-decoration: none; color: #888; font-size: 12px; }
+    .nav-links a:hover { background: #333; color: #fff; }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <div class="sidebar">
+      <div class="logo" style="display: flex; align-items: center; gap: 10px;">
+        <div style="width: 32px; height: 32px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px;">U</div>
+        UniQdata
+      </div>
+
+      <div class="nav-section">
+        <a href="list.html" class="nav-item"><span class="icon">🏠</span> 연구 허브</a>
+        <a href="create.html" class="nav-item"><span class="icon">➕</span> 새 연구</a>
+      </div>
+
+      <!-- 내 연구들 -->
+      <div class="nav-section" style="flex: 1; overflow-y: auto; padding-top: 8px; border-top: 1px solid #2a2a2a;">
+        <div style="font-size: 10px; color: #64748b; padding: 6px 12px; text-transform: uppercase; letter-spacing: 0.5px;">내 연구 <span style="background: #3b82f6; color: white; padding: 1px 6px; border-radius: 8px; font-size: 9px; margin-left: 4px;">3</span></div>
+
+        <!-- 연구 1: 당뇨병 - 현재 선택됨, 펼쳐진 상태 -->
+        <div class="research-nav-item expanded">
+          <div class="research-nav-header">
+            <span class="folder-icon">📁</span>
+            <span class="research-title">당뇨병 복약 순응도</span>
+            <span class="status-dot active"></span>
+          </div>
+          <div class="research-nav-sub">
+            <a href="data-overview.html" class="nav-sub-item"><span class="dot"></span> 개요</a>
+            <a href="data-table.html" class="nav-sub-item"><span class="dot"></span> 테이블</a>
+            <a href="analysis-discovery.html" class="nav-sub-item"><span class="dot"></span> 인과발견</a>
+            <a href="analysis-importance.html" class="nav-sub-item active"><span class="dot"></span> SHAP</a>
+            <a href="analysis-personalized.html" class="nav-sub-item"><span class="dot"></span> CATE</a>
+            <a href="analysis-whatif.html" class="nav-sub-item"><span class="dot"></span> What-If</a>
+            <a href="analysis-rootcause.html" class="nav-sub-item"><span class="dot"></span> 이상추적</a>
+          </div>
+        </div>
+
+        <!-- 연구 2: 접힌 상태 -->
+        <div class="research-nav-item collapsed">
+          <div class="research-nav-header">
+            <span class="folder-icon">📁</span>
+            <span class="research-title">노인 수면 패턴</span>
+            <span class="status-dot recruiting"></span>
+          </div>
+        </div>
+
+        <!-- 연구 3: 초안 -->
+        <div class="research-nav-item collapsed">
+          <div class="research-nav-header">
+            <span class="folder-icon">📄</span>
+            <span class="research-title">ADHD 생활습관</span>
+            <span class="status-dot draft"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="nav-section">
+        <a href="../team.html" class="nav-item"><span class="icon">👥</span> 팀</a>
+        <a href="../billing.html" class="nav-item"><span class="icon">💳</span> 결제</a>
+        <a href="#" class="nav-item"><span class="icon">⚙️</span> 설정</a>
+      </div>
+
+      <!-- 유저 프로필 -->
+      <div style="padding: 12px; border-top: 1px solid #2a2a2a;">
+        <div style="display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: 8px; cursor: pointer;" onmouseover="this.style.background='#252525'" onmouseout="this.style.background='transparent'">
+          <div style="width: 32px; height: 32px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; color: white;">김</div>
+          <div>
+            <div style="font-size: 13px; color: #e2e8f0;">김연구</div>
+            <div style="font-size: 11px; color: #64748b;">서울대학교병원</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="main">
+      <div class="header">
+        <div class="header-left">
+          <h1>📊 인과적 영향 요인</h1>
+          <div class="sub">단순 상관이 아닌 진짜 인과적 영향을 주는 요인 순위 (Causal SHAP 기반)</div>
+        </div>
+        <div class="header-actions">
+          <button class="header-btn">📥 내보내기</button>
+          <button class="header-btn primary">결과 변수 변경</button>
+        </div>
+      </div>
+
+      <div class="content">
+        <!-- 좌측: 설정 -->
+        <div class="target-panel">
+          <div class="panel-title">결과 변수</div>
+          <div class="target-select">
+            <div class="label">분석 대상</div>
+            <select>
+              <option>평균 혈당 (HbA1c)</option>
+              <option>혈당 변동성</option>
+              <option>저혈당 빈도</option>
+              <option>복약 순응도</option>
+            </select>
+          </div>
+
+          <div class="panel-title">분석 방법</div>
+          <div class="method-info">
+            <div class="title">Causal SHAP <span class="badge">v2025</span></div>
+            <div class="desc">
+              기존 SHAP은 상관관계와 인과관계를 구분 못 함.<br><br>
+              Causal SHAP은 인과 구조(DAG)를 반영하여 <strong>진짜 기여도</strong>만 계산합니다.
+            </div>
+          </div>
+
+          <div class="comparison-toggle">
+            <div class="title">비교 표시</div>
+            <div class="toggle-options">
+              <label class="toggle-option">
+                <input type="checkbox" checked> Causal SHAP (인과적)
+              </label>
+              <label class="toggle-option">
+                <input type="checkbox"> 기존 SHAP (상관적)
+              </label>
+              <label class="toggle-option">
+                <input type="checkbox"> 단순 상관계수
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- 중앙: 차트 -->
+        <div class="chart-area">
+          <div class="chart-header">
+            <h2>혈당(HbA1c)에 대한 인과적 영향 요인</h2>
+            <div class="meta">127개 변수 중 23개가 유의미 | 신뢰도 95%</div>
+          </div>
+
+          <div class="importance-list">
+            <!-- 1위 -->
+            <div class="importance-item">
+              <div class="importance-rank top">1</div>
+              <div class="importance-info">
+                <div class="name">
+                  복약 순응도
+                  <span class="type treatment">치료</span>
+                </div>
+                <div class="importance-bar-container">
+                  <div class="importance-bar negative" style="width: 100%;"></div>
+                </div>
+              </div>
+              <div class="importance-values">
+                <div class="effect negative">-18.3</div>
+                <div class="ci">[-23.1, -13.5]</div>
+              </div>
+            </div>
+
+            <!-- 2위 -->
+            <div class="importance-item">
+              <div class="importance-rank top">2</div>
+              <div class="importance-info">
+                <div class="name">
+                  식이 패턴 (탄수화물)
+                  <span class="type treatment">치료</span>
+                </div>
+                <div class="importance-bar-container">
+                  <div class="importance-bar positive" style="width: 65%;"></div>
+                </div>
+              </div>
+              <div class="importance-values">
+                <div class="effect positive">+12.1</div>
+                <div class="ci">[8.4, 15.8]</div>
+              </div>
+            </div>
+
+            <!-- 3위 -->
+            <div class="importance-item">
+              <div class="importance-rank top">3</div>
+              <div class="importance-info">
+                <div class="name">
+                  인슐린 민감성
+                  <span class="type mediator">매개</span>
+                </div>
+                <div class="importance-bar-container">
+                  <div class="importance-bar negative" style="width: 58%;"></div>
+                </div>
+              </div>
+              <div class="importance-values">
+                <div class="effect negative">-10.7</div>
+                <div class="ci">[-14.2, -7.2]</div>
+              </div>
+            </div>
+
+            <!-- 4위 -->
+            <div class="importance-item">
+              <div class="importance-rank">4</div>
+              <div class="importance-info">
+                <div class="name">
+                  당뇨 유병 기간
+                  <span class="type confounder">교란</span>
+                </div>
+                <div class="importance-bar-container">
+                  <div class="importance-bar positive" style="width: 48%;"></div>
+                </div>
+              </div>
+              <div class="importance-values">
+                <div class="effect positive">+8.9</div>
+                <div class="ci">[5.1, 12.7]</div>
+              </div>
+            </div>
+
+            <!-- 5위 -->
+            <div class="importance-item">
+              <div class="importance-rank">5</div>
+              <div class="importance-info">
+                <div class="name">
+                  스트레스 수준
+                  <span class="type treatment">치료</span>
+                </div>
+                <div class="importance-bar-container">
+                  <div class="importance-bar positive" style="width: 38%;"></div>
+                </div>
+              </div>
+              <div class="importance-values">
+                <div class="effect positive">+7.2</div>
+                <div class="ci">[3.8, 10.6]</div>
+              </div>
+            </div>
+
+            <!-- 6위 -->
+            <div class="importance-item">
+              <div class="importance-rank">6</div>
+              <div class="importance-info">
+                <div class="name">
+                  BMI
+                  <span class="type confounder">교란</span>
+                </div>
+                <div class="importance-bar-container">
+                  <div class="importance-bar positive" style="width: 32%;"></div>
+                </div>
+              </div>
+              <div class="importance-values">
+                <div class="effect positive">+5.8</div>
+                <div class="ci">[2.4, 9.2]</div>
+              </div>
+            </div>
+
+            <!-- 7위 - 주의 표시 -->
+            <div class="importance-item" style="opacity: 0.6;">
+              <div class="importance-rank">7</div>
+              <div class="importance-info">
+                <div class="name">
+                  운동량
+                  <span class="type" style="background: rgba(239, 68, 68, 0.2); color: #f87171;">⚠️ 상관만</span>
+                </div>
+                <div class="importance-bar-container">
+                  <div class="importance-bar negative" style="width: 8%;"></div>
+                </div>
+                <div class="comparison-bars">
+                  <span class="comparison-label">SHAP</span>
+                  <div class="comparison-bar shap" style="width: 45%;"></div>
+                  <span class="comparison-label">Causal</span>
+                  <div class="comparison-bar causal" style="width: 8%;"></div>
+                </div>
+              </div>
+              <div class="importance-values">
+                <div class="effect" style="color: #888;">-1.4</div>
+                <div class="ci" style="color: #ef4444;">직접 효과 없음</div>
+              </div>
+            </div>
+
+            <!-- 8위 -->
+            <div class="importance-item">
+              <div class="importance-rank">8</div>
+              <div class="importance-info">
+                <div class="name">수면 시간</div>
+                <div class="importance-bar-container">
+                  <div class="importance-bar negative" style="width: 22%;"></div>
+                </div>
+              </div>
+              <div class="importance-values">
+                <div class="effect negative">-4.1</div>
+                <div class="ci">[-7.3, -0.9]</div>
+              </div>
+            </div>
+
+            <!-- 더보기 -->
+            <div style="text-align: center; padding: 16px;">
+              <button style="background: #252525; border: 1px solid #333; padding: 10px 20px; border-radius: 8px; color: #888; cursor: pointer; font-size: 13px;">
+                + 15개 더 보기
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 우측: AI 해석 -->
+        <div class="insight-panel">
+          <div class="insight-header">
+            <h2><span class="dot"></span> AI 해석</h2>
+          </div>
+
+          <div class="insight-body">
+            <div class="insight-card">
+              <div class="label key">🔑 핵심 발견</div>
+              <div class="text">
+                <span class="highlight">복약 순응도</span>가 혈당에 가장 큰 인과적 영향을 줍니다.
+                <br><br>
+                순응도 10% 증가 시 → 평균 혈당 <span class="highlight">1.83 mg/dL 감소</span>
+              </div>
+              <div class="factor-detail">
+                <div class="row">
+                  <span class="label">효과 크기</span>
+                  <span class="value" style="color: #10b981;">-18.3 mg/dL</span>
+                </div>
+                <div class="row">
+                  <span class="label">신뢰구간</span>
+                  <span class="value">[-23.1, -13.5]</span>
+                </div>
+                <div class="row">
+                  <span class="label">p-value</span>
+                  <span class="value" style="color: #10b981;"><0.001</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="insight-card">
+              <div class="label warning">⚠️ 상관 ≠ 인과 주의</div>
+              <div class="text">
+                <span class="highlight">운동량</span>은 기존 SHAP에서 높은 중요도를 보이지만 (45%), Causal SHAP에서는 <span style="color: #f87171;">8%</span>에 불과합니다.
+                <br><br>
+                운동은 직접 혈당을 낮추지 않고, <strong>체중</strong>과 <strong>스트레스</strong>를 통해 간접적으로만 영향을 줍니다.
+              </div>
+            </div>
+
+            <div class="insight-card">
+              <div class="label tip">💡 개입 가능성</div>
+              <div class="text">
+                상위 요인 중 <span class="highlight">개입 가능한 것</span>:
+                <br><br>
+                ✓ 복약 순응도 (교육/알림)<br>
+                ✓ 식이 패턴 (식단 조절)<br>
+                ✓ 스트레스 (심리 지원)<br><br>
+                ✗ 유병 기간 (불가)<br>
+                ✗ 연령 (불가)
+              </div>
+            </div>
+
+            <div class="action-card">
+              <div class="title">다음 분석 추천</div>
+              <div class="actions">
+                <button class="action-btn">👤 복약 효과가 높은 환자 그룹 찾기</button>
+                <button class="action-btn">🔄 복약 개선 시 혈당 변화 시뮬레이션</button>
+                <button class="action-btn">📊 식이 패턴 상세 분석</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="insight-footer">
+            <div class="ask-input">
+              <input type="text" placeholder="영향 요인에 대해 질문하세요...">
+              <button>→</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="nav-links">
+        <a href="../index.html">← 와이어프레임 목록</a>
+        <a href="analysis-discovery.html">← 인과 발견</a>
+        <a href="analysis-personalized.html">개인화 효과 →</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 기능 명세 -->
+  <div style="background: linear-gradient(135deg, #ecfdf5, #d1fae5); border: 2px solid #10b981; border-radius: 12px; padding: 16px; margin: 20px 24px;">
+    <h3 style="color: #047857; margin-bottom: 12px; font-size: 14px;">⚙️ 기능 명세</h3>
+    <div style="font-size: 12px; color: #374151; line-height: 1.8;">
+      <strong>핵심 기능:</strong><br>
+      • Causal SHAP 기반 인과적 영향 요인 분석<br>
+      • 기존 SHAP과 Causal SHAP 비교 표시<br>
+      • 상관관계 vs 인과관계 경고 표시<br>
+      • 변수 타입별 분류 (치료/교란/매개)<br>
+      • 신뢰구간 및 p-value 표시<br><br>
+
+      <strong>Causal SHAP 특징:</strong><br>
+      • 인과 구조(DAG)를 반영한 기여도 계산<br>
+      • 단순 상관이 아닌 진짜 인과적 영향만 측정<br>
+      • 직접 효과와 간접 효과 분리<br><br>
+
+      <strong>비즈니스 로직:</strong><br>
+      • 결과 변수 선택 시 자동 재계산<br>
+      • 개입 가능/불가능 변수 자동 분류<br>
+      • 상위 요인에 대한 AI 임상 해석 제공
+    </div>
+  </div>
+
+  <!-- 백엔드 호출 -->
+  <div style="background: linear-gradient(135deg, #f5f3ff, #ede9fe); border: 2px solid #8b5cf6; border-radius: 12px; padding: 16px; margin: 12px 24px 20px;">
+    <h3 style="color: #6d28d9; margin-bottom: 12px; font-size: 14px;">🔗 백엔드 호출</h3>
+    <div style="font-size: 11px; font-family: 'SF Mono', Monaco, monospace; color: #374151; line-height: 1.8;">
+      <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
+POST /api/v2/analysis/projects/:id/causal-shap<br>
+{ "outcome_var": "hba1c", "include_traditional_shap": true }<br>
+→ { "job_id": "job_xxx", "status": "processing" }
+      </code>
+
+      <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
+GET /api/v2/analysis/projects/:id/causal-shap/:job_id<br>
+→ { "factors": [{ "name", "type", "causal_effect", "traditional_shap", "ci_lower", "ci_upper", "p_value" }], "total_vars": 127, "significant_vars": 23 }
+      </code>
+
+      <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
+GET /api/v2/analysis/projects/:id/causal-shap/:job_id/insights<br>
+→ { "key_finding", "correlation_warnings": [...], "actionable_factors": [...], "clinical_interpretation" }
+      </code>
+
+      <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
+GET /api/v2/analysis/projects/:id/causal-shap/:job_id/export?format=csv|json<br>
+→ 영향 요인 분석 결과 다운로드
+      </code>
+    </div>
+  </div>
+
+  <script src="page-spec.js"></script>
+</body>
+</html>

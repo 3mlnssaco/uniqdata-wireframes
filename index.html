@@ -1,0 +1,1325 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UniQdata Enterprise - Wireframes</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, sans-serif; background: #f5f5f5; padding: 40px; }
+    h1 { margin-bottom: 10px; }
+    .subtitle { color: #666; margin-bottom: 30px; }
+    h2 { margin: 40px 0 20px; font-size: 18px; color: #374151; border-bottom: 2px solid #e5e7eb; padding-bottom: 10px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+    .card {
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 20px;
+      text-decoration: none;
+      color: inherit;
+      transition: box-shadow 0.2s;
+    }
+    .card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+    .card h3 { margin-bottom: 8px; font-size: 16px; }
+    .card p { font-size: 13px; margin: 0; color: #666; line-height: 1.5; }
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      margin-top: 10px;
+    }
+    .badge.p0 { background: #dcfce7; color: #166534; }
+    .badge.p1 { background: #dbeafe; color: #1e40af; }
+    .badge.p2 { background: #f3e8ff; color: #6b21a8; }
+    .badge.new { background: #fef3c7; color: #92400e; }
+    .badge.ai { background: #8b5cf6; color: white; }
+    .card.highlight { border: 2px solid #8b5cf6; }
+
+    .view-tabs { display: flex; gap: 10px; margin: 12px 0 28px; flex-wrap: wrap; }
+    .view-tab {
+      padding: 8px 12px;
+      border-radius: 8px;
+      background: #f3f4f6;
+      color: #374151;
+      border: 1px solid #e5e7eb;
+      cursor: pointer;
+      font-size: 13px;
+      transition: background 0.2s, color 0.2s, border-color 0.2s;
+    }
+    .view-tab:hover { background: #e5e7eb; }
+    .view-tab.is-active { background: #111827; color: #fff; border-color: #111827; }
+
+    .tab-section { display: none; }
+    .tab-section.is-active { display: block; }
+
+    .group-title { margin: 22px 0 12px; font-size: 16px; color: #111827; }
+    .group-note { color: #6b7280; font-size: 13px; margin-bottom: 12px; }
+
+    /* 디자인 논의 박스 */
+    .discussion-box {
+      background: linear-gradient(135deg, #fef3c7, #fde68a);
+      border: 2px solid #f59e0b;
+      border-radius: 12px;
+      padding: 24px;
+      margin: 24px 0;
+    }
+    .discussion-box h3 {
+      color: #92400e;
+      font-size: 16px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .discussion-box .options {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    .discussion-box .option {
+      background: white;
+      border-radius: 8px;
+      padding: 16px;
+      border: 1px solid #fcd34d;
+    }
+    .discussion-box .option h4 {
+      font-size: 14px;
+      margin-bottom: 8px;
+      color: #1f2937;
+    }
+    .discussion-box .option p {
+      font-size: 12px;
+      color: #6b7280;
+      line-height: 1.5;
+      margin-bottom: 8px;
+    }
+    .discussion-box .option .pros { color: #059669; font-size: 11px; }
+    .discussion-box .option .cons { color: #dc2626; font-size: 11px; }
+    .discussion-box .note {
+      font-size: 13px;
+      color: #78350f;
+      padding-top: 12px;
+      border-top: 1px solid #fcd34d;
+    }
+
+    /* 기능 명세 & 백엔드 호출 */
+    .spec-info {
+      margin-top: 12px;
+      padding-top: 10px;
+      border-top: 1px dashed #e5e7eb;
+      font-size: 11px;
+    }
+    .spec-info .features {
+      color: #059669;
+      margin-bottom: 4px;
+      line-height: 1.4;
+    }
+    .spec-info .features::before {
+      content: "⚙️ ";
+    }
+    .spec-info .api-calls {
+      color: #7c3aed;
+      font-family: 'SF Mono', Monaco, monospace;
+      line-height: 1.4;
+    }
+    .spec-info .api-calls::before {
+      content: "🔗 ";
+    }
+
+    .schema-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+      gap: 20px;
+    }
+    .schema-card {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      padding: 18px;
+    }
+    .schema-card h3 {
+      font-size: 15px;
+      margin-bottom: 8px;
+      color: #111827;
+    }
+    .schema-card p {
+      font-size: 13px;
+      color: #6b7280;
+      margin-bottom: 12px;
+      line-height: 1.5;
+    }
+    .schema-code {
+      background: #0f172a;
+      color: #e2e8f0;
+      border-radius: 8px;
+      padding: 12px;
+      font-family: "SF Mono", Monaco, monospace;
+      font-size: 11px;
+      line-height: 1.5;
+      overflow: auto;
+      max-height: 420px;
+      white-space: pre;
+    }
+    .schema-mermaid {
+      position: relative;
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      padding: 12px;
+    }
+    .schema-canvas {
+      position: relative;
+      height: 520px;
+      overflow: hidden;
+      background: #f8fafc;
+      border-radius: 8px;
+      border: 1px dashed #e5e7eb;
+      cursor: grab;
+    }
+    .schema-canvas.is-dragging { cursor: grabbing; }
+    .schema-panzoom {
+      transform-origin: 0 0;
+      will-change: transform;
+    }
+    .schema-mermaid svg {
+      max-width: none;
+      height: auto;
+    }
+    .schema-controls {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      display: flex;
+      gap: 6px;
+      z-index: 3;
+    }
+    .schema-controls button {
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      border: 1px solid #e5e7eb;
+      background: #111827;
+      color: #fff;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .schema-controls button:hover { background: #1f2937; }
+    .schema-hint {
+      position: absolute;
+      bottom: 12px;
+      right: 16px;
+      font-size: 11px;
+      color: #64748b;
+      background: rgba(255,255,255,0.9);
+      padding: 4px 8px;
+      border-radius: 999px;
+      border: 1px solid #e5e7eb;
+      z-index: 2;
+    }
+    .schema-details {
+      margin-top: 12px;
+      font-size: 12px;
+      color: #6b7280;
+    }
+    .schema-details summary {
+      cursor: pointer;
+      color: #4b5563;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .schema-links {
+      margin-top: 12px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .schema-links a {
+      font-size: 12px;
+      color: #1d4ed8;
+      text-decoration: none;
+    }
+    .schema-links a:hover { text-decoration: underline; }
+    .schema-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      font-size: 12px;
+      color: #374151;
+      line-height: 1.6;
+    }
+    .schema-list li { padding: 4px 0; border-bottom: 1px dashed #e5e7eb; }
+    .schema-list li:last-child { border-bottom: none; }
+
+    @media (max-width: 960px) {
+      .schema-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <h1>UniQdata Enterprise Wireframes</h1>
+  <p class="subtitle">디자이너 참고용 와이어프레임. 클릭하면 각 화면으로 이동합니다.</p>
+
+  <div class="view-tabs" role="tablist" aria-label="Wireframe Views">
+    <button class="view-tab is-active" data-tab="concept" role="tab" aria-selected="true">컨셉별 보기</button>
+    <button class="view-tab" data-tab="phase" role="tab" aria-selected="false">Phase별 보기</button>
+    <button class="view-tab" data-tab="schema" role="tab" aria-selected="false">스키마</button>
+  </div>
+
+  <section class="tab-section is-active" data-tab="concept">
+    <!-- 컨셉별 보기 -->
+    <h2 id="by-concept">🧩 컨셉별 보기</h2>
+    <div class="group-note">현재 우선순위 흐름: 회원가입 → 연구 세션 생성 → 수집 데이터 확정 → 데이터 구매 → 데이터 조회 → 출력</div>
+
+    <div class="group-title">1) 회원가입 / 로그인</div>
+    <div class="grid">
+    <a href="auth/signup.html" class="card">
+      <h3>Step 1: 회원 유형</h3>
+      <p>기관/개인 선택</p>
+      <span class="badge p0">Phase 0</span>
+    </a>
+    <a href="auth/signup-step2.html" class="card">
+      <h3>Step 2: 이메일 인증</h3>
+      <p>이메일 입력 → 인증 코드</p>
+      <span class="badge p0">Phase 0</span>
+    </a>
+    <a href="auth/signup-step3.html" class="card">
+      <h3>Step 3: 비밀번호</h3>
+      <p>비밀번호 설정 (강도 표시)</p>
+      <span class="badge p0">Phase 0</span>
+    </a>
+    <a href="auth/signup-step4.html" class="card">
+      <h3>Step 4: 패스키 안내</h3>
+      <p>패스키 소개 및 장점 설명</p>
+      <span class="badge p0">Phase 0</span>
+    </a>
+    <a href="auth/signup-step5.html" class="card">
+      <h3>Step 5: 패스키 등록</h3>
+      <p>WebAuthn 생체인증으로 패스키 생성</p>
+      <span class="badge p0">Phase 0</span>
+    </a>
+    <a href="auth/signup-step6.html" class="card">
+      <h3>Step 6: 블록체인 연동</h3>
+      <p>XRPL 앵커링 (챌린지→서명→전송→완료)</p>
+      <span class="badge p0">Phase 0</span>
+      <span class="badge new">NEW</span>
+    </a>
+    <a href="auth/signup-step7.html" class="card">
+      <h3>Step 7: 완료</h3>
+      <p>가입 완료 + 설정 요약 + 연구 허브 이동</p>
+      <span class="badge p0">Phase 0</span>
+      <span class="badge new">NEW</span>
+    </a>
+    <a href="auth/login.html" class="card">
+      <h3>로그인</h3>
+      <p>패스키 인증 로그인</p>
+      <span class="badge p0">Phase 0</span>
+    </a>
+    </div>
+
+    <div class="group-title">2) 연구 세션 생성</div>
+    <div class="grid">
+    <a href="research/list.html" class="card highlight">
+      <h3>연구 허브</h3>
+      <p>로그인 후 첫 화면<br>내 할 일 + 연구 카드 + 빠른 액션</p>
+      <span class="badge p0">Phase 0</span>
+      <span class="badge" style="background: #dcfce7; color: #166534;">통합</span>
+    </a>
+    <a href="research/create.html" class="card highlight">
+      <h3>Step 1: 기본 정보</h3>
+      <p>제목, 목적, 참여자, 기간</p>
+      <span class="badge p0">Phase 0</span>
+    </a>
+    <a href="research/create-step2.html" class="card highlight">
+      <h3>Step 2: 대상자 설정</h3>
+      <p>연령, 성별, 건강조건</p>
+      <span class="badge p0">Phase 0</span>
+    </a>
+    </div>
+
+    <div class="group-title">3) 수집 데이터 확정</div>
+    <div class="grid">
+    <a href="research/create-step3.html" class="card highlight">
+      <h3>Step 3: 데이터 범위</h3>
+      <p>심박수, 혈당, 복약, 수면, 기분...</p>
+      <span class="badge p0">Phase 0</span>
+    </a>
+    <a href="research/create-step4.html" class="card highlight">
+      <h3>Step 4: 동의서</h3>
+      <p>법적 요건 검토, 템플릿 제공</p>
+      <span class="badge p0">Phase 0</span>
+    </a>
+    </div>
+
+    <div class="group-title">4) 데이터 구매</div>
+    <div class="grid">
+    <a href="research/create-step5.html" class="card highlight">
+      <h3>Step 5: 에스크로</h3>
+      <p>1인당 보상, 예산, XRPL 에스크로</p>
+      <span class="badge p0">Phase 0</span>
+    </a>
+    <a href="research/create-step6.html" class="card highlight">
+      <h3>Step 6: 최종 검토</h3>
+      <p>모든 설정 확인 후 연구 생성</p>
+      <span class="badge p0">Phase 0</span>
+    </a>
+    </div>
+
+    <div class="group-title">5) 데이터 조회</div>
+    <div class="grid">
+    <a href="research/data-overview.html" class="card">
+      <h3>개요</h3>
+      <p>KPI, 참여자 추이, 수집률, 인사이트</p>
+      <span class="badge p0">Phase 0</span>
+    </a>
+    <a href="research/data-table.html" class="card">
+      <h3>테이블</h3>
+      <p>필터/정렬 중심 스프레드시트 뷰</p>
+      <span class="badge p0">Phase 0</span>
+    </a>
+    </div>
+
+    <div class="group-title">6) 출력</div>
+    <div class="grid">
+    <a href="research/data-table.html" class="card">
+      <h3>CSV / Excel Export</h3>
+      <p>테이블 상단 Export 버튼 사용</p>
+      <span class="badge p0">Phase 0</span>
+    </a>
+    </div>
+
+    <div class="group-title">🔬 인과/AI 분석 (후순위)</div>
+    <div class="group-note">AI 분석은 Phase 2 이후로 미룸</div>
+    <div class="grid">
+    <a href="research/analysis-discovery.html" class="card highlight">
+      <h3>인과발견 (3D 통합)</h3>
+      <p>3계층 데이터 구조 + 3D 그래프 + 인사이트 배지</p>
+      <span class="badge ai">3D + AI</span>
+      <span class="badge p2">Phase 2</span>
+    </a>
+    <a href="research/analysis-importance.html" class="card">
+      <h3>SHAP</h3>
+      <p>인과 기여도 요약 + AI 해석</p>
+      <span class="badge p2">Phase 2</span>
+    </a>
+    <a href="research/analysis-personalized.html" class="card">
+      <h3>CATE</h3>
+      <p>개인/세그먼트 효과 분포</p>
+      <span class="badge p2">Phase 2</span>
+    </a>
+    <a href="research/analysis-whatif.html" class="card">
+      <h3>What-If</h3>
+      <p>반사실 시뮬레이션</p>
+      <span class="badge p2">Phase 2</span>
+    </a>
+    <a href="research/analysis-rootcause.html" class="card">
+      <h3>이상추적</h3>
+      <p>Root Cause / 이상치 경로</p>
+      <span class="badge p2">Phase 2</span>
+    </a>
+    </div>
+
+    <div class="group-title">⚙️ 운영/관리</div>
+    <div class="grid">
+    <a href="research/list.html" class="card highlight">
+      <h3>연구 허브 (통합)</h3>
+      <p>내 할 일 + 연구 목록 + 상태/필터 + 빠른 액션</p>
+      <span class="badge p0">Phase 0</span>
+      <span class="badge new">개선됨</span>
+    </a>
+    <a href="team.html" class="card" style="opacity: 0.6;">
+      <h3>팀 관리</h3>
+      <p>멤버 초대, ABAC 권한 관리</p>
+      <span class="badge p1">Phase 1</span>
+    </a>
+    <a href="billing.html" class="card" style="opacity: 0.6;">
+      <h3>결제/에스크로</h3>
+      <p>XRPL 지갑, 거래 내역</p>
+      <span class="badge p1">Phase 1</span>
+    </a>
+    </div>
+  </section>
+
+  <section class="tab-section" data-tab="phase">
+    <!-- Phase별 보기 -->
+    <h2 id="by-phase">🧭 Phase별 보기</h2>
+
+    <div class="group-title">Phase 0 (최우선 · 코어 플로우)</div>
+    <div class="grid">
+    <a href="auth/signup.html" class="card">
+      <h3>Step 1: 회원 유형</h3>
+      <p>기관/개인 선택</p>
+      <span class="badge p0">Phase 0</span>
+    </a>
+    <a href="auth/signup-step2.html" class="card">
+      <h3>Step 2: 이메일 인증</h3>
+      <p>이메일 입력 → 인증 코드</p>
+      <span class="badge p0">Phase 0</span>
+    </a>
+    <a href="auth/signup-step3.html" class="card">
+      <h3>Step 3: 비밀번호</h3>
+      <p>비밀번호 설정 (강도 표시)</p>
+      <span class="badge p0">Phase 0</span>
+    </a>
+    <a href="auth/signup-step4.html" class="card">
+      <h3>Step 4: 패스키 안내</h3>
+      <p>패스키 소개 및 장점 설명</p>
+      <span class="badge p0">Phase 0</span>
+    </a>
+    <a href="auth/signup-step5.html" class="card">
+      <h3>Step 5: 패스키 등록</h3>
+      <p>WebAuthn 생체인증으로 패스키 생성</p>
+      <span class="badge p0">Phase 0</span>
+    </a>
+    <a href="auth/signup-step6.html" class="card">
+      <h3>Step 6: 블록체인 연동</h3>
+      <p>XRPL 앵커링 (챌린지→서명→전송→완료)</p>
+      <span class="badge p0">Phase 0</span>
+      <span class="badge new">NEW</span>
+    </a>
+    <a href="auth/signup-step7.html" class="card">
+      <h3>Step 7: 완료</h3>
+      <p>가입 완료 + 설정 요약 + 연구 허브 이동</p>
+      <span class="badge p0">Phase 0</span>
+      <span class="badge new">NEW</span>
+    </a>
+    <a href="auth/login.html" class="card">
+      <h3>로그인</h3>
+      <p>패스키 인증 로그인</p>
+      <span class="badge p0">Phase 0</span>
+    </a>
+    <a href="research/list.html" class="card highlight">
+      <h3>홈 (연구 목록)</h3>
+      <p>로그인 후 첫 화면<br>KPI 요약 + 연구 카드 + 빠른 액션</p>
+      <span class="badge p0">Phase 0</span>
+      <span class="badge" style="background: #dcfce7; color: #166534;">홈</span>
+    </a>
+    <a href="research/create.html" class="card highlight">
+      <h3>Step 1: 기본 정보</h3>
+      <p>제목, 목적, 참여자, 기간</p>
+      <span class="badge p0">Phase 0</span>
+    </a>
+    <a href="research/create-step2.html" class="card highlight">
+      <h3>Step 2: 대상자 설정</h3>
+      <p>연령, 성별, 건강조건</p>
+      <span class="badge p0">Phase 0</span>
+    </a>
+    <a href="research/create-step3.html" class="card highlight">
+      <h3>Step 3: 데이터 범위</h3>
+      <p>심박수, 혈당, 복약, 수면, 기분...</p>
+      <span class="badge p0">Phase 0</span>
+    </a>
+    <a href="research/create-step4.html" class="card highlight">
+      <h3>Step 4: 동의서</h3>
+      <p>법적 요건 검토, 템플릿 제공</p>
+      <span class="badge p0">Phase 0</span>
+    </a>
+    <a href="research/create-step5.html" class="card highlight">
+      <h3>Step 5: 에스크로</h3>
+      <p>1인당 보상, 예산, XRPL 에스크로</p>
+      <span class="badge p0">Phase 0</span>
+    </a>
+    <a href="research/create-step6.html" class="card highlight">
+      <h3>Step 6: 최종 검토</h3>
+      <p>모든 설정 확인 후 연구 생성</p>
+      <span class="badge p0">Phase 0</span>
+    </a>
+    <a href="research/data-overview.html" class="card">
+      <h3>개요</h3>
+      <p>KPI, 참여자 추이, 수집률, 인사이트</p>
+      <span class="badge p0">Phase 0</span>
+    </a>
+    <a href="research/data-table.html" class="card">
+      <h3>테이블</h3>
+      <p>필터/정렬 중심 스프레드시트 뷰</p>
+      <span class="badge p0">Phase 0</span>
+    </a>
+    <a href="research/data-table.html" class="card">
+      <h3>CSV / Excel Export</h3>
+      <p>테이블 상단 Export 버튼 사용</p>
+      <span class="badge p0">Phase 0</span>
+    </a>
+    </div>
+
+    <div class="group-title">Phase 1 (운영/관리)</div>
+    <div class="grid">
+    <a href="research/list.html" class="card highlight">
+      <h3>연구 허브 (통합)</h3>
+      <p>내 할 일 + 연구 목록 + 상태/필터 + 빠른 액션</p>
+      <span class="badge p0">Phase 0</span>
+      <span class="badge new">개선됨</span>
+    </a>
+    <a href="team.html" class="card" style="opacity: 0.6;">
+      <h3>팀 관리</h3>
+      <p>멤버 초대, ABAC 권한 관리</p>
+      <span class="badge p1">Phase 1</span>
+    </a>
+    <a href="billing.html" class="card" style="opacity: 0.6;">
+      <h3>결제/에스크로</h3>
+      <p>XRPL 지갑, 거래 내역</p>
+      <span class="badge p1">Phase 1</span>
+    </a>
+    </div>
+
+    <div class="group-title">Phase 2 (AI/인과 분석)</div>
+    <div class="grid">
+    <a href="research/analysis-discovery.html" class="card highlight">
+      <h3>인과발견 (3D 통합)</h3>
+      <p>3계층 데이터 구조 + 3D 그래프 + 인사이트 배지</p>
+      <span class="badge ai">3D + AI</span>
+      <span class="badge p2">Phase 2</span>
+    </a>
+    <a href="research/analysis-importance.html" class="card">
+      <h3>SHAP</h3>
+      <p>인과 기여도 요약 + AI 해석</p>
+      <span class="badge p2">Phase 2</span>
+    </a>
+    <a href="research/analysis-personalized.html" class="card">
+      <h3>CATE</h3>
+      <p>개인/세그먼트 효과 분포</p>
+      <span class="badge p2">Phase 2</span>
+    </a>
+    <a href="research/analysis-whatif.html" class="card">
+      <h3>What-If</h3>
+      <p>반사실 시뮬레이션</p>
+      <span class="badge p2">Phase 2</span>
+    </a>
+    <a href="research/analysis-rootcause.html" class="card">
+      <h3>이상추적</h3>
+      <p>Root Cause / 이상치 경로</p>
+      <span class="badge p2">Phase 2</span>
+    </a>
+    </div>
+  </section>
+
+  <section class="tab-section" data-tab="schema">
+    <h2 id="by-schema">🗂️ 스키마 / ERD</h2>
+    <div class="group-note">전체 DB 구조를 한 눈에 확인하는 탭입니다. 상세 스키마는 아래 문서 링크에서 확인하세요.</div>
+
+    <div class="schema-grid">
+      <div class="schema-card">
+        <h3>DB ERD (요약)</h3>
+        <p>핵심 흐름만 보는 간략 버전입니다. 필요한 경우 아래 전체 ERD를 참고하세요.</p>
+        <div class="schema-mermaid" data-zoom="1">
+          <div class="schema-controls">
+            <button type="button" data-zoom="in">+</button>
+            <button type="button" data-zoom="out">−</button>
+            <button type="button" data-zoom="reset">↺</button>
+          </div>
+          <div class="schema-hint">휠로 확대 · 드래그로 이동</div>
+          <div class="schema-canvas">
+            <div class="schema-panzoom">
+              <div class="mermaid">erDiagram
+  accounts {
+    uuid id PK
+    enum type
+  }
+  users {
+    uuid id PK
+    uuid accountId FK
+  }
+  passkey_credentials {
+    uuid id PK
+    uuid userId FK
+  }
+  wallets {
+    uuid id PK
+    uuid ownerId FK
+  }
+  wallet_secrets {
+    uuid id PK
+    uuid walletId FK
+  }
+  consents {
+    uuid id PK
+    uuid userId FK
+  }
+  audit_logs {
+    uuid id PK
+    uuid userId FK
+  }
+  data_points {
+    uuid id PK
+    uuid userId FK
+    datetime timestamp
+  }
+  workspaces {
+    uuid id PK
+    uuid institutionId FK
+  }
+  workspace_members {
+    uuid id PK
+    uuid workspaceId FK
+    uuid accountId FK
+  }
+  data_accesses {
+    uuid id PK
+    uuid workspaceId FK
+    uuid accountId FK
+  }
+
+  accounts ||--o| users : profile
+  users ||--o{ passkey_credentials : auth
+  users ||--o{ consents : grants
+  users ||--o{ audit_logs : audits
+  users ||--o{ data_points : writes
+  accounts ||--o{ workspace_members : member
+  workspaces ||--o{ workspace_members : members
+  accounts ||--o{ data_accesses : access
+  workspaces ||--o{ data_accesses : grants
+  users ||--o{ wallets : owns
+  wallets ||--o{ wallet_secrets : secures</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="schema-card">
+        <h3>DB ERD (Mermaid)</h3>
+        <p>현재 구현 기준 ERD 요약입니다. Mermaid 지원 뷰어에서 보면 더 선명합니다.</p>
+        <div class="schema-mermaid" data-zoom="1">
+          <div class="schema-controls">
+            <button type="button" data-zoom="in">+</button>
+            <button type="button" data-zoom="out">−</button>
+            <button type="button" data-zoom="reset">↺</button>
+          </div>
+          <div class="schema-hint">휠로 확대 · 드래그로 이동</div>
+          <div class="schema-canvas">
+            <div class="schema-panzoom">
+              <div class="mermaid">erDiagram
+  accounts {
+    uuid id PK
+    enum type
+    enum status
+    string identityHash
+    datetime createdAt
+  }
+  account_logins {
+    uuid id PK
+    uuid accountId FK
+    string provider
+    string email
+    string phone
+  }
+  users {
+    uuid id PK
+    uuid accountId FK
+    date birthDate
+    string gender
+  }
+  owners {
+    uuid id PK
+    uuid accountId FK
+  }
+
+  passkey_credentials {
+    uuid id PK
+    uuid userId FK
+    string credentialId
+  }
+  sessions {
+    uuid id PK
+    uuid userId FK
+    string appId
+  }
+  refresh_tokens {
+    uuid id PK
+    uuid userId FK
+    uuid sessionId
+  }
+
+  wallets {
+    uuid id PK
+    uuid ownerId FK
+    string address
+  }
+  wallet_secrets {
+    uuid id PK
+    uuid walletId FK
+  }
+  wallet_credential_bindings {
+    uuid id PK
+    uuid walletId FK
+    uuid credentialId FK
+  }
+  wallet_recovery_requests {
+    uuid id PK
+    uuid walletId FK
+    uuid ownerId FK
+    enum status
+  }
+  anchor_logs {
+    uuid id PK
+    uuid userId FK
+    enum anchorType
+    string txHash
+  }
+
+  apps {
+    uuid id PK
+    string slug
+  }
+  app_keys {
+    uuid id PK
+    uuid appId FK
+  }
+
+  consents {
+    uuid id PK
+    uuid userId FK
+    string appId FK
+  }
+  audit_logs {
+    uuid id PK
+    uuid userId FK
+    string appId FK
+    string action
+  }
+
+  data_points {
+    uuid id PK
+    uuid userId FK
+    string category
+    string metric
+    jsonb value
+    datetime timestamp
+  }
+  data_sources {
+    uuid id PK
+    uuid userId FK
+    string type
+  }
+  data_attachments {
+    uuid id PK
+    uuid dataPointId FK
+    uuid userId FK
+  }
+  features {
+    uuid id PK
+    uuid userId FK
+    string featureType
+  }
+
+  user_medications {
+    uuid id PK
+    uuid userId FK
+  }
+  medication_logs {
+    uuid id PK
+    uuid userId FK
+    uuid medicationId FK
+  }
+  medication_proofs {
+    uuid id PK
+    uuid userId FK
+  }
+  drug_info_cache {
+    string drugCode PK
+  }
+  ai_analyses {
+    uuid id PK
+    uuid userId FK
+  }
+  notifications {
+    uuid id PK
+    uuid userId FK
+  }
+
+  institutions {
+    uuid id PK
+    string name
+  }
+  workspaces {
+    uuid id PK
+    uuid institutionId FK
+    string name
+  }
+  workspace_members {
+    uuid id PK
+    uuid workspaceId FK
+    uuid accountId FK
+    enum role
+  }
+  data_accesses {
+    uuid id PK
+    uuid workspaceId FK
+    uuid accountId FK
+    string dataProductId
+  }
+
+  accounts ||--o{ account_logins : has
+  accounts ||--o| owners : owns
+  accounts ||--o| users : profile
+  accounts ||--o{ workspace_members : member
+  accounts ||--o{ data_accesses : access
+
+  users ||--o{ passkey_credentials : owns
+  users ||--o{ sessions : uses
+  users ||--o{ refresh_tokens : issues
+  users ||--o{ data_points : writes
+  users ||--o{ data_sources : connects
+  users ||--o{ data_attachments : uploads
+  users ||--o{ features : derives
+  users ||--o{ user_medications : has
+  users ||--o{ medication_logs : logs
+  users ||--o{ medication_proofs : proves
+  users ||--o{ notifications : receives
+  users ||--o{ ai_analyses : runs
+  users ||--o{ anchor_logs : anchors
+  users ||--o{ consents : grants
+  users ||--o{ audit_logs : audits
+
+  data_points ||--o{ data_attachments : has
+  user_medications ||--o{ medication_logs : logs
+
+  apps ||--o{ app_keys : has
+  apps ||--o{ audit_logs : logs
+  apps ||--o{ consents : scopes
+  apps ||--o{ sessions : usedBy</div>
+            </div>
+          </div>
+        </div>
+        <details class="schema-details">
+          <summary>Mermaid 원문 보기</summary>
+          <pre class="schema-code">erDiagram
+  accounts {
+    uuid id PK
+    enum type
+    enum status
+    string identityHash
+    datetime createdAt
+  }
+  account_logins {
+    uuid id PK
+    uuid accountId FK
+    string provider
+    string email
+    string phone
+  }
+  users {
+    uuid id PK
+    uuid accountId FK
+    date birthDate
+    string gender
+  }
+  owners {
+    uuid id PK
+    uuid accountId FK
+  }
+
+  passkey_credentials {
+    uuid id PK
+    uuid userId FK
+    string credentialId
+  }
+  sessions {
+    uuid id PK
+    uuid userId FK
+    string appId
+  }
+  refresh_tokens {
+    uuid id PK
+    uuid userId FK
+    uuid sessionId
+  }
+
+  wallets {
+    uuid id PK
+    uuid ownerId FK
+    string address
+  }
+  wallet_secrets {
+    uuid id PK
+    uuid walletId FK
+  }
+  wallet_credential_bindings {
+    uuid id PK
+    uuid walletId FK
+    uuid credentialId FK
+  }
+  wallet_recovery_requests {
+    uuid id PK
+    uuid walletId FK
+    uuid ownerId FK
+    enum status
+  }
+  anchor_logs {
+    uuid id PK
+    uuid userId FK
+    enum anchorType
+    string txHash
+  }
+
+  apps {
+    uuid id PK
+    string slug
+  }
+  app_keys {
+    uuid id PK
+    uuid appId FK
+  }
+
+  consents {
+    uuid id PK
+    uuid userId FK
+    string appId FK
+  }
+  audit_logs {
+    uuid id PK
+    uuid userId FK
+    string appId FK
+    string action
+  }
+
+  data_points {
+    uuid id PK
+    uuid userId FK
+    string category
+    string metric
+    jsonb value
+    datetime timestamp
+  }
+  data_sources {
+    uuid id PK
+    uuid userId FK
+    string type
+  }
+  data_attachments {
+    uuid id PK
+    uuid dataPointId FK
+    uuid userId FK
+  }
+  features {
+    uuid id PK
+    uuid userId FK
+    string featureType
+  }
+
+  user_medications {
+    uuid id PK
+    uuid userId FK
+  }
+  medication_logs {
+    uuid id PK
+    uuid userId FK
+    uuid medicationId FK
+  }
+  medication_proofs {
+    uuid id PK
+    uuid userId FK
+  }
+  drug_info_cache {
+    string drugCode PK
+  }
+  ai_analyses {
+    uuid id PK
+    uuid userId FK
+  }
+  notifications {
+    uuid id PK
+    uuid userId FK
+  }
+
+  institutions {
+    uuid id PK
+    string name
+  }
+  workspaces {
+    uuid id PK
+    uuid institutionId FK
+    string name
+  }
+  workspace_members {
+    uuid id PK
+    uuid workspaceId FK
+    uuid accountId FK
+    enum role
+  }
+  data_accesses {
+    uuid id PK
+    uuid workspaceId FK
+    uuid accountId FK
+    string dataProductId
+  }
+
+  accounts ||--o{ account_logins : has
+  accounts ||--o| owners : owns
+  accounts ||--o| users : profile
+  accounts ||--o{ workspace_members : member
+  accounts ||--o{ data_accesses : access
+
+  users ||--o{ passkey_credentials : owns
+  users ||--o{ sessions : uses
+  users ||--o{ refresh_tokens : issues
+  users ||--o{ data_points : writes
+  users ||--o{ data_sources : connects
+  users ||--o{ data_attachments : uploads
+  users ||--o{ features : derives
+  users ||--o{ user_medications : has
+  users ||--o{ medication_logs : logs
+  users ||--o{ medication_proofs : proves
+  users ||--o{ notifications : receives
+  users ||--o{ ai_analyses : runs
+  users ||--o{ anchor_logs : anchors
+  users ||--o{ consents : grants
+  users ||--o{ audit_logs : audits
+
+  data_points ||--o{ data_attachments : has
+  user_medications ||--o{ medication_logs : logs
+
+  apps ||--o{ app_keys : has
+  apps ||--o{ audit_logs : logs
+  apps ||--o{ consents : scopes
+  apps ||--o{ sessions : usedBy</pre>
+        </details>
+        <div class="schema-links">
+          <a href="../../../../../backend/docs/architecture/DB_ERD.md">DB_ERD.md 열기</a>
+          <a href="../../../../../backend/docs/architecture/DATA_SCHEMA_MASTER.md">DATA_SCHEMA_MASTER.md 열기</a>
+        </div>
+      </div>
+      <div class="schema-card">
+        <h3>핵심 엔티티 (요약)</h3>
+        <p>기능 중심으로 자주 보는 테이블만 요약했습니다.</p>
+        <ul class="schema-list">
+          <li>계정/인증: accounts, users, owners, passkey_credentials, sessions, refresh_tokens</li>
+          <li>지갑/앵커: wallets, wallet_secrets, wallet_credential_bindings, anchor_logs</li>
+          <li>데이터 수집: data_points, data_sources, data_attachments, features</li>
+          <li>복약/의약: user_medications, medication_logs, medication_proofs, drug_info_cache</li>
+          <li>정책/감사: consents, audit_logs, data_accesses</li>
+          <li>기관/워크스페이스: institutions, workspaces, workspace_members</li>
+          <li>AI/알림: ai_analyses, notifications</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="group-title">👤 사용자/지갑/패스키 관계 (확대)</div>
+    <div class="group-note">요청하신 “ASCII 박스” 스타일에 가깝게, 사용자 관련 테이블만 확대해서 보여줍니다.</div>
+    <div class="schema-card">
+      <div class="schema-mermaid" data-zoom="1">
+        <div class="schema-controls">
+          <button type="button" data-zoom="in">+</button>
+          <button type="button" data-zoom="out">−</button>
+          <button type="button" data-zoom="reset">↺</button>
+        </div>
+        <div class="schema-hint">휠로 확대 · 드래그로 이동</div>
+        <div class="schema-canvas">
+          <div class="schema-panzoom">
+            <div class="mermaid">flowchart LR
+  users["users\n- id (PK)\n- email\n- phone\n- createdAt\n- updatedAt"]:::box
+  passkey["passkey_credentials\n- userId (FK)\n- credentialId\n- publicKey\n- counter"]:::box
+  wallets["wallets\n- userId (FK)\n- address\n- publicKey\n- type\n- isActive"]:::box
+  walletSecrets["wallet_secrets\n- walletId (FK)\n- encryptedSeed\n- keyId"]:::box
+
+  users --> passkey
+  users --> wallets
+  wallets --> walletSecrets
+
+  classDef box fill:#ffffff,stroke:#d1d5db,stroke-width:1px,rx:8,ry:8,color:#111827;</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="group-title">🌐 UniQdata 전체 데이터 생태계 (개념도)</div>
+    <div class="group-note">전체 시스템 관점의 데이터 흐름/저장소 관계를 한 눈에 보는 개념도입니다.</div>
+    <div class="schema-card">
+      <div class="schema-mermaid" data-zoom="1">
+        <div class="schema-controls">
+          <button type="button" data-zoom="in">+</button>
+          <button type="button" data-zoom="out">−</button>
+          <button type="button" data-zoom="reset">↺</button>
+        </div>
+        <div class="schema-hint">휠로 확대 · 드래그로 이동</div>
+        <div class="schema-canvas">
+          <div class="schema-panzoom">
+            <div class="mermaid">flowchart LR
+  subgraph Clients["Clients & Products"]
+    App[UniQdata App]
+    Enterprise[Enterprise Portal]
+    Admin[Admin Console]
+    SDK[Partner SDK]
+    Bodab[AI Bodab Tools]
+  end
+
+  subgraph Ingestion["Data Ingestion Layer"]
+    Connectors[Connectors: HealthKit, Health Connect, IoT, EHR]
+    Gateway[Ingestion Gateway: Validation, Dedup, Audit]
+  end
+
+  subgraph Core["Core Backend (Postgres)"]
+    Auth[Identity/Auth and Passkey/KYC]
+    Consent[Consent Service]
+    Audit[Audit Logs]
+    Research[Research/Projects]
+    Data[data_points and attachments]
+    Wallet[Wallet/Anchor Logs]
+    Workspace[Workspaces/Data Access]
+  end
+
+  subgraph Storage["Data Storage (Lakehouse)"]
+    Vault[Encrypted Vault]
+    Raw[Raw Layer]
+    Canonical[Canonical or OMOP-like]
+    Artifact[Artifact or Data Marts]
+    Feature[Feature Store]
+  end
+
+  subgraph Analytics["Analytics & AI"]
+    SafeView[Safe View API (kDP)]
+    Models[Model Training / Inference]
+    Vector[Vector Index Store]
+  end
+
+  subgraph External["External Sources"]
+    Public[Public Datasets]
+    Partners[Partner Data]
+    XRPL[(XRPL Ledger)]
+  end
+
+  Clients --> Gateway
+  SDK --> Connectors
+  Connectors --> Gateway
+  Gateway --> Core
+  Gateway --> Raw
+  Core --> Vault
+  Raw --> Canonical --> Artifact --> Feature
+  Core --> SafeView --> Models
+  Feature --> Models
+  Models --> Vector
+  Models --> Enterprise
+  Models --> Bodab
+  Data --> Audit
+  Consent --> Audit
+  Audit --> XRPL
+  Public --> Raw
+  Partners --> Raw</div>
+          </div>
+        </div>
+      </div>
+      <p class="schema-details">표기 기준: Core Backend는 현재 구현, Storage/AI 일부는 설계/확장 영역입니다.</p>
+    </div>
+  </section>
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script>
+    (function () {
+      const tabs = document.querySelectorAll('.view-tab');
+      const sections = document.querySelectorAll('.tab-section');
+      const hashToTab = {
+        'by-concept': 'concept',
+        'by-phase': 'phase',
+        'by-schema': 'schema',
+        'schema': 'schema'
+      };
+      const tabToHash = {
+        concept: 'by-concept',
+        phase: 'by-phase',
+        schema: 'by-schema'
+      };
+
+      function setTab(tabName, updateHash = true) {
+        tabs.forEach((tab) => {
+          const active = tab.dataset.tab === tabName;
+          tab.classList.toggle('is-active', active);
+          tab.setAttribute('aria-selected', active ? 'true' : 'false');
+        });
+        sections.forEach((section) => {
+          section.classList.toggle('is-active', section.dataset.tab === tabName);
+        });
+        if (updateHash && tabToHash[tabName]) {
+          history.replaceState(null, '', `#${tabToHash[tabName]}`);
+        }
+      }
+
+      tabs.forEach((tab) => {
+        tab.addEventListener('click', () => setTab(tab.dataset.tab));
+      });
+
+      const initial = hashToTab[location.hash.replace('#', '')] || 'concept';
+      setTab(initial, false);
+
+      if (window.mermaid) {
+        mermaid.initialize({ startOnLoad: false, theme: 'neutral' });
+        mermaid.init(undefined, document.querySelectorAll('.mermaid'));
+      }
+
+      const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
+
+      function setupPanZoom(block) {
+        const canvas = block.querySelector('.schema-canvas');
+        const panzoom = block.querySelector('.schema-panzoom');
+        const zoomIn = block.querySelector('[data-zoom="in"]');
+        const zoomOut = block.querySelector('[data-zoom="out"]');
+        const zoomReset = block.querySelector('[data-zoom="reset"]');
+        if (!canvas || !panzoom) return;
+
+        let scale = 1;
+        let translate = { x: 0, y: 0 };
+        let isDragging = false;
+        let dragStart = { x: 0, y: 0 };
+        let dragOrigin = { x: 0, y: 0 };
+
+        const applyTransform = () => {
+          panzoom.style.transform = `translate(${translate.x}px, ${translate.y}px) scale(${scale})`;
+        };
+
+        const zoomAt = (factor, originX, originY) => {
+          const prevScale = scale;
+          scale = clamp(scale * factor, 0.4, 3.2);
+          const ratio = scale / prevScale;
+          translate.x = originX - (originX - translate.x) * ratio;
+          translate.y = originY - (originY - translate.y) * ratio;
+          applyTransform();
+        };
+
+        const reset = () => {
+          scale = 1;
+          translate = { x: 0, y: 0 };
+          applyTransform();
+        };
+
+        zoomIn?.addEventListener('click', () => zoomAt(1.15, canvas.clientWidth / 2, canvas.clientHeight / 2));
+        zoomOut?.addEventListener('click', () => zoomAt(0.87, canvas.clientWidth / 2, canvas.clientHeight / 2));
+        zoomReset?.addEventListener('click', reset);
+
+        canvas.addEventListener('wheel', (event) => {
+          event.preventDefault();
+          const rect = canvas.getBoundingClientRect();
+          const x = event.clientX - rect.left;
+          const y = event.clientY - rect.top;
+          const factor = event.deltaY < 0 ? 1.12 : 0.9;
+          zoomAt(factor, x, y);
+        }, { passive: false });
+
+        canvas.addEventListener('mousedown', (event) => {
+          isDragging = true;
+          canvas.classList.add('is-dragging');
+          dragStart = { x: event.clientX, y: event.clientY };
+          dragOrigin = { ...translate };
+        });
+
+        window.addEventListener('mousemove', (event) => {
+          if (!isDragging) return;
+          const dx = event.clientX - dragStart.x;
+          const dy = event.clientY - dragStart.y;
+          translate = { x: dragOrigin.x + dx, y: dragOrigin.y + dy };
+          applyTransform();
+        });
+
+        window.addEventListener('mouseup', () => {
+          if (!isDragging) return;
+          isDragging = false;
+          canvas.classList.remove('is-dragging');
+        });
+
+        applyTransform();
+      }
+
+      document.querySelectorAll('.schema-mermaid').forEach(setupPanZoom);
+    })();
+  </script>
+
+</body>
+</html>

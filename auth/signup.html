@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>회원가입 Step 1 - 회원 유형 - Wireframe</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, sans-serif; background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 100%); min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+
+    .container { display: flex; width: 900px; min-height: 600px; background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 25px 50px rgba(0,0,0,0.3); }
+
+    .left-panel { width: 320px; background: linear-gradient(180deg, #1e40af 0%, #1e3a8a 100%); color: white; padding: 40px; display: flex; flex-direction: column; }
+    .logo { font-size: 24px; font-weight: bold; margin-bottom: 40px; }
+    .left-title { font-size: 26px; font-weight: 700; line-height: 1.3; margin-bottom: 16px; }
+    .left-desc { font-size: 14px; opacity: 0.8; line-height: 1.6; margin-bottom: 40px; }
+
+    .steps-vertical { display: flex; flex-direction: column; gap: 0; margin-top: auto; }
+    .step-v { display: flex; align-items: center; gap: 12px; padding: 10px 0; position: relative; }
+    .step-v::before { content: ''; position: absolute; left: 14px; top: 36px; width: 2px; height: calc(100% - 6px); background: rgba(255,255,255,0.2); }
+    .step-v:last-child::before { display: none; }
+    .step-v .num { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; background: rgba(255,255,255,0.2); position: relative; z-index: 1; }
+    .step-v.done .num { background: #22c55e; }
+    .step-v.active .num { background: white; color: #1e40af; }
+    .step-v .label { font-size: 13px; opacity: 0.7; }
+    .step-v.active .label { opacity: 1; font-weight: 600; }
+    .step-v.done .label { opacity: 0.9; }
+
+    .right-panel { flex: 1; padding: 48px; display: flex; flex-direction: column; }
+    .form-header { margin-bottom: 24px; }
+    .form-header h1 { font-size: 24px; font-weight: 700; margin-bottom: 8px; color: #111827; }
+    .form-header p { font-size: 14px; color: #6b7280; }
+
+    .type-options { display: flex; flex-direction: column; gap: 16px; margin-bottom: 24px; }
+    .type-card { border: 2px solid #e5e7eb; border-radius: 14px; padding: 20px; cursor: pointer; transition: all 0.2s; }
+    .type-card:hover { border-color: #93c5fd; }
+    .type-card.selected { border-color: #3b82f6; background: #eff6ff; }
+    .type-card .header { display: flex; align-items: center; gap: 14px; margin-bottom: 8px; }
+    .type-card .icon { width: 44px; height: 44px; background: #dbeafe; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 22px; }
+    .type-card.selected .icon { background: #3b82f6; }
+    .type-card .title { font-size: 16px; font-weight: 600; color: #1e293b; }
+    .type-card .desc { font-size: 13px; color: #64748b; line-height: 1.5; padding-left: 58px; }
+    .type-card .features { display: flex; gap: 8px; margin-top: 12px; padding-left: 58px; flex-wrap: wrap; }
+    .type-card .feature { font-size: 11px; background: #f1f5f9; color: #475569; padding: 4px 8px; border-radius: 4px; }
+    .type-card.selected .feature { background: #dbeafe; color: #1e40af; }
+
+    .radio-dot { width: 20px; height: 20px; border: 2px solid #d1d5db; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-left: auto; }
+    .type-card.selected .radio-dot { border-color: #3b82f6; }
+    .type-card.selected .radio-dot::after { content: ''; width: 10px; height: 10px; background: #3b82f6; border-radius: 50%; }
+
+    .btn-row { display: flex; gap: 12px; margin-top: auto; }
+    .btn { flex: 1; padding: 14px 24px; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; text-align: center; text-decoration: none; transition: all 0.2s; }
+    .btn-secondary { background: white; border: 1px solid #e5e7eb; color: #374151; }
+    .btn-secondary:hover { background: #f9fafb; }
+    .btn-primary { background: #3b82f6; border: none; color: white; }
+    .btn-primary:hover { background: #2563eb; }
+
+    .note { background: #fef3c7; border: 1px solid #fcd34d; padding: 10px 12px; border-radius: 8px; font-size: 11px; margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="left-panel">
+      <div class="logo">UniQdata</div>
+      <div class="left-title">UniQdata Enterprise 가입</div>
+      <div class="left-desc">헬스케어 데이터 연구를 위한 안전한 플랫폼에 가입하세요.</div>
+
+      <div class="steps-vertical">
+        <div class="step-v active"><div class="num">1</div><div class="label">회원 유형</div></div>
+        <div class="step-v"><div class="num">2</div><div class="label">이메일 인증</div></div>
+        <div class="step-v"><div class="num">3</div><div class="label">비밀번호</div></div>
+        <div class="step-v"><div class="num">4</div><div class="label">패스키 안내</div></div>
+        <div class="step-v"><div class="num">5</div><div class="label">패스키 등록</div></div>
+        <div class="step-v"><div class="num">6</div><div class="label">블록체인 연동</div></div>
+        <div class="step-v"><div class="num">7</div><div class="label">완료</div></div>
+      </div>
+    </div>
+
+    <div class="right-panel">
+      <div class="form-header">
+        <h1>계정 유형 선택</h1>
+        <p>연구 목적에 맞는 유형을 선택해주세요</p>
+      </div>
+
+      <div class="type-options">
+        <div class="type-card selected">
+          <div class="header">
+            <div class="icon">👤</div>
+            <div class="title">개인 연구자</div>
+            <div class="radio-dot"></div>
+          </div>
+          <p class="desc">대학원생, 독립 연구자, 의료진을 위한 개인 계정</p>
+          <div class="features">
+            <span class="feature">개인 연구</span>
+            <span class="feature">데이터 접근</span>
+            <span class="feature">AI 분석</span>
+          </div>
+        </div>
+
+        <div class="type-card">
+          <div class="header">
+            <div class="icon">🏢</div>
+            <div class="title">기관/기업</div>
+            <div class="radio-dot"></div>
+          </div>
+          <p class="desc">연구소, 제약사, 병원을 위한 팀 계정</p>
+          <div class="features">
+            <span class="feature">팀 관리</span>
+            <span class="feature">권한 설정</span>
+            <span class="feature">대규모 연구</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <a href="../index.html" class="btn btn-secondary">목록</a>
+        <a href="signup-step2.html" class="btn btn-primary">다음 →</a>
+      </div>
+
+      <!-- 디자이너 노트 -->
+      <div style="background: linear-gradient(135deg, #fdf4ff, #fae8ff); border: 2px solid #d946ef; border-radius: 12px; padding: 16px; margin-top: 20px;">
+        <h3 style="color: #a21caf; margin-bottom: 12px; font-size: 14px;">📋 디자이너 노트: 회원가입 Step 1</h3>
+
+        <div style="font-size: 12px; color: #374151; line-height: 1.6;">
+          <strong style="color: #86198f;">페이지 목적:</strong> 개인/기관 계정 유형 선택. 첫인상이 중요!<br><br>
+
+          <strong style="color: #86198f;">사용자 행동:</strong><br>
+          1. 랜딩 페이지 → "시작하기" 클릭 → 이 페이지<br>
+          2. 개인(대학원생, 의료진) vs 기관(병원, 제약사) 선택<br>
+          3. "다음" 클릭 → Step 2로 이동<br><br>
+
+          <strong style="color: #86198f;">디자인 포인트:</strong><br>
+          • 7단계 진행 표시 (왼쪽 패널)<br>
+          • 선택된 카드는 파란 테두리 + 배경색<br>
+          • 기관 선택 시 → 팀 관리/권한 기능 활성화됨 (나중에)<br>
+          • 라디오 버튼 스타일로 단일 선택 표현
+        </div>
+      </div>
+
+      <!-- 기능 명세 -->
+      <div style="background: linear-gradient(135deg, #ecfdf5, #d1fae5); border: 2px solid #10b981; border-radius: 12px; padding: 16px; margin-top: 12px;">
+        <h3 style="color: #047857; margin-bottom: 12px; font-size: 14px;">⚙️ 기능 명세</h3>
+        <div style="font-size: 12px; color: #374151; line-height: 1.8;">
+          <strong>핵심 기능:</strong><br>
+          • 계정 유형 선택 (개인 연구자 / 기관·기업)<br>
+          • 선택 상태 로컬 저장 (sessionStorage)<br>
+          • 유형별 기능 차이 안내 표시<br><br>
+
+          <strong>비즈니스 로직:</strong><br>
+          • 개인: 개인 연구, 데이터 접근, AI 분석 기능<br>
+          • 기관: 팀 관리, 권한 설정, 대규모 연구 기능 추가<br>
+          • 선택 필수 (미선택 시 다음 버튼 비활성화)
+        </div>
+      </div>
+
+      <!-- 백엔드 호출 -->
+      <div style="background: linear-gradient(135deg, #f5f3ff, #ede9fe); border: 2px solid #8b5cf6; border-radius: 12px; padding: 16px; margin-top: 12px;">
+        <h3 style="color: #6d28d9; margin-bottom: 12px; font-size: 14px;">🔗 백엔드 호출</h3>
+        <div style="font-size: 12px; font-family: 'SF Mono', Monaco, monospace; color: #374151; line-height: 1.8;">
+          <code style="background: #f3f4f6; padding: 2px 6px; border-radius: 4px; color: #6b7280;">없음 (클라이언트 상태만)</code><br><br>
+
+          <strong style="font-family: -apple-system, sans-serif;">다음 단계 전달 데이터:</strong><br>
+          <code style="background: #1f2937; color: #a5b4fc; padding: 8px 12px; border-radius: 6px; display: block; margin-top: 8px;">
+{<br>
+&nbsp;&nbsp;"account_type": "individual" | "organization"<br>
+}
+          </code>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

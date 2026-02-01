@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>회원가입 Step 3 - 비밀번호 - Wireframe</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, sans-serif; background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 100%); min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+
+    .container { display: flex; width: 900px; min-height: 600px; background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 25px 50px rgba(0,0,0,0.3); }
+
+    .left-panel { width: 320px; background: linear-gradient(180deg, #1e40af 0%, #1e3a8a 100%); color: white; padding: 40px; display: flex; flex-direction: column; }
+    .logo { font-size: 24px; font-weight: bold; margin-bottom: 40px; }
+    .left-title { font-size: 26px; font-weight: 700; line-height: 1.3; margin-bottom: 16px; }
+    .left-desc { font-size: 14px; opacity: 0.8; line-height: 1.6; margin-bottom: 40px; }
+
+    .steps-vertical { display: flex; flex-direction: column; gap: 0; margin-top: auto; }
+    .step-v { display: flex; align-items: center; gap: 12px; padding: 10px 0; position: relative; }
+    .step-v::before { content: ''; position: absolute; left: 14px; top: 36px; width: 2px; height: calc(100% - 6px); background: rgba(255,255,255,0.2); }
+    .step-v:last-child::before { display: none; }
+    .step-v .num { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; background: rgba(255,255,255,0.2); position: relative; z-index: 1; }
+    .step-v.done .num { background: #22c55e; }
+    .step-v.active .num { background: white; color: #1e40af; }
+    .step-v .label { font-size: 13px; opacity: 0.7; }
+    .step-v.active .label { opacity: 1; font-weight: 600; }
+    .step-v.done .label { opacity: 0.9; }
+
+    .right-panel { flex: 1; padding: 48px; display: flex; flex-direction: column; }
+    .form-header { margin-bottom: 24px; }
+    .form-header h1 { font-size: 24px; font-weight: 700; margin-bottom: 8px; color: #111827; }
+    .form-header p { font-size: 14px; color: #6b7280; }
+
+    .form-group { margin-bottom: 20px; }
+    .form-group label { display: block; font-size: 14px; font-weight: 500; color: #374151; margin-bottom: 8px; }
+    .input-field { width: 100%; height: 48px; border: 1px solid #d1d5db; border-radius: 10px; padding: 0 16px; font-size: 15px; background: white; display: flex; align-items: center; color: #111827; letter-spacing: 2px; }
+
+    .requirements { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; margin-bottom: 24px; }
+    .requirements h4 { font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 12px; }
+    .req-item { display: flex; align-items: center; gap: 10px; font-size: 14px; color: #64748b; margin-bottom: 8px; }
+    .req-item:last-child { margin-bottom: 0; }
+    .req-item.ok { color: #16a34a; }
+    .req-item .icon { width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; }
+    .req-item.ok .icon { background: #dcfce7; }
+    .req-item:not(.ok) .icon { background: #f1f5f9; }
+
+    .strength-bar { height: 6px; background: #e5e7eb; border-radius: 3px; margin-top: 8px; overflow: hidden; }
+    .strength-bar .fill { height: 100%; width: 75%; background: linear-gradient(90deg, #22c55e, #16a34a); border-radius: 3px; }
+
+    .btn-row { display: flex; gap: 12px; margin-top: auto; }
+    .btn { flex: 1; padding: 14px 24px; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; text-align: center; text-decoration: none; transition: all 0.2s; }
+    .btn-secondary { background: white; border: 1px solid #e5e7eb; color: #374151; }
+    .btn-secondary:hover { background: #f9fafb; }
+    .btn-primary { background: #3b82f6; border: none; color: white; }
+    .btn-primary:hover { background: #2563eb; }
+
+    .note { background: #fef3c7; border: 1px solid #fcd34d; padding: 10px 12px; border-radius: 8px; font-size: 11px; margin-top: 20px; }
+
+    .nav-links { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; justify-content: center; }
+    .nav-links a { padding: 6px 12px; background: #f1f5f9; border-radius: 6px; text-decoration: none; color: #64748b; font-size: 12px; }
+    .nav-links a:hover { background: #e2e8f0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="left-panel">
+      <div class="logo">UniQdata</div>
+      <div class="left-title">비밀번호 설정</div>
+      <div class="left-desc">안전한 비밀번호로 계정을 보호하세요.</div>
+
+      <div class="steps-vertical">
+        <div class="step-v done"><div class="num">✓</div><div class="label">회원 유형</div></div>
+        <div class="step-v done"><div class="num">✓</div><div class="label">이메일 인증</div></div>
+        <div class="step-v active"><div class="num">3</div><div class="label">비밀번호</div></div>
+        <div class="step-v"><div class="num">4</div><div class="label">패스키 안내</div></div>
+        <div class="step-v"><div class="num">5</div><div class="label">패스키 등록</div></div>
+        <div class="step-v"><div class="num">6</div><div class="label">블록체인 연동</div></div>
+        <div class="step-v"><div class="num">7</div><div class="label">완료</div></div>
+      </div>
+    </div>
+
+    <div class="right-panel">
+      <div class="form-header">
+        <h1>비밀번호 설정</h1>
+        <p>안전한 비밀번호를 설정해주세요</p>
+      </div>
+
+      <div class="form-group">
+        <label>비밀번호</label>
+        <div class="input-field">••••••••••</div>
+        <div class="strength-bar"><div class="fill"></div></div>
+      </div>
+
+      <div class="form-group">
+        <label>비밀번호 확인</label>
+        <div class="input-field">••••••••••</div>
+      </div>
+
+      <div class="requirements">
+        <h4>비밀번호 요구사항</h4>
+        <div class="req-item ok">
+          <span class="icon">✓</span>
+          <span>8자 이상</span>
+        </div>
+        <div class="req-item ok">
+          <span class="icon">✓</span>
+          <span>영문 대/소문자 포함</span>
+        </div>
+        <div class="req-item ok">
+          <span class="icon">✓</span>
+          <span>숫자 포함</span>
+        </div>
+        <div class="req-item ok">
+          <span class="icon">✓</span>
+          <span>비밀번호 일치</span>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <a href="signup-step2.html" class="btn btn-secondary">이전</a>
+        <a href="signup-step4.html" class="btn btn-primary">다음 →</a>
+      </div>
+
+      <div class="nav-links">
+        <a href="../index.html">← 와이어프레임 목록</a>
+        <a href="signup-step2.html">← Step 2</a>
+        <a href="signup-step4.html">Step 4 →</a>
+      </div>
+
+      <div class="note">
+        <strong>Step 3/7</strong>: 비밀번호 설정. 최소 8자. 실시간 검증 표시.
+      </div>
+
+      <!-- 기능 명세 -->
+      <div style="background: linear-gradient(135deg, #ecfdf5, #d1fae5); border: 2px solid #10b981; border-radius: 12px; padding: 16px; margin-top: 12px;">
+        <h3 style="color: #047857; margin-bottom: 12px; font-size: 14px;">⚙️ 기능 명세</h3>
+        <div style="font-size: 12px; color: #374151; line-height: 1.8;">
+          <strong>핵심 기능:</strong><br>
+          • 비밀번호 입력 및 확인<br>
+          • 실시간 강도 검증 (Weak/Medium/Strong)<br>
+          • 요구사항 체크리스트 표시<br>
+          • 비밀번호 일치 여부 검증<br><br>
+
+          <strong>비즈니스 로직:</strong><br>
+          • 최소 8자 이상<br>
+          • 영문 대/소문자 포함 필수<br>
+          • 숫자 1개 이상 포함 필수<br>
+          • 특수문자 권장 (선택)<br>
+          • 비밀번호 해시화: Argon2id (클라이언트→서버)
+        </div>
+      </div>
+
+      <!-- 백엔드 호출 -->
+      <div style="background: linear-gradient(135deg, #f5f3ff, #ede9fe); border: 2px solid #8b5cf6; border-radius: 12px; padding: 16px; margin-top: 12px;">
+        <h3 style="color: #6d28d9; margin-bottom: 12px; font-size: 14px;">🔗 백엔드 호출</h3>
+        <div style="font-size: 11px; font-family: 'SF Mono', Monaco, monospace; color: #374151; line-height: 1.8;">
+          <code style="background: #f3f4f6; padding: 2px 6px; border-radius: 4px; color: #6b7280;">없음 (클라이언트 검증만)</code><br><br>
+
+          <strong style="font-family: -apple-system, sans-serif;">클라이언트 처리:</strong><br>
+          <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
+// 비밀번호 해시 생성 (서버 전송용)<br>
+const hash = await argon2id(password, {<br>
+&nbsp;&nbsp;time: 3, memory: 65536, parallelism: 4<br>
+});<br>
+sessionStorage.set("password_hash", hash);
+          </code>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

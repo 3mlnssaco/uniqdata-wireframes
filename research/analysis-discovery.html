@@ -1,0 +1,1208 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>인과 구조 발견 - Wireframe</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f0f0f; color: #e5e5e5; }
+
+    .layout { display: flex; min-height: 100vh; }
+    .sidebar { width: 260px; background: #1a1a1a; border-right: 1px solid #2a2a2a; padding: 16px 12px; flex-shrink: 0; display: flex; flex-direction: column; }
+    .logo { font-size: 17px; font-weight: 700; padding: 8px 12px; margin-bottom: 16px; color: #fff; }
+    .nav-section { margin-bottom: 8px; }
+    .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 8px; margin-bottom: 2px; color: #888; font-size: 13px; cursor: pointer; transition: all 0.15s; text-decoration: none; }
+    .nav-item:hover { background: #252525; color: #ccc; }
+    .nav-item.active { background: #2563eb; color: #fff; }
+    .nav-item .icon { width: 18px; text-align: center; font-size: 14px; }
+    .nav-project { margin-top: 8px; padding-top: 12px; border-top: 1px solid #2a2a2a; }
+    .nav-project-header { display: flex; align-items: center; gap: 8px; padding: 8px 12px; color: #666; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+    .nav-project-name { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 8px; background: #252525; margin-bottom: 8px; color: #fff; font-size: 12px; font-weight: 500; cursor: pointer; border: 1px solid #333; }
+    .nav-project-name:hover { border-color: #3b82f6; }
+    .nav-project-name .folder { color: #3b82f6; }
+    .nav-sub { padding-left: 12px; border-left: 2px solid #2a2a2a; margin-left: 20px; }
+    .nav-sub-item { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 6px; color: #777; font-size: 12px; cursor: pointer; transition: all 0.15s; text-decoration: none; margin-bottom: 2px; }
+    .nav-sub-item:hover { background: #252525; color: #ccc; }
+    .nav-sub-item.active { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border-left: 2px solid #3b82f6; margin-left: -2px; padding-left: 14px; }
+    .nav-sub-item .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; opacity: 0.5; }
+    .nav-sub-item.active .dot { background: #3b82f6; opacity: 1; }
+    .nav-divider { height: 1px; background: #2a2a2a; margin: 12px 12px; }
+    .nav-sub-label { font-size: 10px; color: #555; font-weight: 600; padding: 6px 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+    /* 연구 네비게이션 */
+    .research-nav-item { margin-bottom: 2px; }
+    .research-nav-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 12px;
+      color: #888;
+      transition: all 0.15s;
+    }
+    .research-nav-header:hover { background: #252525; color: #ccc; }
+    .research-nav-item.expanded .research-nav-header { background: rgba(59, 130, 246, 0.1); color: #60a5fa; }
+    .folder-icon { font-size: 13px; }
+    .research-title { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .status-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+    .status-dot.active { background: #22c55e; }
+    .status-dot.recruiting { background: #3b82f6; }
+    .status-dot.draft { background: #6b7280; }
+    .research-nav-sub {
+      display: none;
+      padding-left: 20px;
+      margin-top: 4px;
+      border-left: 2px solid #333;
+      margin-left: 18px;
+    }
+    .research-nav-item.expanded .research-nav-sub { display: block; }
+    .research-nav-item.collapsed .research-nav-sub { display: none; }
+    .nav-sub-divider { height: 1px; background: #333; margin: 8px 0; }
+
+    .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+    .header { padding: 16px 24px; border-bottom: 1px solid #2a2a2a; display: flex; align-items: center; justify-content: space-between; }
+    .header-left h1 { font-size: 18px; font-weight: 600; display: flex; align-items: center; gap: 10px; }
+    .header-left h1 .icon { font-size: 22px; }
+    .header-left .sub { font-size: 13px; color: #666; margin-top: 4px; }
+    .header-actions { display: flex; gap: 8px; align-items: center; }
+    .header-btn { padding: 8px 14px; border-radius: 8px; font-size: 13px; cursor: pointer; border: 1px solid #333; background: #1a1a1a; color: #ccc; }
+    .header-btn:hover { border-color: #3b82f6; }
+    .header-btn.primary { background: #2563eb; border-color: #2563eb; color: white; }
+    .ai-badge-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid #3b82f6;
+      background: rgba(59, 130, 246, 0.15);
+      color: #93c5fd;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    .ai-badge-btn.active { background: rgba(59, 130, 246, 0.3); color: #dbeafe; }
+    .ai-badge { background: #ef4444; color: #fff; font-size: 10px; padding: 2px 6px; border-radius: 999px; line-height: 1; }
+
+    .content { flex: 1; display: flex; overflow: hidden; position: relative; }
+
+    /* 좌측: 설정 패널 */
+    .config-panel { width: 280px; background: #1a1a1a; border-right: 1px solid #2a2a2a; padding: 20px; overflow-y: auto; flex-shrink: 0; }
+    .config-section { margin-bottom: 24px; }
+    .config-section .title { font-size: 12px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; }
+
+    .algo-option { padding: 12px; border: 1px solid #2a2a2a; border-radius: 10px; margin-bottom: 8px; cursor: pointer; transition: all 0.15s; }
+    .algo-option:hover { border-color: #444; }
+    .algo-option.selected { border-color: #8b5cf6; background: rgba(139, 92, 246, 0.1); }
+    .algo-option .name { font-size: 14px; font-weight: 500; margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }
+    .algo-option .name .badge { font-size: 10px; padding: 2px 6px; border-radius: 4px; background: #8b5cf6; color: white; }
+    .algo-option .desc { font-size: 12px; color: #666; line-height: 1.4; }
+
+    .var-count { background: #252525; border-radius: 8px; padding: 14px; }
+    .var-count .row { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 8px; }
+    .var-count .row:last-child { margin-bottom: 0; }
+    .var-count .row .label { color: #888; }
+    .var-count .row .value { font-weight: 600; }
+
+    .threshold-slider { margin-bottom: 16px; }
+    .threshold-slider .header { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 8px; }
+    .threshold-slider .header .label { color: #888; }
+    .threshold-slider .header .value { color: #3b82f6; font-weight: 600; }
+    .threshold-slider input[type="range"] { width: 100%; height: 4px; -webkit-appearance: none; background: #333; border-radius: 2px; }
+    .threshold-slider input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; background: #3b82f6; border-radius: 50%; cursor: pointer; }
+
+    /* 중앙: 그래프 시각화 */
+    .graph-area { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+    .graph-toolbar { padding: 12px 20px; border-bottom: 1px solid #2a2a2a; display: flex; align-items: center; gap: 16px; background: #151515; }
+    .view-toggle { display: flex; background: #252525; border-radius: 6px; padding: 2px; }
+    .view-toggle button { padding: 6px 12px; border: none; background: transparent; color: #888; font-size: 12px; border-radius: 4px; cursor: pointer; }
+    .view-toggle button.active { background: #3b82f6; color: white; }
+    .strength-inline { display: flex; align-items: center; gap: 8px; font-size: 12px; color: #888; }
+    .strength-inline input { width: 120px; height: 4px; -webkit-appearance: none; background: #333; border-radius: 2px; }
+    .strength-inline input::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; background: #3b82f6; border-radius: 50%; cursor: pointer; }
+    .graph-stats { display: flex; gap: 16px; margin-left: auto; }
+    .graph-stat { font-size: 12px; color: #888; }
+    .graph-stat .value { color: #fff; font-weight: 600; }
+
+    .graph-canvas { flex: 1; position: relative; background: radial-gradient(circle at center, #1a1a1a 0%, #0f0f0f 100%); overflow: hidden; }
+
+    /* 3D 캔버스 */
+    .graph-3d { width: 100%; height: 100%; position: relative; perspective: 1200px; cursor: grab; }
+    .graph-3d:active { cursor: grabbing; }
+    .graph-container { position: absolute; top: 50%; left: 50%; transform-style: preserve-3d; transition: transform 0.1s ease-out; }
+
+    /* 3D 노드 */
+    .node-3d { position: absolute; transform-style: preserve-3d; cursor: pointer; transition: opacity 0.3s, transform 0.3s; user-select: none; }
+    .node-3d .sphere { width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; text-align: center; line-height: 1.2; border: 2px solid; transition: all 0.3s; box-shadow: 0 0 20px rgba(0,0,0,0.5); color: white; }
+    .node-3d .label { position: absolute; top: 100%; left: 50%; transform: translateX(-50%); font-size: 10px; color: #666; white-space: nowrap; margin-top: 8px; transition: all 0.3s; }
+    .node-3d.dim .sphere { opacity: 0.15; border-color: #333 !important; }
+    .node-3d.dim .label { opacity: 0.3; }
+    .node-3d.weak .sphere { opacity: 0.2; }
+    .node-3d.active .sphere { box-shadow: 0 0 30px currentColor, 0 0 60px currentColor; transform: scale(1.1); }
+    .node-3d.active .label { color: #fff; }
+    .node-3d:hover:not(.dim) .sphere { transform: scale(1.15); }
+    .node-3d.outcome .sphere { background: rgba(59, 130, 246, 0.3); border-color: #3b82f6; color: #93c5fd; }
+    .node-3d.treatment .sphere { background: rgba(245, 158, 11, 0.3); border-color: #f59e0b; color: #fcd34d; }
+    .node-3d.mediator .sphere { background: rgba(16, 185, 129, 0.3); border-color: #10b981; color: #6ee7b7; }
+    .node-3d.confounder .sphere { background: rgba(139, 92, 246, 0.3); border-color: #8b5cf6; color: #c4b5fd; }
+    .node-3d.other .sphere { background: rgba(100, 100, 110, 0.2); border-color: #555; color: #999; width: 50px; height: 50px; font-size: 10px; }
+
+    .selection-info { position: absolute; bottom: 20px; left: 20px; background: rgba(20, 20, 30, 0.95); border: 1px solid #2a2a3a; border-radius: 12px; padding: 16px 20px; backdrop-filter: blur(10px); min-width: 300px; z-index: 5; color: white; }
+    .selection-info .title { font-size: 12px; color: #666; margin-bottom: 8px; }
+    .selection-info .nodes { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; min-height: 28px; }
+    .selection-info .node-tag { padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 500; }
+    .selection-info .node-tag.outcome { background: rgba(59, 130, 246, 0.2); color: #93c5fd; }
+    .selection-info .node-tag.treatment { background: rgba(245, 158, 11, 0.2); color: #fcd34d; }
+    .selection-info .node-tag.mediator { background: rgba(16, 185, 129, 0.2); color: #6ee7b7; }
+    .selection-info .node-tag.confounder { background: rgba(139, 92, 246, 0.2); color: #c4b5fd; }
+    .selection-info .stats { display: flex; gap: 20px; font-size: 12px; color: #888; }
+    .selection-info .stats .value { color: #fff; font-weight: 600; }
+
+    .drag-hint { position: absolute; bottom: 20px; right: 340px; font-size: 11px; color: #444; z-index: 5; }
+
+    /* 노드들 (시뮬레이션) */
+    .graph-node { position: absolute; display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: transform 0.2s; }
+    .graph-node:hover { transform: scale(1.1); z-index: 10; }
+    .graph-node .circle { width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; text-align: center; line-height: 1.2; border: 2px solid; }
+    .graph-node .label { margin-top: 6px; font-size: 11px; color: #888; white-space: nowrap; }
+    .graph-node.outcome .circle { background: rgba(59, 130, 246, 0.2); border-color: #3b82f6; color: #60a5fa; width: 70px; height: 70px; font-size: 12px; }
+    .graph-node.treatment .circle { background: rgba(245, 158, 11, 0.2); border-color: #f59e0b; color: #fbbf24; }
+    .graph-node.confounder .circle { background: rgba(139, 92, 246, 0.2); border-color: #8b5cf6; color: #a78bfa; }
+    .graph-node.mediator .circle { background: rgba(16, 185, 129, 0.2); border-color: #10b981; color: #34d399; }
+    .graph-node.other .circle { background: rgba(100, 100, 100, 0.2); border-color: #666; color: #999; width: 40px; height: 40px; font-size: 10px; }
+
+    /* 엣지 (SVG) */
+    .graph-edges { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+    .graph-edges line { stroke: #444; stroke-width: 1.5; }
+    .graph-edges line.strong { stroke: #3b82f6; stroke-width: 2.5; }
+    .graph-edges line.causal { stroke: #10b981; stroke-width: 2; }
+    .graph-edges marker { fill: #444; }
+
+    /* 범례 */
+    .graph-legend { position: absolute; bottom: 20px; left: 20px; background: rgba(26, 26, 26, 0.95); border: 1px solid #2a2a2a; border-radius: 10px; padding: 14px 18px; }
+    .graph-legend .title { font-size: 11px; color: #666; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .legend-item { display: flex; align-items: center; gap: 8px; font-size: 12px; margin-bottom: 6px; }
+    .legend-item:last-child { margin-bottom: 0; }
+    .legend-item .dot { width: 10px; height: 10px; border-radius: 50%; border: 2px solid; }
+    .legend-item .dot.outcome { border-color: #3b82f6; background: rgba(59, 130, 246, 0.3); }
+    .legend-item .dot.treatment { border-color: #f59e0b; background: rgba(245, 158, 11, 0.3); }
+    .legend-item .dot.confounder { border-color: #8b5cf6; background: rgba(139, 92, 246, 0.3); }
+    .legend-item .dot.mediator { border-color: #10b981; background: rgba(16, 185, 129, 0.3); }
+
+    /* 우측: AI 에이전트 */
+    .insight-panel { width: 320px; background: #1a1a1a; border-left: 1px solid #2a2a2a; display: flex; flex-direction: column; flex-shrink: 0; }
+    .insight-header { padding: 16px 20px; border-bottom: 1px solid #2a2a2a; }
+    .insight-header h2 { font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+    .insight-header .dot { width: 8px; height: 8px; background: #10b981; border-radius: 50%; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+    .chat-body { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+    .chat-bubble { max-width: 90%; padding: 10px 12px; border-radius: 12px; font-size: 12px; line-height: 1.5; }
+    .chat-bubble.ai { background: #252525; color: #e5e7eb; border-bottom-left-radius: 4px; }
+    .chat-bubble.user { background: #3b82f6; color: #fff; align-self: flex-end; border-bottom-right-radius: 4px; }
+    .chat-input { padding: 14px; border-top: 1px solid #2a2a2a; }
+
+    /* 인사이트 슬롯 (우상단 고정) */
+    .insight-slot {
+      position: absolute;
+      top: 16px;
+      right: 340px;
+      width: 320px;
+      max-height: 70%;
+      background: rgba(20, 20, 24, 0.95);
+      color: #e2e8f0;
+      border: 1px dashed #2f2f2f;
+      border-radius: 12px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.35);
+      overflow: hidden;
+      z-index: 6;
+    }
+    .insight-slot .pop-header { padding: 12px 14px; font-size: 13px; font-weight: 700; border-bottom: 1px solid #2a2a2a; display: flex; align-items: center; justify-content: space-between; }
+    .insight-slot .pop-body { padding: 12px 14px; font-size: 12px; color: #cbd5f5; overflow-y: auto; max-height: calc(70vh - 48px); display: none; }
+    .insight-slot.show .pop-body { display: block; }
+    .insight-slot .pop-empty { padding: 16px 14px; font-size: 12px; color: #64748b; display: block; }
+    .insight-slot.show .pop-empty { display: none; }
+    .insight-list { display: flex; flex-direction: column; gap: 10px; }
+    .insight-item { padding: 10px 12px; border: 1px dashed #374151; border-radius: 8px; background: #111827; }
+    .insight-item .title { font-weight: 700; font-size: 11px; color: #93c5fd; margin-bottom: 6px; }
+    .insight-item .desc { font-size: 12px; color: #e2e8f0; }
+    .pop-close { background: #1f2937; border: 1px solid #334155; border-radius: 6px; padding: 4px 8px; cursor: pointer; font-size: 11px; color: #cbd5f5; }
+
+    .insight-card { background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px; margin-bottom: 10px; }
+    .insight-card .label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+    .insight-card .label.discovery { color: #8b5cf6; }
+    .insight-card .label.warning { color: #f59e0b; }
+    .insight-card .label.path { color: #10b981; }
+    .insight-card .text { font-size: 12px; line-height: 1.5; color: #334155; }
+    .insight-card .highlight { color: #2563eb; font-weight: 600; }
+    .insight-card .positive { color: #34d399; }
+    .insight-card .negative { color: #f87171; }
+
+    .path-list { margin-top: 10px; }
+    .path-item { display: flex; align-items: center; gap: 6px; font-size: 12px; padding: 8px 10px; background: #1a1a1a; border-radius: 6px; margin-bottom: 6px; }
+    .path-item .arrow { color: #666; }
+    .path-item .node { padding: 2px 8px; border-radius: 4px; font-size: 11px; }
+    .path-item .node.treatment { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
+    .path-item .node.mediator { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+    .path-item .node.outcome { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
+    .path-item .strength { margin-left: auto; font-weight: 600; color: #10b981; }
+
+    .ask-input { display: flex; gap: 8px; }
+    .ask-input input { flex: 1; padding: 10px 14px; background: #252525; border: 1px solid #333; border-radius: 8px; color: #fff; font-size: 13px; }
+    .ask-input input::placeholder { color: #666; }
+    .ask-input button { padding: 10px 14px; background: #3b82f6; border: none; border-radius: 8px; color: white; cursor: pointer; }
+
+    .nav-links { display: flex; gap: 10px; padding: 16px 24px; border-top: 1px solid #2a2a2a; }
+    .nav-links a { padding: 6px 12px; background: #252525; border-radius: 6px; text-decoration: none; color: #888; font-size: 12px; }
+    .nav-links a:hover { background: #333; color: #fff; }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <div class="sidebar">
+      <div class="logo" style="display: flex; align-items: center; gap: 10px;">
+        <div style="width: 32px; height: 32px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px;">U</div>
+        UniQdata
+      </div>
+
+      <div class="nav-section">
+        <a href="list.html" class="nav-item"><span class="icon">🏠</span> 연구 허브</a>
+        <a href="create.html" class="nav-item"><span class="icon">➕</span> 새 연구</a>
+      </div>
+
+      <!-- 내 연구들 -->
+      <div class="nav-section" style="flex: 1; overflow-y: auto; padding-top: 8px; border-top: 1px solid #2a2a2a;">
+        <div style="font-size: 10px; color: #64748b; padding: 6px 12px; text-transform: uppercase; letter-spacing: 0.5px;">내 연구 <span style="background: #3b82f6; color: white; padding: 1px 6px; border-radius: 8px; font-size: 9px; margin-left: 4px;">3</span></div>
+
+        <!-- 연구 1: 당뇨병 - 현재 선택됨, 펼쳐진 상태 -->
+        <div class="research-nav-item expanded">
+          <div class="research-nav-header">
+            <span class="folder-icon">📁</span>
+            <span class="research-title">당뇨병 복약 순응도</span>
+            <span class="status-dot active"></span>
+          </div>
+          <div class="research-nav-sub">
+            <a href="data-overview.html" class="nav-sub-item"><span class="dot"></span> 개요</a>
+            <a href="data-table.html" class="nav-sub-item"><span class="dot"></span> 테이블</a>
+            <a href="analysis-discovery.html" class="nav-sub-item active"><span class="dot"></span> 인과발견</a>
+            <a href="analysis-importance.html" class="nav-sub-item"><span class="dot"></span> SHAP</a>
+            <a href="analysis-personalized.html" class="nav-sub-item"><span class="dot"></span> CATE</a>
+            <a href="analysis-whatif.html" class="nav-sub-item"><span class="dot"></span> What-If</a>
+            <a href="analysis-rootcause.html" class="nav-sub-item"><span class="dot"></span> 이상추적</a>
+          </div>
+        </div>
+
+        <!-- 연구 2: 접힌 상태 -->
+        <div class="research-nav-item collapsed">
+          <div class="research-nav-header">
+            <span class="folder-icon">📁</span>
+            <span class="research-title">노인 수면 패턴</span>
+            <span class="status-dot recruiting"></span>
+          </div>
+        </div>
+
+        <!-- 연구 3: 초안 -->
+        <div class="research-nav-item collapsed">
+          <div class="research-nav-header">
+            <span class="folder-icon">📄</span>
+            <span class="research-title">ADHD 생활습관</span>
+            <span class="status-dot draft"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="nav-section">
+        <a href="../team.html" class="nav-item"><span class="icon">👥</span> 팀</a>
+        <a href="../billing.html" class="nav-item"><span class="icon">💳</span> 결제</a>
+        <a href="#" class="nav-item"><span class="icon">⚙️</span> 설정</a>
+      </div>
+
+      <!-- 유저 프로필 -->
+      <div style="padding: 12px; border-top: 1px solid #2a2a2a;">
+        <div style="display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: 8px; cursor: pointer;" onmouseover="this.style.background='#252525'" onmouseout="this.style.background='transparent'">
+          <div style="width: 32px; height: 32px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; color: white;">김</div>
+          <div>
+            <div style="font-size: 13px; color: #e2e8f0;">김연구</div>
+            <div style="font-size: 11px; color: #64748b;">서울대학교병원</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="main">
+      <div class="header">
+        <div class="header-left">
+          <h1><span class="icon">🔮</span> 인과 구조 발견</h1>
+          <div class="sub">상관관계 매트릭스 기반 경로 탐색 (847개 변수, 357K+ 페어)</div>
+        </div>
+        <div class="header-actions">
+          <button class="ai-badge-btn" id="ai-insight-toggle">AI 인사이트 <span class="ai-badge" id="ai-insight-badge">3</span></button>
+          <button class="header-btn">📥 DAG 내보내기</button>
+          <button class="header-btn primary">🔄 재분석</button>
+        </div>
+      </div>
+
+      <!-- 타겟 변수 선택 바 -->
+      <div style="padding: 16px 24px; background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1)); border-bottom: 1px solid #2a2a2a; display: flex; align-items: center; gap: 16px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 18px;">🎯</span>
+          <span style="font-size: 13px; color: #94a3b8;">추적할 타겟 변수:</span>
+        </div>
+        <select id="target-variable" style="padding: 10px 16px; background: #1a1a1a; border: 2px solid #3b82f6; border-radius: 10px; color: #e5e5e5; font-size: 14px; font-weight: 600; min-width: 280px; cursor: pointer;">
+          <optgroup label="🩸 생체지표">
+            <option value="blood_glucose_variability" selected>혈당 변동성 (Blood Glucose Variability)</option>
+            <option value="fasting_glucose">공복 혈당 (Fasting Glucose)</option>
+            <option value="hba1c">당화혈색소 (HbA1c)</option>
+            <option value="blood_pressure">혈압 (Blood Pressure)</option>
+            <option value="heart_rate_variability">심박변이도 (HRV)</option>
+          </optgroup>
+          <optgroup label="😴 수면">
+            <option value="sleep_quality">수면 질 (Sleep Quality)</option>
+            <option value="sleep_duration">수면 시간 (Sleep Duration)</option>
+          </optgroup>
+          <optgroup label="💊 복약">
+            <option value="medication_adherence">복약 순응도 (Medication Adherence)</option>
+          </optgroup>
+          <optgroup label="🧠 인지/정서">
+            <option value="stress_level">스트레스 (Stress Level)</option>
+            <option value="mood_score">기분 점수 (Mood Score)</option>
+          </optgroup>
+        </select>
+        <div style="display: flex; align-items: center; gap: 8px; padding: 8px 14px; background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.3); border-radius: 8px;">
+          <span style="font-size: 11px; color: #22c55e;">✓ 매트릭스 로드됨</span>
+          <span style="font-size: 10px; color: #64748b;">|</span>
+          <span style="font-size: 11px; color: #94a3b8;">42개 직접 연결</span>
+        </div>
+        <div style="margin-left: auto; display: flex; gap: 8px;">
+          <button style="padding: 8px 14px; background: #252525; border: 1px solid #333; border-radius: 8px; color: #94a3b8; font-size: 12px; cursor: pointer;">비교 변수 추가 +</button>
+          <button style="padding: 8px 14px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); border: none; border-radius: 8px; color: white; font-size: 12px; font-weight: 600; cursor: pointer;">🔍 경로 탐색</button>
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="insight-slot" id="ai-insight-popover">
+          <div class="pop-header">
+            AI 발견
+            <button class="pop-close" id="ai-insight-close">닫기</button>
+          </div>
+          <div class="pop-empty">AI 인사이트는 우측 배지를 눌러 켜세요.</div>
+          <div class="pop-body">
+            <div class="insight-list">
+              <div class="insight-item">
+                <div class="title">AI 예상 발견 #1</div>
+                <div class="desc">복약 순응도 → 혈당 (β = -0.42)</div>
+              </div>
+              <div class="insight-item">
+                <div class="title">AI 예상 발견 #2</div>
+                <div class="desc">식이 패턴 → 체중 → 혈당 (β = -0.28)</div>
+              </div>
+              <div class="insight-item">
+                <div class="title">AI 예상 발견 #3</div>
+                <div class="desc">스트레스 → 혈당 (β = +0.19)</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- 좌측: 설정 -->
+        <div class="config-panel">
+          <!-- 시각화 모드 선택 -->
+          <div class="config-section">
+            <div class="title">시각화 모드</div>
+            <div style="display: flex; gap: 4px; background: #252525; padding: 4px; border-radius: 10px;">
+              <button class="mode-tab" style="flex: 1; padding: 10px 8px; border: none; background: transparent; color: #64748b; font-size: 11px; border-radius: 8px; cursor: pointer; text-align: center;" onclick="setMode('variable')">
+                <span style="font-size: 16px; display: block; margin-bottom: 4px;">📊</span>
+                변수공간
+              </button>
+              <button class="mode-tab" style="flex: 1; padding: 10px 8px; border: none; background: transparent; color: #64748b; font-size: 11px; border-radius: 8px; cursor: pointer; text-align: center;" onclick="setMode('temporal')">
+                <span style="font-size: 16px; display: block; margin-bottom: 4px;">📈</span>
+                시계열
+              </button>
+              <button class="mode-tab active" style="flex: 1; padding: 10px 8px; border: none; background: linear-gradient(135deg, #3b82f6, #8b5cf6); color: white; font-size: 11px; border-radius: 8px; cursor: pointer; text-align: center; font-weight: 600;" onclick="setMode('causal')">
+                <span style="font-size: 16px; display: block; margin-bottom: 4px;">🔗</span>
+                인과망
+              </button>
+            </div>
+          </div>
+
+          <!-- 축 매핑 (변수공간 모드) -->
+          <div class="config-section" id="axis-config" style="display: none;">
+            <div class="title">📐 축 매핑</div>
+            <div style="background: #252525; border: 1px solid #333; border-radius: 10px; padding: 12px; margin-bottom: 10px;">
+              <div style="font-size: 11px; color: #ef4444; font-weight: 600; margin-bottom: 8px;">🔴 X축</div>
+              <select style="width: 100%; padding: 10px 12px; background: #1a1a1a; border: 1px solid #333; border-radius: 8px; color: #e5e5e5; font-size: 13px;">
+                <option selected>평균 혈당 (mg/dL)</option>
+                <option>혈당 변동성 (CV%)</option>
+                <option>공복 혈당</option>
+              </select>
+            </div>
+            <div style="background: #252525; border: 1px solid #333; border-radius: 10px; padding: 12px; margin-bottom: 10px;">
+              <div style="font-size: 11px; color: #22c55e; font-weight: 600; margin-bottom: 8px;">🟢 Y축</div>
+              <select style="width: 100%; padding: 10px 12px; background: #1a1a1a; border: 1px solid #333; border-radius: 8px; color: #e5e5e5; font-size: 13px;">
+                <option selected>복약 순응도 (%)</option>
+                <option>복약 시간 일관성</option>
+              </select>
+            </div>
+            <div style="background: #252525; border: 1px solid #333; border-radius: 10px; padding: 12px;">
+              <div style="font-size: 11px; color: #3b82f6; font-weight: 600; margin-bottom: 8px;">🔵 Z축</div>
+              <select style="width: 100%; padding: 10px 12px; background: #1a1a1a; border: 1px solid #333; border-radius: 8px; color: #e5e5e5; font-size: 13px;">
+                <option selected>평균 수면시간 (h)</option>
+                <option>수면 효율 (%)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- 인과망 알고리즘 (인과망 모드) -->
+          <div class="config-section" id="algo-config">
+            <div class="title">발견 알고리즘</div>
+            <div class="algo-option selected">
+              <div class="name">PC Algorithm <span class="badge">추천</span></div>
+              <div class="desc">조건부 독립성 테스트 기반. 빠르고 해석 용이.</div>
+            </div>
+            <div class="algo-option">
+              <div class="name">FCI (Fast Causal Inference)</div>
+              <div class="desc">숨겨진 교란변수 허용. 더 보수적.</div>
+            </div>
+            <div class="algo-option">
+              <div class="name">NOTEARS</div>
+              <div class="desc">딥러닝 기반. 고차원에 적합.</div>
+            </div>
+            <div class="algo-option">
+              <div class="name">GES (Greedy Equivalence)</div>
+              <div class="desc">스코어 기반 탐색. 대규모 데이터에 적합.</div>
+            </div>
+          </div>
+
+          <!-- 색상 매핑 -->
+          <div class="config-section">
+            <div class="title">🎨 색상 매핑</div>
+            <div style="background: #252525; border: 1px solid #333; border-radius: 10px; padding: 12px;">
+              <select style="width: 100%; padding: 10px 12px; background: #1a1a1a; border: 1px solid #333; border-radius: 8px; color: #e5e5e5; font-size: 13px; margin-bottom: 10px;">
+                <option selected>노드 타입별</option>
+                <option>순응도 클러스터</option>
+                <option>연령대</option>
+              </select>
+              <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                <div style="display: flex; align-items: center; gap: 6px; font-size: 11px; color: #94a3b8;">
+                  <div style="width: 12px; height: 12px; border-radius: 50%; background: #3b82f6;"></div>
+                  <span>결과 (n=1)</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 6px; font-size: 11px; color: #94a3b8;">
+                  <div style="width: 12px; height: 12px; border-radius: 50%; background: #f59e0b;"></div>
+                  <span>치료 (n=2)</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 6px; font-size: 11px; color: #94a3b8;">
+                  <div style="width: 12px; height: 12px; border-radius: 50%; background: #10b981;"></div>
+                  <span>매개 (n=1)</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 6px; font-size: 11px; color: #94a3b8;">
+                  <div style="width: 12px; height: 12px; border-radius: 50%; background: #8b5cf6;"></div>
+                  <span>교란 (n=4)</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 상관관계 레이어 -->
+          <div class="config-section">
+            <div class="title">📚 상관관계 소스</div>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+              <label style="display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: #252525; border: 1px solid #333; border-radius: 8px; cursor: pointer; font-size: 12px;">
+                <input type="checkbox" checked style="accent-color: #3b82f6;">
+                <div style="flex: 1;">
+                  <div style="color: #e5e5e5; font-weight: 500;">📖 문헌 기반</div>
+                  <div style="font-size: 10px; color: #64748b; margin-top: 2px;">UK Biobank, Cochrane, NHANES</div>
+                </div>
+                <span style="font-size: 10px; padding: 2px 6px; background: rgba(34, 197, 94, 0.2); color: #22c55e; border-radius: 4px;">★★★★</span>
+              </label>
+              <label style="display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: #252525; border: 1px solid #333; border-radius: 8px; cursor: pointer; font-size: 12px;">
+                <input type="checkbox" checked style="accent-color: #3b82f6;">
+                <div style="flex: 1;">
+                  <div style="color: #e5e5e5; font-weight: 500;">📊 플랫폼 집계</div>
+                  <div style="font-size: 10px; color: #64748b; margin-top: 2px;">UniQdata 12,847명 (k-anon)</div>
+                </div>
+                <span style="font-size: 10px; padding: 2px 6px; background: rgba(59, 130, 246, 0.2); color: #60a5fa; border-radius: 4px;">★★★</span>
+              </label>
+              <label style="display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: #252525; border: 1px solid #333; border-radius: 8px; cursor: pointer; font-size: 12px;">
+                <input type="checkbox" style="accent-color: #3b82f6;">
+                <div style="flex: 1;">
+                  <div style="color: #e5e5e5; font-weight: 500;">👤 내 데이터</div>
+                  <div style="font-size: 10px; color: #64748b; margin-top: 2px;">개인 상관관계 (n=45일)</div>
+                </div>
+                <span style="font-size: 10px; padding: 2px 6px; background: rgba(251, 191, 36, 0.2); color: #fbbf24; border-radius: 4px;">★★</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- 발견된 영향 요인 -->
+          <div class="config-section">
+            <div class="title">📈 영향 요인 (1차 연결)</div>
+            <div style="display: flex; flex-direction: column; gap: 6px; max-height: 200px; overflow-y: auto;">
+              <div style="display: flex; align-items: center; gap: 8px; padding: 8px 10px; background: #252525; border-radius: 8px; font-size: 12px; cursor: pointer; border: 1px solid transparent;" onmouseover="this.style.borderColor='#3b82f6'" onmouseout="this.style.borderColor='transparent'">
+                <span style="width: 8px; height: 8px; border-radius: 50%; background: #ef4444;"></span>
+                <span style="flex: 1; color: #e5e5e5;">복약 순응도</span>
+                <span style="font-weight: 600; color: #10b981;">r=-0.42</span>
+                <span style="font-size: 10px; color: #64748b;">★★★★</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 8px; padding: 8px 10px; background: #252525; border-radius: 8px; font-size: 12px; cursor: pointer; border: 1px solid transparent;" onmouseover="this.style.borderColor='#3b82f6'" onmouseout="this.style.borderColor='transparent'">
+                <span style="width: 8px; height: 8px; border-radius: 50%; background: #f59e0b;"></span>
+                <span style="flex: 1; color: #e5e5e5;">탄수화물 섭취</span>
+                <span style="font-weight: 600; color: #ef4444;">r=+0.38</span>
+                <span style="font-size: 10px; color: #64748b;">★★★</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 8px; padding: 8px 10px; background: #252525; border-radius: 8px; font-size: 12px; cursor: pointer; border: 1px solid transparent;" onmouseover="this.style.borderColor='#3b82f6'" onmouseout="this.style.borderColor='transparent'">
+                <span style="width: 8px; height: 8px; border-radius: 50%; background: #f59e0b;"></span>
+                <span style="flex: 1; color: #e5e5e5;">스트레스</span>
+                <span style="font-weight: 600; color: #ef4444;">r=+0.32</span>
+                <span style="font-size: 10px; color: #64748b;">★★★</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 8px; padding: 8px 10px; background: #252525; border-radius: 8px; font-size: 12px; cursor: pointer; border: 1px solid transparent;" onmouseover="this.style.borderColor='#3b82f6'" onmouseout="this.style.borderColor='transparent'">
+                <span style="width: 8px; height: 8px; border-radius: 50%; background: #22c55e;"></span>
+                <span style="flex: 1; color: #e5e5e5;">운동량</span>
+                <span style="font-weight: 600; color: #10b981;">r=-0.28</span>
+                <span style="font-size: 10px; color: #64748b;">★★★</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 8px; padding: 8px 10px; background: #252525; border-radius: 8px; font-size: 12px; cursor: pointer; border: 1px solid transparent;" onmouseover="this.style.borderColor='#3b82f6'" onmouseout="this.style.borderColor='transparent'">
+                <span style="width: 8px; height: 8px; border-radius: 50%; background: #22c55e;"></span>
+                <span style="flex: 1; color: #e5e5e5;">수면 질</span>
+                <span style="font-weight: 600; color: #10b981;">r=-0.25</span>
+                <span style="font-size: 10px; color: #64748b;">★★</span>
+              </div>
+            </div>
+            <div style="margin-top: 8px; font-size: 10px; color: #64748b; text-align: center;">
+              + 37개 더 보기
+            </div>
+          </div>
+
+          <!-- 간접 경로 -->
+          <div class="config-section">
+            <div class="title">🔗 간접 경로 (2차+)</div>
+            <div style="background: #252525; border: 1px solid #333; border-radius: 10px; padding: 12px;">
+              <div style="display: flex; flex-direction: column; gap: 8px;">
+                <div style="display: flex; align-items: center; gap: 4px; font-size: 11px; flex-wrap: wrap;">
+                  <span style="padding: 3px 8px; background: rgba(100, 100, 100, 0.3); color: #94a3b8; border-radius: 4px;">업무시간</span>
+                  <span style="color: #64748b;">→</span>
+                  <span style="padding: 3px 8px; background: rgba(245, 158, 11, 0.2); color: #fbbf24; border-radius: 4px;">스트레스</span>
+                  <span style="color: #64748b;">→</span>
+                  <span style="padding: 3px 8px; background: rgba(59, 130, 246, 0.2); color: #60a5fa; border-radius: 4px;">혈당</span>
+                  <span style="margin-left: auto; font-size: 10px; color: #64748b;">0.14</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 4px; font-size: 11px; flex-wrap: wrap;">
+                  <span style="padding: 3px 8px; background: rgba(100, 100, 100, 0.3); color: #94a3b8; border-radius: 4px;">수면질</span>
+                  <span style="color: #64748b;">→</span>
+                  <span style="padding: 3px 8px; background: rgba(245, 158, 11, 0.2); color: #fbbf24; border-radius: 4px;">스트레스</span>
+                  <span style="color: #64748b;">→</span>
+                  <span style="padding: 3px 8px; background: rgba(59, 130, 246, 0.2); color: #60a5fa; border-radius: 4px;">혈당</span>
+                  <span style="margin-left: auto; font-size: 10px; color: #64748b;">0.12</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 4px; font-size: 11px; flex-wrap: wrap;">
+                  <span style="padding: 3px 8px; background: rgba(100, 100, 100, 0.3); color: #94a3b8; border-radius: 4px;">카페인</span>
+                  <span style="color: #64748b;">→</span>
+                  <span style="padding: 3px 8px; background: rgba(139, 92, 246, 0.2); color: #a78bfa; border-radius: 4px;">수면질</span>
+                  <span style="color: #64748b;">→</span>
+                  <span style="padding: 3px 8px; background: rgba(59, 130, 246, 0.2); color: #60a5fa; border-radius: 4px;">혈당</span>
+                  <span style="margin-left: auto; font-size: 10px; color: #64748b;">0.08</span>
+                </div>
+              </div>
+              <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #333; font-size: 10px; color: #64748b; text-align: center;">
+                경로 효과 = r₁ × r₂ × ... (곱셈 규칙)
+              </div>
+            </div>
+          </div>
+
+          <!-- 변수 현황 -->
+          <div class="config-section">
+            <div class="title">변수 현황</div>
+            <div class="var-count">
+              <div class="row">
+                <span class="label">매트릭스 변수</span>
+                <span class="value">847개</span>
+              </div>
+              <div class="row">
+                <span class="label">상관관계 페어</span>
+                <span class="value" style="color: #3b82f6;">357,481개</span>
+              </div>
+              <div class="row">
+                <span class="label">타겟 직접 연결</span>
+                <span class="value" style="color: #f59e0b;">42개</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="config-section">
+            <div class="title">필터</div>
+            <div class="threshold-slider">
+              <div class="header">
+                <span class="label">최소 인과 강도</span>
+                <span class="value" id="threshold-value">0.3</span>
+              </div>
+              <input type="range" id="threshold-range" min="0" max="1" step="0.05" value="0.3">
+            </div>
+            <div class="threshold-slider">
+              <div class="header">
+                <span class="label">신뢰도 임계값</span>
+                <span class="value">0.95</span>
+              </div>
+              <input type="range" min="0.5" max="1" step="0.05" value="0.95">
+            </div>
+            <!-- k-check 표시 -->
+            <div style="margin-top: 12px; padding: 10px; background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.3); border-radius: 8px; font-size: 11px; color: #22c55e;">
+              ✓ k-check 통과 (n=87, k≥5)
+            </div>
+          </div>
+
+          <!-- 시간 컨트롤 -->
+          <div class="config-section">
+            <div class="title">⏱ 시간 범위</div>
+            <div style="background: #252525; border: 1px solid #333; border-radius: 10px; padding: 12px;">
+              <div style="display: flex; justify-content: space-between; font-size: 11px; color: #64748b; margin-bottom: 8px;">
+                <span>Day 1</span>
+                <span style="color: #3b82f6; font-weight: 600;">Day 23</span>
+                <span>Day 60</span>
+              </div>
+              <input type="range" style="width: 100%; height: 6px; -webkit-appearance: none; background: #333; border-radius: 3px; outline: none;" min="1" max="60" value="23">
+              <div style="display: flex; gap: 6px; margin-top: 10px;">
+                <button style="flex: 1; padding: 8px; background: #333; border: none; border-radius: 6px; color: #94a3b8; font-size: 12px; cursor: pointer;">◀◀</button>
+                <button style="flex: 1; padding: 8px; background: #333; border: none; border-radius: 6px; color: #94a3b8; font-size: 12px; cursor: pointer;">◀</button>
+                <button style="flex: 1; padding: 8px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); border: none; border-radius: 6px; color: white; font-size: 12px; cursor: pointer;">▶ 재생</button>
+                <button style="flex: 1; padding: 8px; background: #333; border: none; border-radius: 6px; color: #94a3b8; font-size: 12px; cursor: pointer;">▶</button>
+                <button style="flex: 1; padding: 8px; background: #333; border: none; border-radius: 6px; color: #94a3b8; font-size: 12px; cursor: pointer;">▶▶</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 중앙: 그래프 -->
+        <div class="graph-area">
+          <div class="graph-toolbar">
+            <div class="view-toggle">
+              <button class="active" data-layer="short">단기</button>
+              <button data-layer="long">장기</button>
+              <button data-layer="cohort">코호트</button>
+            </div>
+            <div class="strength-inline">
+              <span>인과강도 ≥</span>
+              <span id="strength-value">0.30</span>
+              <input type="range" id="strength-range" min="0" max="1" step="0.05" value="0.3">
+            </div>
+            <div class="graph-stats">
+              <div class="graph-stat">노드 <span class="value">24</span></div>
+              <div class="graph-stat">엣지 <span class="value">38</span></div>
+              <div class="graph-stat">신뢰도 <span class="value">94.2%</span></div>
+            </div>
+          </div>
+
+          <div class="graph-canvas">
+            <div class="graph-3d" id="graph-3d">
+              <div class="graph-container" id="graph-container"></div>
+            </div>
+
+            <div class="selection-info">
+              <div class="title">활성화된 노드 (<span id="active-count">0</span>개)</div>
+              <div class="nodes" id="active-nodes"></div>
+              <div class="stats">
+                <span>활성 경로: <span class="value" id="active-paths">0</span>개</span>
+                <span>모델 적합도: <span class="value" id="model-fit">R² = 0.00</span></span>
+              </div>
+            </div>
+
+            <div class="drag-hint">마우스 드래그로 회전 | 노드 클릭으로 on/off</div>
+
+            <!-- 범례 -->
+            <div class="graph-legend">
+              <div class="title">범례</div>
+              <div class="legend-item"><span class="dot outcome"></span> 결과 변수</div>
+              <div class="legend-item"><span class="dot treatment"></span> 치료/원인 변수</div>
+              <div class="legend-item"><span class="dot mediator"></span> 매개 변수</div>
+              <div class="legend-item"><span class="dot confounder"></span> 교란 변수</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 우측: 상세 패널 -->
+        <div class="insight-panel">
+          <div class="insight-header">
+            <h2>상관관계 상세</h2>
+            <div style="font-size: 11px; color: #64748b; margin-top: 4px;">노드 클릭으로 경로 탐색</div>
+          </div>
+
+          <div style="flex: 1; overflow-y: auto; padding: 16px;">
+            <!-- 선택된 상관관계 -->
+            <div style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(245, 158, 11, 0.05)); border: 1px solid rgba(245, 158, 11, 0.4); border-radius: 12px; padding: 16px; margin-bottom: 16px;">
+              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+                <span style="padding: 4px 10px; background: rgba(245, 158, 11, 0.2); color: #fbbf24; border-radius: 6px; font-size: 12px; font-weight: 600;">스트레스</span>
+                <span style="font-size: 18px;">→</span>
+                <span style="padding: 4px 10px; background: rgba(59, 130, 246, 0.2); color: #60a5fa; border-radius: 6px; font-size: 12px; font-weight: 600;">혈당 변동성</span>
+              </div>
+
+              <!-- 통합 상관계수 -->
+              <div style="text-align: center; padding: 16px; background: rgba(0, 0, 0, 0.3); border-radius: 10px; margin-bottom: 12px;">
+                <div style="font-size: 10px; color: #64748b; margin-bottom: 4px;">통합 상관계수 (Combined)</div>
+                <div style="font-size: 32px; font-weight: 700; color: #ef4444;">+0.32</div>
+                <div style="font-size: 11px; color: #94a3b8; margin-top: 4px;">95% CI: [0.28, 0.36]</div>
+              </div>
+
+              <!-- 레이어별 상관관계 -->
+              <div style="display: flex; flex-direction: column; gap: 8px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.3); border-radius: 8px;">
+                  <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 14px;">📖</span>
+                    <div>
+                      <div style="font-size: 11px; color: #22c55e; font-weight: 600;">문헌 기반</div>
+                      <div style="font-size: 10px; color: #64748b;">Cochrane 2024, n=8,500</div>
+                    </div>
+                  </div>
+                  <div style="text-align: right;">
+                    <div style="font-size: 14px; font-weight: 700; color: #ef4444;">+0.34</div>
+                    <div style="font-size: 9px; color: #64748b;">★★★★</div>
+                  </div>
+                </div>
+
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 8px;">
+                  <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 14px;">📊</span>
+                    <div>
+                      <div style="font-size: 11px; color: #60a5fa; font-weight: 600;">플랫폼 집계</div>
+                      <div style="font-size: 10px; color: #64748b;">UniQdata, n=5,420</div>
+                    </div>
+                  </div>
+                  <div style="text-align: right;">
+                    <div style="font-size: 14px; font-weight: 700; color: #ef4444;">+0.30</div>
+                    <div style="font-size: 9px; color: #64748b;">★★★</div>
+                  </div>
+                </div>
+
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: rgba(251, 191, 36, 0.1); border: 1px solid rgba(251, 191, 36, 0.3); border-radius: 8px;">
+                  <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 14px;">👤</span>
+                    <div>
+                      <div style="font-size: 11px; color: #fbbf24; font-weight: 600;">내 데이터</div>
+                      <div style="font-size: 10px; color: #64748b;">45일 기록</div>
+                    </div>
+                  </div>
+                  <div style="text-align: right;">
+                    <div style="font-size: 14px; font-weight: 700; color: #ef4444;">+0.45</div>
+                    <div style="font-size: 9px; color: #fbbf24;">평균보다 높음!</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 문헌 근거 -->
+            <div style="background: #252525; border: 1px solid #333; border-radius: 10px; padding: 12px; margin-bottom: 16px;">
+              <div style="font-size: 12px; font-weight: 600; margin-bottom: 10px; color: #94a3b8;">📚 문헌 근거</div>
+              <div style="display: flex; flex-direction: column; gap: 8px; font-size: 11px; color: #94a3b8; line-height: 1.5;">
+                <div style="padding: 8px 10px; background: #1a1a1a; border-radius: 6px;">
+                  <div style="color: #e5e5e5; font-weight: 500; margin-bottom: 4px;">Cochrane Review 2024</div>
+                  <div>"스트레스 호르몬(코르티솔)이 인슐린 저항성을 증가시켜 혈당 조절에 영향"</div>
+                </div>
+                <div style="padding: 8px 10px; background: #1a1a1a; border-radius: 6px;">
+                  <div style="color: #e5e5e5; font-weight: 500; margin-bottom: 4px;">PMID:35847293</div>
+                  <div>"8,500명 코호트에서 만성 스트레스와 혈당 변동성 간 유의한 연관성 확인 (p&lt;0.001)"</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 개인화 인사이트 -->
+            <div style="background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(139, 92, 246, 0.05)); border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 10px; padding: 12px; margin-bottom: 16px;">
+              <div style="font-size: 12px; font-weight: 600; margin-bottom: 8px; color: #a78bfa; display: flex; align-items: center; gap: 6px;">
+                <span>💡</span> 개인화 인사이트
+              </div>
+              <div style="font-size: 12px; color: #e5e5e5; line-height: 1.6;">
+                당신의 스트레스-혈당 상관관계(<strong style="color: #ef4444;">r=+0.45</strong>)는 평균(<strong>r=+0.32</strong>)보다 <strong style="color: #fbbf24;">40% 높습니다</strong>.
+                <br><br>
+                → 스트레스 관리가 혈당 조절에 특히 중요할 수 있습니다.
+              </div>
+            </div>
+
+            <!-- 경로 확장 -->
+            <div style="background: #252525; border: 1px solid #333; border-radius: 10px; padding: 12px; margin-bottom: 16px;">
+              <div style="font-size: 12px; font-weight: 600; margin-bottom: 10px; color: #94a3b8;">🔗 연결된 변수 탐색</div>
+              <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+                <button style="padding: 6px 12px; background: #1a1a1a; border: 1px solid #333; border-radius: 6px; color: #94a3b8; font-size: 11px; cursor: pointer;" onmouseover="this.style.borderColor='#3b82f6'" onmouseout="this.style.borderColor='#333'">업무시간 →</button>
+                <button style="padding: 6px 12px; background: #1a1a1a; border: 1px solid #333; border-radius: 6px; color: #94a3b8; font-size: 11px; cursor: pointer;" onmouseover="this.style.borderColor='#3b82f6'" onmouseout="this.style.borderColor='#333'">수면 질 →</button>
+                <button style="padding: 6px 12px; background: #1a1a1a; border: 1px solid #333; border-radius: 6px; color: #94a3b8; font-size: 11px; cursor: pointer;" onmouseover="this.style.borderColor='#3b82f6'" onmouseout="this.style.borderColor='#333'">카페인 →</button>
+                <button style="padding: 6px 12px; background: #1a1a1a; border: 1px solid #333; border-radius: 6px; color: #94a3b8; font-size: 11px; cursor: pointer;" onmouseover="this.style.borderColor='#3b82f6'" onmouseout="this.style.borderColor='#333'">운동 →</button>
+                <button style="padding: 6px 12px; background: #1a1a1a; border: 1px solid #333; border-radius: 6px; color: #94a3b8; font-size: 11px; cursor: pointer;" onmouseover="this.style.borderColor='#3b82f6'" onmouseout="this.style.borderColor='#333'">알코올 →</button>
+              </div>
+            </div>
+
+            <!-- 연관 분석 도구 -->
+            <div style="margin-bottom: 16px;">
+              <div style="font-size: 11px; font-weight: 600; color: #64748b; text-transform: uppercase; margin-bottom: 10px;">연관 분석 도구</div>
+
+              <a href="analysis-importance.html" style="display: flex; align-items: center; gap: 10px; padding: 12px; background: #252525; border: 1px solid #333; border-radius: 10px; margin-bottom: 8px; cursor: pointer; text-decoration: none; color: inherit; transition: all 0.2s;" onmouseover="this.style.borderColor='#3b82f6'; this.style.background='rgba(59,130,246,0.1)'" onmouseout="this.style.borderColor='#333'; this.style.background='#252525'">
+                <div style="width: 36px; height: 36px; background: linear-gradient(135deg, #1e293b, #0f172a); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px;">📊</div>
+                <div style="flex: 1;">
+                  <div style="font-size: 13px; font-weight: 500; color: #e5e5e5;">SHAP 중요도</div>
+                  <div style="font-size: 11px; color: #64748b;">이 변수의 영향 요인 분석</div>
+                </div>
+                <span style="color: #64748b;">→</span>
+              </a>
+
+              <a href="analysis-personalized.html" style="display: flex; align-items: center; gap: 10px; padding: 12px; background: #252525; border: 1px solid #333; border-radius: 10px; margin-bottom: 8px; cursor: pointer; text-decoration: none; color: inherit; transition: all 0.2s;" onmouseover="this.style.borderColor='#3b82f6'; this.style.background='rgba(59,130,246,0.1)'" onmouseout="this.style.borderColor='#333'; this.style.background='#252525'">
+                <div style="width: 36px; height: 36px; background: linear-gradient(135deg, #1e293b, #0f172a); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px;">🎯</div>
+                <div style="flex: 1;">
+                  <div style="font-size: 13px; font-weight: 500; color: #e5e5e5;">CATE 분석</div>
+                  <div style="font-size: 11px; color: #64748b;">개인화된 처치 효과</div>
+                </div>
+                <span style="color: #64748b;">→</span>
+              </a>
+
+              <a href="analysis-whatif.html" style="display: flex; align-items: center; gap: 10px; padding: 12px; background: #252525; border: 1px solid #333; border-radius: 10px; margin-bottom: 8px; cursor: pointer; text-decoration: none; color: inherit; transition: all 0.2s;" onmouseover="this.style.borderColor='#3b82f6'; this.style.background='rgba(59,130,246,0.1)'" onmouseout="this.style.borderColor='#333'; this.style.background='#252525'">
+                <div style="width: 36px; height: 36px; background: linear-gradient(135deg, #1e293b, #0f172a); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px;">🔮</div>
+                <div style="flex: 1;">
+                  <div style="font-size: 13px; font-weight: 500; color: #e5e5e5;">What-If 시뮬레이션</div>
+                  <div style="font-size: 11px; color: #64748b;">개입 효과 예측</div>
+                </div>
+                <span style="color: #64748b;">→</span>
+              </a>
+
+              <a href="analysis-rootcause.html" style="display: flex; align-items: center; gap: 10px; padding: 12px; background: #252525; border: 1px solid #333; border-radius: 10px; cursor: pointer; text-decoration: none; color: inherit; transition: all 0.2s;" onmouseover="this.style.borderColor='#3b82f6'; this.style.background='rgba(59,130,246,0.1)'" onmouseout="this.style.borderColor='#333'; this.style.background='#252525'">
+                <div style="width: 36px; height: 36px; background: linear-gradient(135deg, #1e293b, #0f172a); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px;">🔍</div>
+                <div style="flex: 1;">
+                  <div style="font-size: 13px; font-weight: 500; color: #e5e5e5;">이상 원인 추적</div>
+                  <div style="font-size: 11px; color: #64748b;">비정상 패턴 원인 분석</div>
+                </div>
+                <span style="color: #64748b;">→</span>
+              </a>
+            </div>
+
+            <!-- 인과 면책 -->
+            <div style="background: rgba(251, 191, 36, 0.1); border: 1px solid rgba(251, 191, 36, 0.3); border-radius: 10px; padding: 12px; font-size: 11px; color: #fbbf24; line-height: 1.5;">
+              <div style="font-weight: 600; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">⚠️ 인과 해석 주의</div>
+              <div>
+                표시된 패턴은 <strong>조건부 관측</strong>이며 인과관계를 확정하지 않습니다.
+                통제변수와 시간 지연을 고려한 추가 분석이 필요합니다.
+              </div>
+            </div>
+          </div>
+
+          <!-- AI 질문 입력 -->
+          <div style="padding: 14px; border-top: 1px solid #2a2a2a;">
+            <div style="font-size: 11px; color: #64748b; margin-bottom: 8px;">AI에게 질문하기</div>
+            <div class="ask-input">
+              <input type="text" placeholder="예: 복약과 혈당의 관계는?">
+              <button>→</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 하단 상태바 -->
+      <div style="padding: 10px 24px; background: rgba(26, 26, 26, 0.95); border-top: 1px solid #2a2a2a; display: flex; align-items: center; gap: 20px; font-size: 11px;">
+        <div style="display: flex; align-items: center; gap: 6px; color: #64748b;">
+          <span style="width: 8px; height: 8px; border-radius: 50%; background: #22c55e;"></span>
+          <span>k-check:</span>
+          <span style="color: #e5e5e5; font-weight: 500;">pass (n=87)</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 6px; color: #64748b;">
+          <span style="width: 8px; height: 8px; border-radius: 50%; background: #3b82f6;"></span>
+          <span>DP 예산:</span>
+          <span style="color: #e5e5e5; font-weight: 500;">ε=0.15 used / 0.85 remaining</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 6px; color: #64748b;">
+          <span style="width: 8px; height: 8px; border-radius: 50%; background: #f59e0b;"></span>
+          <span>노드:</span>
+          <span style="color: #e5e5e5; font-weight: 500;">12개 표시 / 127개 전체</span>
+        </div>
+        <div style="margin-left: auto; color: #64748b;">
+          마지막 분석: 2분 전 · PC Algorithm
+        </div>
+      </div>
+
+      <div class="nav-links">
+        <a href="../index.html">← 와이어프레임 목록</a>
+        <a href="data-table.html">← 테이블</a>
+        <a href="analysis-importance.html">SHAP →</a>
+      </div>
+  </div>
+</div>
+
+<script>
+  const insightToggle = document.getElementById('ai-insight-toggle');
+  const insightPopover = document.getElementById('ai-insight-popover');
+  const insightClose = document.getElementById('ai-insight-close');
+
+  function toggleInsight(force) {
+    const shouldShow = typeof force === 'boolean' ? force : !insightPopover.classList.contains('show');
+    insightPopover.classList.toggle('show', shouldShow);
+    insightToggle.classList.toggle('active', shouldShow);
+  }
+
+  insightToggle?.addEventListener('click', () => toggleInsight());
+  insightClose?.addEventListener('click', () => toggleInsight(false));
+</script>
+<script>
+  const variables = [
+    { id: 'glucose', name: '혈당 (HbA1c)', type: 'outcome', connections: 12, x: 200, y: 0, z: 0 },
+    { id: 'medication', name: '복약 순응도', type: 'treatment', coef: -0.42, connections: 5, x: -180, y: -30, z: 80 },
+    { id: 'diet', name: '식이 패턴', type: 'treatment', coef: 0.28, connections: 4, x: -150, y: 120, z: -60 },
+    { id: 'insulin', name: '인슐린 민감성', type: 'mediator', coef: -0.35, connections: 6, x: 20, y: 20, z: 40 },
+    { id: 'age', name: '연령', type: 'confounder', coef: 0.15, connections: 8, x: -80, y: -150, z: 20 },
+    { id: 'exercise', name: '운동량', type: 'other', coef: -0.08, connections: 3, x: -220, y: 80, z: 100 },
+    { id: 'sleep', name: '수면 시간', type: 'other', coef: -0.12, connections: 4, x: -100, y: 180, z: 80 },
+    { id: 'stress', name: '스트레스', type: 'other', coef: 0.19, connections: 5, x: 80, y: 150, z: -80 },
+    { id: 'weight', name: '체중', type: 'other', coef: 0.22, connections: 4, x: 100, y: -100, z: -100 },
+    { id: 'bmi', name: 'BMI', type: 'confounder', coef: 0.18, connections: 6, x: -50, y: -180, z: -60 },
+    { id: 'gender', name: '성별', type: 'confounder', coef: 0.05, connections: 3, x: 150, y: -150, z: 60 },
+    { id: 'duration', name: '유병 기간', type: 'confounder', coef: 0.25, connections: 5, x: -180, y: -120, z: -100 },
+  ];
+
+  const paths = [
+    { id: 'path1', from: 'medication', via: 'insulin', to: 'glucose', effect: -12.4 },
+    { id: 'path2', from: 'medication', to: 'glucose', effect: -5.9 },
+    { id: 'path3', from: 'diet', to: 'glucose', effect: 8.2 },
+    { id: 'path4', from: 'exercise', via: 'weight', to: 'glucose', effect: -3.2 },
+    { id: 'path5', from: 'stress', to: 'glucose', effect: 4.8 },
+  ];
+
+  let activeNodes = new Set(['glucose']);
+  let activePaths = new Set(['path1', 'path2']);
+  let rotateX = 15;
+  let rotateY = -10;
+  let isDragging = false;
+  let lastX, lastY;
+  let strengthThreshold = 0.3;
+
+  function renderNodes() {
+    const container = document.getElementById('graph-container');
+    container.innerHTML = variables.map(v => {
+      const strong = v.coef == null || Math.abs(v.coef) >= strengthThreshold;
+      return `
+        <div class="node-3d ${v.type} ${activeNodes.has(v.id) ? 'active' : 'dim'} ${strong ? '' : 'weak'}"
+             data-id="${v.id}"
+             style="transform: translate3d(${v.x}px, ${v.y}px, ${v.z}px);">
+          <div class="sphere">${v.name.split(' ')[0]}</div>
+          <div class="label">${v.type === 'outcome' ? '결과' : v.type === 'treatment' ? '치료' : v.type === 'mediator' ? '매개' : v.type === 'confounder' ? '교란' : ''}</div>
+        </div>
+      `;
+    }).join('');
+
+    container.querySelectorAll('.node-3d').forEach(el => {
+      el.addEventListener('click', (e) => {
+        e.stopPropagation();
+        toggleNode(el.dataset.id);
+      });
+    });
+
+    updateRotation();
+  }
+
+  function toggleNode(id) {
+    if (activeNodes.has(id)) activeNodes.delete(id);
+    else activeNodes.add(id);
+    updateUI();
+  }
+
+  function updateUI() {
+    document.querySelectorAll('.node-3d').forEach(el => {
+      const id = el.dataset.id;
+      el.classList.toggle('active', activeNodes.has(id));
+      el.classList.toggle('dim', !activeNodes.has(id));
+    });
+
+    document.getElementById('active-count').textContent = activeNodes.size;
+
+    const nodesHtml = Array.from(activeNodes).map(id => {
+      const v = variables.find(x => x.id === id);
+      return `<span class="node-tag ${v.type}">${v.name.split(' ')[0]}</span>`;
+    }).join('');
+    document.getElementById('active-nodes').innerHTML = nodesHtml || '<span style="color:#666">없음</span>';
+
+    updateSimulation();
+  }
+
+  function updateSimulation() {
+    let totalEffect = 0;
+    let validPaths = 0;
+
+    paths.forEach(p => {
+      if (activePaths.has(p.id) && activeNodes.has(p.from) && activeNodes.has(p.to)) {
+        totalEffect += p.effect;
+        validPaths++;
+      }
+    });
+
+    document.getElementById('active-paths').textContent = validPaths;
+    const r2 = Math.min(0.95, activeNodes.size * 0.08 + validPaths * 0.05).toFixed(2);
+    document.getElementById('model-fit').textContent = `R² = ${r2}`;
+  }
+
+  function setupDragRotation() {
+    const graph = document.getElementById('graph-3d');
+    graph.addEventListener('mousedown', (e) => {
+      if (e.target.closest('.node-3d')) return;
+      isDragging = true;
+      lastX = e.clientX;
+      lastY = e.clientY;
+      graph.style.cursor = 'grabbing';
+    });
+    document.addEventListener('mousemove', (e) => {
+      if (!isDragging) return;
+      rotateY += (e.clientX - lastX) * 0.5;
+      rotateX -= (e.clientY - lastY) * 0.5;
+      rotateX = Math.max(-60, Math.min(60, rotateX));
+      lastX = e.clientX;
+      lastY = e.clientY;
+      updateRotation();
+    });
+    document.addEventListener('mouseup', () => {
+      isDragging = false;
+      document.getElementById('graph-3d').style.cursor = 'grab';
+    });
+  }
+
+  function updateRotation() {
+    document.getElementById('graph-container').style.transform = `translate(-50%, -50%) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+  }
+
+  function setupStrengthControls() {
+    const leftRange = document.getElementById('threshold-range');
+    const leftValue = document.getElementById('threshold-value');
+    const topRange = document.getElementById('strength-range');
+    const topValue = document.getElementById('strength-value');
+
+    function apply(value) {
+      strengthThreshold = parseFloat(value);
+      if (leftValue) leftValue.textContent = strengthThreshold.toFixed(2);
+      if (topValue) topValue.textContent = strengthThreshold.toFixed(2);
+      if (leftRange && leftRange.value !== String(value)) leftRange.value = value;
+      if (topRange && topRange.value !== String(value)) topRange.value = value;
+      renderNodes();
+    }
+
+    leftRange?.addEventListener('input', (e) => apply(e.target.value));
+    topRange?.addEventListener('input', (e) => apply(e.target.value));
+  }
+
+  function initGraph() {
+    renderNodes();
+    updateUI();
+    setupDragRotation();
+    setupStrengthControls();
+
+    document.querySelectorAll('.view-toggle button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.view-toggle button').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      });
+    });
+  }
+
+  initGraph();
+
+  // 모드 전환 함수
+  function setMode(mode) {
+    const modeTabs = document.querySelectorAll('.mode-tab');
+    modeTabs.forEach(tab => {
+      tab.style.background = 'transparent';
+      tab.style.color = '#64748b';
+      tab.style.fontWeight = 'normal';
+    });
+    event.target.closest('.mode-tab').style.background = 'linear-gradient(135deg, #3b82f6, #8b5cf6)';
+    event.target.closest('.mode-tab').style.color = 'white';
+    event.target.closest('.mode-tab').style.fontWeight = '600';
+
+    const axisConfig = document.getElementById('axis-config');
+    const algoConfig = document.getElementById('algo-config');
+
+    if (mode === 'variable') {
+      if (axisConfig) axisConfig.style.display = 'block';
+      if (algoConfig) algoConfig.style.display = 'none';
+    } else if (mode === 'causal') {
+      if (axisConfig) axisConfig.style.display = 'none';
+      if (algoConfig) algoConfig.style.display = 'block';
+    } else {
+      if (axisConfig) axisConfig.style.display = 'none';
+      if (algoConfig) algoConfig.style.display = 'none';
+    }
+  }
+</script>
+  <!-- 기능 명세 -->
+  <div style="background: linear-gradient(135deg, #ecfdf5, #d1fae5); border: 2px solid #10b981; border-radius: 12px; padding: 16px; margin: 20px 24px;">
+    <h3 style="color: #047857; margin-bottom: 12px; font-size: 14px;">⚙️ 기능 명세</h3>
+    <div style="font-size: 12px; color: #374151; line-height: 1.8;">
+      <strong>핵심 기능:</strong><br>
+      • <strong>타겟 변수 선택:</strong> 추적하고 싶은 건강 지표 설정 (847개 변수 중 선택)<br>
+      • <strong>상관관계 매트릭스 탐색:</strong> 357,481개 변수쌍의 사전 계산된 상관관계<br>
+      • <strong>마인드맵 스타일 경로 탐색:</strong> 1차→2차→n차 연결 네트워크 시각화<br>
+      • <strong>3-레이어 상관관계:</strong> 문헌(★★★★) + 플랫폼(★★★) + 개인(★★)<br>
+      • <strong>개인화 인사이트:</strong> 내 상관관계 vs 집단 평균 비교<br><br>
+
+      <strong>상관관계 베이스 (Whitepaper):</strong><br>
+      • Layer 1 문헌: UK Biobank, NHANES, Cochrane (분기별 갱신)<br>
+      • Layer 2 플랫폼: UniQdata 집계, k-anon + DP (주간 갱신)<br>
+      • Layer 3 개인: 사용자 데이터 (실시간, n≥30일 필요)<br>
+      • 결합 가중치: w₁=0.5 (문헌), w₂=0.3 (플랫폼), w₃=0.2 (개인)<br><br>
+
+      <strong>인과 분석 (보조):</strong><br>
+      • PC Algorithm: 조건부 독립성 테스트 기반<br>
+      • FCI: 숨겨진 교란변수 허용<br>
+      • NOTEARS: 딥러닝 기반<br>
+      • GES: 스코어 기반 탐색<br><br>
+
+      <strong>비즈니스 로직:</strong><br>
+      • 상관관계 매트릭스는 글로벌 캐시 (분기별 갱신)<br>
+      • 플랫폼 집계는 주간 배치 계산 (차등 프라이버시 ε=0.5)<br>
+      • 개인 상관관계는 실시간 계산 (n<30이면 신뢰도 표시)<br>
+      • 경로 탐색 결과 내보내기 (JSON, GraphML)
+    </div>
+  </div>
+
+  <!-- 백엔드 호출 -->
+  <div style="background: linear-gradient(135deg, #f5f3ff, #ede9fe); border: 2px solid #8b5cf6; border-radius: 12px; padding: 16px; margin: 12px 24px 20px;">
+    <h3 style="color: #6d28d9; margin-bottom: 12px; font-size: 14px;">🔗 백엔드 호출</h3>
+    <div style="font-size: 11px; font-family: 'SF Mono', Monaco, monospace; color: #374151; line-height: 1.8;">
+
+      <div style="font-size: 10px; color: #6d28d9; font-weight: 600; margin: 12px 0 6px; font-family: sans-serif;">📊 상관관계 매트릭스 API</div>
+
+      <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
+GET /api/v2/correlations/matrix?variables=blood_glucose,sleep,stress&layers=literature,platform<br>
+→ { "matrix_version": "2026.02", "correlations": [{ "var_a", "var_b", "layers": {...}, "combined_r" }] }
+      </code>
+
+      <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
+GET /api/v2/correlations/search?target=blood_glucose_variability&depth=2&min_r=0.2<br>
+→ { "target", "direct_correlations": [...], "indirect_paths": [...], "total_found": 42 }
+      </code>
+
+      <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
+GET /api/v2/correlations/path?from=work_hours&to=blood_glucose&max_hops=3<br>
+→ { "paths": [{ "nodes": [...], "total_effect": 0.14, "confidence": "medium" }] }
+      </code>
+
+      <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
+GET /api/v2/correlations/personal?user_id=xxx&target=blood_glucose&compare_with=aggregate<br>
+→ { "personal_r": 0.45, "aggregate_r": 0.32, "deviation": "+40%", "insight": "..." }
+      </code>
+
+      <div style="font-size: 10px; color: #6d28d9; font-weight: 600; margin: 16px 0 6px; font-family: sans-serif;">🔬 인과 분석 API (기존)</div>
+
+      <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
+POST /api/v2/analysis/projects/:id/causal-discovery<br>
+{ "algorithm": "pc|fci|notears|ges", "outcome_var": "glucose", "threshold": 0.3 }<br>
+→ { "job_id": "job_xxx", "status": "processing" }
+      </code>
+
+      <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
+GET /api/v2/analysis/projects/:id/causal-discovery/:job_id/export?format=json|graphml<br>
+→ DAG 파일 다운로드
+      </code>
+
+      <div style="font-size: 10px; color: #6d28d9; font-weight: 600; margin: 16px 0 6px; font-family: sans-serif;">📚 문헌 데이터 소스</div>
+
+      <code style="background: #1f2937; color: #93c5fd; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
+Layer 1 (문헌): UK Biobank, NHANES, Cochrane, PubMed NLP 추출<br>
+Layer 2 (플랫폼): UniQdata k-anon 집계 (ε=0.5 DP 적용, 주간 갱신)<br>
+Layer 3 (개인): 사용자 본인 데이터 (n≥30일 필요, 실시간)
+      </code>
+    </div>
+  </div>
+
+  <script src="page-spec.js"></script>
+</body>
+</html>

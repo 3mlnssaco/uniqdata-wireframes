@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>팀 관리 - Wireframe</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, sans-serif; background: #f5f5f5; }
+    .layout { display: flex; min-height: 100vh; }
+    .sidebar { width: 240px; background: #1a1a1a; color: white; padding: 20px; }
+    .logo { font-size: 18px; font-weight: bold; margin-bottom: 30px; padding: 10px; }
+    .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 8px; margin-bottom: 4px; color: #9ca3af; }
+    .nav-item.active { background: #3b82f6; color: white; }
+    .main { flex: 1; }
+    .content { padding: 24px; }
+    .page-header { display: flex; justify-content: space-between; margin-bottom: 24px; }
+    h1 { font-size: 24px; }
+    .btn { padding: 10px 20px; background: #3b82f6; color: white; border: none; border-radius: 8px; }
+    .card { background: white; border: 1px solid #e5e7eb; border-radius: 12px; }
+    .card-header { padding: 16px 20px; border-bottom: 1px solid #e5e7eb; font-weight: 600; }
+    .member-row { display: flex; align-items: center; padding: 16px 20px; border-bottom: 1px solid #f3f4f6; }
+    .member-row:last-child { border: none; }
+    .avatar { width: 40px; height: 40px; background: #e5e7eb; border-radius: 50%; margin-right: 16px; }
+    .member-info { flex: 1; }
+    .member-name { font-weight: 500; }
+    .member-email { font-size: 14px; color: #6b7280; }
+    .role-badge { padding: 4px 12px; border-radius: 12px; font-size: 12px; }
+    .role-owner { background: #f3e8ff; color: #7c3aed; }
+    .role-member { background: #dbeafe; color: #1d4ed8; }
+    .role-viewer { background: #f3f4f6; color: #4b5563; }
+    .note { background: #fef3c7; border: 1px solid #fcd34d; padding: 12px; border-radius: 8px; font-size: 13px; margin-top: 24px; }
+    .step-nav { display: flex; gap: 10px; margin-top: 20px; }
+    .step-nav a { padding: 8px 16px; background: #eee; border-radius: 6px; text-decoration: none; color: #333; font-size: 14px; }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <div class="sidebar">
+      <div class="logo">UniQdata</div>
+      <a href="research/list.html" class="nav-item">🏠 연구 허브</a>
+      <a href="research/list.html" class="nav-item">📊 연구 관리</a>
+      <a href="data-pool.html" class="nav-item">🗄️ Data Pool</a>
+      <a href="team.html" class="nav-item active">👥 팀</a>
+      <a href="billing.html" class="nav-item">💳 결제/에스크로</a>
+    </div>
+
+    <div class="main">
+      <div class="content">
+        <div class="page-header">
+          <div>
+            <h1>팀 관리</h1>
+            <p style="color: #6b7280; margin-top: 4px;">팀 멤버와 권한을 관리합니다</p>
+          </div>
+          <button class="btn">+ 멤버 초대</button>
+        </div>
+
+        <div class="card">
+          <div class="card-header">팀 멤버</div>
+          <div class="member-row">
+            <div class="avatar"></div>
+            <div class="member-info">
+              <div class="member-name">김연구</div>
+              <div class="member-email">kim@research.org</div>
+            </div>
+            <span class="role-badge role-owner">Owner</span>
+          </div>
+          <div class="member-row">
+            <div class="avatar"></div>
+            <div class="member-info">
+              <div class="member-name">이분석</div>
+              <div class="member-email">lee@research.org</div>
+            </div>
+            <span class="role-badge role-member">Member</span>
+          </div>
+          <div class="member-row">
+            <div class="avatar"></div>
+            <div class="member-info">
+              <div class="member-name">박통계</div>
+              <div class="member-email">park@research.org</div>
+            </div>
+            <span class="role-badge role-viewer">Viewer</span>
+          </div>
+        </div>
+
+        <div class="note">
+          <strong>팀 관리</strong> - ABAC 역할: Owner(전체 권한), Member(연구 참여), Viewer(읽기만). Phase 2.
+        </div>
+
+        <!-- 기능 명세 -->
+        <div style="background: linear-gradient(135deg, #ecfdf5, #d1fae5); border: 2px solid #10b981; border-radius: 12px; padding: 16px; margin-top: 20px;">
+          <h3 style="color: #047857; margin-bottom: 12px; font-size: 14px;">⚙️ 기능 명세</h3>
+          <div style="font-size: 12px; color: #374151; line-height: 1.8;">
+            <strong>핵심 기능:</strong><br>
+            • 팀 멤버 목록 조회<br>
+            • 멤버 초대 (이메일)<br>
+            • 역할 변경 (Owner/Member/Viewer)<br>
+            • 멤버 제거<br>
+            • 소유권 이전<br><br>
+
+            <strong>ABAC 역할:</strong><br>
+            • Owner: 연구 생성, 팀 관리, 에스크로<br>
+            • Member: 데이터 조회, 분석 실행<br>
+            • Viewer: 읽기 전용
+          </div>
+        </div>
+
+        <!-- 백엔드 호출 -->
+        <div style="background: linear-gradient(135deg, #f5f3ff, #ede9fe); border: 2px solid #8b5cf6; border-radius: 12px; padding: 16px; margin-top: 12px;">
+          <h3 style="color: #6d28d9; margin-bottom: 12px; font-size: 14px;">🔗 백엔드 호출</h3>
+          <div style="font-size: 11px; font-family: 'SF Mono', Monaco, monospace; color: #374151; line-height: 1.8;">
+            <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
+GET /api/v2/projects/:id/team<br>
+→ { "members": [{ "user_id", "email", "role", "joined_at" }] }
+            </code>
+
+            <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
+POST /api/v2/projects/:id/team<br>
+{ "email": "new@example.com", "role": "member" }<br>
+→ { "invite_sent": true }
+            </code>
+
+            <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
+DELETE /api/v2/projects/:id/team/:userId<br>
+→ { "removed": true }
+            </code>
+          </div>
+        </div>
+
+        <div class="step-nav">
+          <a href="index.html">← 목록</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

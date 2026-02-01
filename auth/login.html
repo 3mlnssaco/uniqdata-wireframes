@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>로그인 - Wireframe</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, sans-serif; background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 100%); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+
+    .container { width: 100%; max-width: 440px; }
+
+    .card { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 25px 50px rgba(0,0,0,0.3); }
+    .logo { font-size: 28px; font-weight: bold; text-align: center; margin-bottom: 8px; color: #1e40af; }
+    .subtitle { text-align: center; color: #6b7280; margin-bottom: 32px; font-size: 14px; }
+
+    /* 스텝 인디케이터 */
+    .login-steps { display: flex; justify-content: center; gap: 8px; margin-bottom: 28px; }
+    .login-step { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+    .login-step .num { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; background: #e5e7eb; color: #9ca3af; }
+    .login-step.active .num { background: #3b82f6; color: white; }
+    .login-step.done .num { background: #22c55e; color: white; }
+    .login-step .label { font-size: 10px; color: #9ca3af; }
+    .login-step.active .label { color: #3b82f6; font-weight: 500; }
+    .login-step.done .label { color: #22c55e; }
+    .step-line { width: 40px; height: 2px; background: #e5e7eb; margin-top: 14px; }
+    .step-line.done { background: #22c55e; }
+
+    .form-group { margin-bottom: 20px; }
+    label { display: block; font-size: 14px; font-weight: 500; margin-bottom: 8px; color: #374151; }
+    .input { width: 100%; height: 48px; border: 1px solid #e5e7eb; border-radius: 10px; padding: 0 16px; font-size: 14px; transition: all 0.2s; }
+    .input:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
+    .input.filled { border-color: #22c55e; background: #f0fdf4; }
+
+    .btn { width: 100%; height: 52px; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: all 0.2s; }
+    .btn-primary { background: #3b82f6; color: white; border: none; }
+    .btn-primary:hover { background: #2563eb; }
+    .btn-passkey { background: linear-gradient(135deg, #8b5cf6, #6366f1); color: white; border: none; }
+    .btn-passkey:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(139, 92, 246, 0.3); }
+    .btn-secondary { background: white; border: 2px solid #e5e7eb; color: #374151; }
+    .btn-secondary:hover { background: #f9fafb; border-color: #d1d5db; }
+
+    .divider { text-align: center; color: #9ca3af; margin: 24px 0; font-size: 13px; position: relative; }
+    .divider::before, .divider::after { content: ''; position: absolute; top: 50%; width: 40%; height: 1px; background: #e5e7eb; }
+    .divider::before { left: 0; }
+    .divider::after { right: 0; }
+
+    .help-section { background: #fef3c7; border: 1px solid #fcd34d; border-radius: 12px; padding: 16px; margin-top: 24px; }
+    .help-section h4 { font-size: 13px; font-weight: 600; color: #92400e; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+    .help-section p { font-size: 12px; color: #92400e; line-height: 1.6; margin-bottom: 10px; }
+    .help-link { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: #3b82f6; text-decoration: none; font-weight: 500; }
+    .help-link:hover { text-decoration: underline; }
+
+    .signup-link { text-align: center; margin-top: 24px; font-size: 14px; color: #6b7280; }
+    .signup-link a { color: #3b82f6; text-decoration: none; font-weight: 500; }
+    .signup-link a:hover { text-decoration: underline; }
+
+    .nav-links { display: flex; gap: 10px; margin-top: 24px; padding-top: 20px; border-top: 1px solid #f3f4f6; justify-content: center; flex-wrap: wrap; }
+    .nav-links a { padding: 6px 12px; background: #f1f5f9; border-radius: 6px; text-decoration: none; color: #64748b; font-size: 12px; }
+    .nav-links a:hover { background: #e2e8f0; }
+
+    /* 디자이너 노트 */
+    .designer-note { background: linear-gradient(135deg, #fdf4ff, #fae8ff); border: 2px solid #d946ef; border-radius: 12px; padding: 16px; margin-top: 24px; }
+    .designer-note h3 { color: #a21caf; margin-bottom: 10px; font-size: 13px; }
+    .designer-note .content { font-size: 11px; color: #374151; line-height: 1.6; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <div class="logo">UniQdata</div>
+      <p class="subtitle">Enterprise 포털에 로그인하세요</p>
+
+      <!-- 로그인 스텝 -->
+      <div class="login-steps">
+        <div class="login-step active">
+          <div class="num">1</div>
+          <div class="label">이메일</div>
+        </div>
+        <div class="step-line"></div>
+        <div class="login-step">
+          <div class="num">2</div>
+          <div class="label">인증</div>
+        </div>
+        <div class="step-line"></div>
+        <div class="login-step">
+          <div class="num">3</div>
+          <div class="label">패스키</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>이메일</label>
+        <input type="email" class="input" placeholder="name@company.com" value="researcher@example.com">
+      </div>
+
+      <div class="form-group">
+        <label>비밀번호</label>
+        <input type="password" class="input" placeholder="비밀번호 입력">
+      </div>
+
+      <button class="btn btn-primary" style="margin-bottom: 16px;">
+        다음: 이메일 인증
+      </button>
+
+      <div class="divider">또는</div>
+
+      <button class="btn btn-passkey">
+        <span>🔐</span>
+        <span>패스키로 바로 로그인</span>
+      </button>
+
+      <!-- 패스키 분실 안내 -->
+      <div class="help-section">
+        <h4>⚠️ 패스키를 분실했나요?</h4>
+        <p>
+          패스키가 등록된 기기를 분실하거나 접근할 수 없는 경우,
+          이메일 + 비밀번호 인증 후 새 패스키를 등록할 수 있습니다.
+        </p>
+        <a href="#" class="help-link">
+          → 패스키 복구 절차 안내
+        </a>
+      </div>
+
+      <p class="signup-link">
+        계정이 없으신가요? <a href="signup.html">회원가입</a>
+      </p>
+
+      <div class="nav-links">
+        <a href="../index.html">← 와이어프레임 목록</a>
+        <a href="../research/list.html">연구 허브 →</a>
+        <a href="signup.html">회원가입 →</a>
+      </div>
+
+      <!-- 디자이너 노트 -->
+      <div class="designer-note">
+        <h3>📋 디자이너 노트: 로그인</h3>
+        <div class="content">
+          <strong>로그인 플로우 (3단계):</strong><br>
+          1. <strong>이메일 + 비밀번호</strong>: 기본 인증<br>
+          2. <strong>이메일 인증 코드</strong>: 2차 인증 (6자리 코드)<br>
+          3. <strong>패스키 인증</strong>: 생체인증으로 최종 확인<br><br>
+
+          <strong>또는 빠른 로그인:</strong><br>
+          • 패스키만으로 바로 로그인 가능 (이메일+비번 스킵)<br>
+          • Resident Key가 있으면 이메일 입력도 필요 없음<br><br>
+
+          <strong>패스키 분실 복구:</strong><br>
+          1. 이메일 + 비밀번호로 로그인 시도<br>
+          2. 이메일 인증 코드 입력<br>
+          3. 패스키 없음 → "새 패스키 등록" 옵션 제공<br>
+          4. 새 기기에서 패스키 재등록<br><br>
+
+          <strong>보안 포인트:</strong><br>
+          • 패스키 없이는 민감 작업 불가 (에스크로 등)<br>
+          • 복구 시에도 3단계 인증 필요<br>
+          • 지갑 시드는 새 패스키의 PRF로 재암호화
+        </div>
+      </div>
+
+      <!-- 기능 명세 -->
+      <div style="background: linear-gradient(135deg, #ecfdf5, #d1fae5); border: 2px solid #10b981; border-radius: 12px; padding: 16px; margin-top: 12px;">
+        <h3 style="color: #047857; margin-bottom: 12px; font-size: 14px;">⚙️ 기능 명세</h3>
+        <div style="font-size: 12px; color: #374151; line-height: 1.8;">
+          <strong>로그인 방식:</strong><br>
+          • 패스키 바로 로그인 (생체인증만)<br>
+          • 이메일 + 비밀번호 → 이메일 인증 → 패스키<br><br>
+
+          <strong>패스키 분실 복구:</strong><br>
+          1. 이메일 + 비밀번호 인증<br>
+          2. 이메일 인증 코드 입력<br>
+          3. 새 패스키 등록 옵션 제공<br>
+          4. 새 PRF로 지갑 시드 재암호화
+        </div>
+      </div>
+
+      <!-- 백엔드 호출 -->
+      <div style="background: linear-gradient(135deg, #f5f3ff, #ede9fe); border: 2px solid #8b5cf6; border-radius: 12px; padding: 16px; margin-top: 12px;">
+        <h3 style="color: #6d28d9; margin-bottom: 12px; font-size: 14px;">🔗 백엔드 호출</h3>
+        <div style="font-size: 11px; font-family: 'SF Mono', Monaco, monospace; color: #374151; line-height: 1.8;">
+          <strong style="font-family: -apple-system, sans-serif;">1. 패스키 인증 옵션:</strong><br>
+          <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
+POST /api/v2/auth/passkey/auth-options<br>
+{ "email": "researcher@example.com" } // 또는 빈 객체 (Resident Key)<br>
+→ { challenge, rpId, allowCredentials, extensions: { prf: true } }
+          </code>
+
+          <strong style="font-family: -apple-system, sans-serif;">2. 패스키 인증 완료:</strong><br>
+          <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
+POST /api/v2/auth/passkey/authenticate<br>
+{ "credential": { id, type, response, clientExtensionResults } }<br>
+→ { "access_token": "jwt...", "refresh_token": "...", "user": {...} }
+          </code>
+
+          <strong style="font-family: -apple-system, sans-serif;">3. 이메일 + 비밀번호 로그인:</strong><br>
+          <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
+POST /api/v2/auth/login<br>
+{ "email": "...", "password": "..." }<br>
+→ { "requires_email_code": true, "session_token": "temp..." }
+          </code>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
