@@ -4,25 +4,50 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>결제/에스크로 - Wireframe</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --bg: #f5f5f5;
+      --card: #ffffff;
+      --ink: #111827;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --primary: #2563eb;
+      --success: #16a34a;
+      --warning: #d97706;
+      --danger: #dc2626;
+      --shadow: 0 12px 24px rgba(15, 23, 42, 0.08);
+    }
+
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: -apple-system, sans-serif; background: #f5f5f5; }
+    body { font-family: 'Noto Sans KR', -apple-system, sans-serif; background: var(--bg); color: var(--ink); }
     .layout { display: flex; min-height: 100vh; }
-    .sidebar { width: 240px; background: #1a1a1a; color: white; padding: 20px; }
+    .sidebar { width: 240px; background: #0f172a; color: white; padding: 20px; }
     .logo { font-size: 18px; font-weight: bold; margin-bottom: 30px; padding: 10px; }
-    .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 8px; margin-bottom: 4px; color: #9ca3af; }
-    .nav-item.active { background: #3b82f6; color: white; }
+    .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 8px; margin-bottom: 4px; color: #9ca3af; text-decoration: none; }
+    .nav-item.active { background: #2563eb; color: white; }
     .main { flex: 1; }
-    .content { padding: 24px; }
+    .content { padding: 24px; max-width: 1200px; margin: 0 auto; }
+
     h1 { font-size: 24px; margin-bottom: 8px; }
-    .subtitle { color: #6b7280; margin-bottom: 24px; }
+    .subtitle { color: var(--muted); margin-bottom: 20px; }
+    .page-header { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap; }
+
+    .toolbar { display: flex; flex-wrap: wrap; gap: 8px; }
+    .input, .select, .btn { height: 36px; border-radius: 8px; border: 1px solid var(--border); padding: 0 12px; font-size: 13px; background: white; }
+    .btn { background: #111827; color: white; cursor: pointer; border: none; display: inline-flex; align-items: center; justify-content: center; text-decoration: none; }
+    .btn.secondary { background: #e2e8f0; color: #111827; }
+
+    .overview-grid { display: grid; grid-template-columns: 1.6fr 1fr 1fr; gap: 16px; margin-bottom: 20px; }
 
     .wallet-card {
-      background: linear-gradient(135deg, #1f2937, #111827);
+      background: linear-gradient(135deg, #1f2937, #0f172a);
       color: white;
       padding: 24px;
       border-radius: 16px;
-      margin-bottom: 24px;
+      box-shadow: var(--shadow);
     }
     .wallet-label { font-size: 12px; color: #9ca3af; }
     .wallet-balance { font-size: 32px; font-weight: bold; margin: 8px 0; }
@@ -31,23 +56,133 @@
     .wallet-status { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
     .status-dot { width: 8px; height: 8px; background: #4ade80; border-radius: 50%; }
 
-    .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
-    .action-btn { background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 20px; cursor: pointer; text-align: left; }
-    .action-btn:hover { border-color: #3b82f6; }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; box-shadow: var(--shadow); }
+    .card-header { padding: 16px 20px; border-bottom: 1px solid var(--border); font-weight: 600; }
+    .card-body { padding: 16px 20px; }
+
+    .summary-item { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px; }
+    .summary-item span:last-child { font-weight: 600; }
+
+    .actions-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
+    .action-btn { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 16px; cursor: pointer; text-align: left; display: block; text-decoration: none; color: inherit; }
+    .action-btn:hover { border-color: var(--primary); }
     .action-icon { width: 40px; height: 40px; border-radius: 8px; margin-bottom: 12px; }
+    .action-title { font-weight: 600; }
+    .action-desc { font-size: 13px; color: var(--muted); margin-top: 4px; }
+    .action-tag { display: inline-block; margin-top: 8px; font-size: 11px; padding: 3px 8px; border-radius: 999px; background: #fee2e2; color: #991b1b; }
 
-    .card { background: white; border: 1px solid #e5e7eb; border-radius: 12px; }
-    .card-header { padding: 16px 20px; border-bottom: 1px solid #e5e7eb; font-weight: 600; }
-    .tx-row { display: flex; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid #f3f4f6; }
-    .tx-row:last-child { border: none; }
-    .tx-desc { font-weight: 500; }
-    .tx-time { font-size: 14px; color: #6b7280; }
-    .tx-amount { font-weight: 600; }
-    .tx-amount.positive { color: #16a34a; }
+    .split-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-bottom: 20px; }
 
-    .note { background: #fef3c7; border: 1px solid #fcd34d; padding: 12px; border-radius: 8px; font-size: 13px; margin-top: 24px; }
+    .table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .table th { text-align: left; color: var(--muted); font-weight: 500; padding: 10px 8px; border-bottom: 1px solid var(--border); }
+    .table td { padding: 12px 8px; border-bottom: 1px solid #f3f4f6; vertical-align: middle; }
+    .badge { display: inline-block; padding: 3px 8px; border-radius: 999px; font-size: 11px; font-weight: 600; }
+    .badge.success { background: #dcfce7; color: #166534; }
+    .badge.warn { background: #fef3c7; color: #92400e; }
+    .badge.fail { background: #fee2e2; color: #991b1b; }
+    .badge.neutral { background: #e2e8f0; color: #334155; }
+
+    .progress { background: #e5e7eb; height: 8px; border-radius: 999px; overflow: hidden; margin: 8px 0 12px; }
+    .progress span { display: block; height: 100%; background: #22c55e; width: 92%; }
+
+    .alert { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f3f4f6; font-size: 13px; }
+    .alert:last-child { border: none; }
+    .alert button { border: 1px solid var(--border); background: #f8fafc; padding: 6px 10px; border-radius: 6px; font-size: 12px; }
+
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .field { display: flex; flex-direction: column; gap: 6px; font-size: 12px; color: var(--muted); }
+    .field input, .field select { height: 36px; border-radius: 8px; border: 1px solid var(--border); padding: 0 10px; font-size: 13px; }
+    .full { grid-column: 1 / -1; }
+
+    .otp { display: flex; gap: 6px; }
+    .otp span { width: 32px; height: 36px; border: 1px solid var(--border); border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; font-weight: 600; color: #94a3b8; }
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.6);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      z-index: 50;
+    }
+    .modal-overlay:target { display: flex; }
+    .modal {
+      background: white;
+      border-radius: 16px;
+      width: min(920px, 96vw);
+      max-height: 92vh;
+      overflow: auto;
+      box-shadow: 0 24px 60px rgba(15, 23, 42, 0.3);
+      border: 1px solid var(--border);
+    }
+    .modal-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .modal-title { font-weight: 700; font-size: 16px; }
+    .modal-close {
+      text-decoration: none;
+      font-size: 12px;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      padding: 6px 10px;
+      border-radius: 8px;
+      background: #f8fafc;
+    }
+    .modal-body {
+      padding: 20px;
+      display: grid;
+      grid-template-columns: 1.3fr 0.9fr;
+      gap: 16px;
+    }
+    .modal-section {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      background: #fff;
+    }
+    .step-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      color: #1e40af;
+      background: #dbeafe;
+      padding: 4px 10px;
+      border-radius: 999px;
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+    .modal-summary {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .note { background: #fef3c7; border: 1px solid #fcd34d; padding: 12px; border-radius: 8px; font-size: 13px; margin-top: 20px; }
+
     .step-nav { display: flex; gap: 10px; margin-top: 20px; }
     .step-nav a { padding: 8px 16px; background: #eee; border-radius: 6px; text-decoration: none; color: #333; font-size: 14px; }
+
+    @media (max-width: 1100px) {
+      .overview-grid { grid-template-columns: 1fr; }
+      .actions-grid { grid-template-columns: repeat(2, 1fr); }
+      .split-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 720px) {
+      .layout { flex-direction: column; }
+      .sidebar { width: 100%; }
+      .actions-grid { grid-template-columns: 1fr; }
+      .toolbar { width: 100%; }
+      .input, .select { flex: 1; }
+    }
   </style>
 </head>
 <body>
@@ -63,80 +198,246 @@
 
     <div class="main">
       <div class="content">
-        <h1>결제/에스크로</h1>
-        <p class="subtitle">XRPL 지갑과 에스크로 관리</p>
+        <div class="page-header">
+          <div>
+            <h1>결제/에스크로</h1>
+            <p class="subtitle">연구별 지출/정산 추적, 외부 입출금, 이체 인증 흐름</p>
+          </div>
+          <div class="toolbar">
+            <input class="input" placeholder="연구/트랜잭션 검색">
+            <select class="select">
+              <option>최근 30일</option>
+              <option>최근 90일</option>
+              <option>올해</option>
+            </select>
+            <select class="select">
+              <option>전체 상태</option>
+              <option>검증 완료</option>
+              <option>미검증</option>
+              <option>불일치</option>
+            </select>
+            <button class="btn">CSV 내보내기</button>
+          </div>
+        </div>
 
-        <!-- 지갑 카드 -->
-        <div class="wallet-card">
-          <div class="wallet-label">XRPL 지갑</div>
-          <div class="wallet-balance">45,000 XRP</div>
-          <div class="wallet-usd">≈ $22,500 USD</div>
-          <div class="wallet-address">rKx7vN...3pQm</div>
-          <div class="wallet-status">
-            <span class="status-dot"></span>
-            <span style="font-size: 14px;">연결됨</span>
+        <!-- 개요 -->
+        <div class="overview-grid">
+          <div class="wallet-card">
+            <div class="wallet-label">운영 지갑 (XRPL)</div>
+            <div class="wallet-balance">45,000 XRP</div>
+            <div class="wallet-usd">≈ $22,500 USD</div>
+            <div class="wallet-address">rKx7vN...3pQm</div>
+            <div class="wallet-status">
+              <span class="status-dot"></span>
+              <span style="font-size: 14px;">연결됨</span>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">에스크로 요약</div>
+            <div class="card-body">
+              <div class="summary-item"><span>잠금 중(연구)</span><span>18,500 XRP</span></div>
+              <div class="summary-item"><span>정산 대기</span><span>2,300 XRP</span></div>
+              <div class="summary-item"><span>환불 예정</span><span>1,150 XRP</span></div>
+              <div class="summary-item"><span>사용 가능</span><span>23,050 XRP</span></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">검증 상태</div>
+            <div class="card-body">
+              <div style="font-size: 12px; color: var(--muted);">내부 원장 vs 온체인 대사</div>
+              <div class="progress"><span></span></div>
+              <div style="display: flex; justify-content: space-between; font-size: 12px; color: var(--muted);">
+                <span>매칭률 92%</span>
+                <span>불일치 3건</span>
+              </div>
+            </div>
           </div>
         </div>
 
         <!-- 액션 -->
-        <div class="actions">
+        <div class="actions-grid">
           <div class="action-btn">
             <div class="action-icon" style="background: #dcfce7;"></div>
-            <div style="font-weight: 600;">충전</div>
-            <div style="font-size: 14px; color: #6b7280;">XRP 입금</div>
+            <div class="action-title">입금</div>
+            <div class="action-desc">외부 지갑에서 충전</div>
+          </div>
+          <a class="action-btn" href="#withdraw-modal">
+            <div class="action-icon" style="background: #dbeafe;"></div>
+            <div class="action-title">출금/이체</div>
+            <div class="action-desc">외부 지갑으로 전송 (팝업)</div>
+            <div class="action-tag">이메일 + Passkey 인증</div>
+          </a>
+          <div class="action-btn">
+            <div class="action-icon" style="background: #fef3c7;"></div>
+            <div class="action-title">연구 에스크로 예치</div>
+            <div class="action-desc">연구별 예산 잠금</div>
           </div>
           <div class="action-btn">
-            <div class="action-icon" style="background: #dbeafe;"></div>
-            <div style="font-weight: 600;">출금</div>
-            <div style="font-size: 14px; color: #6b7280;">외부 지갑으로 전송</div>
+            <div class="action-icon" style="background: #e0e7ff;"></div>
+            <div class="action-title">참여자 정산</div>
+            <div class="action-desc">지급 배치 실행</div>
+            <div class="action-tag">검증 후 실행</div>
           </div>
         </div>
 
-        <!-- 거래 내역 -->
+        <!-- 연구별 원장 + 검증 -->
+        <div class="split-grid">
+          <div class="card">
+            <div class="card-header">연구별 지출/정산 원장</div>
+            <div class="card-body">
+              <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px;">
+                <span class="badge neutral">내 지갑 출금만</span>
+                <span class="badge neutral">연구: 전체</span>
+                <span class="badge neutral">유형: 전체</span>
+              </div>
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>연구</th>
+                    <th>유형</th>
+                    <th>금액</th>
+                    <th>지갑</th>
+                    <th>검증</th>
+                    <th>TX</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>당뇨 환자 식습관 연구</td>
+                    <td><span class="badge warn">예치</span></td>
+                    <td>-5,000 XRP</td>
+                    <td>운영 지갑</td>
+                    <td><span class="badge success">온체인 매칭</span></td>
+                    <td>9A3F...2C1</td>
+                  </tr>
+                  <tr>
+                    <td>수면-혈당 상관 연구</td>
+                    <td><span class="badge neutral">정산</span></td>
+                    <td>-600 XRP</td>
+                    <td>에스크로</td>
+                    <td><span class="badge warn">검증 대기</span></td>
+                    <td>요청 #124</td>
+                  </tr>
+                  <tr>
+                    <td>운동 습관 연구</td>
+                    <td><span class="badge neutral">환불</span></td>
+                    <td>+320 XRP</td>
+                    <td>에스크로</td>
+                    <td><span class="badge fail">불일치</span></td>
+                    <td>7B11...8D9</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">검증/대사 알림</div>
+            <div class="card-body">
+              <div class="alert">
+                <div>
+                  <div style="font-weight: 600;">TX 7B11...8D9</div>
+                  <div style="color: var(--muted); font-size: 12px;">연구: 운동 습관 연구 · 환불</div>
+                </div>
+                <button>재검증</button>
+              </div>
+              <div class="alert">
+                <div>
+                  <div style="font-weight: 600;">요청 #124</div>
+                  <div style="color: var(--muted); font-size: 12px;">정산 배치 승인 대기</div>
+                </div>
+                <button>승인</button>
+              </div>
+              <div class="alert">
+                <div>
+                  <div style="font-weight: 600;">입금 지연</div>
+                  <div style="color: var(--muted); font-size: 12px;">외부 지갑 입금 2건 미매칭</div>
+                </div>
+                <button>확인</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 출금 팝업 안내 -->
         <div class="card">
-          <div class="card-header">최근 거래</div>
-          <div class="tx-row">
-            <div>
-              <div class="tx-desc">에스크로 예치 - 당뇨병 연구</div>
-              <div class="tx-time">2시간 전</div>
+          <div class="card-header">출금/이체는 팝업으로 진행</div>
+          <div class="card-body">
+            <div class="summary-item"><span>Step 1</span><span>출금 정보 입력 + 요약 확인</span></div>
+            <div class="summary-item"><span>Step 2</span><span>이메일 OTP 인증</span></div>
+            <div class="summary-item"><span>Step 3</span><span>Passkey 서명</span></div>
+            <div style="display: flex; align-items: center; gap: 10px; margin-top: 12px;">
+              <a class="btn" href="#withdraw-modal">출금 팝업 열기</a>
+              <span style="font-size: 12px; color: var(--muted);">팝업에서 입력/인증까지 완료</span>
             </div>
-            <div class="tx-amount">-5,000 XRP</div>
           </div>
-          <div class="tx-row">
-            <div>
-              <div class="tx-desc">참여자 정산 (10명)</div>
-              <div class="tx-time">5시간 전</div>
-            </div>
-            <div class="tx-amount">-500 XRP</div>
-          </div>
-          <div class="tx-row">
-            <div>
-              <div class="tx-desc">XRP 입금</div>
-              <div class="tx-time">어제</div>
-            </div>
-            <div class="tx-amount positive">+10,000 XRP</div>
+        </div>
+
+        <!-- 외부 입출금 내역 -->
+        <div class="card">
+          <div class="card-header">외부 입출금 내역</div>
+          <div class="card-body">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>유형</th>
+                  <th>금액</th>
+                  <th>상태</th>
+                  <th>지갑</th>
+                  <th>TX</th>
+                  <th>시간</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>입금</td>
+                  <td>+10,000 XRP</td>
+                  <td><span class="badge success">확인됨</span></td>
+                  <td>운영 지갑</td>
+                  <td>9F1C...AA2</td>
+                  <td>오늘 10:12</td>
+                </tr>
+                <tr>
+                  <td>출금</td>
+                  <td>-2,000 XRP</td>
+                  <td><span class="badge warn">승인 대기</span></td>
+                  <td>운영 지갑</td>
+                  <td>요청 #221</td>
+                  <td>어제 19:30</td>
+                </tr>
+                <tr>
+                  <td>입금</td>
+                  <td>+3,500 XRP</td>
+                  <td><span class="badge fail">미매칭</span></td>
+                  <td>운영 지갑</td>
+                  <td>4C0A...9D1</td>
+                  <td>2일 전</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
 
         <div class="note">
-          <strong>결제/에스크로</strong> - XRPL 지갑 잔액, 충전/출금, 거래 내역. Phase 2.
+          <strong>결제/에스크로</strong> - 연구별 지출/정산 원장, 온체인 검증, 외부 입출금 및 MFA 기반 이체 흐름.
         </div>
 
         <!-- 기능 명세 -->
-        <div style="background: linear-gradient(135deg, #ecfdf5, #d1fae5); border: 2px solid #10b981; border-radius: 12px; padding: 16px; margin-top: 20px;">
+        <div style="background: linear-gradient(135deg, #ecfdf5, #d1fae5); border: 2px solid #10b981; border-radius: 12px; padding: 16px; margin-top: 16px;">
           <h3 style="color: #047857; margin-bottom: 12px; font-size: 14px;">⚙️ 기능 명세</h3>
           <div style="font-size: 12px; color: #374151; line-height: 1.8;">
             <strong>핵심 기능:</strong><br>
-            • XRPL 지갑 잔액 표시<br>
-            • XRP 충전 (외부 지갑에서 송금)<br>
-            • XRP 출금 (외부 지갑으로 송금)<br>
-            • 거래 내역 조회<br>
-            • 에스크로 상태 확인<br><br>
+            • 연구별 지출/정산 원장 (내부 원장 + 온체인 매칭)<br>
+            • XRPL 지갑 입금/출금, 에스크로 예치/해제<br>
+            • 외부 이체 시 이메일 OTP + Passkey MFA<br>
+            • 불일치 트랜잭션 탐지/재검증<br>
+            • 정산 배치 승인/실행/감사 로그<br><br>
 
-            <strong>에스크로 타입:</strong><br>
-            • 예치: 연구 생성 시<br>
-            • 정산: 참여자 보상 지급<br>
-            • 반환: 연구 종료 시 잔액
+            <strong>검증 흐름:</strong><br>
+            1) 내부 원장 생성 → 2) 온체인 TX 매칭 → 3) 불일치/지연 건 재검증<br>
+            4) 정산 배치 승인 → 5) 지급 완료 후 상태 업데이트
           </div>
         </div>
 
@@ -145,25 +446,106 @@
           <h3 style="color: #6d28d9; margin-bottom: 12px; font-size: 14px;">🔗 백엔드 호출</h3>
           <div style="font-size: 11px; font-family: 'SF Mono', Monaco, monospace; color: #374151; line-height: 1.8;">
             <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
-GET /api/v2/xrpl/wallet<br>
-→ { "address": "rKx7vN...", "balance_xrp": 45000 }
+GET /api/v2/billing/ledger?research_id=...&scope=wallet<br>
+→ { "rows": [{ "type", "amount", "tx_hash", "status" }] }
             </code>
 
             <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
-GET /api/v2/xrpl/transactions?limit=20<br>
-→ { "transactions": [{ "type", "amount", "timestamp", "tx_hash" }] }
+GET /api/v2/billing/reconciliation?status=unmatched<br>
+→ { "items": [{ "tx_hash", "reason" }] }
             </code>
 
             <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
-POST /api/v2/xrpl/withdraw<br>
-{ "destination": "rXXX...", "amount_xrp": 1000 }<br>
-→ { "tx_hash": "A1B2C3...", "status": "pending" }
+POST /api/v2/xrpl/withdraw/request<br>
+{ "destination", "amount_xrp", "purpose" }
+            </code>
+
+            <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
+POST /api/v2/auth/email-otp/send<br>
+POST /api/v2/auth/email-otp/verify
+            </code>
+
+            <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
+POST /api/v2/auth/passkey/challenge<br>
+POST /api/v2/auth/passkey/verify
             </code>
           </div>
         </div>
 
         <div class="step-nav">
           <a href="index.html">← 목록</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 출금/이체 팝업 -->
+  <div id="withdraw-modal" class="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <div>
+          <div class="modal-title">출금/이체 요청</div>
+          <div style="font-size: 12px; color: var(--muted);">팝업에서 입력 → OTP → Passkey 순서로 진행</div>
+        </div>
+        <a href="#" class="modal-close">닫기</a>
+      </div>
+      <div class="modal-body">
+        <div class="modal-section">
+          <div class="step-pill">Step 1 · 출금 정보</div>
+          <div class="form-grid">
+            <div class="field full">
+              <label>출금 대상 지갑</label>
+              <input placeholder="rXXX... 외부 XRPL 주소">
+            </div>
+            <div class="field">
+              <label>금액 (XRP)</label>
+              <input placeholder="1000">
+            </div>
+            <div class="field">
+              <label>수수료</label>
+              <input placeholder="0.12 XRP">
+            </div>
+            <div class="field full">
+              <label>메모/목적</label>
+              <input placeholder="연구 예산 이동 / 외부 정산">
+            </div>
+            <div class="field">
+              <label>출금 방식</label>
+              <select>
+                <option>즉시 출금</option>
+                <option>에스크로 해제 후 출금</option>
+                <option>예약 출금</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>출금 계정</label>
+              <select>
+                <option>운영 지갑</option>
+                              </select>
+            </div>
+            <div class="field full">
+              <button class="btn" style="width: 100%;">요약 확인</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-section">
+          <div class="step-pill">Step 2 · 이메일 OTP</div>
+          <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 12px;">
+            <button class="btn secondary">인증 메일 보내기</button>
+            <span style="font-size: 12px; color: var(--muted);">admin@uniqdata.ai</span>
+          </div>
+          <div class="otp" style="margin-bottom: 14px;">
+            <span>•</span><span>•</span><span>•</span><span>•</span><span>•</span><span>•</span>
+          </div>
+
+          <div class="step-pill">Step 3 · Passkey 서명</div>
+          <button class="btn" style="width: 100%; margin-bottom: 10px;">Passkey로 서명</button>
+          <div class="modal-summary">
+            출금 요약: 1,000 XRP (수수료 0.12 XRP)<br>
+            대상 지갑: rXXX...abcd<br>
+            승인 완료 후 즉시 전송됩니다.
+          </div>
         </div>
       </div>
     </div>

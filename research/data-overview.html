@@ -455,56 +455,57 @@
             </div>
           </div>
 
-          <!-- 데이터 수집률 (인사이트 있던 자리) -->
+          <!-- 데이터 수집률 (세션 단위) -->
           <div class="chart-card">
-            <h3>데이터 수집률</h3>
+            <h3>일일 제출 현황</h3>
             <div class="donut-container">
               <div class="donut">
                 <span class="percent">85%</span>
               </div>
               <div class="donut-legend">
-                <div class="item"><div class="dot complete"></div> 완전 제출: 70명</div>
-                <div class="item"><div class="dot partial"></div> 부분 제출: 12명</div>
-                <div class="item"><div class="dot missing"></div> 미제출: 5명</div>
+                <div class="item"><div class="dot complete"></div> 제출 완료: 70명</div>
+                <div class="item"><div class="dot missing"></div> 미제출: 17명</div>
+                <div style="font-size: 11px; color: #6b7280; margin-top: 8px; padding-top: 8px; border-top: 1px solid #e5e7eb;">
+                  ※ 5개 항목 전부 입력 시 유효
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- 데이터 유형별 현황 -->
+        <!-- 수집 항목 (세션 단위 - 전부 필수) -->
         <div class="chart-card" style="margin-bottom: 24px;">
-          <h3>데이터 유형별 수집 현황</h3>
+          <h3>수집 항목 <span style="font-size: 12px; font-weight: normal; color: #6b7280; margin-left: 8px;">5개 전부 입력 시 유효 레코드</span></h3>
           <div class="data-status-grid">
-            <div class="data-status-item excellent">
+            <div class="data-status-item" style="border-color: #22c55e; background: #f0fdf4;">
               <div class="icon">❤️</div>
               <div class="name">심박수</div>
-              <div class="count">2,610</div>
-              <div class="rate">수집률 100%</div>
+              <div class="count" style="font-size: 13px; color: #22c55e;">필수</div>
             </div>
-            <div class="data-status-item excellent">
+            <div class="data-status-item" style="border-color: #22c55e; background: #f0fdf4;">
               <div class="icon">😴</div>
               <div class="name">수면</div>
-              <div class="count">2,436</div>
-              <div class="rate">수집률 93%</div>
+              <div class="count" style="font-size: 13px; color: #22c55e;">필수</div>
             </div>
-            <div class="data-status-item good">
+            <div class="data-status-item" style="border-color: #22c55e; background: #f0fdf4;">
               <div class="icon">🩸</div>
               <div class="name">혈당</div>
-              <div class="count">2,349</div>
-              <div class="rate">수집률 90%</div>
+              <div class="count" style="font-size: 13px; color: #22c55e;">필수</div>
             </div>
-            <div class="data-status-item good">
+            <div class="data-status-item" style="border-color: #22c55e; background: #f0fdf4;">
               <div class="icon">💊</div>
               <div class="name">복약</div>
-              <div class="count">2,523</div>
-              <div class="rate">수집률 97%</div>
+              <div class="count" style="font-size: 13px; color: #22c55e;">필수</div>
             </div>
-            <div class="data-status-item warning">
+            <div class="data-status-item" style="border-color: #22c55e; background: #f0fdf4;">
               <div class="icon">😊</div>
               <div class="name">기분</div>
-              <div class="count">1,929</div>
-              <div class="rate">수집률 74%</div>
+              <div class="count" style="font-size: 13px; color: #22c55e;">필수</div>
             </div>
+          </div>
+          <div style="margin-top: 16px; padding: 12px; background: #f9fafb; border-radius: 8px; font-size: 13px; color: #374151;">
+            <strong>총 유효 레코드:</strong> 2,047개 (70명 × 평균 29.2일) &nbsp;&nbsp;
+            <strong>보상 지급:</strong> 70명 완료
           </div>
         </div>
 
@@ -589,13 +590,10 @@ Headers: Authorization: Bearer {jwt}<br><br>
 &nbsp;&nbsp;&nbsp;&nbsp;{ "date": "2026-01-01", "count": 245, "k_check": "pass" },<br>
 &nbsp;&nbsp;&nbsp;&nbsp;{ "date": "2026-01-02", "count": 238, "k_check": "pass" }<br>
 &nbsp;&nbsp;],<br>
-&nbsp;&nbsp;"by_type": [<br>
-&nbsp;&nbsp;&nbsp;&nbsp;{ "type": "heart_rate", "count": 2610, "rate": 100.0 },<br>
-&nbsp;&nbsp;&nbsp;&nbsp;{ "type": "sleep", "count": 2436, "rate": 93.3 },<br>
-&nbsp;&nbsp;&nbsp;&nbsp;{ "type": "blood_glucose", "count": 2349, "rate": 90.0 },<br>
-&nbsp;&nbsp;&nbsp;&nbsp;{ "type": "medication", "count": 2523, "rate": 96.7 },<br>
-&nbsp;&nbsp;&nbsp;&nbsp;{ "type": "mood", "count": 1929, "rate": 73.9 }<br>
-&nbsp;&nbsp;],<br>
+&nbsp;&nbsp;"required_fields": ["heart_rate", "sleep", "blood_glucose", "medication", "mood"],<br>
+&nbsp;&nbsp;"valid_records": 2047,  // 5개 전부 입력된 레코드만<br>
+&nbsp;&nbsp;"participants_completed": 70,  // 보상 대상<br>
+&nbsp;&nbsp;"participants_incomplete": 17,  // 미완료<br>
 &nbsp;&nbsp;"heatmap": [  // 일별 수집 강도 (0-4 레벨)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;{ "date": "2026-01-01", "level": 4 },<br>
 &nbsp;&nbsp;&nbsp;&nbsp;{ "date": "2026-01-02", "level": 3 }<br>

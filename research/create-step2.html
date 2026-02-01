@@ -4,16 +4,17 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>연구 생성 Step 2 - 설계 확인 - Wireframe</title>
+  <link rel="stylesheet" href="ai-chat-panel.css">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: -apple-system, sans-serif; background: #f5f5f5; }
-    .layout { display: flex; min-height: 100vh; }
+    .layout { display: flex; min-height: 100vh; width: 100%; flex-wrap: nowrap; }
     .sidebar { width: 240px; background: #1a1a1a; color: white; padding: 20px; flex-shrink: 0; }
     .logo { font-size: 18px; font-weight: bold; margin-bottom: 30px; padding: 10px; }
     .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 8px; margin-bottom: 4px; color: #9ca3af; }
     .nav-item.active { background: #3b82f6; color: white; }
 
-    .main { flex: 1; padding: 32px; max-width: 900px; margin: 0 auto; }
+    .main { flex: 1 1 auto; padding: 32px; min-width: 0; }
     .main h1 { font-size: 28px; margin-bottom: 8px; }
     .main .subtitle { color: #6b7280; margin-bottom: 32px; }
 
@@ -119,32 +120,32 @@
         </div>
         <div class="card-body">
           <div class="methodology-grid">
-            <div class="methodology-item">
+            <div class="methodology-item" data-id="prospective_cohort">
               <h4>전향적 코호트</h4>
               <p>시간에 따른 추적 관찰</p>
               <div class="tags"><span class="tag">시계열 분석</span><span class="tag">트렌드 예측</span></div>
             </div>
-            <div class="methodology-item selected">
+            <div class="methodology-item selected" data-id="rct">
               <h4>RCT</h4>
               <p>무작위 대조 시험</p>
               <div class="tags"><span class="tag">그룹 비교</span><span class="tag">효과 크기</span></div>
             </div>
-            <div class="methodology-item">
+            <div class="methodology-item" data-id="smart">
               <h4>SMART</h4>
               <p>적응형 다단계 배정</p>
               <div class="tags"><span class="tag">적응형 분석</span><span class="tag">최적 경로</span></div>
             </div>
-            <div class="methodology-item">
+            <div class="methodology-item" data-id="mrt">
               <h4>MRT</h4>
               <p>마이크로 무작위 시험</p>
               <div class="tags"><span class="tag">JITAI</span><span class="tag">순간 효과</span></div>
             </div>
-            <div class="methodology-item">
+            <div class="methodology-item" data-id="n_of_1">
               <h4>N-of-1</h4>
               <p>단일 피험자 반복 측정</p>
               <div class="tags"><span class="tag">개인화</span><span class="tag">맞춤 치료</span></div>
             </div>
-            <div class="methodology-item">
+            <div class="methodology-item" data-id="cross_sectional">
               <h4>횡단 조사</h4>
               <p>한 시점 스냅샷</p>
               <div class="tags"><span class="tag">분포 분석</span><span class="tag">세그먼트</span></div>
@@ -184,19 +185,19 @@
         <div class="card-body">
           <label>연령</label>
           <div class="condition-row">
-            <input type="number" class="input-small ai-filled" value="30">
+            <input type="number" class="input-small ai-filled" value="30" data-field="age_min" id="age-min">
             <span>세 ~</span>
-            <input type="number" class="input-small ai-filled" value="60">
+            <input type="number" class="input-small ai-filled" value="60" data-field="age_max" id="age-max">
             <span>세</span>
           </div>
 
           <label>건강 조건</label>
-          <div class="chip-group">
-            <div class="chip selected">제2형 당뇨</div>
-            <div class="chip">고혈압</div>
-            <div class="chip">고지혈증</div>
-            <div class="chip">비만</div>
-            <div class="chip selected">CGM 사용자</div>
+          <div class="chip-group" id="condition-chips">
+            <div class="chip selected" data-id="diabetes_t2">제2형 당뇨</div>
+            <div class="chip" data-id="hypertension">고혈압</div>
+            <div class="chip" data-id="hyperlipidemia">고지혈증</div>
+            <div class="chip" data-id="obesity">비만</div>
+            <div class="chip selected" data-id="cgm_user">CGM 사용자</div>
           </div>
 
           <div class="info-box">
@@ -395,7 +396,54 @@ Request Body:<br>
         </div>
       </div>
     </div>
+
+    <!-- AI 채팅 패널 -->
+    <aside class="ai-chat-panel">
+      <div class="ai-chat-header">
+        <div class="title">
+          <span class="icon">🤖</span>
+          AI 연구 설계 어시스턴트
+        </div>
+        <div class="subtitle">자연어로 설정을 변경할 수 있어요</div>
+      </div>
+
+      <!-- 현재 컨텍스트 -->
+      <div class="ai-context-card">
+        <div class="label">현재 연구</div>
+        <div class="value">저탄수화물 식단의 혈당 변동 개선 효과 연구</div>
+        <div class="ai-context-chips">
+          <span class="ai-context-chip active">RCT</span>
+          <span class="ai-context-chip active">30-60세</span>
+          <span class="ai-context-chip active">당뇨</span>
+        </div>
+      </div>
+
+      <!-- 채팅 메시지 -->
+      <div class="ai-chat-messages" id="ai-chat-messages">
+        <!-- 메시지가 여기에 동적으로 추가됨 -->
+      </div>
+
+      <!-- 빠른 액션 -->
+      <div class="ai-quick-actions">
+        <div class="label">빠른 설정</div>
+        <div class="ai-quick-chips">
+          <span class="ai-quick-chip" data-action="methodology_rct">RCT로 변경</span>
+          <span class="ai-quick-chip" data-action="methodology_cohort">코호트로 변경</span>
+          <span class="ai-quick-chip" data-action="age40">40대 이상</span>
+          <span class="ai-quick-chip" data-action="diabetes">당뇨 환자</span>
+        </div>
+      </div>
+
+      <!-- 입력 -->
+      <div class="ai-chat-input">
+        <div class="ai-input-wrapper">
+          <input type="text" id="ai-chat-input" placeholder="예: 연구 기간을 90일로 늘려줘">
+          <button class="ai-send-btn" id="ai-send-btn">➤</button>
+        </div>
+      </div>
+    </aside>
   </div>
   <script src="page-spec.js"></script>
+  <script src="ai-chat-panel.js"></script>
 </body>
 </html>

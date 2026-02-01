@@ -33,6 +33,7 @@
     .badge.p0 { background: #dcfce7; color: #166534; }
     .badge.p1 { background: #dbeafe; color: #1e40af; }
     .badge.p2 { background: #f3e8ff; color: #6b21a8; }
+    .badge.p3 { background: #fee2e2; color: #991b1b; }
     .badge.new { background: #fef3c7; color: #92400e; }
     .badge.ai { background: #8b5cf6; color: white; }
     .card.highlight { border: 2px solid #8b5cf6; }
@@ -259,7 +260,7 @@
   </style>
 </head>
 <body>
-  <h1>UniQdata Enterprise Wireframes</h1>
+  <h1>UniQdata Enterprise - Wireframes</h1>
   <p class="subtitle">디자이너 참고용 와이어프레임. 클릭하면 각 화면으로 이동합니다.</p>
 
   <div class="view-tabs" role="tablist" aria-label="Wireframe Views">
@@ -271,62 +272,10 @@
   <section class="tab-section is-active" data-tab="concept">
     <!-- 컨셉별 보기 -->
     <h2 id="by-concept">🧩 컨셉별 보기</h2>
-    <div class="group-note">현재 우선순위 흐름: 회원가입 → 연구 세션 생성 → 수집 데이터 확정 → 데이터 구매 → 데이터 조회 → 출력</div>
+    <div class="group-note">현재 우선순위 흐름: 연구 세션 생성 → 수집 데이터 확정 → 데이터 구매</div>
 
-    <div class="group-title">1) 회원가입 / 로그인</div>
+    <div class="group-title">1) 연구 세션 생성</div>
     <div class="grid">
-    <a href="auth/signup.html" class="card">
-      <h3>Step 1: 회원 유형</h3>
-      <p>기관/개인 선택</p>
-      <span class="badge p0">Phase 0</span>
-    </a>
-    <a href="auth/signup-step2.html" class="card">
-      <h3>Step 2: 이메일 인증</h3>
-      <p>이메일 입력 → 인증 코드</p>
-      <span class="badge p0">Phase 0</span>
-    </a>
-    <a href="auth/signup-step3.html" class="card">
-      <h3>Step 3: 비밀번호</h3>
-      <p>비밀번호 설정 (강도 표시)</p>
-      <span class="badge p0">Phase 0</span>
-    </a>
-    <a href="auth/signup-step4.html" class="card">
-      <h3>Step 4: 패스키 안내</h3>
-      <p>패스키 소개 및 장점 설명</p>
-      <span class="badge p0">Phase 0</span>
-    </a>
-    <a href="auth/signup-step5.html" class="card">
-      <h3>Step 5: 패스키 등록</h3>
-      <p>WebAuthn 생체인증으로 패스키 생성</p>
-      <span class="badge p0">Phase 0</span>
-    </a>
-    <a href="auth/signup-step6.html" class="card">
-      <h3>Step 6: 블록체인 연동</h3>
-      <p>XRPL 앵커링 (챌린지→서명→전송→완료)</p>
-      <span class="badge p0">Phase 0</span>
-      <span class="badge new">NEW</span>
-    </a>
-    <a href="auth/signup-step7.html" class="card">
-      <h3>Step 7: 완료</h3>
-      <p>가입 완료 + 설정 요약 + 연구 허브 이동</p>
-      <span class="badge p0">Phase 0</span>
-      <span class="badge new">NEW</span>
-    </a>
-    <a href="auth/login.html" class="card">
-      <h3>로그인</h3>
-      <p>패스키 인증 로그인</p>
-      <span class="badge p0">Phase 0</span>
-    </a>
-    </div>
-
-    <div class="group-title">2) 연구 세션 생성</div>
-    <div class="grid">
-    <a href="research/list.html" class="card highlight">
-      <h3>연구 허브</h3>
-      <p>로그인 후 첫 화면<br>내 할 일 + 연구 카드 + 빠른 액션</p>
-      <span class="badge p0">Phase 0</span>
-      <span class="badge" style="background: #dcfce7; color: #166534;">통합</span>
-    </a>
     <a href="research/create.html" class="card highlight">
       <h3>Step 1: 기본 정보</h3>
       <p>제목, 목적, 참여자, 기간</p>
@@ -339,7 +288,7 @@
     </a>
     </div>
 
-    <div class="group-title">3) 수집 데이터 확정</div>
+    <div class="group-title">2) 수집 데이터 확정</div>
     <div class="grid">
     <a href="research/create-step3.html" class="card highlight">
       <h3>Step 3: 데이터 범위</h3>
@@ -353,7 +302,7 @@
     </a>
     </div>
 
-    <div class="group-title">4) 데이터 구매</div>
+    <div class="group-title">3) 데이터 구매</div>
     <div class="grid">
     <a href="research/create-step5.html" class="card highlight">
       <h3>Step 5: 에스크로</h3>
@@ -366,78 +315,121 @@
       <span class="badge p0">Phase 0</span>
     </a>
     </div>
-
-    <div class="group-title">5) 데이터 조회</div>
+    
+    <div class="group-title">4) 홈, 데이터 조회, 출력</div>
     <div class="grid">
+    <a href="research/list.html" class="card highlight">
+      <h3>홈 (연구 목록)</h3>
+      <p>내 할 일 + 연구 목록 + 상태/필터 + 빠른 액션</p>
+      <span class="badge p1">Phase 1</span>
+      <span class="badge new">개선됨</span>
+    </a>
     <a href="research/data-overview.html" class="card">
       <h3>개요</h3>
       <p>KPI, 참여자 추이, 수집률, 인사이트</p>
-      <span class="badge p0">Phase 0</span>
+      <span class="badge p1">Phase 1</span>
     </a>
     <a href="research/data-table.html" class="card">
       <h3>테이블</h3>
       <p>필터/정렬 중심 스프레드시트 뷰</p>
-      <span class="badge p0">Phase 0</span>
+      <span class="badge p1">Phase 1</span>
     </a>
-    </div>
-
-    <div class="group-title">6) 출력</div>
-    <div class="grid">
     <a href="research/data-table.html" class="card">
       <h3>CSV / Excel Export</h3>
       <p>테이블 상단 Export 버튼 사용</p>
-      <span class="badge p0">Phase 0</span>
+      <span class="badge p1">Phase 1</span>
+    </a>
+    </div>
+
+    <div class="group-title">5) 회원가입 / 로그인</div>
+    <div class="grid">
+    <a href="auth/signup.html" class="card">
+      <h3>Step 1: 회원 유형</h3>
+      <p>기관/개인 선택</p>
+      <span class="badge p2">Phase 2</span>
+    </a>
+    <a href="auth/signup-step2.html" class="card">
+      <h3>Step 2: 이메일 인증</h3>
+      <p>이메일 입력 → 인증 코드</p>
+      <span class="badge p2">Phase 2</span>
+    </a>
+    <a href="auth/signup-step3.html" class="card">
+      <h3>Step 3: 비밀번호</h3>
+      <p>비밀번호 설정 (강도 표시)</p>
+      <span class="badge p2">Phase 2</span>
+    </a>
+    <a href="auth/signup-step4.html" class="card">
+      <h3>Step 4: 패스키 안내</h3>
+      <p>패스키 소개 및 장점 설명</p>
+      <span class="badge p2">Phase 2</span>
+    </a>
+    <a href="auth/signup-step5.html" class="card">
+      <h3>Step 5: 패스키 등록</h3>
+      <p>WebAuthn 생체인증으로 패스키 생성</p>
+      <span class="badge p2">Phase 2</span>
+    </a>
+    <a href="auth/signup-step6.html" class="card">
+      <h3>Step 6: 블록체인 연동</h3>
+      <p>XRPL 앵커링 (챌린지→서명→전송→완료)</p>
+      <span class="badge p2">Phase 2</span>
+      <span class="badge new">NEW</span>
+    </a>
+    <a href="auth/signup-step7.html" class="card">
+      <h3>Step 7: 완료</h3>
+      <p>가입 완료 + 설정 요약 + 연구 허브 이동</p>
+      <span class="badge p2">Phase 2</span>
+      <span class="badge new">NEW</span>
+    </a>
+    <a href="auth/login.html" class="card">
+      <h3>로그인</h3>
+      <p>패스키 인증 로그인</p>
+      <span class="badge p2">Phase 2</span>
     </a>
     </div>
 
     <div class="group-title">🔬 인과/AI 분석 (후순위)</div>
-    <div class="group-note">AI 분석은 Phase 2 이후로 미룸</div>
+    <div class="group-note">AI 분석은 Phase 3 이후로 미룸</div>
     <div class="grid">
     <a href="research/analysis-discovery.html" class="card highlight">
       <h3>인과발견 (3D 통합)</h3>
       <p>3계층 데이터 구조 + 3D 그래프 + 인사이트 배지</p>
       <span class="badge ai">3D + AI</span>
-      <span class="badge p2">Phase 2</span>
+      <span class="badge p3">Phase 3</span>
     </a>
     <a href="research/analysis-importance.html" class="card">
       <h3>SHAP</h3>
       <p>인과 기여도 요약 + AI 해석</p>
-      <span class="badge p2">Phase 2</span>
+      <span class="badge p3">Phase 3</span>
     </a>
     <a href="research/analysis-personalized.html" class="card">
       <h3>CATE</h3>
       <p>개인/세그먼트 효과 분포</p>
-      <span class="badge p2">Phase 2</span>
+      <span class="badge p3">Phase 3</span>
     </a>
     <a href="research/analysis-whatif.html" class="card">
       <h3>What-If</h3>
       <p>반사실 시뮬레이션</p>
-      <span class="badge p2">Phase 2</span>
+      <span class="badge p3">Phase 3</span>
     </a>
     <a href="research/analysis-rootcause.html" class="card">
       <h3>이상추적</h3>
       <p>Root Cause / 이상치 경로</p>
-      <span class="badge p2">Phase 2</span>
+      <span class="badge p3">Phase 3</span>
     </a>
     </div>
 
     <div class="group-title">⚙️ 운영/관리</div>
     <div class="grid">
-    <a href="research/list.html" class="card highlight">
-      <h3>연구 허브 (통합)</h3>
-      <p>내 할 일 + 연구 목록 + 상태/필터 + 빠른 액션</p>
-      <span class="badge p0">Phase 0</span>
-      <span class="badge new">개선됨</span>
-    </a>
     <a href="team.html" class="card" style="opacity: 0.6;">
       <h3>팀 관리</h3>
       <p>멤버 초대, ABAC 권한 관리</p>
       <span class="badge p1">Phase 1</span>
     </a>
-    <a href="billing.html" class="card" style="opacity: 0.6;">
+    <a href="billing.html" class="card highlight">
       <h3>결제/에스크로</h3>
-      <p>XRPL 지갑, 거래 내역</p>
+      <p>연구별 지출/정산 원장 + 외부 입출금 + 출금 팝업(MFA)</p>
       <span class="badge p1">Phase 1</span>
+      <span class="badge new">팝업</span>
     </a>
     </div>
   </section>
@@ -448,54 +440,6 @@
 
     <div class="group-title">Phase 0 (최우선 · 코어 플로우)</div>
     <div class="grid">
-    <a href="auth/signup.html" class="card">
-      <h3>Step 1: 회원 유형</h3>
-      <p>기관/개인 선택</p>
-      <span class="badge p0">Phase 0</span>
-    </a>
-    <a href="auth/signup-step2.html" class="card">
-      <h3>Step 2: 이메일 인증</h3>
-      <p>이메일 입력 → 인증 코드</p>
-      <span class="badge p0">Phase 0</span>
-    </a>
-    <a href="auth/signup-step3.html" class="card">
-      <h3>Step 3: 비밀번호</h3>
-      <p>비밀번호 설정 (강도 표시)</p>
-      <span class="badge p0">Phase 0</span>
-    </a>
-    <a href="auth/signup-step4.html" class="card">
-      <h3>Step 4: 패스키 안내</h3>
-      <p>패스키 소개 및 장점 설명</p>
-      <span class="badge p0">Phase 0</span>
-    </a>
-    <a href="auth/signup-step5.html" class="card">
-      <h3>Step 5: 패스키 등록</h3>
-      <p>WebAuthn 생체인증으로 패스키 생성</p>
-      <span class="badge p0">Phase 0</span>
-    </a>
-    <a href="auth/signup-step6.html" class="card">
-      <h3>Step 6: 블록체인 연동</h3>
-      <p>XRPL 앵커링 (챌린지→서명→전송→완료)</p>
-      <span class="badge p0">Phase 0</span>
-      <span class="badge new">NEW</span>
-    </a>
-    <a href="auth/signup-step7.html" class="card">
-      <h3>Step 7: 완료</h3>
-      <p>가입 완료 + 설정 요약 + 연구 허브 이동</p>
-      <span class="badge p0">Phase 0</span>
-      <span class="badge new">NEW</span>
-    </a>
-    <a href="auth/login.html" class="card">
-      <h3>로그인</h3>
-      <p>패스키 인증 로그인</p>
-      <span class="badge p0">Phase 0</span>
-    </a>
-    <a href="research/list.html" class="card highlight">
-      <h3>홈 (연구 목록)</h3>
-      <p>로그인 후 첫 화면<br>KPI 요약 + 연구 카드 + 빠른 액션</p>
-      <span class="badge p0">Phase 0</span>
-      <span class="badge" style="background: #dcfce7; color: #166534;">홈</span>
-    </a>
     <a href="research/create.html" class="card highlight">
       <h3>Step 1: 기본 정보</h3>
       <p>제목, 목적, 참여자, 기간</p>
@@ -526,29 +470,14 @@
       <p>모든 설정 확인 후 연구 생성</p>
       <span class="badge p0">Phase 0</span>
     </a>
-    <a href="research/data-overview.html" class="card">
-      <h3>개요</h3>
-      <p>KPI, 참여자 추이, 수집률, 인사이트</p>
-      <span class="badge p0">Phase 0</span>
-    </a>
-    <a href="research/data-table.html" class="card">
-      <h3>테이블</h3>
-      <p>필터/정렬 중심 스프레드시트 뷰</p>
-      <span class="badge p0">Phase 0</span>
-    </a>
-    <a href="research/data-table.html" class="card">
-      <h3>CSV / Excel Export</h3>
-      <p>테이블 상단 Export 버튼 사용</p>
-      <span class="badge p0">Phase 0</span>
-    </a>
     </div>
 
-    <div class="group-title">Phase 1 (운영/관리)</div>
+    <div class="group-title">Phase 1 (운영/관리 및 데이터 조회)</div>
     <div class="grid">
     <a href="research/list.html" class="card highlight">
-      <h3>연구 허브 (통합)</h3>
+      <h3>홈 (연구 목록)</h3>
       <p>내 할 일 + 연구 목록 + 상태/필터 + 빠른 액션</p>
-      <span class="badge p0">Phase 0</span>
+      <span class="badge p1">Phase 1</span>
       <span class="badge new">개선됨</span>
     </a>
     <a href="team.html" class="card" style="opacity: 0.6;">
@@ -556,40 +485,102 @@
       <p>멤버 초대, ABAC 권한 관리</p>
       <span class="badge p1">Phase 1</span>
     </a>
-    <a href="billing.html" class="card" style="opacity: 0.6;">
+    <a href="billing.html" class="card highlight">
       <h3>결제/에스크로</h3>
-      <p>XRPL 지갑, 거래 내역</p>
+      <p>연구별 지출/정산 원장 + 외부 입출금 + 출금 팝업(MFA)</p>
+      <span class="badge p1">Phase 1</span>
+      <span class="badge new">팝업</span>
+    </a>
+    <a href="research/data-overview.html" class="card">
+      <h3>개요</h3>
+      <p>KPI, 참여자 추이, 수집률, 인사이트</p>
+      <span class="badge p1">Phase 1</span>
+    </a>
+    <a href="research/data-table.html" class="card">
+      <h3>테이블</h3>
+      <p>필터/정렬 중심 스프레드시트 뷰</p>
+      <span class="badge p1">Phase 1</span>
+    </a>
+    <a href="research/data-table.html" class="card">
+      <h3>CSV / Excel Export</h3>
+      <p>테이블 상단 Export 버튼 사용</p>
       <span class="badge p1">Phase 1</span>
     </a>
     </div>
 
-    <div class="group-title">Phase 2 (AI/인과 분석)</div>
+    <div class="group-title">Phase 2 (회원가입/로그인)</div>
+    <div class="grid">
+      <a href="auth/signup.html" class="card">
+        <h3>Step 1: 회원 유형</h3>
+        <p>기관/개인 선택</p>
+        <span class="badge p2">Phase 2</span>
+      </a>
+      <a href="auth/signup-step2.html" class="card">
+        <h3>Step 2: 이메일 인증</h3>
+        <p>이메일 입력 → 인증 코드</p>
+        <span class="badge p2">Phase 2</span>
+      </a>
+      <a href="auth/signup-step3.html" class="card">
+        <h3>Step 3: 비밀번호</h3>
+        <p>비밀번호 설정 (강도 표시)</p>
+        <span class="badge p2">Phase 2</span>
+      </a>
+      <a href="auth/signup-step4.html" class="card">
+        <h3>Step 4: 패스키 안내</h3>
+        <p>패스키 소개 및 장점 설명</p>
+        <span class="badge p2">Phase 2</span>
+      </a>
+      <a href="auth/signup-step5.html" class="card">
+        <h3>Step 5: 패스키 등록</h3>
+        <p>WebAuthn 생체인증으로 패스키 생성</p>
+        <span class="badge p2">Phase 2</span>
+      </a>
+      <a href="auth/signup-step6.html" class="card">
+        <h3>Step 6: 블록체인 연동</h3>
+        <p>XRPL 앵커링 (챌린지→서명→전송→완료)</p>
+        <span class="badge p2">Phase 2</span>
+        <span class="badge new">NEW</span>
+      </a>
+      <a href="auth/signup-step7.html" class="card">
+        <h3>Step 7: 완료</h3>
+        <p>가입 완료 + 설정 요약 + 연구 허브 이동</p>
+        <span class="badge p2">Phase 2</span>
+        <span class="badge new">NEW</span>
+      </a>
+      <a href="auth/login.html" class="card">
+        <h3>로그인</h3>
+        <p>패스키 인증 로그인</p>
+        <span class="badge p2">Phase 2</span>
+      </a>
+    </div>
+
+    <div class="group-title">Phase 3 (AI/인과 분석)</div>
     <div class="grid">
     <a href="research/analysis-discovery.html" class="card highlight">
       <h3>인과발견 (3D 통합)</h3>
       <p>3계층 데이터 구조 + 3D 그래프 + 인사이트 배지</p>
       <span class="badge ai">3D + AI</span>
-      <span class="badge p2">Phase 2</span>
+      <span class="badge p3">Phase 3</span>
     </a>
     <a href="research/analysis-importance.html" class="card">
       <h3>SHAP</h3>
       <p>인과 기여도 요약 + AI 해석</p>
-      <span class="badge p2">Phase 2</span>
+      <span class="badge p3">Phase 3</span>
     </a>
     <a href="research/analysis-personalized.html" class="card">
       <h3>CATE</h3>
       <p>개인/세그먼트 효과 분포</p>
-      <span class="badge p2">Phase 2</span>
+      <span class="badge p3">Phase 3</span>
     </a>
     <a href="research/analysis-whatif.html" class="card">
       <h3>What-If</h3>
       <p>반사실 시뮬레이션</p>
-      <span class="badge p2">Phase 2</span>
+      <span class="badge p3">Phase 3</span>
     </a>
     <a href="research/analysis-rootcause.html" class="card">
       <h3>이상추적</h3>
       <p>Root Cause / 이상치 경로</p>
-      <span class="badge p2">Phase 2</span>
+      <span class="badge p3">Phase 3</span>
     </a>
     </div>
   </section>
@@ -618,46 +609,46 @@
   }
   users {
     uuid id PK
-    uuid accountId FK
+    uuid accountId
   }
   passkey_credentials {
     uuid id PK
-    uuid userId FK
+    uuid userId
   }
   wallets {
     uuid id PK
-    uuid ownerId FK
+    uuid ownerId
   }
   wallet_secrets {
     uuid id PK
-    uuid walletId FK
+    uuid walletId
   }
   consents {
     uuid id PK
-    uuid userId FK
+    uuid userId
   }
   audit_logs {
     uuid id PK
-    uuid userId FK
+    uuid userId
   }
   data_points {
     uuid id PK
-    uuid userId FK
+    uuid userId
     datetime timestamp
   }
   workspaces {
     uuid id PK
-    uuid institutionId FK
+    uuid institutionId
   }
   workspace_members {
     uuid id PK
-    uuid workspaceId FK
-    uuid accountId FK
+    uuid workspaceId
+    uuid accountId
   }
   data_accesses {
     uuid id PK
-    uuid workspaceId FK
-    uuid accountId FK
+    uuid workspaceId
+    uuid accountId
   }
 
   accounts ||--o| users : profile
@@ -698,61 +689,61 @@
   }
   account_logins {
     uuid id PK
-    uuid accountId FK
+    uuid accountId
     string provider
     string email
     string phone
   }
   users {
     uuid id PK
-    uuid accountId FK
+    uuid accountId
     date birthDate
     string gender
   }
   owners {
     uuid id PK
-    uuid accountId FK
+    uuid accountId
   }
 
   passkey_credentials {
     uuid id PK
-    uuid userId FK
+    uuid userId
     string credentialId
   }
   sessions {
     uuid id PK
-    uuid userId FK
+    uuid userId
     string appId
   }
   refresh_tokens {
     uuid id PK
-    uuid userId FK
+    uuid userId
     uuid sessionId
   }
 
   wallets {
     uuid id PK
-    uuid ownerId FK
+    uuid ownerId
     string address
   }
   wallet_secrets {
     uuid id PK
-    uuid walletId FK
+    uuid walletId
   }
   wallet_credential_bindings {
     uuid id PK
-    uuid walletId FK
-    uuid credentialId FK
+    uuid walletId
+    uuid credentialId
   }
   wallet_recovery_requests {
     uuid id PK
-    uuid walletId FK
-    uuid ownerId FK
+    uuid walletId
+    uuid ownerId
     enum status
   }
   anchor_logs {
     uuid id PK
-    uuid userId FK
+    uuid userId
     enum anchorType
     string txHash
   }
@@ -763,24 +754,24 @@
   }
   app_keys {
     uuid id PK
-    uuid appId FK
+    uuid appId
   }
 
   consents {
     uuid id PK
-    uuid userId FK
-    string appId FK
+    uuid userId
+    string appId
   }
   audit_logs {
     uuid id PK
-    uuid userId FK
-    string appId FK
+    uuid userId
+    string appId
     string action
   }
 
   data_points {
     uuid id PK
-    uuid userId FK
+    uuid userId
     string category
     string metric
     jsonb value
@@ -788,43 +779,43 @@
   }
   data_sources {
     uuid id PK
-    uuid userId FK
+    uuid userId
     string type
   }
   data_attachments {
     uuid id PK
-    uuid dataPointId FK
-    uuid userId FK
+    uuid dataPointId
+    uuid userId
   }
   features {
     uuid id PK
-    uuid userId FK
+    uuid userId
     string featureType
   }
 
   user_medications {
     uuid id PK
-    uuid userId FK
+    uuid userId
   }
   medication_logs {
     uuid id PK
-    uuid userId FK
-    uuid medicationId FK
+    uuid userId
+    uuid medicationId
   }
   medication_proofs {
     uuid id PK
-    uuid userId FK
+    uuid userId
   }
   drug_info_cache {
     string drugCode PK
   }
   ai_analyses {
     uuid id PK
-    uuid userId FK
+    uuid userId
   }
   notifications {
     uuid id PK
-    uuid userId FK
+    uuid userId
   }
 
   institutions {
@@ -833,19 +824,19 @@
   }
   workspaces {
     uuid id PK
-    uuid institutionId FK
+    uuid institutionId
     string name
   }
   workspace_members {
     uuid id PK
-    uuid workspaceId FK
-    uuid accountId FK
+    uuid workspaceId
+    uuid accountId
     enum role
   }
   data_accesses {
     uuid id PK
-    uuid workspaceId FK
-    uuid accountId FK
+    uuid workspaceId
+    uuid accountId
     string dataProductId
   }
 
@@ -893,61 +884,61 @@
   }
   account_logins {
     uuid id PK
-    uuid accountId FK
+    uuid accountId
     string provider
     string email
     string phone
   }
   users {
     uuid id PK
-    uuid accountId FK
+    uuid accountId
     date birthDate
     string gender
   }
   owners {
     uuid id PK
-    uuid accountId FK
+    uuid accountId
   }
 
   passkey_credentials {
     uuid id PK
-    uuid userId FK
+    uuid userId
     string credentialId
   }
   sessions {
     uuid id PK
-    uuid userId FK
+    uuid userId
     string appId
   }
   refresh_tokens {
     uuid id PK
-    uuid userId FK
+    uuid userId
     uuid sessionId
   }
 
   wallets {
     uuid id PK
-    uuid ownerId FK
+    uuid ownerId
     string address
   }
   wallet_secrets {
     uuid id PK
-    uuid walletId FK
+    uuid walletId
   }
   wallet_credential_bindings {
     uuid id PK
-    uuid walletId FK
-    uuid credentialId FK
+    uuid walletId
+    uuid credentialId
   }
   wallet_recovery_requests {
     uuid id PK
-    uuid walletId FK
-    uuid ownerId FK
+    uuid walletId
+    uuid ownerId
     enum status
   }
   anchor_logs {
     uuid id PK
-    uuid userId FK
+    uuid userId
     enum anchorType
     string txHash
   }
@@ -958,24 +949,24 @@
   }
   app_keys {
     uuid id PK
-    uuid appId FK
+    uuid appId
   }
 
   consents {
     uuid id PK
-    uuid userId FK
-    string appId FK
+    uuid userId
+    string appId
   }
   audit_logs {
     uuid id PK
-    uuid userId FK
-    string appId FK
+    uuid userId
+    string appId
     string action
   }
 
   data_points {
     uuid id PK
-    uuid userId FK
+    uuid userId
     string category
     string metric
     jsonb value
@@ -983,43 +974,43 @@
   }
   data_sources {
     uuid id PK
-    uuid userId FK
+    uuid userId
     string type
   }
   data_attachments {
     uuid id PK
-    uuid dataPointId FK
-    uuid userId FK
+    uuid dataPointId
+    uuid userId
   }
   features {
     uuid id PK
-    uuid userId FK
+    uuid userId
     string featureType
   }
 
   user_medications {
     uuid id PK
-    uuid userId FK
+    uuid userId
   }
   medication_logs {
     uuid id PK
-    uuid userId FK
-    uuid medicationId FK
+    uuid userId
+    uuid medicationId
   }
   medication_proofs {
     uuid id PK
-    uuid userId FK
+    uuid userId
   }
   drug_info_cache {
     string drugCode PK
   }
   ai_analyses {
     uuid id PK
-    uuid userId FK
+    uuid userId
   }
   notifications {
     uuid id PK
-    uuid userId FK
+    uuid userId
   }
 
   institutions {
@@ -1028,19 +1019,19 @@
   }
   workspaces {
     uuid id PK
-    uuid institutionId FK
+    uuid institutionId
     string name
   }
   workspace_members {
     uuid id PK
-    uuid workspaceId FK
-    uuid accountId FK
+    uuid workspaceId
+    uuid accountId
     enum role
   }
   data_accesses {
     uuid id PK
-    uuid workspaceId FK
-    uuid accountId FK
+    uuid workspaceId
+    uuid accountId
     string dataProductId
   }
 
@@ -1075,8 +1066,8 @@
   apps ||--o{ sessions : usedBy</pre>
         </details>
         <div class="schema-links">
-          <a href="../../../../../backend/docs/architecture/DB_ERD.md">DB_ERD.md 열기</a>
-          <a href="../../../../../backend/docs/architecture/DATA_SCHEMA_MASTER.md">DATA_SCHEMA_MASTER.md 열기</a>
+          <a href="../../../../../../backend/docs/architecture/DB_ERD.md">DB_ERD.md 열기</a>
+          <a href="../../../../../../backend/docs/architecture/DATA_SCHEMA_MASTER.md">DATA_SCHEMA_MASTER.md 열기</a>
         </div>
       </div>
       <div class="schema-card">
@@ -1108,9 +1099,9 @@
           <div class="schema-panzoom">
             <div class="mermaid">flowchart LR
   users["users\n- id (PK)\n- email\n- phone\n- createdAt\n- updatedAt"]:::box
-  passkey["passkey_credentials\n- userId (FK)\n- credentialId\n- publicKey\n- counter"]:::box
-  wallets["wallets\n- userId (FK)\n- address\n- publicKey\n- type\n- isActive"]:::box
-  walletSecrets["wallet_secrets\n- walletId (FK)\n- encryptedSeed\n- keyId"]:::box
+  passkey["passkey_credentials\n- userId\n- credentialId\n- publicKey\n- counter"]:::box
+  wallets["wallets\n- userId\n- address\n- publicKey\n- type\n- isActive"]:::box
+  walletSecrets["wallet_secrets\n- walletId\n- encryptedSeed\n- keyId"]:::box
 
   users --> passkey
   users --> wallets
