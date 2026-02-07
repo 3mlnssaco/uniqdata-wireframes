@@ -372,6 +372,110 @@
           </div>
         </div>
 
+        <!-- 메인 차트: 복약 순응도 & 혈당 트렌드 -->
+        <div class="chart-card" style="margin-bottom: 24px;" data-spec="메인 차트: 복약 순응도와 혈당 변동의 시계열 비교. 인과관계 시각적 확인용. 전체 기간 또는 기간 필터링 가능." data-spec-type="data" data-added="큰 차트 요청" data-priority="1">
+          <h3 style="display: flex; justify-content: space-between; align-items: center;">
+            📈 복약 순응도 vs 혈당 트렌드
+            <div style="display: flex; gap: 8px;">
+              <span class="filter" style="background: #3b82f6; color: white;">30일</span>
+              <span class="filter">90일</span>
+              <span class="filter">전체</span>
+            </div>
+          </h3>
+          <div style="height: 320px; position: relative; margin-top: 20px;">
+            <!-- Y축 (왼쪽: 순응도) -->
+            <div style="position: absolute; left: 0; top: 0; bottom: 40px; width: 50px; display: flex; flex-direction: column; justify-content: space-between; font-size: 11px; color: #3b82f6; text-align: right; padding-right: 8px;">
+              <span>100%</span>
+              <span>75%</span>
+              <span>50%</span>
+              <span>25%</span>
+              <span>0%</span>
+            </div>
+            <!-- Y축 (오른쪽: 혈당) -->
+            <div style="position: absolute; right: 0; top: 0; bottom: 40px; width: 60px; display: flex; flex-direction: column; justify-content: space-between; font-size: 11px; color: #ef4444; text-align: left; padding-left: 8px;">
+              <span>200</span>
+              <span>175</span>
+              <span>150</span>
+              <span>125</span>
+              <span>100 mg/dL</span>
+            </div>
+            <!-- 차트 영역 -->
+            <div style="position: absolute; left: 60px; right: 70px; top: 0; bottom: 40px; background: linear-gradient(to bottom, rgba(59, 130, 246, 0.05), transparent); border-left: 1px solid #e5e7eb; border-bottom: 1px solid #e5e7eb;">
+              <!-- 그리드 라인 -->
+              <div style="position: absolute; top: 25%; left: 0; right: 0; border-top: 1px dashed #e5e7eb;"></div>
+              <div style="position: absolute; top: 50%; left: 0; right: 0; border-top: 1px dashed #e5e7eb;"></div>
+              <div style="position: absolute; top: 75%; left: 0; right: 0; border-top: 1px dashed #e5e7eb;"></div>
+
+              <!-- 복약 순응도 라인 (파란색) -->
+              <svg style="position: absolute; inset: 0; width: 100%; height: 100%;" preserveAspectRatio="none">
+                <defs>
+                  <linearGradient id="blueGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:0.3" />
+                    <stop offset="100%" style="stop-color:#3b82f6;stop-opacity:0" />
+                  </linearGradient>
+                </defs>
+                <path d="M 0 30 Q 50 25, 100 28 T 200 22 T 300 35 T 400 20 T 500 25 T 600 18 T 700 22 T 800 15"
+                      fill="none" stroke="#3b82f6" stroke-width="3" vector-effect="non-scaling-stroke"/>
+                <path d="M 0 30 Q 50 25, 100 28 T 200 22 T 300 35 T 400 20 T 500 25 T 600 18 T 700 22 T 800 15 L 800 100 L 0 100 Z"
+                      fill="url(#blueGrad)" opacity="0.5"/>
+              </svg>
+
+              <!-- 혈당 라인 (빨간색) -->
+              <svg style="position: absolute; inset: 0; width: 100%; height: 100%;" preserveAspectRatio="none">
+                <path d="M 0 60 Q 50 55, 100 65 T 200 58 T 300 70 T 400 55 T 500 62 T 600 50 T 700 58 T 800 45"
+                      fill="none" stroke="#ef4444" stroke-width="3" stroke-dasharray="8,4" vector-effect="non-scaling-stroke"/>
+              </svg>
+
+              <!-- 인사이트 마커 -->
+              <div style="position: absolute; left: 35%; top: 20%; width: 24px; height: 24px; background: #fbbf24; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; cursor: pointer; box-shadow: 0 2px 8px rgba(251, 191, 36, 0.4);" title="순응도 15% 감소 시점">⚠️</div>
+              <div style="position: absolute; left: 75%; top: 10%; width: 24px; height: 24px; background: #22c55e; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; cursor: pointer; box-shadow: 0 2px 8px rgba(34, 197, 94, 0.4);" title="혈당 안정화 구간">✓</div>
+            </div>
+            <!-- X축 -->
+            <div style="position: absolute; left: 60px; right: 70px; bottom: 0; height: 40px; display: flex; justify-content: space-between; align-items: flex-start; padding-top: 8px; font-size: 11px; color: #6b7280;">
+              <span>1/1</span>
+              <span>1/5</span>
+              <span>1/10</span>
+              <span>1/15</span>
+              <span>1/20</span>
+              <span>1/25</span>
+              <span>1/30</span>
+            </div>
+          </div>
+          <!-- 범례 -->
+          <div style="display: flex; justify-content: center; gap: 24px; margin-top: 16px; padding-top: 16px; border-top: 1px solid #e5e7eb;">
+            <div style="display: flex; align-items: center; gap: 8px; font-size: 13px;">
+              <div style="width: 24px; height: 3px; background: #3b82f6; border-radius: 2px;"></div>
+              <span>복약 순응도 (%)</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px; font-size: 13px;">
+              <div style="width: 24px; height: 3px; background: #ef4444; border-radius: 2px; border-style: dashed;"></div>
+              <span>평균 혈당 (mg/dL)</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px; font-size: 13px;">
+              <div style="width: 16px; height: 16px; background: #fbbf24; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px;">⚠️</div>
+              <span>주의 구간</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px; font-size: 13px;">
+              <div style="width: 16px; height: 16px; background: #22c55e; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px;">✓</div>
+              <span>안정 구간</span>
+            </div>
+          </div>
+          <!-- AI 인사이트 요약 -->
+          <div style="margin-top: 16px; padding: 16px; background: linear-gradient(135deg, #eff6ff, #dbeafe); border: 1px solid #3b82f6; border-radius: 8px;">
+            <div style="display: flex; align-items: flex-start; gap: 12px;">
+              <div style="font-size: 20px;">🤖</div>
+              <div>
+                <div style="font-size: 13px; font-weight: 600; color: #1e40af; margin-bottom: 4px;">AI 분석 요약</div>
+                <div style="font-size: 12px; color: #374151; line-height: 1.6;">
+                  1/10~1/15 구간에서 <strong style="color: #dc2626;">복약 순응도 15% 감소</strong> 후 혈당 변동성 증가.
+                  1/20 이후 순응도 회복과 함께 <strong style="color: #16a34a;">혈당 안정화</strong> 확인.
+                  <strong>인과 효과 크기: 0.42</strong> (복약→혈당)
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- 프로젝트 지갑 정보 (신규) -->
         <div class="chart-card" style="margin-bottom: 24px; background: linear-gradient(135deg, #0f172a, #1e293b); color: white;" data-spec="프로젝트 지갑: 이 연구 전용 XRPL 지갑. 개인 지갑과 분리되어 예산 관리. 서버에서 자동 생성됨." data-spec-type="wallet" data-added="회의 결정: 지갑 이원화" data-priority="1">
           <h3 style="color: #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
