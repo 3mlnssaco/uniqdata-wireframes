@@ -259,6 +259,46 @@
     .nav-links { display: flex; gap: 10px; padding: 16px 24px; border-top: 1px solid #2a2a2a; }
     .nav-links a { padding: 6px 12px; background: #252525; border-radius: 6px; text-decoration: none; color: #888; font-size: 12px; }
     .nav-links a:hover { background: #333; color: #fff; }
+
+    /* AI 허브 탭 */
+    .ai-hub-tabs {
+      display: flex;
+      gap: 4px;
+      padding: 12px 24px;
+      background: #151515;
+      border-bottom: 1px solid #2a2a2a;
+    }
+    .ai-hub-tab {
+      padding: 10px 20px;
+      border: 1px solid #333;
+      border-radius: 10px;
+      background: #1a1a1a;
+      color: #888;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .ai-hub-tab:hover { border-color: #3b82f6; color: #ccc; }
+    .ai-hub-tab.active {
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      border-color: transparent;
+      color: white;
+      font-weight: 600;
+    }
+    .ai-hub-tab .tab-icon { font-size: 16px; }
+    .ai-hub-tab .tab-badge {
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.2);
+    }
+    .ai-hub-tab.active .tab-badge { background: rgba(255,255,255,0.3); }
+
+    .tab-content { display: none; }
+    .tab-content.active { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
   </style>
 </head>
 <body>
@@ -288,11 +328,7 @@
           <div class="research-nav-sub">
             <a href="data-overview.html" class="nav-sub-item"><span class="dot"></span> 개요</a>
             <a href="data-table.html" class="nav-sub-item"><span class="dot"></span> 테이블</a>
-            <a href="analysis-discovery.html" class="nav-sub-item active"><span class="dot"></span> 인과발견</a>
-            <a href="analysis-importance.html" class="nav-sub-item"><span class="dot"></span> SHAP</a>
-            <a href="analysis-personalized.html" class="nav-sub-item"><span class="dot"></span> CATE</a>
-            <a href="analysis-whatif.html" class="nav-sub-item"><span class="dot"></span> What-If</a>
-            <a href="analysis-rootcause.html" class="nav-sub-item"><span class="dot"></span> 이상추적</a>
+            <a href="analysis-discovery.html" class="nav-sub-item active"><span class="dot"></span> 🤖 AI 허브</a>
           </div>
         </div>
 
@@ -334,17 +370,44 @@
     </div>
 
     <div class="main">
-      <div class="header">
+      <div class="header" data-spec="AI 허브: 5개 AI 분석 도구 통합. 인과발견/SHAP/CATE/What-If/이상추적을 탭으로 전환." data-spec-type="ai" data-added="회의 결정: AI 허브 통합">
         <div class="header-left">
-          <h1><span class="icon">🔮</span> 인과 구조 발견</h1>
-          <div class="sub">상관관계 매트릭스 기반 경로 탐색 (847개 변수, 357K+ 페어)</div>
+          <h1><span class="icon">🤖</span> AI 허브</h1>
+          <div class="sub">연구 방법론별 AI 분석 도구 통합 · 당뇨병 복약 순응도 연구</div>
         </div>
         <div class="header-actions">
           <button class="ai-badge-btn" id="ai-insight-toggle">AI 인사이트 <span class="ai-badge" id="ai-insight-badge">3</span></button>
-          <button class="header-btn">📥 DAG 내보내기</button>
+          <button class="header-btn">📥 내보내기</button>
           <button class="header-btn primary">🔄 재분석</button>
         </div>
       </div>
+
+      <!-- AI 허브 탭 -->
+      <div class="ai-hub-tabs" data-spec="AI 허브 탭: 인과발견(3D 그래프), SHAP(기여도), CATE(개인효과), What-If(시뮬레이션), 이상추적(Root Cause)" data-spec-type="nav" data-added="탭 통합">
+        <button class="ai-hub-tab active" onclick="switchTab('discovery')">
+          <span class="tab-icon">🔮</span>
+          인과발견
+        </button>
+        <button class="ai-hub-tab" onclick="switchTab('shap')">
+          <span class="tab-icon">📊</span>
+          SHAP
+        </button>
+        <button class="ai-hub-tab" onclick="switchTab('cate')">
+          <span class="tab-icon">👤</span>
+          CATE
+        </button>
+        <button class="ai-hub-tab" onclick="switchTab('whatif')">
+          <span class="tab-icon">🔄</span>
+          What-If
+        </button>
+        <button class="ai-hub-tab" onclick="switchTab('rootcause')">
+          <span class="tab-icon">🔍</span>
+          이상추적
+        </button>
+      </div>
+
+      <!-- 인과발견 탭 콘텐츠 -->
+      <div class="tab-content active" id="tab-discovery">
 
       <!-- 타겟 변수 선택 바 -->
       <div style="padding: 16px 24px; background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1)); border-bottom: 1px solid #2a2a2a; display: flex; align-items: center; gap: 16px;">
@@ -891,6 +954,59 @@
           </div>
         </div>
       </div>
+      </div><!-- end tab-discovery -->
+
+      <!-- SHAP 탭 콘텐츠 -->
+      <div class="tab-content" id="tab-shap">
+        <div style="flex: 1; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 16px; color: #64748b;">
+          <div style="font-size: 48px;">📊</div>
+          <div style="font-size: 18px; font-weight: 600; color: #e5e5e5;">SHAP 기여도 분석</div>
+          <div style="font-size: 13px; max-width: 400px; text-align: center; line-height: 1.6;">
+            각 변수가 예측에 미치는 영향도를 시각화합니다.<br>
+            Waterfall / Beeswarm / Bar 차트 제공
+          </div>
+          <a href="analysis-importance.html" style="padding: 12px 24px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); border-radius: 10px; color: white; text-decoration: none; font-size: 13px; font-weight: 600;">상세 페이지 보기 →</a>
+        </div>
+      </div>
+
+      <!-- CATE 탭 콘텐츠 -->
+      <div class="tab-content" id="tab-cate">
+        <div style="flex: 1; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 16px; color: #64748b;">
+          <div style="font-size: 48px;">👤</div>
+          <div style="font-size: 18px; font-weight: 600; color: #e5e5e5;">CATE 개인화 효과</div>
+          <div style="font-size: 13px; max-width: 400px; text-align: center; line-height: 1.6;">
+            개인/세그먼트별 처치 효과(Conditional Average Treatment Effect)를 분석합니다.<br>
+            누구에게 어떤 개입이 효과적인지 파악
+          </div>
+          <a href="analysis-personalized.html" style="padding: 12px 24px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); border-radius: 10px; color: white; text-decoration: none; font-size: 13px; font-weight: 600;">상세 페이지 보기 →</a>
+        </div>
+      </div>
+
+      <!-- What-If 탭 콘텐츠 -->
+      <div class="tab-content" id="tab-whatif">
+        <div style="flex: 1; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 16px; color: #64748b;">
+          <div style="font-size: 48px;">🔄</div>
+          <div style="font-size: 18px; font-weight: 600; color: #e5e5e5;">What-If 시뮬레이션</div>
+          <div style="font-size: 13px; max-width: 400px; text-align: center; line-height: 1.6;">
+            반사실(Counterfactual) 시나리오를 시뮬레이션합니다.<br>
+            "만약 복약률이 90%였다면?" 같은 질문에 답변
+          </div>
+          <a href="analysis-whatif.html" style="padding: 12px 24px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); border-radius: 10px; color: white; text-decoration: none; font-size: 13px; font-weight: 600;">상세 페이지 보기 →</a>
+        </div>
+      </div>
+
+      <!-- 이상추적 탭 콘텐츠 -->
+      <div class="tab-content" id="tab-rootcause">
+        <div style="flex: 1; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 16px; color: #64748b;">
+          <div style="font-size: 48px;">🔍</div>
+          <div style="font-size: 18px; font-weight: 600; color: #e5e5e5;">이상 원인 추적</div>
+          <div style="font-size: 13px; max-width: 400px; text-align: center; line-height: 1.6;">
+            비정상 패턴의 Root Cause를 추적합니다.<br>
+            어떤 변수가 이상의 원인인지 경로 분석
+          </div>
+          <a href="analysis-rootcause.html" style="padding: 12px 24px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); border-radius: 10px; color: white; text-decoration: none; font-size: 13px; font-weight: 600;">상세 페이지 보기 →</a>
+        </div>
+      </div>
 
       <!-- 하단 상태바 -->
       <div style="padding: 10px 24px; background: rgba(26, 26, 26, 0.95); border-top: 1px solid #2a2a2a; display: flex; align-items: center; gap: 20px; font-size: 11px;">
@@ -917,10 +1033,26 @@
       <div class="nav-links">
         <a href="../index.html">← 와이어프레임 목록</a>
         <a href="data-table.html">← 테이블</a>
-        <a href="analysis-importance.html">SHAP →</a>
+        <a href="data-overview.html">개요 →</a>
       </div>
   </div>
 </div>
+
+<script>
+  // AI 허브 탭 전환
+  function switchTab(tabId) {
+    // 모든 탭 비활성화
+    document.querySelectorAll('.ai-hub-tab').forEach(tab => tab.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+    // 선택된 탭 활성화
+    const activeTab = document.querySelector(`.ai-hub-tab[onclick="switchTab('${tabId}')"]`);
+    const activeContent = document.getElementById('tab-' + tabId);
+
+    if (activeTab) activeTab.classList.add('active');
+    if (activeContent) activeContent.classList.add('active');
+  }
+</script>
 
 <script>
   const insightToggle = document.getElementById('ai-insight-toggle');
