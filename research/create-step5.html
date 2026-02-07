@@ -108,19 +108,55 @@
       <h1>예산 설정</h1>
       <p class="subtitle">참여자 보상 및 연구 예산을 설정하세요</p>
 
-      <!-- 스텝 인디케이터 -->
-      <div class="steps">
-        <div class="step"><div class="step-num done">✓</div><div class="step-label">AI 설계</div></div>
+      <!-- 스텝 인디케이터 (Step 4 AI 도구 제거됨 - AI 허브로 통합) -->
+      <div class="steps" data-spec="스텝 구조 변경: AI 도구 선택 단계 제거. AI 분석은 연구 생성 후 AI 허브에서 선택." data-spec-type="nav" data-changed="Step 4 AI 도구 제거">
+        <div class="step"><div class="step-num done">✓</div><div class="step-label">기본 정보</div></div>
         <div class="step-line done"></div>
-        <div class="step"><div class="step-num done">✓</div><div class="step-label">설계 확인</div></div>
+        <div class="step"><div class="step-num done">✓</div><div class="step-label">대상자</div></div>
         <div class="step-line done"></div>
-        <div class="step"><div class="step-num done">✓</div><div class="step-label">데이터 수집</div></div>
+        <div class="step"><div class="step-num done">✓</div><div class="step-label">데이터</div></div>
         <div class="step-line done"></div>
-        <div class="step"><div class="step-num done">✓</div><div class="step-label">AI 도구</div></div>
+        <div class="step"><div class="step-num done">✓</div><div class="step-label">동의서</div></div>
         <div class="step-line done"></div>
         <div class="step"><div class="step-num active">5</div><div class="step-label">예산</div></div>
         <div class="step-line"></div>
-        <div class="step"><div class="step-num pending">6</div><div class="step-label">에스크로</div></div>
+        <div class="step"><div class="step-num pending">6</div><div class="step-label">검토</div></div>
+      </div>
+
+      <!-- 프로젝트 지갑 생성 (신규) -->
+      <div class="card" style="border: 2px solid #06b6d4; background: linear-gradient(135deg, #f0fdfa, #ecfeff);" data-spec="프로젝트 지갑: 예산 설정 전 서버에서 자동 생성. 개인 지갑과 별도로 연구별 예산 관리." data-spec-type="wallet" data-added="회의 결정: 지갑 이원화">
+        <div class="card-header" style="background: linear-gradient(135deg, #0e7490, #0891b2); border: none;">
+          <h3 style="color: white;">💳 프로젝트 지갑</h3>
+          <span style="font-size: 11px; color: #a5f3fc; background: rgba(255,255,255,0.2); padding: 4px 10px; border-radius: 12px;">자동 생성됨</span>
+        </div>
+        <div class="card-body">
+          <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 16px;">
+            <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #0e7490, #0891b2); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+              <span style="font-size: 24px;">🔐</span>
+            </div>
+            <div>
+              <div style="font-size: 12px; color: #6b7280;">프로젝트 전용 XRPL 지갑</div>
+              <div style="font-family: monospace; font-size: 14px; color: #0e7490;">rPrj...당뇨복약연구</div>
+            </div>
+          </div>
+
+          <div style="background: #f0fdfa; border: 1px solid #99f6e4; border-radius: 8px; padding: 16px; margin-bottom: 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+              <span style="font-size: 12px; color: #6b7280;">현재 잔액</span>
+              <span style="font-size: 20px; font-weight: 700; color: #0e7490;">0 XRP</span>
+            </div>
+            <div style="font-size: 11px; color: #6b7280;">예산 설정 후 개인 지갑에서 이체가 필요합니다</div>
+          </div>
+
+          <div style="display: flex; gap: 12px;">
+            <button class="btn btn-primary" style="flex: 1; background: #0891b2;" onclick="alert('개인 지갑 → 프로젝트 지갑 이체 팝업')" data-spec="이체 팝업: 개인 지갑에서 프로젝트 지갑으로 예산 이체. 금액 입력 후 Passkey 서명." data-spec-type="action" data-added="회의 결정: 이체 팝업">
+              💸 예산 이체하기
+            </button>
+            <button class="btn btn-secondary" style="flex: 1;">
+              📋 지갑 상세
+            </button>
+          </div>
+        </div>
       </div>
 
       <!-- 참여자 보상 -->
@@ -212,8 +248,8 @@
       </div>
 
       <!-- 비용 요약 -->
-      <div class="cost-summary">
-        <h4>비용 요약</h4>
+      <div class="cost-summary" data-spec="비용 요약: 프로젝트 지갑으로 이체할 총 예산. AI 도구 비용은 AI 허브에서 별도 결제." data-spec-type="wallet" data-changed="AI 도구 비용 제거 (AI 허브로 이동)">
+        <h4>비용 요약 (프로젝트 지갑 이체 금액)</h4>
         <div class="cost-row">
           <span class="label">기본 보상 (50 XRP × 100명)</span>
           <span class="value">5,000 XRP</span>
@@ -227,19 +263,16 @@
           <span class="value">400 XRP</span>
         </div>
         <div class="cost-row">
-          <span class="label">AI 분석 도구 비용</span>
-          <span class="value">200 XRP</span>
-        </div>
-        <div class="cost-row">
           <span class="label">플랫폼 수수료 (5%)</span>
-          <span class="value">330 XRP</span>
+          <span class="value">320 XRP</span>
         </div>
         <div class="cost-total">
           <span class="label">총 예산</span>
-          <span class="value">6,930 XRP</span>
+          <span class="value">6,720 XRP</span>
         </div>
         <p style="font-size: 12px; color: #6b7280; margin-top: 12px; text-align: right;">
-          ≈ $3,465 USD (1 XRP = $0.50 기준)
+          ≈ $3,360 USD (1 XRP = $0.50 기준)<br>
+          <span style="color: #0891b2;">* AI 분석 비용은 AI 허브에서 사용 시 별도 결제</span>
         </p>
       </div>
 
@@ -259,6 +292,12 @@
       <div class="designer-note">
         <h3>📋 디자이너 노트: Step 5 - 예산 설정</h3>
         <div class="content">
+          <strong>🔄 2026-02-07 회의 변경사항:</strong><br>
+          • <span style="color: #dc2626;">Step 4 "AI 도구 선택" 제거</span> → AI 허브로 통합<br>
+          • <span style="color: #0891b2;">프로젝트 지갑 자동 생성</span> → 개인/프로젝트 이원화<br>
+          • <span style="color: #0891b2;">예산 이체 팝업</span> → 개인 지갑에서 프로젝트 지갑으로<br>
+          • AI 분석 비용은 AI 허브에서 사용 시 별도 결제<br><br>
+
           <strong>AI 추천 로직:</strong><br>
           • 유사 연구 시장 데이터 분석<br>
           • 데이터 수집 항목 수 / 연구 기간 고려<br>
@@ -268,13 +307,12 @@
           • 기본 보상: 참여자 기본 지급금<br>
           • 완료 보너스: 전체 기간 완료 시<br>
           • 고품질 보너스: 데이터 품질 우수 시<br>
-          • AI 도구 비용: 선택한 분석 도구<br>
           • 플랫폼 수수료: 5%<br><br>
 
-          <strong>슬라이더 UX:</strong><br>
-          • 직관적인 보상 수준 조절<br>
-          • 실시간 총 비용 계산<br>
-          • 시장 비교 데이터 표시
+          <strong>지갑 이원화 구조:</strong><br>
+          • 개인 지갑: 연구자 본인 XRPL 지갑<br>
+          • 프로젝트 지갑: 연구별 전용 지갑 (서버 자동 생성)<br>
+          • 예산 이체: 개인 → 프로젝트 (Passkey 서명)
         </div>
       </div>
 
@@ -323,5 +361,7 @@ PATCH /api/v2/projects/:id<br>
     </div>
   </div>
   <script src="page-spec.js"></script>
+  <link rel="stylesheet" href="tooltip-spec.css">
+  <script src="tooltip-spec.js"></script>
 </body>
 </html>

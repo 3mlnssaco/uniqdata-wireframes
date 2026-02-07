@@ -385,14 +385,10 @@
             <span class="status-dot active"></span>
             <span class="expand-icon">▼</span>
           </div>
-          <div class="research-nav-sub">
+          <div class="research-nav-sub" data-spec="메뉴 구조: 홈, 개요, 테이블, AI 허브까지만 표시. 인과발견/SHAP 등 개별 메뉴는 AI 허브로 통합됨." data-spec-type="nav" data-changed="메뉴 통합">
             <a href="data-overview.html" class="nav-sub-item"><span class="dot"></span> 개요</a>
             <a href="data-table.html" class="nav-sub-item"><span class="dot"></span> 테이블</a>
-            <a href="analysis-discovery.html" class="nav-sub-item"><span class="dot"></span> 인과발견</a>
-            <a href="analysis-importance.html" class="nav-sub-item"><span class="dot"></span> SHAP</a>
-            <a href="analysis-personalized.html" class="nav-sub-item"><span class="dot"></span> CATE</a>
-            <a href="analysis-whatif.html" class="nav-sub-item"><span class="dot"></span> What-If</a>
-            <a href="analysis-rootcause.html" class="nav-sub-item"><span class="dot"></span> 이상추적</a>
+            <a href="analysis-discovery.html" class="nav-sub-item ai" data-spec="AI 허브: 연구 방법론별 최적화된 AI 알고리즘 선택. 인과발견, SHAP, CATE, What-If, 이상추적 등 통합." data-spec-type="ai" data-added="통합 메뉴"><span class="dot"></span> AI 허브</a>
           </div>
         </div>
 
@@ -407,11 +403,7 @@
           <div class="research-nav-sub">
             <a href="data-overview.html" class="nav-sub-item"><span class="dot"></span> 개요</a>
             <a href="data-table.html" class="nav-sub-item"><span class="dot"></span> 테이블</a>
-            <a href="analysis-discovery.html" class="nav-sub-item"><span class="dot"></span> 인과발견</a>
-            <a href="analysis-importance.html" class="nav-sub-item"><span class="dot"></span> SHAP</a>
-            <a href="analysis-personalized.html" class="nav-sub-item"><span class="dot"></span> CATE</a>
-            <a href="analysis-whatif.html" class="nav-sub-item"><span class="dot"></span> What-If</a>
-            <a href="analysis-rootcause.html" class="nav-sub-item"><span class="dot"></span> 이상추적</a>
+            <a href="analysis-discovery.html" class="nav-sub-item ai"><span class="dot"></span> AI 허브</a>
           </div>
         </div>
 
@@ -426,11 +418,7 @@
           <div class="research-nav-sub">
             <a href="data-overview.html" class="nav-sub-item"><span class="dot"></span> 개요</a>
             <a href="data-table.html" class="nav-sub-item"><span class="dot"></span> 테이블</a>
-            <a href="analysis-discovery.html" class="nav-sub-item"><span class="dot"></span> 인과발견</a>
-            <a href="analysis-importance.html" class="nav-sub-item"><span class="dot"></span> SHAP</a>
-            <a href="analysis-personalized.html" class="nav-sub-item"><span class="dot"></span> CATE</a>
-            <a href="analysis-whatif.html" class="nav-sub-item"><span class="dot"></span> What-If</a>
-            <a href="analysis-rootcause.html" class="nav-sub-item"><span class="dot"></span> 이상추적</a>
+            <a href="analysis-discovery.html" class="nav-sub-item ai"><span class="dot"></span> AI 허브</a>
           </div>
         </div>
       </div>
@@ -477,26 +465,26 @@
 
       <div class="content">
         <!-- 전체 KPI 요약 -->
-        <div class="kpi-summary">
-          <div class="kpi-card">
+        <div class="kpi-summary" data-spec="홈 화면 상단 KPI: 연구자가 한눈에 전체 현황 파악. 가장 중요한 4가지 지표만 표시." data-spec-type="kpi" data-priority="1">
+          <div class="kpi-card" data-spec="전체 연구: 상태별 연구 수 (진행 중/모집 중/초안/완료). 연구 포트폴리오 개요." data-spec-type="kpi">
             <span class="icon">📋</span>
             <div class="label">전체 연구</div>
             <div class="value">5</div>
             <div class="change up">진행 중 3 · 모집 중 1 · 초안 1</div>
           </div>
-          <div class="kpi-card">
+          <div class="kpi-card" data-spec="총 참여자: 모든 연구의 현재 참여자 합계. 주간 증감으로 성장 추이 파악." data-spec-type="kpi">
             <span class="icon">👥</span>
             <div class="label">총 참여자</div>
             <div class="value">1,430</div>
             <div class="change up">▲ 156 이번 주</div>
           </div>
-          <div class="kpi-card">
+          <div class="kpi-card" data-spec="수집 데이터: 전체 데이터 포인트 수. 연구 규모와 데이터 자산 가치 표시." data-spec-type="kpi">
             <span class="icon">📊</span>
             <div class="label">수집 데이터</div>
             <div class="value">2.8M</div>
             <div class="change up">▲ 340K 이번 주</div>
           </div>
-          <div class="kpi-card">
+          <div class="kpi-card" data-spec="에스크로 총액: XRPL 에스크로 잔액. 지급완료 금액 함께 표시하여 예산 현황 파악." data-spec-type="wallet">
             <span class="icon">💰</span>
             <div class="label">에스크로 총액</div>
             <div class="value">65,000 XRP</div>
@@ -581,12 +569,12 @@
               </div>
             </div>
 
-            <div class="card-status">
-              <div class="trend-section">
-                <div class="trend-label">최근 7일 데이터 수집 트렌드</div>
+            <div class="card-status" data-spec="카드 상태 섹션: 수집 트렌드 그래프 + 알림 표시." data-spec-type="data">
+              <div class="trend-section" data-spec="데이터 수집 트렌드: 전체 수집 기간의 일별 응답률 그래프. 이탈 추이 파악용. 이탈 시 참여자 추가 모집 등 액션 가능." data-spec-type="data" data-changed="7일→전체 기간으로 변경" data-priority="2">
+                <div class="trend-label">전체 기간 데이터 수집 트렌드 <span style="font-size: 10px; color: #9ca3af;">(일별 응답률)</span></div>
                 <div class="sparkline"></div>
               </div>
-              <div class="alert-section">
+              <div class="alert-section" data-spec="알림: 이상치, 미제출 등 주의 필요 사항. 빨간색=긴급, 노란색=주의." data-spec-type="data">
                 <div class="alert-label">알림 <span class="alert-count">2</span></div>
                 <div class="alert-list">
                   <div class="alert-item"><span class="dot red"></span> P023 3일 연속 미제출</div>
@@ -595,7 +583,7 @@
               </div>
             </div>
 
-            <div class="card-footer">
+            <div class="card-footer" data-spec="카드 푸터: 팀 정보, 데이터량, 예산, 빠른 액션 버튼." data-spec-type="action">
               <div class="footer-info">
                 <div class="item">
                   <div class="team-avatars">
@@ -607,9 +595,8 @@
                 <div class="item"><span class="icon">📊</span> 1.2M 포인트</div>
                 <div class="item"><span class="icon">💰</span> 25,000 XRP</div>
               </div>
-              <div class="footer-actions">
-                <button class="action-btn">참여자</button>
-                <button class="action-btn primary">데이터 →</button>
+              <div class="footer-actions" data-spec="액션 버튼: 참여자/데이터 버튼을 하나로 통합. 클릭 시 개요 페이지로 이동." data-spec-type="action" data-changed="참여자/데이터 버튼 통합">
+                <button class="action-btn primary">개요 보기 →</button>
               </div>
             </div>
           </a>
@@ -665,8 +652,8 @@
             </div>
 
             <div class="card-status">
-              <div class="trend-section">
-                <div class="trend-label">최근 7일 모집 트렌드</div>
+              <div class="trend-section" data-spec="참여자 등록 추이: 계약 체결 시점 차이로 인한 모집 진행 현황 표시. 전체 모집 기간 그래프." data-spec-type="data" data-changed="7일→전체 기간">
+                <div class="trend-label">전체 기간 모집 트렌드 <span style="font-size: 10px; color: #9ca3af;">(일별 등록)</span></div>
                 <div class="sparkline"></div>
               </div>
               <div class="alert-section">
@@ -688,9 +675,8 @@
                 <div class="item"><span class="icon">📊</span> 340K 포인트</div>
                 <div class="item"><span class="icon">💰</span> 15,000 XRP</div>
               </div>
-              <div class="footer-actions">
-                <button class="action-btn">모집 관리</button>
-                <button class="action-btn primary">데이터 →</button>
+              <div class="footer-actions" data-changed="버튼 통합">
+                <button class="action-btn primary">개요 보기 →</button>
               </div>
             </div>
           </a>
@@ -864,5 +850,7 @@ GET /api/v2/dashboard/summary<br>
     </div>
   </div>
   <script src="page-spec.js"></script>
+  <link rel="stylesheet" href="../tooltip-spec.css">
+  <script src="../tooltip-spec.js"></script>
 </body>
 </html>

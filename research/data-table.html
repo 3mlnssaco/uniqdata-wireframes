@@ -331,14 +331,10 @@
             <span class="research-title">당뇨병 복약 순응도</span>
             <span class="status-dot active"></span>
           </div>
-          <div class="research-nav-sub">
+          <div class="research-nav-sub" data-spec="메뉴 구조: 개요, 테이블, AI 허브만 표시. 인과발견/SHAP 등은 AI 허브로 통합됨." data-spec-type="nav" data-changed="메뉴 통합">
             <a href="data-overview.html" class="nav-sub-item"><span class="dot"></span> 개요</a>
             <a href="data-table.html" class="nav-sub-item active"><span class="dot"></span> 테이블</a>
-            <a href="analysis-discovery.html" class="nav-sub-item"><span class="dot"></span> 인과발견</a>
-            <a href="analysis-importance.html" class="nav-sub-item"><span class="dot"></span> SHAP</a>
-            <a href="analysis-personalized.html" class="nav-sub-item"><span class="dot"></span> CATE</a>
-            <a href="analysis-whatif.html" class="nav-sub-item"><span class="dot"></span> What-If</a>
-            <a href="analysis-rootcause.html" class="nav-sub-item"><span class="dot"></span> 이상추적</a>
+            <a href="analysis-discovery.html" class="nav-sub-item" style="color: #a78bfa;" data-spec="AI 허브: 연구 방법론별 최적화된 AI 알고리즘 선택." data-spec-type="ai" data-added="통합 메뉴"><span class="dot"></span> AI 허브</a>
           </div>
         </div>
 
@@ -394,7 +390,7 @@
         <!-- 툴바 -->
         <div class="toolbar">
           <div class="toolbar-left">
-            <div class="view-toggle">
+            <div class="view-toggle" data-spec="뷰 토글: 날짜별(일별 전체 데이터), 참여자별(개인별 시계열), 전체(모든 데이터 종합)" data-spec-type="nav" data-spec-title="뷰 토글" data-changed="참여자별 와이어프레임 추가 예정">
               <button class="view-btn active">날짜별</button>
               <button class="view-btn">참여자별</button>
               <button class="view-btn">전체</button>
@@ -436,18 +432,18 @@
         </div>
 
         <!-- 테이블: 주간 뷰 (시각적) -->
-        <div class="table-container">
+        <div class="table-container" data-spec="데이터 테이블: 텍스트 기반 엑셀 형식. 심박수/혈당/복약/수면/기분 컬럼. 스파크라인은 트렌드 시각화용으로 유지." data-spec-type="data" data-spec-title="데이터 컬럼" data-changed="시각화→텍스트 기반 (그래프 최소화)">
           <table class="data-table">
             <thead>
               <tr>
-                <th class="sortable">참여자 <span class="sort-icon">↓</span></th>
-                <th>로컬이름 <span class="local-badge">로컬</span></th>
-                <th class="sortable">심박수 (7일)</th>
-                <th class="sortable">혈당 (7일)</th>
-                <th class="sortable">복약 (7일)</th>
-                <th class="sortable">수면 (7일)</th>
-                <th class="sortable">기분 (7일)</th>
-                <th>트렌드</th>
+                <th class="sortable" data-spec="익명 참여자 ID (P001 형식). 실제 user_id는 미노출." data-spec-type="data">참여자 <span class="sort-icon">↓</span></th>
+                <th data-spec="로컬 닉네임: 브라우저 localStorage에만 저장. 서버 전송 없음." data-spec-type="data">로컬이름 <span class="local-badge">로컬</span></th>
+                <th class="sortable" data-spec="심박수 평균 및 트렌드. 정상 60-100bpm." data-spec-type="data">심박수 (7일)</th>
+                <th class="sortable" data-spec="혈당 평균 및 트렌드. 정상 공복 70-100mg/dL." data-spec-type="data">혈당 (7일)</th>
+                <th class="sortable" data-spec="복약 순응도: 7일간 복약 여부. ●=복용, ○=미복용." data-spec-type="data">복약 (7일)</th>
+                <th class="sortable" data-spec="평균 수면 시간. 권장 7-8시간." data-spec-type="data">수면 (7일)</th>
+                <th class="sortable" data-spec="주관적 기분 점수 (1-5). AI 인과분석 핵심 변수." data-spec-type="data">기분 (7일)</th>
+                <th data-spec="종합 트렌드: 안정/개선/악화/위험. AI가 복합 지표 기반 계산." data-spec-type="ai">트렌드</th>
               </tr>
             </thead>
             <tbody>
@@ -748,7 +744,7 @@
             </tbody>
           </table>
 
-          <div class="pagination">
+          <div class="pagination" data-spec="페이징: 데이터 원본 반출 방지용. 한 번에 제한된 행만 표시 (기본 20행). ABAC 권한에 따라 Export 제한." data-spec-type="action" data-spec-title="페이지네이션">
             <div class="pagination-info">
               1월 1주차 데이터: 84명
             </div>
@@ -943,11 +939,13 @@ POST /internal/opa/data/access<br>
 
         <div class="step-nav">
           <a href="data-overview.html">← 개요</a>
-          <a href="analysis-discovery.html">인과발견 →</a>
+          <a href="analysis-discovery.html">AI 허브 →</a>
         </div>
       </div>
     </div>
   </div>
   <script src="page-spec.js"></script>
+  <link rel="stylesheet" href="tooltip-spec.css">
+  <script src="tooltip-spec.js"></script>
 </body>
 </html>

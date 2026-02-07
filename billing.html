@@ -222,7 +222,7 @@
 
         <!-- 개요 -->
         <div class="overview-grid">
-          <div class="wallet-card">
+          <div class="wallet-card" data-spec="개인 지갑 (운영): 연구자 개인 XRPL 지갑. 프로젝트 지갑과 별도로 관리됨." data-spec-type="wallet" data-spec-title="개인 지갑" data-changed="지갑 이원화: 개인+프로젝트 분리">
             <div class="wallet-label">운영 지갑 (XRPL)</div>
             <div class="wallet-balance">45,000 XRP</div>
             <div class="wallet-usd">≈ $22,500 USD</div>
@@ -284,7 +284,7 @@
 
         <!-- 연구별 원장 + 검증 -->
         <div class="split-grid">
-          <div class="card">
+          <div class="card" data-spec="연구별 지출 원장: 연구별 예치, 정산, 환불 내역. 온체인 검증 상태 표시." data-spec-type="wallet" data-spec-title="연구별 지출 원장">
             <div class="card-header">연구별 지출/정산 원장</div>
             <div class="card-body">
               <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px;">
@@ -376,7 +376,7 @@
         </div>
 
         <!-- 외부 입출금 내역 -->
-        <div class="card">
+        <div class="card" data-spec="외부 입출금 내역: 외부 지갑과의 입출금 기록. 개인 지갑 ↔ 외부 지갑 거래 추적." data-spec-type="wallet" data-spec-title="외부 입출금 내역">
           <div class="card-header">외부 입출금 내역</div>
           <div class="card-body">
             <table class="table">
@@ -509,12 +509,10 @@ POST /api/v2/auth/passkey/verify
               <label>메모/목적</label>
               <input placeholder="연구 예산 이동 / 외부 정산">
             </div>
-            <div class="field">
+            <div class="field" data-spec="출금 방식: 즉시 출금만 지원. 에스크로 해제/예약 출금 옵션 제거." data-spec-type="action" data-changed="에스크로 해제/예약 출금 옵션 제거">
               <label>출금 방식</label>
               <select>
                 <option>즉시 출금</option>
-                <option>에스크로 해제 후 출금</option>
-                <option>예약 출금</option>
               </select>
             </div>
             <div class="field">
@@ -550,5 +548,7 @@ POST /api/v2/auth/passkey/verify
       </div>
     </div>
   </div>
+  <link rel="stylesheet" href="research/tooltip-spec.css">
+  <script src="research/tooltip-spec.js"></script>
 </body>
 </html>
