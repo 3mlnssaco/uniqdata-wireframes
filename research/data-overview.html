@@ -372,66 +372,92 @@
           </div>
         </div>
 
-        <!-- 메인 차트: 복약 순응도 & 혈당 트렌드 -->
-        <div class="chart-card" style="margin-bottom: 24px;" data-spec="메인 차트: 복약 순응도와 혈당 변동의 시계열 비교. 인과관계 시각적 확인용. 전체 기간 또는 기간 필터링 가능." data-spec-type="data" data-added="큰 차트 요청" data-priority="1">
+        <!-- 메인 차트: 일별 데이터 제출 추이 (Area Chart) -->
+        <div class="chart-card" style="margin-bottom: 24px;" data-spec="메인 차트: 일별 사용자 데이터 제출 현황. Area 차트로 추이 시각화. 주말/공휴일 패턴 확인 가능." data-spec-type="data" data-added="큰 차트 요청" data-priority="1">
           <h3 style="display: flex; justify-content: space-between; align-items: center;">
-            📈 복약 순응도 vs 혈당 트렌드
-            <div style="display: flex; gap: 8px;">
+            📊 일별 데이터 제출 추이
+            <div style="display: flex; gap: 8px; align-items: center;">
+              <span style="font-size: 12px; color: #6b7280;">기간:</span>
               <span class="filter" style="background: #3b82f6; color: white;">30일</span>
               <span class="filter">90일</span>
               <span class="filter">전체</span>
             </div>
           </h3>
-          <div style="height: 320px; position: relative; margin-top: 20px;">
-            <!-- Y축 (왼쪽: 순응도) -->
-            <div style="position: absolute; left: 0; top: 0; bottom: 40px; width: 50px; display: flex; flex-direction: column; justify-content: space-between; font-size: 11px; color: #3b82f6; text-align: right; padding-right: 8px;">
-              <span>100%</span>
-              <span>75%</span>
-              <span>50%</span>
-              <span>25%</span>
-              <span>0%</span>
-            </div>
-            <!-- Y축 (오른쪽: 혈당) -->
-            <div style="position: absolute; right: 0; top: 0; bottom: 40px; width: 60px; display: flex; flex-direction: column; justify-content: space-between; font-size: 11px; color: #ef4444; text-align: left; padding-left: 8px;">
-              <span>200</span>
-              <span>175</span>
-              <span>150</span>
-              <span>125</span>
-              <span>100 mg/dL</span>
-            </div>
-            <!-- 차트 영역 -->
-            <div style="position: absolute; left: 60px; right: 70px; top: 0; bottom: 40px; background: linear-gradient(to bottom, rgba(59, 130, 246, 0.05), transparent); border-left: 1px solid #e5e7eb; border-bottom: 1px solid #e5e7eb;">
-              <!-- 그리드 라인 -->
-              <div style="position: absolute; top: 25%; left: 0; right: 0; border-top: 1px dashed #e5e7eb;"></div>
-              <div style="position: absolute; top: 50%; left: 0; right: 0; border-top: 1px dashed #e5e7eb;"></div>
-              <div style="position: absolute; top: 75%; left: 0; right: 0; border-top: 1px dashed #e5e7eb;"></div>
 
-              <!-- 복약 순응도 라인 (파란색) -->
-              <svg style="position: absolute; inset: 0; width: 100%; height: 100%;" preserveAspectRatio="none">
+          <!-- 요약 통계 -->
+          <div style="display: flex; gap: 24px; margin: 16px 0; padding: 16px; background: #f8fafc; border-radius: 8px;">
+            <div style="text-align: center;">
+              <div style="font-size: 24px; font-weight: 700; color: #3b82f6;">2,847</div>
+              <div style="font-size: 11px; color: #6b7280;">총 제출</div>
+            </div>
+            <div style="text-align: center;">
+              <div style="font-size: 24px; font-weight: 700; color: #22c55e;">94.9</div>
+              <div style="font-size: 11px; color: #6b7280;">일 평균</div>
+            </div>
+            <div style="text-align: center;">
+              <div style="font-size: 24px; font-weight: 700; color: #f59e0b;">112</div>
+              <div style="font-size: 11px; color: #6b7280;">최고 (1/15)</div>
+            </div>
+            <div style="text-align: center;">
+              <div style="font-size: 24px; font-weight: 700; color: #ef4444;">68</div>
+              <div style="font-size: 11px; color: #6b7280;">최저 (1/7)</div>
+            </div>
+          </div>
+
+          <!-- Area Chart -->
+          <div style="height: 280px; position: relative; margin-top: 16px;">
+            <!-- Y축 -->
+            <div style="position: absolute; left: 0; top: 0; bottom: 30px; width: 40px; display: flex; flex-direction: column; justify-content: space-between; font-size: 10px; color: #9ca3af; text-align: right; padding-right: 8px;">
+              <span>120</span>
+              <span>90</span>
+              <span>60</span>
+              <span>30</span>
+              <span>0</span>
+            </div>
+
+            <!-- 차트 영역 -->
+            <div style="position: absolute; left: 50px; right: 20px; top: 0; bottom: 30px; border-left: 1px solid #e5e7eb; border-bottom: 1px solid #e5e7eb; overflow: hidden;">
+              <!-- 그리드 라인 -->
+              <div style="position: absolute; top: 25%; left: 0; right: 0; border-top: 1px dashed #f3f4f6;"></div>
+              <div style="position: absolute; top: 50%; left: 0; right: 0; border-top: 1px dashed #f3f4f6;"></div>
+              <div style="position: absolute; top: 75%; left: 0; right: 0; border-top: 1px dashed #f3f4f6;"></div>
+
+              <!-- 평균선 -->
+              <div style="position: absolute; top: 21%; left: 0; right: 0; border-top: 2px dashed #22c55e;"></div>
+              <div style="position: absolute; top: 18%; right: 8px; font-size: 10px; color: #22c55e; background: white; padding: 0 4px;">평균 94.9</div>
+
+              <!-- Area Chart SVG -->
+              <svg style="position: absolute; inset: 0; width: 100%; height: 100%;" viewBox="0 0 300 100" preserveAspectRatio="none">
                 <defs>
-                  <linearGradient id="blueGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:0.3" />
-                    <stop offset="100%" style="stop-color:#3b82f6;stop-opacity:0" />
+                  <linearGradient id="areaGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:0.4" />
+                    <stop offset="100%" style="stop-color:#3b82f6;stop-opacity:0.05" />
                   </linearGradient>
                 </defs>
-                <path d="M 0 30 Q 50 25, 100 28 T 200 22 T 300 35 T 400 20 T 500 25 T 600 18 T 700 22 T 800 15"
-                      fill="none" stroke="#3b82f6" stroke-width="3" vector-effect="non-scaling-stroke"/>
-                <path d="M 0 30 Q 50 25, 100 28 T 200 22 T 300 35 T 400 20 T 500 25 T 600 18 T 700 22 T 800 15 L 800 100 L 0 100 Z"
-                      fill="url(#blueGrad)" opacity="0.5"/>
+                <!-- Area fill -->
+                <path d="M0,35 L10,30 L20,38 L30,25 L40,42 L50,28 L60,22 L70,35 L80,18 L90,25 L100,20 L110,30 L120,15 L130,22 L140,28 L150,12 L160,20 L170,25 L180,18 L190,30 L200,22 L210,28 L220,20 L230,25 L240,18 L250,22 L260,15 L270,20 L280,18 L290,12 L300,15 L300,100 L0,100 Z"
+                      fill="url(#areaGrad)"/>
+                <!-- Line -->
+                <path d="M0,35 L10,30 L20,38 L30,25 L40,42 L50,28 L60,22 L70,35 L80,18 L90,25 L100,20 L110,30 L120,15 L130,22 L140,28 L150,12 L160,20 L170,25 L180,18 L190,30 L200,22 L210,28 L220,20 L230,25 L240,18 L250,22 L260,15 L270,20 L280,18 L290,12 L300,15"
+                      fill="none" stroke="#3b82f6" stroke-width="0.8"/>
               </svg>
 
-              <!-- 혈당 라인 (빨간색) -->
-              <svg style="position: absolute; inset: 0; width: 100%; height: 100%;" preserveAspectRatio="none">
-                <path d="M 0 60 Q 50 55, 100 65 T 200 58 T 300 70 T 400 55 T 500 62 T 600 50 T 700 58 T 800 45"
-                      fill="none" stroke="#ef4444" stroke-width="3" stroke-dasharray="8,4" vector-effect="non-scaling-stroke"/>
-              </svg>
+              <!-- 주말 하이라이트 (토/일) -->
+              <div style="position: absolute; left: 13%; width: 7%; top: 0; bottom: 0; background: rgba(239, 68, 68, 0.08);"></div>
+              <div style="position: absolute; left: 46%; width: 7%; top: 0; bottom: 0; background: rgba(239, 68, 68, 0.08);"></div>
+              <div style="position: absolute; left: 80%; width: 7%; top: 0; bottom: 0; background: rgba(239, 68, 68, 0.08);"></div>
 
-              <!-- 인사이트 마커 -->
-              <div style="position: absolute; left: 35%; top: 20%; width: 24px; height: 24px; background: #fbbf24; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; cursor: pointer; box-shadow: 0 2px 8px rgba(251, 191, 36, 0.4);" title="순응도 15% 감소 시점">⚠️</div>
-              <div style="position: absolute; left: 75%; top: 10%; width: 24px; height: 24px; background: #22c55e; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; cursor: pointer; box-shadow: 0 2px 8px rgba(34, 197, 94, 0.4);" title="혈당 안정화 구간">✓</div>
+              <!-- 포인트 마커 (최고/최저) -->
+              <div style="position: absolute; left: 50%; top: 12%; transform: translate(-50%, -50%);">
+                <div style="width: 10px; height: 10px; background: #f59e0b; border: 2px solid white; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.2);"></div>
+              </div>
+              <div style="position: absolute; left: 13%; top: 42%; transform: translate(-50%, -50%);">
+                <div style="width: 10px; height: 10px; background: #ef4444; border: 2px solid white; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.2);"></div>
+              </div>
             </div>
+
             <!-- X축 -->
-            <div style="position: absolute; left: 60px; right: 70px; bottom: 0; height: 40px; display: flex; justify-content: space-between; align-items: flex-start; padding-top: 8px; font-size: 11px; color: #6b7280;">
+            <div style="position: absolute; left: 50px; right: 20px; bottom: 0; height: 30px; display: flex; justify-content: space-between; font-size: 10px; color: #9ca3af; padding-top: 8px;">
               <span>1/1</span>
               <span>1/5</span>
               <span>1/10</span>
@@ -441,37 +467,25 @@
               <span>1/30</span>
             </div>
           </div>
-          <!-- 범례 -->
-          <div style="display: flex; justify-content: center; gap: 24px; margin-top: 16px; padding-top: 16px; border-top: 1px solid #e5e7eb;">
-            <div style="display: flex; align-items: center; gap: 8px; font-size: 13px;">
-              <div style="width: 24px; height: 3px; background: #3b82f6; border-radius: 2px;"></div>
-              <span>복약 순응도 (%)</span>
-            </div>
-            <div style="display: flex; align-items: center; gap: 8px; font-size: 13px;">
-              <div style="width: 24px; height: 3px; background: #ef4444; border-radius: 2px; border-style: dashed;"></div>
-              <span>평균 혈당 (mg/dL)</span>
-            </div>
-            <div style="display: flex; align-items: center; gap: 8px; font-size: 13px;">
-              <div style="width: 16px; height: 16px; background: #fbbf24; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px;">⚠️</div>
-              <span>주의 구간</span>
-            </div>
-            <div style="display: flex; align-items: center; gap: 8px; font-size: 13px;">
-              <div style="width: 16px; height: 16px; background: #22c55e; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px;">✓</div>
-              <span>안정 구간</span>
-            </div>
-          </div>
-          <!-- AI 인사이트 요약 -->
-          <div style="margin-top: 16px; padding: 16px; background: linear-gradient(135deg, #eff6ff, #dbeafe); border: 1px solid #3b82f6; border-radius: 8px;">
-            <div style="display: flex; align-items: flex-start; gap: 12px;">
-              <div style="font-size: 20px;">🤖</div>
-              <div>
-                <div style="font-size: 13px; font-weight: 600; color: #1e40af; margin-bottom: 4px;">AI 분석 요약</div>
-                <div style="font-size: 12px; color: #374151; line-height: 1.6;">
-                  1/10~1/15 구간에서 <strong style="color: #dc2626;">복약 순응도 15% 감소</strong> 후 혈당 변동성 증가.
-                  1/20 이후 순응도 회복과 함께 <strong style="color: #16a34a;">혈당 안정화</strong> 확인.
-                  <strong>인과 효과 크기: 0.42</strong> (복약→혈당)
-                </div>
+
+          <!-- 범례 & 인사이트 -->
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 16px; padding-top: 16px; border-top: 1px solid #e5e7eb;">
+            <div style="display: flex; gap: 16px; font-size: 12px;">
+              <div style="display: flex; align-items: center; gap: 6px;">
+                <div style="width: 12px; height: 12px; background: linear-gradient(to bottom, rgba(59,130,246,0.4), rgba(59,130,246,0.05)); border-radius: 2px;"></div>
+                <span>일별 제출 수</span>
               </div>
+              <div style="display: flex; align-items: center; gap: 6px;">
+                <div style="width: 16px; border-top: 2px dashed #22c55e;"></div>
+                <span>평균선</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 6px;">
+                <div style="width: 12px; height: 12px; background: rgba(239, 68, 68, 0.1); border-radius: 2px;"></div>
+                <span>주말</span>
+              </div>
+            </div>
+            <div style="font-size: 12px; color: #6b7280;">
+              💡 주말 제출률 <span style="color: #ef4444; font-weight: 600;">-23%</span> 감소 패턴 확인
             </div>
           </div>
         </div>
