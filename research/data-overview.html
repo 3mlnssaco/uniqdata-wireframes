@@ -324,10 +324,31 @@
             <a href="list.html">연구 관리</a> / <span>당뇨병 환자 복약 순응도 연구</span>
           </div>
 
-          <div class="title-row">
+          <div class="title-row" style="display: flex; justify-content: space-between; align-items: flex-start; gap: 24px;">
             <div class="title-block">
               <h1>당뇨병 환자 복약 순응도 연구</h1>
               <p class="subtitle">2형 당뇨 환자의 복약 패턴과 혈당 변화 상관관계 분석</p>
+            </div>
+            <!-- 프로젝트 지갑 (우측 상단) -->
+            <div style="background: linear-gradient(135deg, #0f172a, #1e293b); color: white; border-radius: 12px; padding: 12px 16px; min-width: 280px;" data-spec="프로젝트 지갑: 타이틀 옆에 배치. 예산 현황 즉시 확인 가능." data-spec-type="wallet" data-changed="위치 이동: 하단→상단 우측">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <span style="font-size: 12px; color: #94a3b8;">💳 프로젝트 지갑</span>
+                <span style="font-size: 10px; color: #22c55e; display: flex; align-items: center; gap: 4px;"><span style="width: 6px; height: 6px; background: #22c55e; border-radius: 50%;"></span>연결됨</span>
+              </div>
+              <div style="display: flex; gap: 16px; align-items: baseline;">
+                <div>
+                  <div style="font-size: 20px; font-weight: 700;">18,500 XRP</div>
+                  <div style="font-size: 10px; color: #64748b;">잔액 ≈ $9,250</div>
+                </div>
+                <div style="border-left: 1px solid #334155; padding-left: 12px;">
+                  <div style="font-size: 14px; font-weight: 600; color: #22c55e;">6,500</div>
+                  <div style="font-size: 10px; color: #64748b;">지급완료</div>
+                </div>
+                <div>
+                  <div style="font-size: 14px; font-weight: 600; color: #f59e0b;">~4,350</div>
+                  <div style="font-size: 10px; color: #64748b;">예정</div>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -343,6 +364,9 @@
             </button>
             <button onclick="switchMainChart('enrollment')" class="main-chart-tab" style="padding: 10px 20px; border: 1px solid #d1d5db; background: white; color: #6b7280; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s;">
               👥 참여자 등록
+            </button>
+            <button onclick="switchMainChart('budget')" class="main-chart-tab" style="padding: 10px 20px; border: 1px solid #d1d5db; background: white; color: #6b7280; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s;">
+              💰 예산 사용
             </button>
             <div style="flex: 1;"></div>
             <!-- 기간 필터 -->
@@ -477,6 +501,69 @@
               <span style="color: #3b82f6; font-weight: 600;">📈 예상 완료일: 2/15</span>
             </div>
           </div>
+
+          <!-- ===== 탭 4: 예산 사용 추이 ===== -->
+          <div id="chart-budget" class="main-chart-content" style="display: none;">
+            <h3 style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+              💰 예산 사용 추이
+              <span style="font-size: 12px; color: #22c55e; font-weight: 600;">사용률 35%</span>
+            </h3>
+
+            <!-- 요약 통계 -->
+            <div style="display: flex; gap: 16px; margin: 12px 0; padding: 14px; background: #f8fafc; border-radius: 8px;">
+              <div style="flex: 1; text-align: center; padding: 8px; background: linear-gradient(135deg, #0f172a, #1e293b); border-radius: 8px;"><div style="font-size: 18px; font-weight: 700; color: white;">25,000</div><div style="font-size: 9px; color: #94a3b8;">총 예산 XRP</div></div>
+              <div style="flex: 1; text-align: center; padding: 8px; background: #f0fdf4; border-radius: 8px;"><div style="font-size: 18px; font-weight: 700; color: #16a34a;">6,500</div><div style="font-size: 9px; color: #6b7280;">지급 완료</div></div>
+              <div style="flex: 1; text-align: center; padding: 8px; background: #fef3c7; border-radius: 8px;"><div style="font-size: 18px; font-weight: 700; color: #d97706;">4,350</div><div style="font-size: 9px; color: #6b7280;">지급 예정</div></div>
+              <div style="flex: 1; text-align: center; padding: 8px; background: #eff6ff; border-radius: 8px;"><div style="font-size: 18px; font-weight: 700; color: #2563eb;">14,150</div><div style="font-size: 9px; color: #6b7280;">잔여 예산</div></div>
+            </div>
+
+            <!-- 예산 사용 차트 -->
+            <div style="height: 200px; position: relative; margin-top: 12px;">
+              <div style="position: absolute; left: 0; top: 0; bottom: 25px; width: 40px; display: flex; flex-direction: column; justify-content: space-between; font-size: 9px; color: #9ca3af; text-align: right; padding-right: 6px;"><span>25k</span><span>20k</span><span>15k</span><span>10k</span><span>5k</span><span>0</span></div>
+              <div style="position: absolute; left: 45px; right: 10px; top: 0; bottom: 25px; border-left: 1px solid #e5e7eb; border-bottom: 1px solid #e5e7eb; overflow: hidden;">
+                <!-- 그리드 -->
+                <div style="position: absolute; top: 20%; left: 0; right: 0; border-top: 1px dashed #f3f4f6;"></div>
+                <div style="position: absolute; top: 40%; left: 0; right: 0; border-top: 1px dashed #f3f4f6;"></div>
+                <div style="position: absolute; top: 60%; left: 0; right: 0; border-top: 1px dashed #f3f4f6;"></div>
+                <div style="position: absolute; top: 80%; left: 0; right: 0; border-top: 1px dashed #f3f4f6;"></div>
+                <!-- 스택 바 차트 -->
+                <svg style="position: absolute; inset: 0; width: 100%; height: 100%;" viewBox="0 0 300 100" preserveAspectRatio="none">
+                  <!-- 잔여 (파랑) -->
+                  <rect x="10" y="0" width="35" height="100" fill="#dbeafe"/>
+                  <rect x="60" y="0" width="35" height="100" fill="#dbeafe"/>
+                  <rect x="110" y="0" width="35" height="100" fill="#dbeafe"/>
+                  <rect x="160" y="0" width="35" height="100" fill="#dbeafe"/>
+                  <rect x="210" y="0" width="35" height="100" fill="#dbeafe"/>
+                  <rect x="260" y="0" width="35" height="100" fill="#dbeafe"/>
+                  <!-- 지급예정 (노랑) -->
+                  <rect x="10" y="60" width="35" height="40" fill="#fde68a"/>
+                  <rect x="60" y="55" width="35" height="45" fill="#fde68a"/>
+                  <rect x="110" y="50" width="35" height="50" fill="#fde68a"/>
+                  <rect x="160" y="45" width="35" height="55" fill="#fde68a"/>
+                  <rect x="210" y="42" width="35" height="58" fill="#fde68a"/>
+                  <rect x="260" y="40" width="35" height="60" fill="#fde68a"/>
+                  <!-- 지급완료 (초록) -->
+                  <rect x="10" y="90" width="35" height="10" fill="#86efac"/>
+                  <rect x="60" y="82" width="35" height="18" fill="#86efac"/>
+                  <rect x="110" y="72" width="35" height="28" fill="#86efac"/>
+                  <rect x="160" y="64" width="35" height="36" fill="#86efac"/>
+                  <rect x="210" y="58" width="35" height="42" fill="#86efac"/>
+                  <rect x="260" y="52" width="35" height="48" fill="#86efac"/>
+                </svg>
+                <!-- 예산선 -->
+                <div style="position: absolute; top: 0%; left: 0; right: 0; border-top: 2px solid #1e293b;"></div>
+              </div>
+              <div style="position: absolute; left: 45px; right: 10px; bottom: 0; height: 25px; display: flex; justify-content: space-around; font-size: 9px; color: #9ca3af; padding-top: 6px;"><span>1주</span><span>2주</span><span>3주</span><span>4주</span><span>5주</span><span>6주</span></div>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px; font-size: 11px;">
+              <div style="display: flex; gap: 12px;">
+                <span style="display: flex; align-items: center; gap: 4px;"><span style="width: 10px; height: 10px; background: #86efac; border-radius: 2px;"></span> 지급완료</span>
+                <span style="display: flex; align-items: center; gap: 4px;"><span style="width: 10px; height: 10px; background: #fde68a; border-radius: 2px;"></span> 지급예정</span>
+                <span style="display: flex; align-items: center; gap: 4px;"><span style="width: 10px; height: 10px; background: #dbeafe; border-radius: 2px;"></span> 잔여</span>
+              </div>
+              <span style="color: #6b7280;">💡 예상 소진일: <span style="color: #2563eb; font-weight: 600;">3/15</span></span>
+            </div>
+          </div>
         </div>
 
         <script>
@@ -532,37 +619,6 @@
             <div class="label">총 데이터 포인트</div>
             <div class="value">12,847</div>
             <div class="sub">k-Anonymity 적용됨</div>
-          </div>
-        </div>
-
-        <!-- 프로젝트 지갑 정보 (신규) -->
-        <div class="chart-card" style="margin-bottom: 24px; background: linear-gradient(135deg, #0f172a, #1e293b); color: white;" data-spec="프로젝트 지갑: 이 연구 전용 XRPL 지갑. 개인 지갑과 분리되어 예산 관리. 서버에서 자동 생성됨." data-spec-type="wallet" data-added="회의 결정: 지갑 이원화" data-priority="1">
-          <h3 style="color: #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
-            💳 프로젝트 지갑
-            <span style="font-size: 12px; color: #22c55e; display: flex; align-items: center; gap: 6px;">
-              <span style="width: 8px; height: 8px; background: #22c55e; border-radius: 50%;"></span> 연결됨
-            </span>
-          </h3>
-          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 16px;">
-            <div data-spec="예산 잔액: 현재 프로젝트 지갑에 남은 XRP. 부족 시 개인 지갑에서 이체 필요." data-spec-type="wallet">
-              <div style="font-size: 12px; color: #94a3b8;">예산 잔액</div>
-              <div style="font-size: 24px; font-weight: 700;">18,500 XRP</div>
-              <div style="font-size: 11px; color: #64748b;">≈ $9,250 USD</div>
-            </div>
-            <div data-spec="지급 완료: 참여자에게 이미 지급된 보상 합계." data-spec-type="wallet">
-              <div style="font-size: 12px; color: #94a3b8;">지급 완료</div>
-              <div style="font-size: 24px; font-weight: 700;">6,500 XRP</div>
-              <div style="font-size: 11px; color: #22c55e;">70명 완료</div>
-            </div>
-            <div data-spec="지급 예정: 현재 참여 중인 참여자 완료 시 예상 지급액." data-spec-type="wallet">
-              <div style="font-size: 12px; color: #94a3b8;">지급 예정</div>
-              <div style="font-size: 24px; font-weight: 700;">~4,350 XRP</div>
-              <div style="font-size: 11px; color: #f59e0b;">17명 진행 중</div>
-            </div>
-          </div>
-          <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid #334155; display: flex; justify-content: space-between; align-items: center;">
-            <div style="font-size: 12px; color: #64748b; font-family: monospace;">지갑 주소: rPrj...7xQm</div>
-            <button style="padding: 8px 16px; background: #3b82f6; border: none; border-radius: 8px; color: white; font-size: 12px; cursor: pointer;" data-spec="예산 충전: 개인 지갑에서 프로젝트 지갑으로 XRP 이체. 팝업에서 진행." data-spec-type="action" data-added="이체 팝업">예산 충전 →</button>
           </div>
         </div>
 
