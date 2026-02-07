@@ -329,21 +329,6 @@
               <h1>당뇨병 환자 복약 순응도 연구</h1>
               <p class="subtitle">2형 당뇨 환자의 복약 패턴과 혈당 변화 상관관계 분석</p>
             </div>
-            <div class="top-insight">
-              <h3>💡 핵심 인사이트</h3>
-              <div class="insight-item">
-                <span class="icon">📉</span>
-                <span><span class="highlight">복약 순응도</span>가 지난 7일간 <span class="negative">15% 감소</span></span>
-              </div>
-              <div class="insight-item">
-                <span class="icon">📈</span>
-                <span>상위 10%는 <span class="positive">혈당 변동성 25% 낮음</span></span>
-              </div>
-              <div class="insight-item">
-                <span class="icon">⚠️</span>
-                <span><span class="highlight">3명</span> 심박수 데이터 미수집</span>
-              </div>
-            </div>
           </div>
 
         <!-- 메인 차트: 일별 데이터 제출 추이 (Area Chart) - KPI 위에 배치 -->
@@ -907,6 +892,27 @@ Headers: Authorization: Bearer {jwt}<br><br>
           <div class="ai-body">
             <!-- 인사이트 탭 -->
             <div id="tool-insight" class="tool-content">
+              <!-- 핵심 인사이트 (상단 고정) -->
+              <div style="background: linear-gradient(135deg, #1e3a5f, #1e293b); border: 1px solid #3b82f6; border-radius: 12px; padding: 16px; margin-bottom: 16px;">
+                <h3 style="color: #93c5fd; margin-bottom: 12px; font-size: 14px; display: flex; align-items: center; gap: 8px;">
+                  💡 핵심 인사이트
+                </h3>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                  <div style="display: flex; gap: 10px; align-items: flex-start; font-size: 13px;">
+                    <span>📉</span>
+                    <span><span style="color: #60a5fa; font-weight: 600;">복약 순응도</span>가 지난 7일간 <span style="color: #f87171;">15% 감소</span></span>
+                  </div>
+                  <div style="display: flex; gap: 10px; align-items: flex-start; font-size: 13px;">
+                    <span>📈</span>
+                    <span>상위 10%는 <span style="color: #4ade80;">혈당 변동성 25% 낮음</span></span>
+                  </div>
+                  <div style="display: flex; gap: 10px; align-items: flex-start; font-size: 13px;">
+                    <span>⚠️</span>
+                    <span><span style="color: #fbbf24; font-weight: 600;">3명</span> 심박수 데이터 미수집</span>
+                  </div>
+                </div>
+              </div>
+
               <div class="ai-insight">
                 <div class="icon">💡</div>
                 <div class="text">
