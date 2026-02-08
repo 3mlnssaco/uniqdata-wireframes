@@ -110,24 +110,23 @@
     /* Table Card */
     .table-card {
       position: absolute;
-      background: #151521;
-      border: 1px solid #2a2a3e;
-      border-radius: 12px;
+      background: #12121a;
+      border: 1px solid #252535;
+      border-radius: 8px;
       overflow: hidden;
-      transition: box-shadow 0.2s, border-color 0.2s, transform 0.2s;
+      transition: box-shadow 0.15s, border-color 0.15s;
       cursor: pointer;
     }
     .table-card:hover {
-      border-color: #4f46e5;
-      box-shadow: 0 0 0 1px #4f46e5, 0 8px 24px rgba(0,0,0,0.4);
-      transform: translateY(-2px);
+      border-color: #3b3b55;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
     }
     .table-card.highlighted {
       border-color: #60a5fa;
-      box-shadow: 0 0 0 2px #60a5fa40;
+      box-shadow: 0 0 0 1px #60a5fa50;
     }
-    .table-card.ghost { opacity: 0.6; }
-    .table-card.ghost:hover { opacity: 1; }
+    .table-card.ghost { opacity: 0.5; }
+    .table-card.ghost:hover { opacity: 0.8; }
 
     .table-header {
       padding: 6px 10px;
@@ -162,12 +161,12 @@
     .col-type { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #475569; }
     .table-more { padding: 6px 16px; font-size: 10px; color: #475569; border-top: 1px solid #1e293b; }
 
-    /* Relations */
+    /* Relations - cleaner lines */
     .relations-layer { position: absolute; top: 0; left: 0; pointer-events: none; overflow: visible; }
-    .relation-path { fill: none; stroke: #334155; stroke-width: 1.5; opacity: 0.4; }
-    .relation-path.highlighted { stroke: #60a5fa; stroke-width: 2; opacity: 1; }
-    .relation-dot { fill: #334155; opacity: 0.4; }
-    .relation-dot.highlighted { fill: #60a5fa; opacity: 1; }
+    .relation-path { fill: none; stroke: #4b5563; stroke-width: 1; opacity: 0.3; }
+    .relation-path.highlighted { stroke: #60a5fa; stroke-width: 1.5; opacity: 0.9; }
+    .relation-dot { fill: #4b5563; opacity: 0.3; }
+    .relation-dot.highlighted { fill: #60a5fa; opacity: 0.9; }
 
     /* Column Headers */
     .col-header {
@@ -583,22 +582,24 @@ function calculateLayout(client, domain) {
       };
     });
   } else {
-    // Domain view - primary on right, refs on left
+    // Domain view - primary center, refs left
     const primary = visible.filter(t => t.domain === domain);
     const refs = visible.filter(t => t.domain !== domain);
 
+    // Primary tables in center
     let primaryY = 0;
     primary.forEach(t => {
       const h = HEADER_H + t.cols.length * ROW_H + 6;
-      positions[t.name] = { x: 280, y: primaryY, w: CARD_W, h, ghost: false };
-      primaryY += h + 30;
+      positions[t.name] = { x: 250, y: primaryY, w: CARD_W + 20, h, ghost: false };
+      primaryY += h + 25;
     });
 
+    // Refs on left, compact
     let refY = 0;
     refs.forEach(t => {
-      const h = HEADER_H + Math.min(t.cols.length, 4) * ROW_H + 6;
-      positions[t.name] = { x: 0, y: refY, w: 180, h, ghost: true };
-      refY += h + 20;
+      const h = HEADER_H + Math.min(t.cols.length, 3) * ROW_H + 6;
+      positions[t.name] = { x: 0, y: refY, w: 160, h, ghost: true };
+      refY += h + 15;
     });
   }
 
