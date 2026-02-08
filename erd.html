@@ -164,10 +164,10 @@
 
     /* Relations */
     .relations-layer { position: absolute; top: 0; left: 0; pointer-events: none; overflow: visible; }
-    .relation-path { fill: none; stroke: #475569; stroke-width: 2; opacity: 0.6; }
-    .relation-path.highlighted { stroke: #60a5fa; stroke-width: 2.5; opacity: 1; }
-    .relation-dot { fill: #475569; }
-    .relation-dot.highlighted { fill: #60a5fa; }
+    .relation-path { fill: none; stroke: #334155; stroke-width: 1.5; opacity: 0.5; }
+    .relation-path.highlighted { stroke: #60a5fa; stroke-width: 2; opacity: 1; }
+    .relation-dot { fill: #334155; opacity: 0.5; }
+    .relation-dot.highlighted { fill: #60a5fa; opacity: 1; }
 
     /* Info Panels */
     .legend {
@@ -465,8 +465,11 @@ TABLES.forEach(t => {
 });
 
 // ============================================================
-// LAYOUT - Connection-based smart layout
+// LAYOUT - Simple vertical columns by domain
 // ============================================================
+
+// Domain column order (grouped logically)
+const DOMAIN_ORDER = ["core", "wallet", "app", "org", "research", "finance", "data", "medication", "analytics"];
 
 function calculateLayout(client, domain) {
   let clientTables = CLIENT_TABLES[client];
@@ -486,97 +489,58 @@ function calculateLayout(client, domain) {
       });
 
   const positions = {};
-  const CARD_W = 260;
-  const ROW_H = 28;
-  const HEADER_H = 44;
-
-  // Count incoming references (how many tables reference this one)
-  const incomingCount = {};
-  visible.forEach(t => { incomingCount[t.name] = 0; });
-  visible.forEach(t => {
-    t.cols.forEach(c => {
-      if (c.fk && incomingCount[c.fk] !== undefined) {
-        incomingCount[c.fk]++;
-      }
-    });
-  });
-
-  // Sort tables: most referenced first (these are "parent" tables)
-  const sorted = [...visible].sort((a, b) => incomingCount[b.name] - incomingCount[a.name]);
+  const CARD_W = 240;
+  const ROW_H = 26;
+  const HEADER_H = 40;
+  const COL_WIDTH = 300;  // Column width including gap
+  const CARD_GAP_Y = 30;  // Vertical gap between cards
 
   if (domain === "all") {
-    // Layered layout: Level 0 = most referenced, then their children, etc.
-    const placed = new Set();
-    const levels = [];
+    // Simple: each domain = one vertical column
+    const columnHeights = {};
+    DOMAIN_ORDER.forEach((d, i) => { columnHeights[d] = 0; });
 
-    // Level 0: tables with high incoming refs (accounts, users, owners, apps, etc.)
-    const level0 = sorted.filter(t => incomingCount[t.name] >= 2);
-    levels.push(level0);
-    level0.forEach(t => placed.add(t.name));
+    // Sort tables within each domain by reference count (parents first)
+    const byDomain = {};
+    visible.forEach(t => {
+      if (!byDomain[t.domain]) byDomain[t.domain] = [];
+      byDomain[t.domain].push(t);
+    });
 
-    // Level 1: tables that reference level 0
-    const level1 = sorted.filter(t => !placed.has(t.name) && t.cols.some(c => c.fk && level0.some(l => l.name === c.fk)));
-    levels.push(level1);
-    level1.forEach(t => placed.add(t.name));
+    DOMAIN_ORDER.forEach((domainKey, colIdx) => {
+      const domainTables = byDomain[domainKey] || [];
+      let y = 0;
 
-    // Level 2: tables that reference level 1
-    const level2 = sorted.filter(t => !placed.has(t.name) && t.cols.some(c => c.fk && level1.some(l => l.name === c.fk)));
-    levels.push(level2);
-    level2.forEach(t => placed.add(t.name));
-
-    // Level 3: remaining
-    const level3 = sorted.filter(t => !placed.has(t.name));
-    levels.push(level3);
-
-    const LEVEL_Y_START = [0, 280, 600, 950];
-    const COL_GAP = 320;
-    const CARD_GAP = 50;
-
-    levels.forEach((levelTables, levelIdx) => {
-      // Sort within level by domain for grouping
-      const byDomain = levelTables.sort((a, b) => a.domain.localeCompare(b.domain));
-
-      let x = 0;
-      let y = LEVEL_Y_START[levelIdx] || (levelIdx * 350);
-      let maxRowHeight = 0;
-      let colCount = 0;
-      const MAX_COLS = levelIdx === 0 ? 6 : 5; // Fewer columns for lower levels
-
-      byDomain.forEach(t => {
-        const h = HEADER_H + t.cols.length * ROW_H + 12;
-
-        if (colCount >= MAX_COLS) {
-          // New row
-          x = 0;
-          y += maxRowHeight + CARD_GAP;
-          maxRowHeight = 0;
-          colCount = 0;
-        }
-
-        positions[t.name] = { x, y, w: CARD_W, h, ghost: false };
-        x += CARD_W + COL_GAP;
-        maxRowHeight = Math.max(maxRowHeight, h);
-        colCount++;
+      domainTables.forEach(t => {
+        const h = HEADER_H + t.cols.length * ROW_H + 10;
+        positions[t.name] = {
+          x: colIdx * COL_WIDTH,
+          y: y,
+          w: CARD_W,
+          h,
+          ghost: false
+        };
+        y += h + CARD_GAP_Y;
       });
     });
 
   } else {
-    // Domain view
+    // Domain view: single column for primary, refs on left
     const primary = visible.filter(t => t.domain === domain);
     const refs = visible.filter(t => t.domain !== domain);
 
     let primaryY = 0;
     primary.forEach(t => {
-      const h = HEADER_H + t.cols.length * ROW_H + 12;
-      positions[t.name] = { x: 400, y: primaryY, w: CARD_W, h, ghost: false };
-      primaryY += h + 60;
+      const h = HEADER_H + t.cols.length * ROW_H + 10;
+      positions[t.name] = { x: 320, y: primaryY, w: CARD_W, h, ghost: false };
+      primaryY += h + 40;
     });
 
     let refY = 0;
     refs.forEach(t => {
-      const h = HEADER_H + Math.min(t.cols.length, 4) * ROW_H + 12;
-      positions[t.name] = { x: 0, y: refY, w: 240, h, ghost: true };
-      refY += h + 40;
+      const h = HEADER_H + Math.min(t.cols.length, 4) * ROW_H + 10;
+      positions[t.name] = { x: 0, y: refY, w: 220, h, ghost: true };
+      refY += h + 30;
     });
   }
 
@@ -658,8 +622,8 @@ function App() {
 
   useEffect(() => {
     const isAll = client === "all" && domain === "all";
-    setZoom(isAll ? 0.6 : 0.85);
-    setPan(isAll ? { x: 30, y: 30 } : { x: 50, y: 40 });
+    setZoom(isAll ? 0.7 : 0.9);
+    setPan(isAll ? { x: 40, y: 30 } : { x: 50, y: 40 });
     setSelected(null);
   }, [client, domain]);
 
@@ -752,72 +716,22 @@ function App() {
               const fromTable = TABLES.find(t => t.name === r.from);
               const fromColIdx = fromTable ? fromTable.cols.findIndex(c => c.n === r.fromCol) : 0;
 
-              // Calculate centers
-              const fromCx = fp.x + fp.w / 2;
-              const toCx = tp.x + tp.w / 2;
-              const fromCy = fp.y + fp.h / 2;
-              const toCy = tp.y + tp.h / 2;
+              // Simple: from right edge of FK row to left edge of target header
+              const fx = fp.x + fp.w;
+              const fy = fp.y + 40 + fromColIdx * 26 + 13;
+              const tx = tp.x;
+              const ty = tp.y + 20;
 
-              // Determine best connection direction based on relative positions
-              const dx = toCx - fromCx;
-              const dy = toCy - fromCy;
-
-              let fx, fy, tx, ty, cpx1, cpy1, cpx2, cpy2;
-
-              // FK column Y position
-              const fkColY = fp.y + 44 + fromColIdx * 28 + 14;
-              // Target PK (id) Y position - always first row
-              const pkColY = tp.y + 44 + 14;
-
-              if (Math.abs(dx) > Math.abs(dy) * 0.5) {
-                // Primarily horizontal relationship
-                if (dx > 0) {
-                  // Target is to the right
-                  fx = fp.x + fp.w;
-                  fy = fkColY;
-                  tx = tp.x;
-                  ty = pkColY;
-                } else {
-                  // Target is to the left
-                  fx = fp.x;
-                  fy = fkColY;
-                  tx = tp.x + tp.w;
-                  ty = pkColY;
-                }
-                const gap = Math.abs(tx - fx);
-                cpx1 = fx + (dx > 0 ? gap * 0.4 : -gap * 0.4);
-                cpy1 = fy;
-                cpx2 = tx + (dx > 0 ? -gap * 0.4 : gap * 0.4);
-                cpy2 = ty;
-              } else {
-                // Primarily vertical relationship
-                if (dy > 0) {
-                  // Target is below
-                  fx = fp.x + fp.w / 2;
-                  fy = fp.y + fp.h;
-                  tx = tp.x + tp.w / 2;
-                  ty = tp.y;
-                } else {
-                  // Target is above
-                  fx = fp.x + fp.w / 2;
-                  fy = fp.y;
-                  tx = tp.x + tp.w / 2;
-                  ty = tp.y + tp.h;
-                }
-                const gap = Math.abs(ty - fy);
-                cpx1 = fx;
-                cpy1 = fy + (dy > 0 ? gap * 0.4 : -gap * 0.4);
-                cpx2 = tx;
-                cpy2 = ty + (dy > 0 ? -gap * 0.4 : gap * 0.4);
-              }
+              // Simple bezier curve
+              const midX = (fx + tx) / 2;
+              const d = `M ${fx} ${fy} C ${midX} ${fy}, ${midX} ${ty}, ${tx} ${ty}`;
 
               const isHighlighted = activeTable && (r.from === activeTable || r.to === activeTable);
-              const d = `M ${fx} ${fy} C ${cpx1} ${cpy1}, ${cpx2} ${cpy2}, ${tx} ${ty}`;
 
               return (
                 <g key={i}>
                   <path d={d} className={`relation-path ${isHighlighted ? 'highlighted' : ''}`} />
-                  <circle cx={tx} cy={ty} r={4} className={`relation-dot ${isHighlighted ? 'highlighted' : ''}`} />
+                  <circle cx={tx} cy={ty} r={3} className={`relation-dot ${isHighlighted ? 'highlighted' : ''}`} />
                 </g>
               );
             })}
