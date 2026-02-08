@@ -564,10 +564,10 @@ function calculateLayout(client, domain) {
 
   const positions = {};
   const CARD_W = 180;
-  const ROW_H = 20;
-  const HEADER_H = 28;
-  const COL_WIDTH = 220;
-  const ROW_HEIGHT = 140;
+  const ROW_H = 18;
+  const HEADER_H = 26;
+  const COL_WIDTH = 210;
+  const ROW_HEIGHT = 180;
 
   if (domain === "all") {
     visible.forEach(t => {
@@ -681,7 +681,7 @@ function App() {
 
   useEffect(() => {
     const isAll = client === "all" && domain === "all";
-    setZoom(isAll ? 0.75 : 0.95);
+    setZoom(isAll ? 0.6 : 0.95);
     setPan(isAll ? { x: 20, y: 50 } : { x: 50, y: 40 });
     setSelected(null);
   }, [client, domain]);
@@ -777,9 +777,9 @@ function App() {
 
               // Simple: from right edge of FK row to left edge of target header
               const fx = fp.x + fp.w;
-              const fy = fp.y + 28 + fromColIdx * 20 + 10;
+              const fy = fp.y + 26 + fromColIdx * 18 + 9;
               const tx = tp.x;
-              const ty = tp.y + 14;
+              const ty = tp.y + 13;
 
               // Simple bezier curve
               const midX = (fx + tx) / 2;
@@ -806,7 +806,7 @@ function App() {
             { col: 7, label: "Meds", color: "#14b8a6" },
             { col: 8, label: "Analytics", color: "#6366f1" },
           ].map(h => (
-            <div key={h.col} className="col-header" style={{ left: h.col * 220, borderColor: h.color, color: h.color }}>
+            <div key={h.col} className="col-header" style={{ left: h.col * 210, borderColor: h.color, color: h.color }}>
               {h.label}
             </div>
           ))}
