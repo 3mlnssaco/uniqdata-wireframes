@@ -38,7 +38,14 @@
     .badge.ai { background: #8b5cf6; color: white; }
     .card.highlight { border: 2px solid #8b5cf6; }
 
-    .view-tabs { display: flex; gap: 10px; margin: 12px 0 28px; flex-wrap: wrap; }
+    .view-tabs-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 12px 0 28px;
+      flex-wrap: wrap;
+    }
+    .view-tabs { display: flex; gap: 10px; flex-wrap: wrap; margin: 0; }
     .view-tab {
       padding: 8px 12px;
       border-radius: 8px;
@@ -51,6 +58,19 @@
     }
     .view-tab:hover { background: #e5e7eb; }
     .view-tab.is-active { background: #111827; color: #fff; border-color: #111827; }
+    .arch-button {
+      margin-left: auto;
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: 1px solid #7c3aed;
+      background: #8b5cf6;
+      color: #fff;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .arch-button:hover { background: #7c3aed; }
 
     .tab-section { display: none; }
     .tab-section.is-active { display: block; }
@@ -256,6 +276,7 @@
 
     @media (max-width: 960px) {
       .schema-grid { grid-template-columns: 1fr; }
+      .arch-button { margin-left: 0; }
     }
   </style>
 </head>
@@ -263,10 +284,13 @@
   <h1>UniQdata Enterprise - Wireframes</h1>
   <p class="subtitle">디자이너 참고용 와이어프레임. 클릭하면 각 화면으로 이동합니다.</p>
 
-  <div class="view-tabs" role="tablist" aria-label="Wireframe Views">
-    <button class="view-tab is-active" data-tab="concept" role="tab" aria-selected="true">컨셉별 보기</button>
-    <button class="view-tab" data-tab="phase" role="tab" aria-selected="false">Phase별 보기</button>
-    <button class="view-tab" data-tab="schema" role="tab" aria-selected="false">스키마</button>
+  <div class="view-tabs-row">
+    <div class="view-tabs" role="tablist" aria-label="Wireframe Views">
+      <button class="view-tab is-active" data-tab="concept" role="tab" aria-selected="true">컨셉별 보기</button>
+      <button class="view-tab" data-tab="phase" role="tab" aria-selected="false">Phase별 보기</button>
+      <button class="view-tab" data-tab="schema" role="tab" aria-selected="false">스키마</button>
+    </div>
+    <a class="arch-button" href="research/SportiQue_Architecture_v4.html">아키텍처 보기</a>
   </div>
 
   <section class="tab-section is-active" data-tab="concept">
