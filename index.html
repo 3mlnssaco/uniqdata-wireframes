@@ -596,460 +596,48 @@
 
   <section class="tab-section" data-tab="schema">
     <h2 id="by-schema">🗂️ 스키마 / ERD</h2>
-    <div class="group-note">전체 DB 구조를 한 눈에 확인하는 탭입니다. 상세 스키마는 아래 문서 링크에서 확인하세요.</div>
-
-    <div class="schema-grid">
-      <div class="schema-card">
-        <h3>DB ERD (요약)</h3>
-        <p>핵심 흐름만 보는 간략 버전입니다. 필요한 경우 아래 전체 ERD를 참고하세요.</p>
-        <div class="schema-mermaid" data-zoom="1">
-          <div class="schema-controls">
-            <button type="button" data-zoom="in">+</button>
-            <button type="button" data-zoom="out">−</button>
-            <button type="button" data-zoom="reset">↺</button>
-          </div>
-          <div class="schema-hint">휠로 확대 · 드래그로 이동</div>
-          <div class="schema-canvas">
-            <div class="schema-panzoom">
-              <div class="mermaid">erDiagram
-  %% ===== 핵심 흐름 요약 (v4 아키텍처) =====
-
-  accounts {
-    uuid id PK
-    enum type
-  }
-  owners {
-    uuid id PK
-    uuid accountId FK
-  }
-  wallets {
-    uuid id PK
-    uuid ownerId FK
-  }
-
-  research_projects {
-    uuid id PK
-    uuid ownerId FK
-    enum status
-  }
-  team_members {
-    uuid id PK
-    uuid projectId FK
-    uuid ownerId FK
-    enum role
-  }
-  agreements {
-    uuid id PK
-    uuid projectId FK
-    uuid ownerId FK
-    enum status
-  }
-  settlements {
-    uuid id PK
-    uuid agreementId FK
-  }
-  escrows {
-    uuid id PK
-    uuid projectId FK
-  }
-  project_wallets {
-    uuid id PK
-    uuid projectId FK
-  }
-  data_points {
-    uuid id PK
-    uuid ownerId FK
-    datetime timestamp
-  }
-  anchor_logs {
-    uuid id PK
-    enum anchorType
-    string txHash
-  }
-
-  accounts ||--o| owners : has
-  owners ||--o{ wallets : owns
-  owners ||--o{ research_projects : creates
-  owners ||--o{ agreements : signs
-  owners ||--o{ team_members : joins
-
-  research_projects ||--o{ team_members : has
-  research_projects ||--o{ agreements : receives
-  research_projects ||--|| project_wallets : has
-  research_projects ||--o{ escrows : funded_by
-
-  agreements ||--o{ settlements : earns
-  owners ||--o{ data_points : provides
-  owners ||--o{ anchor_logs : anchors</div>
-            </div>
-          </div>
+    <div class="schema-card" style="width: 100%;">
+      <div class="schema-mermaid" data-zoom="1">
+        <div class="schema-controls">
+          <button type="button" data-zoom="in">+</button>
+          <button type="button" data-zoom="out">−</button>
+          <button type="button" data-zoom="reset">↺</button>
         </div>
-      </div>
-
-      <div class="schema-card">
-        <h3>DB ERD (Mermaid)</h3>
-        <p>현재 구현 기준 ERD 요약입니다. Mermaid 지원 뷰어에서 보면 더 선명합니다.</p>
-        <div class="schema-mermaid" data-zoom="1">
-          <div class="schema-controls">
-            <button type="button" data-zoom="in">+</button>
-            <button type="button" data-zoom="out">−</button>
-            <button type="button" data-zoom="reset">↺</button>
-          </div>
-          <div class="schema-hint">휠로 확대 · 드래그로 이동</div>
-          <div class="schema-canvas">
-            <div class="schema-panzoom">
-              <div class="mermaid">erDiagram
-  %% ===== v4 아키텍처 전체 ERD (40개 엔티티) =====
-
-  %% ===== USER & AUTH =====
-  accounts {
-    uuid id PK
-    enum type
-    enum status
-    datetime createdAt
-  }
-  account_logins {
-    uuid id PK
-    uuid accountId FK
-    string provider
-    string email
-  }
-  owners {
-    uuid id PK
-    uuid accountId FK
-  }
-  passkey_credentials {
-    uuid id PK
-    uuid ownerId FK
-    string credentialId
-    bytes publicKey
-  }
-  sessions {
-    uuid id PK
-    uuid ownerId FK
-  }
-
-  %% ===== WALLET =====
-  wallets {
-    uuid id PK
-    uuid ownerId FK
-    string address
-  }
-  wallet_secrets {
-    uuid id PK
-    uuid walletId FK
-  }
-  wallet_credential_bindings {
-    uuid id PK
-    uuid walletId FK
-    uuid credentialId FK
-  }
-
-  %% ===== RESEARCH (🟣 블록체인) =====
-  research_projects {
-    uuid id PK
-    uuid ownerId FK
-    string title
-    enum status
-    string escrowTxHash
-  }
-  data_collection_configs {
-    uuid id PK
-    uuid projectId FK
-    jsonb passiveData
-    jsonb activeData
-  }
-  participation_criteria {
-    uuid id PK
-    uuid projectId FK
-    jsonb ageRange
-  }
-  team_members {
-    uuid id PK
-    uuid projectId FK
-    uuid ownerId FK
-    enum role
-  }
-  agreements {
-    uuid id PK
-    uuid projectId FK
-    uuid ownerId FK
-    enum status
-    jsonb dataScopes
-    string anchorTx
-  }
-  project_wallets {
-    uuid id PK
-    uuid projectId FK
-    string address
-  }
-  escrows {
-    uuid id PK
-    uuid projectId FK
-    decimal amount
-    enum status
-  }
-  settlements {
-    uuid id PK
-    uuid agreementId FK
-    decimal amount
-    string txHash
-  }
-
-  %% ===== DATA =====
-  data_points {
-    uuid id PK
-    uuid ownerId FK
-    string category
-    string metric
-    jsonb value
-    datetime timestamp
-    int sensitivityLevel
-  }
-  data_sources {
-    uuid id PK
-    string type
-  }
-  data_attachments {
-    uuid id PK
-    uuid dataPointId FK
-  }
-
-  %% ===== CONSENT & AUDIT =====
-  consents {
-    uuid id PK
-    uuid ownerId FK
-    string scope
-    enum status
-  }
-  audit_logs {
-    uuid id PK
-    string action
-    uuid ownerId FK
-  }
-  anchor_logs {
-    uuid id PK
-    enum anchorType
-    string txHash UK
-    jsonb metadata
-  }
-
-  %% ===== APP =====
-  user_medications {
-    uuid id PK
-    uuid ownerId FK
-  }
-  medication_logs {
-    uuid id PK
-    uuid medicationId FK
-  }
-  notifications {
-    uuid id PK
-    uuid ownerId FK
-  }
-
-  %% ===== WORKSPACE =====
-  institutions {
-    uuid id PK
-    string name
-  }
-  workspaces {
-    uuid id PK
-    uuid institutionId FK
-  }
-  workspace_members {
-    uuid id PK
-    uuid workspaceId FK
-    uuid accountId FK
-  }
-
-  %% ===== RELATIONS =====
-  accounts ||--o{ account_logins : has
+        <div class="schema-hint">휠로 확대 · 드래그로 이동</div>
+        <div class="schema-canvas">
+          <div class="schema-panzoom">
+            <div class="mermaid">erDiagram
   accounts ||--o| owners : has
-  accounts ||--o{ workspace_members : member
-
-  owners ||--o{ passkey_credentials : has
+  accounts ||--o{ workspace_members : enterprise
   owners ||--o{ wallets : owns
-  owners ||--o{ sessions : uses
   owners ||--o{ data_points : provides
   owners ||--o{ consents : grants
-  owners ||--o{ anchor_logs : creates
-  owners ||--o{ notifications : receives
-
-  wallets ||--|| wallet_secrets : encrypted_by
-  wallets ||--o{ wallet_credential_bindings : binds
-
-  owners ||--o{ research_projects : creates
-  research_projects ||--|| data_collection_configs : has
-  research_projects ||--|| participation_criteria : has
+  owners ||--o{ research_projects : researcher
   research_projects ||--o{ team_members : has
   research_projects ||--o{ agreements : receives
-  research_projects ||--|| project_wallets : has
-  research_projects ||--o{ escrows : funded_by
-
+  research_projects ||--o{ escrows : funded
   agreements ||--o{ settlements : earns
+  workspaces ||--o{ workspace_members : has
 
-  data_points ||--o{ data_attachments : has
-  user_medications ||--o{ medication_logs : logs
-
-  institutions ||--o{ workspaces : owns
-  workspaces ||--o{ workspace_members : has</div>
-            </div>
-          </div>
-        </div>
-        <details class="schema-details">
-          <summary>Mermaid 원문 보기 (v4 아키텍처)</summary>
-          <pre class="schema-code">상세 ERD는 backend/docs/ERD.md 참조
-
-주요 엔티티 (40개):
-- 계정: accounts, account_logins, owners
-- 인증: passkey_credentials, sessions, wallets, wallet_secrets
-- 연구: research_projects, data_collection_configs, participation_criteria
-- 팀: team_members (role: owner/admin/member)
-- 동의: agreements, consents
-- 정산: settlements, escrows, project_wallets
-- 데이터: data_points, data_sources, data_attachments
-- 앵커: anchor_logs (XRPL 트랜잭션)
-- 앱: user_medications, medication_logs, notifications
-- 기관: institutions, workspaces, workspace_members
-
-서버 분리:
-🟣 블록체인: 민감 데이터 (data_points, agreements, settlements, anchor_logs)
-🔵 백엔드: 비민감 데이터 (research_projects, configs, criteria)
-📱 앱: 복약/알림 (medications, notifications)</pre>
-        </details>
-        <div class="schema-links">
-          <a href="../../../../../../backend/docs/ERD.md">📊 ERD.md (40개 엔티티)</a>
-          <a href="../../../../../../backend/docs/API_SEPARATION.md">🔀 API_SEPARATION.md</a>
-          <a href="../../../../../../backend/docs/ARCHITECTURE_QA.md">❓ Q&A 문서</a>
-        </div>
-      </div>
-      <div class="schema-card">
-        <h3>핵심 엔티티 (v4 아키텍처)</h3>
-        <p>서버 분리 기준으로 정리했습니다. 총 40개 엔티티.</p>
-        <ul class="schema-list">
-          <li><strong>🟣 블록체인 서버 (민감)</strong></li>
-          <li>연구: research_projects, team_members, agreements</li>
-          <li>정산: settlements, escrows, project_wallets</li>
-          <li>동의: consents, anchor_logs, audit_logs</li>
-          <li>데이터: data_points (sensitivityLevel >= 3)</li>
-          <li><strong>🔵 백엔드 서버 (비민감)</strong></li>
-          <li>설정: data_collection_configs, participation_criteria</li>
-          <li>계정: accounts, owners, account_logins</li>
-          <li><strong>📱 앱 전용</strong></li>
-          <li>복약: user_medications, medication_logs</li>
-          <li>알림: notifications</li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="group-title">👤 계정/Owner/지갑/패스키 관계 (v4)</div>
-    <div class="group-note">v4 아키텍처 기준 계정-Owner-지갑 관계입니다. Owner가 데이터 소유권의 핵심입니다.</div>
-    <div class="schema-card">
-      <div class="schema-mermaid" data-zoom="1">
-        <div class="schema-controls">
-          <button type="button" data-zoom="in">+</button>
-          <button type="button" data-zoom="out">−</button>
-          <button type="button" data-zoom="reset">↺</button>
-        </div>
-        <div class="schema-hint">휠로 확대 · 드래그로 이동</div>
-        <div class="schema-canvas">
-          <div class="schema-panzoom">
-            <div class="mermaid">flowchart LR
-  accounts["accounts\nid PK\ntype\nstatus"]:::box
-  owners["owners\nid PK\naccountId FK\n익명 소유권"]:::box
-  passkey["passkey_credentials\nownerId FK\ncredentialId\npublicKey"]:::box
-  wallets["wallets\nownerId FK\naddress\nstatus"]:::box
-  walletSecrets["wallet_secrets\nwalletId FK\nencrypted_seed"]:::box
-
-  accounts --> owners
-  owners --> passkey
-  owners --> wallets
-  wallets --> walletSecrets
-
-  classDef box fill:#ffffff,stroke:#d1d5db,stroke-width:1px,rx:8,ry:8,color:#111827;</div>
+  accounts { uuid id PK }
+  owners { uuid id PK }
+  wallets { uuid id PK }
+  data_points { uuid id PK }
+  consents { uuid id PK }
+  research_projects { uuid id PK }
+  team_members { uuid id PK }
+  agreements { uuid id PK }
+  escrows { uuid id PK }
+  settlements { uuid id PK }
+  workspaces { uuid id PK }
+  workspace_members { uuid id PK }</div>
           </div>
         </div>
       </div>
-    </div>
-
-    <div class="group-title">🌐 UniQdata 전체 데이터 생태계 (개념도)</div>
-    <div class="group-note">전체 시스템 관점의 데이터 흐름/저장소 관계를 한 눈에 보는 개념도입니다.</div>
-    <div class="schema-card">
-      <div class="schema-mermaid" data-zoom="1">
-        <div class="schema-controls">
-          <button type="button" data-zoom="in">+</button>
-          <button type="button" data-zoom="out">−</button>
-          <button type="button" data-zoom="reset">↺</button>
-        </div>
-        <div class="schema-hint">휠로 확대 · 드래그로 이동</div>
-        <div class="schema-canvas">
-          <div class="schema-panzoom">
-            <div class="mermaid">flowchart LR
-  subgraph Clients["Clients & Products"]
-    App[UniQdata App]
-    Enterprise[Enterprise Portal]
-    Admin[Admin Console]
-    SDK[Partner SDK]
-    Bodab[AI Bodab Tools]
-  end
-
-  subgraph Ingestion["Data Ingestion Layer"]
-    Connectors[Connectors: HealthKit, Health Connect, IoT, EHR]
-    Gateway[Ingestion Gateway: Validation, Dedup, Audit]
-  end
-
-  subgraph Core["Core Backend (Postgres)"]
-    Auth[Identity/Auth and Passkey/KYC]
-    Consent[Consent Service]
-    Audit[Audit Logs]
-    Research[Research/Projects]
-    Data[data_points and attachments]
-    Wallet[Wallet/Anchor Logs]
-    Workspace[Workspaces/Data Access]
-  end
-
-  subgraph Storage["Data Storage (Lakehouse)"]
-    Vault[Encrypted Vault]
-    Raw[Raw Layer]
-    Canonical[Canonical or OMOP-like]
-    Artifact[Artifact or Data Marts]
-    Feature[Feature Store]
-  end
-
-  subgraph Analytics["Analytics & AI"]
-    SafeView[Safe View API (kDP)]
-    Models[Model Training / Inference]
-    Vector[Vector Index Store]
-  end
-
-  subgraph External["External Sources"]
-    Public[Public Datasets]
-    Partners[Partner Data]
-    XRPL[(XRPL Ledger)]
-  end
-
-  Clients --> Gateway
-  SDK --> Connectors
-  Connectors --> Gateway
-  Gateway --> Core
-  Gateway --> Raw
-  Core --> Vault
-  Raw --> Canonical --> Artifact --> Feature
-  Core --> SafeView --> Models
-  Feature --> Models
-  Models --> Vector
-  Models --> Enterprise
-  Models --> Bodab
-  Data --> Audit
-  Consent --> Audit
-  Audit --> XRPL
-  Public --> Raw
-  Partners --> Raw</div>
-          </div>
-        </div>
+      <div class="schema-links">
+        <a href="../../../../../../backend/docs/ERD.md">📊 전체 ERD (40개)</a>
+        <a href="../../../../../../backend/docs/ARCHITECTURE_QA.md">❓ Q&A</a>
       </div>
-      <p class="schema-details">표기 기준: Core Backend는 현재 구현, Storage/AI 일부는 설계/확장 영역입니다.</p>
     </div>
   </section>
 
