@@ -436,10 +436,12 @@ const TABLES = [
   // Analytics
   { name: "ai_analyses", domain: "analytics", cols: [
     { n: "id", t: "uuid", pk: true }, { n: "user_id", t: "uuid", fk: "users" },
+    { n: "project_id", t: "uuid", fk: "research_projects" }, { n: "app_id", t: "uuid", fk: "apps" },
     { n: "type", t: "varchar" }, { n: "status", t: "enum" }, { n: "result", t: "jsonb" }
   ]},
   { name: "features", domain: "analytics", cols: [
     { n: "id", t: "uuid", pk: true }, { n: "user_id", t: "uuid", fk: "users" },
+    { n: "project_id", t: "uuid", fk: "research_projects" },
     { n: "category", t: "varchar" }, { n: "feature_type", t: "varchar" }
   ]},
   { name: "notifications", domain: "analytics", cols: [
