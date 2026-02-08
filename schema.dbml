@@ -1,6 +1,47 @@
 // UniQdata v4 ERD
 // https://dbdiagram.io
 
+// ============================================================
+// 🔗 XRPL 앵커링 시점 (anchor_logs에 기록)
+// ============================================================
+// 1. 계정 생성: accounts + owners 생성 시 → anchor_type: 'account_created'
+// 2. 지갑 생성: wallets 생성 시 → anchor_type: 'wallet_created'
+// 3. 동의 부여/철회: consents 생성/수정 시 → anchor_type: 'consent_granted' | 'consent_revoked'
+// 4. 연구 참여: agreements 생성 시 → anchor_type: 'agreement_signed'
+// 5. 팀원 변경: team_members 추가/제거 시 → anchor_type: 'team_member_added' | 'team_member_removed'
+// 6. 정산 완료: settlements 생성 시 → anchor_type: 'settlement_completed'
+// 7. 데이터 접근: audit_logs 민감 데이터 조회 시 → anchor_type: 'data_accessed'
+//
+// ============================================================
+// 📝 계정 생성 플로우
+// ============================================================
+// 1. accounts 생성 (email, type)
+// 2. account_logins 생성 (provider: apple/google/email)
+// 3. owners 생성 (익명 ID, 1:1 with accounts)
+// 4. passkey_credentials 생성 (WebAuthn 등록)
+// 5. wallets 생성 (XRPL 주소 발급)
+// 6. wallet_secrets 생성 (PRF 암호화된 시드)
+// 7. anchor_logs 기록 (계정 생성 증명)
+//
+// ============================================================
+// 💾 데이터 저장 플로우
+// ============================================================
+// 1. 앱에서 data_points 전송 (category, metric, value)
+// 2. idempotency_key로 중복 체크
+// 3. sensitivity_level 자동 분류 (1-4)
+// 4. 암호화 후 저장 (L3-L4는 필드 암호화)
+// 5. audit_logs 기록 (write 액션)
+//
+// ============================================================
+// 📖 데이터 조회 플로우
+// ============================================================
+// 1. 요청자 인증 (세션 or 패스키)
+// 2. consents 확인 (scope, status, expires_at)
+// 3. agreements 확인 (연구용 접근 시)
+// 4. data_points 조회 (owner_id + category + timestamp)
+// 5. audit_logs 기록 (read 액션)
+// 6. L4 데이터는 anchor_logs에도 기록
+//
 // ===== TABLE GROUPS =====
 TableGroup auth [color: #3498db] {
   accounts
@@ -87,10 +128,15 @@ Table sessions {
 Table wallets {
   id uuid [pk]
   owner_id uuid [ref: > owners.id]
-  address varchar [note: 'XRPL rXXX...']
+  address varchar [unique, note: 'XRPL rXXX...']
   public_key varchar
   wallet_type varchar
   status varchar
+
+  indexes {
+    (owner_id, wallet_type) [unique, note: '사용자당 지갑 타입 1개']
+    address [unique, note: '주소로 조회']
+  }
 }
 
 Table wallet_secrets {
@@ -110,6 +156,13 @@ Table data_points {
   unit varchar
   timestamp timestamp
   sensitivity_level int [note: '1-4']
+  idempotency_key varchar [unique]
+
+  indexes {
+    (owner_id, category, metric, timestamp) [note: '시계열 조회']
+    (owner_id, sensitivity_level) [note: '민감도별 필터']
+    idempotency_key [unique, note: '중복 방지']
+  }
 }
 
 Table consents {
@@ -119,6 +172,13 @@ Table consents {
   status varchar
   purpose varchar
   project_id uuid [ref: > research_projects.id]
+  granted_at timestamp
+  expires_at timestamp
+
+  indexes {
+    (owner_id, status) [note: '활성 동의 조회']
+    (project_id, status) [note: '프로젝트별 동의']
+  }
 }
 
 // ===== 연구 =====
@@ -158,6 +218,11 @@ Table agreements {
   status varchar
   data_scopes jsonb
   anchor_tx varchar
+
+  indexes {
+    (project_id, status) [note: '프로젝트별 참여자']
+    (owner_id, status) [note: '내 참여 현황']
+  }
 }
 
 Table project_wallets {
@@ -187,15 +252,30 @@ Table audit_logs {
   id uuid [pk]
   action varchar
   category varchar
-  owner_id uuid
+  owner_id uuid [ref: > owners.id]
+  user_id uuid [ref: > owners.id, note: '요청자']
+  record_count int
+  created_at timestamp
+
+  indexes {
+    (owner_id, created_at) [note: '사용자별 로그 조회']
+    (category, created_at) [note: '카테고리별 조회']
+  }
 }
 
 Table anchor_logs {
   id uuid [pk]
   anchor_type varchar
-  owner_id uuid
+  owner_id uuid [ref: > owners.id]
   data_hash varchar
   tx_hash varchar [unique]
+  ledger_index int
+  created_at timestamp
+
+  indexes {
+    (owner_id, anchor_type) [note: '사용자별 앵커 조회']
+    tx_hash [unique, note: 'TX 검증용']
+  }
 }
 
 // ===== 기관 =====
