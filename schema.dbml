@@ -1,0 +1,174 @@
+// UniQdata v4 ERD
+// https://dbdiagram.io
+
+// ===== 인증 & 계정 =====
+Table accounts {
+  id uuid [pk]
+  email varchar
+  type varchar [note: 'individual | enterprise']
+  status varchar
+  created_at timestamp
+}
+
+Table account_logins {
+  id uuid [pk]
+  account_id uuid [ref: > accounts.id]
+  provider varchar [note: 'apple | google | email']
+  provider_user_id varchar
+  email varchar
+}
+
+Table owners {
+  id uuid [pk]
+  account_id uuid [ref: - accounts.id, note: '1:1']
+  created_at timestamp
+}
+
+Table passkey_credentials {
+  id uuid [pk]
+  owner_id uuid [ref: > owners.id]
+  credential_id varchar
+  public_key bytea
+  counter int
+  device_name varchar
+}
+
+Table sessions {
+  id uuid [pk]
+  owner_id uuid [ref: > owners.id]
+  expires_at timestamp
+}
+
+// ===== 지갑 =====
+Table wallets {
+  id uuid [pk]
+  owner_id uuid [ref: > owners.id]
+  address varchar [note: 'XRPL rXXX...']
+  public_key varchar
+  wallet_type varchar
+  status varchar
+}
+
+Table wallet_secrets {
+  id uuid [pk]
+  wallet_id uuid [ref: - wallets.id, note: '1:1']
+  encrypted_seed_prf bytea
+  prf_salt bytea
+}
+
+// ===== 데이터 =====
+Table data_points {
+  id uuid [pk]
+  owner_id uuid [ref: > owners.id]
+  category varchar
+  metric varchar
+  value jsonb
+  unit varchar
+  timestamp timestamp
+  sensitivity_level int [note: '1-4']
+}
+
+Table consents {
+  id uuid [pk]
+  owner_id uuid [ref: > owners.id]
+  scope varchar
+  status varchar
+  purpose varchar
+  project_id uuid [ref: > research_projects.id]
+}
+
+// ===== 연구 =====
+Table research_projects {
+  id uuid [pk]
+  owner_id uuid [ref: > owners.id, note: 'PI']
+  title varchar
+  status varchar
+  escrow_tx_hash varchar
+}
+
+Table data_collection_configs {
+  id uuid [pk]
+  project_id uuid [ref: - research_projects.id]
+  passive_data jsonb
+  active_data jsonb
+}
+
+Table participation_criteria {
+  id uuid [pk]
+  project_id uuid [ref: - research_projects.id]
+  age_range jsonb
+}
+
+Table team_members {
+  id uuid [pk]
+  project_id uuid [ref: > research_projects.id]
+  owner_id uuid [ref: > owners.id]
+  role varchar [note: 'owner | admin | member']
+  anchor_tx varchar
+}
+
+Table agreements {
+  id uuid [pk]
+  project_id uuid [ref: > research_projects.id]
+  owner_id uuid [ref: > owners.id]
+  status varchar
+  data_scopes jsonb
+  anchor_tx varchar
+}
+
+Table project_wallets {
+  id uuid [pk]
+  project_id uuid [ref: - research_projects.id]
+  address varchar
+}
+
+// ===== 정산 =====
+Table escrows {
+  id uuid [pk]
+  project_id uuid [ref: > research_projects.id]
+  amount decimal
+  status varchar
+  tx_hash varchar
+}
+
+Table settlements {
+  id uuid [pk]
+  agreement_id uuid [ref: > agreements.id]
+  amount decimal
+  tx_hash varchar
+}
+
+// ===== 감사 =====
+Table audit_logs {
+  id uuid [pk]
+  action varchar
+  category varchar
+  owner_id uuid
+}
+
+Table anchor_logs {
+  id uuid [pk]
+  anchor_type varchar
+  owner_id uuid
+  data_hash varchar
+  tx_hash varchar [unique]
+}
+
+// ===== 기관 =====
+Table institutions {
+  id uuid [pk]
+  name varchar
+}
+
+Table workspaces {
+  id uuid [pk]
+  institution_id uuid [ref: > institutions.id]
+  name varchar
+}
+
+Table workspace_members {
+  id uuid [pk]
+  workspace_id uuid [ref: > workspaces.id]
+  account_id uuid [ref: > accounts.id]
+  role varchar
+}
