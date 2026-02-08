@@ -268,14 +268,11 @@
             <span class="research-title">당뇨병 복약 순응도</span>
             <span class="status-dot active"></span>
           </div>
-          <div class="research-nav-sub">
+          <div class="research-nav-sub" data-spec="메뉴 구조: 개요, 테이블, AI 허브, 아키텍처를 표시. 인과발견/SHAP 등은 AI 허브로 통합됨." data-spec-type="nav" data-changed="메뉴 통합">
             <a href="data-overview.html" class="nav-sub-item active"><span class="dot"></span> 개요</a>
             <a href="data-table.html" class="nav-sub-item"><span class="dot"></span> 테이블</a>
-            <a href="analysis-discovery.html" class="nav-sub-item"><span class="dot"></span> 인과발견</a>
-            <a href="analysis-importance.html" class="nav-sub-item"><span class="dot"></span> SHAP</a>
-            <a href="analysis-personalized.html" class="nav-sub-item"><span class="dot"></span> CATE</a>
-            <a href="analysis-whatif.html" class="nav-sub-item"><span class="dot"></span> What-If</a>
-            <a href="analysis-rootcause.html" class="nav-sub-item"><span class="dot"></span> 이상추적</a>
+            <a href="analysis-discovery.html" class="nav-sub-item" style="color: #a78bfa;" data-spec="AI 허브: 연구 방법론별 최적화된 AI 알고리즘 선택. 인과발견, SHAP, CATE, What-If, 이상추적 통합." data-spec-type="ai" data-added="통합 메뉴"><span class="dot"></span> AI 허브</a>
+            <a href="SportiQue_Architecture_v4.html" class="nav-sub-item" style="color: #e3b341;"><span class="dot"></span> 아키텍처</a>
           </div>
         </div>
 
@@ -325,51 +322,515 @@
       <div class="content-wrapper">
         <div class="content-main">
           <div class="breadcrumb">
-            <a href="list.html">연구 관리</a> / <span>당뇨병 환자 복약 순응도 연구</span>
+            <a href="list.html">연구 관리</a> / <a href="SportiQue_Architecture_v4.html">아키텍처</a> / <span>당뇨병 환자 복약 순응도 연구</span>
           </div>
 
-          <div class="title-row">
+          <div class="title-row" style="display: flex; justify-content: space-between; align-items: flex-start; gap: 24px;">
             <div class="title-block">
               <h1>당뇨병 환자 복약 순응도 연구</h1>
               <p class="subtitle">2형 당뇨 환자의 복약 패턴과 혈당 변화 상관관계 분석</p>
             </div>
-            <div class="top-insight">
-              <h3>💡 핵심 인사이트</h3>
-              <div class="insight-item">
-                <span class="icon">📉</span>
-                <span><span class="highlight">복약 순응도</span>가 지난 7일간 <span class="negative">15% 감소</span></span>
+            <!-- 프로젝트 지갑 (우측 상단) -->
+            <div style="background: linear-gradient(135deg, #0f172a, #1e293b); color: white; border-radius: 12px; padding: 12px 16px; min-width: 280px;" data-spec="프로젝트 지갑: 타이틀 옆에 배치. 예산 현황 즉시 확인 가능." data-spec-type="wallet" data-changed="위치 이동: 하단→상단 우측">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <span style="font-size: 12px; color: #94a3b8;">💳 프로젝트 지갑</span>
+                <span style="font-size: 10px; color: #22c55e; display: flex; align-items: center; gap: 4px;"><span style="width: 6px; height: 6px; background: #22c55e; border-radius: 50%;"></span>연결됨</span>
               </div>
-              <div class="insight-item">
-                <span class="icon">📈</span>
-                <span>상위 10%는 <span class="positive">혈당 변동성 25% 낮음</span></span>
-              </div>
-              <div class="insight-item">
-                <span class="icon">⚠️</span>
-                <span><span class="highlight">3명</span> 심박수 데이터 미수집</span>
+              <div style="display: flex; gap: 16px; align-items: baseline;">
+                <div>
+                  <div style="font-size: 20px; font-weight: 700;">18,500 XRP</div>
+                  <div style="font-size: 10px; color: #64748b;">잔액 ≈ $9,250</div>
+                </div>
+                <div style="border-left: 1px solid #334155; padding-left: 12px;">
+                  <div style="font-size: 14px; font-weight: 600; color: #22c55e;">6,500</div>
+                  <div style="font-size: 10px; color: #64748b;">지급완료</div>
+                </div>
+                <div>
+                  <div style="font-size: 14px; font-weight: 600; color: #f59e0b;">~4,350</div>
+                  <div style="font-size: 10px; color: #64748b;">예정</div>
+                </div>
               </div>
             </div>
           </div>
 
+        <!-- 통합 메인 차트 (탭 전환) -->
+        <div class="chart-card" style="margin-bottom: 24px;" data-spec="통합 차트: 데이터제출/가설검증/참여자등록을 탭으로 전환. 한 곳에서 모든 추이 확인." data-spec-type="data" data-added="통합 차트" data-priority="1">
+          <!-- 차트 탭 버튼 -->
+          <div style="display: flex; gap: 8px; margin-bottom: 16px; border-bottom: 2px solid #e5e7eb; padding-bottom: 12px;">
+            <button onclick="switchMainChart('collect')" class="main-chart-tab active" style="padding: 10px 20px; border: none; background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+              📊 데이터 수집
+            </button>
+            <button onclick="switchMainChart('hypothesis')" class="main-chart-tab" style="padding: 10px 20px; border: 1px solid #d1d5db; background: white; color: #6b7280; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s;">
+              🔬 가설 검증
+            </button>
+            <button onclick="switchMainChart('enrollment')" class="main-chart-tab" style="padding: 10px 20px; border: 1px solid #d1d5db; background: white; color: #6b7280; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s;">
+              👥 참여자 등록
+            </button>
+            <button onclick="switchMainChart('budget')" class="main-chart-tab" style="padding: 10px 20px; border: 1px solid #d1d5db; background: white; color: #6b7280; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s;">
+              💰 예산 사용
+            </button>
+            <div style="flex: 1;"></div>
+            <!-- 기간 필터 -->
+            <div style="display: flex; gap: 6px; align-items: center;">
+              <span class="period-filter active" onclick="setPeriod('30d')" style="padding: 6px 12px; border: 1px solid #3b82f6; background: #3b82f6; color: white; border-radius: 6px; font-size: 11px; cursor: pointer;">30일</span>
+              <span class="period-filter" onclick="setPeriod('90d')" style="padding: 6px 12px; border: 1px solid #d1d5db; background: white; color: #6b7280; border-radius: 6px; font-size: 11px; cursor: pointer;">90일</span>
+              <span class="period-filter" onclick="setPeriod('all')" style="padding: 6px 12px; border: 1px solid #d1d5db; background: white; color: #6b7280; border-radius: 6px; font-size: 11px; cursor: pointer;">전체</span>
+            </div>
+          </div>
+
+          <!-- ===== 탭 2: 가설 검증 추이 ===== -->
+          <div id="chart-hypothesis" class="main-chart-content" style="display: none;">
+            <h3 style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+              🔬 가설 검증 추이
+              <span style="background: linear-gradient(135deg, #22c55e, #16a34a); color: white; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 600;">일치도 75%</span>
+            </h3>
+            <div style="background: #f5f3ff; border-left: 4px solid #8b5cf6; padding: 8px 12px; margin-bottom: 12px; font-size: 12px; color: #4c1d95;">
+              📋 가설: 복약순응도↑ → 혈당변동↓ → 컨디션↑
+            </div>
+
+            <!-- 요약 통계 -->
+            <div style="display: flex; gap: 16px; margin: 12px 0; padding: 12px; background: #f8fafc; border-radius: 8px;">
+              <div style="flex: 1; text-align: center; padding: 8px; background: #f0fdf4; border-radius: 8px;"><div style="font-size: 18px; font-weight: 700; color: #16a34a;">-0.68</div><div style="font-size: 9px; color: #6b7280;">복약→혈당</div></div>
+              <div style="flex: 1; text-align: center; padding: 8px; background: #eff6ff; border-radius: 8px;"><div style="font-size: 18px; font-weight: 700; color: #2563eb;">-0.52</div><div style="font-size: 9px; color: #6b7280;">혈당→컨디션</div></div>
+              <div style="flex: 1; text-align: center; padding: 8px; background: #faf5ff; border-radius: 8px;"><div style="font-size: 18px; font-weight: 700; color: #9333ea;">+0.41</div><div style="font-size: 9px; color: #6b7280;">복약→컨디션</div></div>
+            </div>
+
+            <!-- 가설 검증 차트 -->
+            <div style="height: 200px; position: relative; margin-top: 12px;">
+              <div style="position: absolute; left: 0; top: 0; bottom: 25px; width: 35px; display: flex; flex-direction: column; justify-content: space-between; font-size: 9px; color: #6b7280; text-align: right; padding-right: 6px;"><span>100%</span><span>75%</span><span>50%</span><span>25%</span><span>0%</span></div>
+              <div style="position: absolute; left: 40px; right: 10px; top: 0; bottom: 25px; border: 1px solid #e5e7eb; border-radius: 8px; background: linear-gradient(to bottom, #fafafa, white); overflow: hidden;">
+                <div style="position: absolute; top: 25%; left: 0; right: 0; border-top: 1px dashed #e5e7eb;"></div>
+                <div style="position: absolute; top: 50%; left: 0; right: 0; border-top: 1px dashed #e5e7eb;"></div>
+                <div style="position: absolute; top: 75%; left: 0; right: 0; border-top: 1px dashed #e5e7eb;"></div>
+                <svg style="position: absolute; inset: 0; width: 100%; height: 100%;" viewBox="0 0 300 150" preserveAspectRatio="none">
+                  <path d="M0,110 L50,95 L100,80 L150,60 L200,45 L250,35 L300,25" fill="none" stroke="#8b5cf6" stroke-width="3"/>
+                  <path d="M0,40 L50,50 L100,65 L150,80 L200,95 L250,105 L300,115" fill="none" stroke="#ef4444" stroke-width="3"/>
+                  <path d="M0,100 L50,90 L100,78 L150,65 L200,50 L250,40 L300,30" fill="none" stroke="#22c55e" stroke-width="3"/>
+                </svg>
+              </div>
+              <div style="position: absolute; left: 40px; right: 10px; bottom: 0; height: 25px; display: flex; justify-content: space-between; font-size: 9px; color: #9ca3af; padding-top: 6px;"><span>1주</span><span>2주</span><span>3주</span><span>4주</span><span>5주</span><span>6주</span><span>현재</span></div>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px; font-size: 11px;">
+              <div style="display: flex; gap: 12px;">
+                <span style="display: flex; align-items: center; gap: 4px;"><span style="width: 12px; height: 3px; background: #8b5cf6; border-radius: 2px;"></span> 복약순응 ↑23%</span>
+                <span style="display: flex; align-items: center; gap: 4px;"><span style="width: 12px; height: 3px; background: #ef4444; border-radius: 2px;"></span> 혈당변동 ↓31%</span>
+                <span style="display: flex; align-items: center; gap: 4px;"><span style="width: 12px; height: 3px; background: #22c55e; border-radius: 2px;"></span> 컨디션 ↑18%</span>
+              </div>
+              <span style="color: #16a34a; font-weight: 600;">✅ 가설 방향 일치</span>
+            </div>
+          </div>
+
+          <!-- ===== 탭 3: 참여자 등록 추이 ===== -->
+          <div id="chart-enrollment" class="main-chart-content" style="display: none;">
+            <h3 style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+              👥 참여자 등록 추이
+              <span style="font-size: 12px; color: #3b82f6; font-weight: 600;">87/100명 (87%)</span>
+            </h3>
+
+            <!-- 요약 통계 -->
+            <div style="display: flex; gap: 24px; margin: 12px 0; padding: 14px; background: #f8fafc; border-radius: 8px;">
+              <div style="text-align: center;"><div style="font-size: 22px; font-weight: 700; color: #3b82f6;">87</div><div style="font-size: 10px; color: #6b7280;">현재 참여자</div></div>
+              <div style="text-align: center;"><div style="font-size: 22px; font-weight: 700; color: #22c55e;">82</div><div style="font-size: 10px; color: #6b7280;">활성 참여자</div></div>
+              <div style="text-align: center;"><div style="font-size: 22px; font-weight: 700; color: #f59e0b;">100</div><div style="font-size: 10px; color: #6b7280;">목표</div></div>
+              <div style="text-align: center;"><div style="font-size: 22px; font-weight: 700; color: #8b5cf6;">13</div><div style="font-size: 10px; color: #6b7280;">남은 인원</div></div>
+            </div>
+
+            <!-- 등록 추이 차트 -->
+            <div style="height: 200px; position: relative; margin-top: 12px;">
+              <div style="position: absolute; left: 0; top: 0; bottom: 25px; width: 35px; display: flex; flex-direction: column; justify-content: space-between; font-size: 9px; color: #9ca3af; text-align: right; padding-right: 6px;"><span>100</span><span>75</span><span>50</span><span>25</span><span>0</span></div>
+              <div style="position: absolute; left: 40px; right: 10px; top: 0; bottom: 25px; border-left: 1px solid #e5e7eb; border-bottom: 1px solid #e5e7eb; overflow: hidden;">
+                <div style="position: absolute; top: 0%; left: 0; right: 0; border-top: 2px dashed #f59e0b;"></div>
+                <div style="position: absolute; top: -3%; right: 8px; font-size: 9px; color: #f59e0b; background: white; padding: 0 4px;">목표 100명</div>
+                <svg style="position: absolute; inset: 0; width: 100%; height: 100%;" viewBox="0 0 300 100" preserveAspectRatio="none">
+                  <defs><linearGradient id="enrollGrad" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" style="stop-color:#3b82f6;stop-opacity:0.3" /><stop offset="100%" style="stop-color:#3b82f6;stop-opacity:0.05" /></linearGradient></defs>
+                  <path d="M0,95 L30,85 L60,75 L90,60 L120,50 L150,40 L180,30 L210,22 L240,18 L270,15 L300,13 L300,100 L0,100 Z" fill="url(#enrollGrad)"/>
+                  <path d="M0,95 L30,85 L60,75 L90,60 L120,50 L150,40 L180,30 L210,22 L240,18 L270,15 L300,13" fill="none" stroke="#3b82f6" stroke-width="2.5"/>
+                </svg>
+              </div>
+              <div style="position: absolute; left: 40px; right: 10px; bottom: 0; height: 25px; display: flex; justify-content: space-between; font-size: 9px; color: #9ca3af; padding-top: 6px;"><span>1일</span><span>5일</span><span>10일</span><span>15일</span><span>20일</span><span>25일</span><span>30일</span></div>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px; font-size: 11px;">
+              <div style="display: flex; gap: 12px;">
+                <span style="display: flex; align-items: center; gap: 4px;"><span style="width: 10px; height: 10px; background: linear-gradient(to bottom, rgba(59,130,246,0.3), rgba(59,130,246,0.05)); border-radius: 2px;"></span> 누적 등록</span>
+                <span style="display: flex; align-items: center; gap: 4px;"><span style="width: 12px; border-top: 2px dashed #f59e0b;"></span> 목표선</span>
+              </div>
+              <span style="color: #3b82f6; font-weight: 600;">📈 예상 완료일: 2/15</span>
+            </div>
+          </div>
+
+          <!-- ===== 탭 4: 예산 사용 추이 ===== -->
+          <div id="chart-budget" class="main-chart-content" style="display: none;">
+            <h3 style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+              💰 예산 사용 추이
+              <span style="font-size: 12px; color: #22c55e; font-weight: 600;">사용률 35%</span>
+            </h3>
+
+            <!-- 요약 통계 -->
+            <div style="display: flex; gap: 16px; margin: 12px 0; padding: 14px; background: #f8fafc; border-radius: 8px;">
+              <div style="flex: 1; text-align: center; padding: 8px; background: linear-gradient(135deg, #0f172a, #1e293b); border-radius: 8px;"><div style="font-size: 18px; font-weight: 700; color: white;">25,000</div><div style="font-size: 9px; color: #94a3b8;">총 예산 XRP</div></div>
+              <div style="flex: 1; text-align: center; padding: 8px; background: #f0fdf4; border-radius: 8px;"><div style="font-size: 18px; font-weight: 700; color: #16a34a;">6,500</div><div style="font-size: 9px; color: #6b7280;">지급 완료</div></div>
+              <div style="flex: 1; text-align: center; padding: 8px; background: #fef3c7; border-radius: 8px;"><div style="font-size: 18px; font-weight: 700; color: #d97706;">4,350</div><div style="font-size: 9px; color: #6b7280;">지급 예정</div></div>
+              <div style="flex: 1; text-align: center; padding: 8px; background: #eff6ff; border-radius: 8px;"><div style="font-size: 18px; font-weight: 700; color: #2563eb;">14,150</div><div style="font-size: 9px; color: #6b7280;">잔여 예산</div></div>
+            </div>
+
+            <!-- 예산 사용 차트 -->
+            <div style="height: 200px; position: relative; margin-top: 12px;">
+              <div style="position: absolute; left: 0; top: 0; bottom: 25px; width: 40px; display: flex; flex-direction: column; justify-content: space-between; font-size: 9px; color: #9ca3af; text-align: right; padding-right: 6px;"><span>25k</span><span>20k</span><span>15k</span><span>10k</span><span>5k</span><span>0</span></div>
+              <div style="position: absolute; left: 45px; right: 10px; top: 0; bottom: 25px; border-left: 1px solid #e5e7eb; border-bottom: 1px solid #e5e7eb; overflow: hidden;">
+                <!-- 그리드 -->
+                <div style="position: absolute; top: 20%; left: 0; right: 0; border-top: 1px dashed #f3f4f6;"></div>
+                <div style="position: absolute; top: 40%; left: 0; right: 0; border-top: 1px dashed #f3f4f6;"></div>
+                <div style="position: absolute; top: 60%; left: 0; right: 0; border-top: 1px dashed #f3f4f6;"></div>
+                <div style="position: absolute; top: 80%; left: 0; right: 0; border-top: 1px dashed #f3f4f6;"></div>
+                <!-- 스택 바 차트 -->
+                <svg style="position: absolute; inset: 0; width: 100%; height: 100%;" viewBox="0 0 300 100" preserveAspectRatio="none">
+                  <!-- 잔여 (파랑) -->
+                  <rect x="10" y="0" width="35" height="100" fill="#dbeafe"/>
+                  <rect x="60" y="0" width="35" height="100" fill="#dbeafe"/>
+                  <rect x="110" y="0" width="35" height="100" fill="#dbeafe"/>
+                  <rect x="160" y="0" width="35" height="100" fill="#dbeafe"/>
+                  <rect x="210" y="0" width="35" height="100" fill="#dbeafe"/>
+                  <rect x="260" y="0" width="35" height="100" fill="#dbeafe"/>
+                  <!-- 지급예정 (노랑) -->
+                  <rect x="10" y="60" width="35" height="40" fill="#fde68a"/>
+                  <rect x="60" y="55" width="35" height="45" fill="#fde68a"/>
+                  <rect x="110" y="50" width="35" height="50" fill="#fde68a"/>
+                  <rect x="160" y="45" width="35" height="55" fill="#fde68a"/>
+                  <rect x="210" y="42" width="35" height="58" fill="#fde68a"/>
+                  <rect x="260" y="40" width="35" height="60" fill="#fde68a"/>
+                  <!-- 지급완료 (초록) -->
+                  <rect x="10" y="90" width="35" height="10" fill="#86efac"/>
+                  <rect x="60" y="82" width="35" height="18" fill="#86efac"/>
+                  <rect x="110" y="72" width="35" height="28" fill="#86efac"/>
+                  <rect x="160" y="64" width="35" height="36" fill="#86efac"/>
+                  <rect x="210" y="58" width="35" height="42" fill="#86efac"/>
+                  <rect x="260" y="52" width="35" height="48" fill="#86efac"/>
+                </svg>
+                <!-- 예산선 -->
+                <div style="position: absolute; top: 0%; left: 0; right: 0; border-top: 2px solid #1e293b;"></div>
+              </div>
+              <div style="position: absolute; left: 45px; right: 10px; bottom: 0; height: 25px; display: flex; justify-content: space-around; font-size: 9px; color: #9ca3af; padding-top: 6px;"><span>1주</span><span>2주</span><span>3주</span><span>4주</span><span>5주</span><span>6주</span></div>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px; font-size: 11px;">
+              <div style="display: flex; gap: 12px;">
+                <span style="display: flex; align-items: center; gap: 4px;"><span style="width: 10px; height: 10px; background: #86efac; border-radius: 2px;"></span> 지급완료</span>
+                <span style="display: flex; align-items: center; gap: 4px;"><span style="width: 10px; height: 10px; background: #fde68a; border-radius: 2px;"></span> 지급예정</span>
+                <span style="display: flex; align-items: center; gap: 4px;"><span style="width: 10px; height: 10px; background: #dbeafe; border-radius: 2px;"></span> 잔여</span>
+              </div>
+              <span style="color: #6b7280;">💡 예상 소진일: <span style="color: #2563eb; font-weight: 600;">3/15</span></span>
+            </div>
+          </div>
+
+          <!-- ===== 탭 1: 데이터 수집 (인원+응답+데이터추이 통합) ===== -->
+          <div id="chart-collect" class="main-chart-content" style="display: block;">
+            <h3 style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+              📊 데이터 수집 현황
+            </h3>
+
+            <!-- 데이터 토글 버튼 그룹 -->
+            <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; padding: 10px; background: white; border-radius: 8px; border: 1px solid #e5e7eb;">
+              <span style="font-size: 10px; color: #6b7280; padding: 4px 0;">표시:</span>
+              <button onclick="toggleDataLayer('participants')" id="btn-participants" class="data-toggle active" style="font-size: 10px; padding: 4px 10px; border-radius: 12px; border: 2px solid #3b82f6; background: #3b82f6; color: white; cursor: pointer; font-weight: 600;">👥 참여인원</button>
+              <button onclick="toggleDataLayer('response')" id="btn-response" class="data-toggle active" style="font-size: 10px; padding: 4px 10px; border-radius: 12px; border: 2px solid #8b5cf6; background: #8b5cf6; color: white; cursor: pointer; font-weight: 600;">📝 응답수</button>
+              <span style="border-left: 1px solid #d1d5db; margin: 0 4px;"></span>
+              <button onclick="toggleDataLayer('medication')" id="btn-medication" class="data-toggle active" style="font-size: 10px; padding: 4px 10px; border-radius: 12px; border: 2px solid #22c55e; background: #22c55e; color: white; cursor: pointer; font-weight: 600;">💊 복약</button>
+              <button onclick="toggleDataLayer('mood')" id="btn-mood" class="data-toggle active" style="font-size: 10px; padding: 4px 10px; border-radius: 12px; border: 2px solid #ec4899; background: #ec4899; color: white; cursor: pointer; font-weight: 600;">😊 기분</button>
+              <button onclick="toggleDataLayer('sleep')" id="btn-sleep" class="data-toggle active" style="font-size: 10px; padding: 4px 10px; border-radius: 12px; border: 2px solid #a855f7; background: #a855f7; color: white; cursor: pointer; font-weight: 600;">😴 수면</button>
+              <button onclick="toggleDataLayer('glucose')" id="btn-glucose" class="data-toggle active" style="font-size: 10px; padding: 4px 10px; border-radius: 12px; border: 2px solid #f59e0b; background: #f59e0b; color: white; cursor: pointer; font-weight: 600;">🩸 혈당</button>
+              <span style="flex: 1;"></span>
+              <label style="display: flex; align-items: center; gap: 4px; font-size: 10px; color: #6b7280; cursor: pointer;">
+                <input type="checkbox" id="show-range" checked onchange="toggleRangeBands()" style="width: 14px; height: 14px;"> 오차범위
+              </label>
+            </div>
+
+            <!-- 요약 통계: 수집 인원 + 데이터 -->
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 12px 0;">
+              <!-- 수집 인원 -->
+              <div style="background: linear-gradient(135deg, #eff6ff, #dbeafe); border: 1px solid #93c5fd; border-radius: 8px; padding: 12px;">
+                <div style="font-size: 10px; color: #3b82f6; font-weight: 600; margin-bottom: 6px;">👥 수집 인원</div>
+                <div style="display: flex; justify-content: space-between;">
+                  <div style="text-align: center;"><div style="font-size: 16px; font-weight: 700; color: #1d4ed8;">87</div><div style="font-size: 8px; color: #6b7280;">참여자</div></div>
+                  <div style="text-align: center;"><div style="font-size: 16px; font-weight: 700; color: #22c55e;">84</div><div style="font-size: 8px; color: #6b7280;">활성</div></div>
+                  <div style="text-align: center;"><div style="font-size: 16px; font-weight: 700; color: #f59e0b;">96%</div><div style="font-size: 8px; color: #6b7280;">참여율</div></div>
+                </div>
+              </div>
+              <!-- 응답 수 -->
+              <div style="background: linear-gradient(135deg, #f5f3ff, #ede9fe); border: 1px solid #c4b5fd; border-radius: 8px; padding: 12px;">
+                <div style="font-size: 10px; color: #8b5cf6; font-weight: 600; margin-bottom: 6px;">📝 응답 수</div>
+                <div style="display: flex; justify-content: space-between;">
+                  <div style="text-align: center;"><div style="font-size: 16px; font-weight: 700; color: #7c3aed;">2,847</div><div style="font-size: 8px; color: #6b7280;">총 응답</div></div>
+                  <div style="text-align: center;"><div style="font-size: 16px; font-weight: 700; color: #22c55e;">95</div><div style="font-size: 8px; color: #6b7280;">일평균</div></div>
+                  <div style="text-align: center;"><div style="font-size: 16px; font-weight: 700; color: #8b5cf6;">+12%</div><div style="font-size: 8px; color: #6b7280;">추세</div></div>
+                </div>
+              </div>
+              <!-- 데이터 품질 -->
+              <div style="background: linear-gradient(135deg, #ecfdf5, #d1fae5); border: 1px solid #6ee7b7; border-radius: 8px; padding: 12px;">
+                <div style="font-size: 10px; color: #22c55e; font-weight: 600; margin-bottom: 6px;">📈 데이터 품질</div>
+                <div style="display: flex; justify-content: space-between;">
+                  <div style="text-align: center;"><div style="font-size: 16px; font-weight: 700; color: #16a34a;">92%</div><div style="font-size: 8px; color: #6b7280;">완성도</div></div>
+                  <div style="text-align: center;"><div style="font-size: 16px; font-weight: 700; color: #22c55e;">4.2</div><div style="font-size: 8px; color: #6b7280;">평균기분</div></div>
+                  <div style="text-align: center;"><div style="font-size: 16px; font-weight: 700; color: #059669;">85%</div><div style="font-size: 8px; color: #6b7280;">복약률</div></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 통합 멀티라인 차트 (오차범위 밴드 포함) -->
+            <svg viewBox="0 0 620 300" style="width: 100%; height: 300px; background: #fafafa; border-radius: 12px;">
+              <defs>
+                <!-- 참여 인원 영역 그라디언트 -->
+                <linearGradient id="areaParticipants" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:0.2" />
+                  <stop offset="100%" style="stop-color:#3b82f6;stop-opacity:0.02" />
+                </linearGradient>
+                <!-- 복약 오차범위 그라디언트 -->
+                <linearGradient id="bandMedication" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" style="stop-color:#22c55e;stop-opacity:0.35" />
+                  <stop offset="50%" style="stop-color:#22c55e;stop-opacity:0.15" />
+                  <stop offset="100%" style="stop-color:#22c55e;stop-opacity:0.35" />
+                </linearGradient>
+                <!-- 기분 오차범위 그라디언트 -->
+                <linearGradient id="bandMood" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" style="stop-color:#ec4899;stop-opacity:0.35" />
+                  <stop offset="50%" style="stop-color:#ec4899;stop-opacity:0.12" />
+                  <stop offset="100%" style="stop-color:#ec4899;stop-opacity:0.35" />
+                </linearGradient>
+                <!-- 수면 오차범위 그라디언트 -->
+                <linearGradient id="bandSleep" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" style="stop-color:#a855f7;stop-opacity:0.3" />
+                  <stop offset="50%" style="stop-color:#a855f7;stop-opacity:0.1" />
+                  <stop offset="100%" style="stop-color:#a855f7;stop-opacity:0.3" />
+                </linearGradient>
+                <!-- 혈당 오차범위 그라디언트 -->
+                <linearGradient id="bandGlucose" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" style="stop-color:#f59e0b;stop-opacity:0.35" />
+                  <stop offset="50%" style="stop-color:#f59e0b;stop-opacity:0.12" />
+                  <stop offset="100%" style="stop-color:#f59e0b;stop-opacity:0.35" />
+                </linearGradient>
+              </defs>
+
+              <!-- Y축 그리드 -->
+              <line x1="50" y1="30" x2="570" y2="30" stroke="#e5e7eb" stroke-width="1" stroke-dasharray="3"/>
+              <line x1="50" y1="80" x2="570" y2="80" stroke="#e5e7eb" stroke-width="1" stroke-dasharray="3"/>
+              <line x1="50" y1="130" x2="570" y2="130" stroke="#e5e7eb" stroke-width="1" stroke-dasharray="3"/>
+              <line x1="50" y1="180" x2="570" y2="180" stroke="#e5e7eb" stroke-width="1" stroke-dasharray="3"/>
+              <line x1="50" y1="230" x2="570" y2="230" stroke="#e5e7eb" stroke-width="1" stroke-dasharray="3"/>
+              <line x1="50" y1="250" x2="570" y2="250" stroke="#e5e7eb" stroke-width="1"/>
+
+              <!-- Y축 레이블 (왼쪽: 인원) -->
+              <text x="10" y="35" font-size="9" fill="#3b82f6">120명</text>
+              <text x="10" y="85" font-size="9" fill="#3b82f6">90</text>
+              <text x="10" y="135" font-size="9" fill="#3b82f6">60</text>
+              <text x="10" y="185" font-size="9" fill="#3b82f6">30</text>
+
+              <!-- Y축 레이블 (오른쪽: 데이터 %) -->
+              <text x="580" y="35" font-size="9" fill="#6b7280">100%</text>
+              <text x="580" y="85" font-size="9" fill="#6b7280">75%</text>
+              <text x="580" y="135" font-size="9" fill="#6b7280">50%</text>
+              <text x="580" y="185" font-size="9" fill="#6b7280">25%</text>
+
+              <!-- ===== 레이어: 참여 인원 ===== -->
+              <g id="layer-participants">
+                <path d="M60,78 L95,75 L130,72 L165,70 L200,68 L235,65 L270,80 L305,82 L340,78 L375,75 L410,72 L445,70 L480,85 L515,82 L550,75 L550,250 L60,250 Z"
+                      fill="url(#areaParticipants)" opacity="0.8"/>
+                <path d="M60,78 L95,75 L130,72 L165,70 L200,68 L235,65 L270,80 L305,82 L340,78 L375,75 L410,72 L445,70 L480,85 L515,82 L550,75"
+                      fill="none" stroke="#3b82f6" stroke-width="2.5" stroke-linecap="round"/>
+                <circle cx="60" cy="78" r="4" fill="white" stroke="#3b82f6" stroke-width="2"><title>1/1: 84명 (±3)</title></circle>
+                <circle cx="270" cy="80" r="4" fill="white" stroke="#3b82f6" stroke-width="2"><title>1/8: 82명 (±4)</title></circle>
+                <circle cx="480" cy="85" r="4" fill="white" stroke="#3b82f6" stroke-width="2"><title>1/14: 80명 (±5)</title></circle>
+                <circle cx="550" cy="75" r="4" fill="white" stroke="#3b82f6" stroke-width="2"><title>1/17: 84명 (±3)</title></circle>
+              </g>
+
+              <!-- ===== 레이어: 응답 수 ===== -->
+              <g id="layer-response">
+                <path d="M60,92 L95,68 L130,58 L165,65 L200,52 L235,48 L270,95 L305,85 L340,55 L375,72 L410,48 L445,42 L480,90 L515,75 L550,52"
+                      fill="none" stroke="#8b5cf6" stroke-width="2" stroke-linecap="round" stroke-dasharray="6,3"/>
+                <circle cx="235" cy="48" r="5" fill="#22c55e" stroke="white" stroke-width="2"><title>1/6: 105명 응답 (최고)</title></circle>
+                <circle cx="270" cy="95" r="5" fill="#ef4444" stroke="white" stroke-width="2"><title>1/7: 68명 응답 (최저-주말)</title></circle>
+              </g>
+
+              <!-- ===== 오차범위 밴드 그룹 ===== -->
+              <g id="range-bands">
+                <!-- 복약 오차범위 밴드 (±12%) -->
+                <g id="layer-medication">
+                  <path d="M60,75 L95,68 L130,62 L165,55 L200,58 L235,52 L270,85 L305,78 L340,65 L375,58 L410,52 L445,48 L480,78 L515,70 L550,55
+                           L550,105 L515,115 L480,120 L445,102 L410,105 L375,108 L340,112 L305,122 L270,128 L235,105 L200,108 L165,105 L130,108 L95,112 L60,118 Z"
+                        fill="url(#bandMedication)"/>
+                  <path d="M60,95 L95,90 L130,85 L165,80 L200,82 L235,78 L270,105 L305,100 L340,88 L375,82 L410,78 L445,75 L480,98 L515,92 L550,80"
+                        fill="none" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round"/>
+                  <circle cx="165" cy="80" r="4" fill="white" stroke="#22c55e" stroke-width="2"><title>1/4: 복약 88% (±12%)</title></circle>
+                  <circle cx="375" cy="82" r="4" fill="white" stroke="#22c55e" stroke-width="2"><title>1/11: 복약 86% (±10%)</title></circle>
+                  <circle cx="550" cy="80" r="4" fill="white" stroke="#22c55e" stroke-width="2"><title>1/17: 복약 88% (±8%)</title></circle>
+                </g>
+
+                <!-- 기분 오차범위 밴드 (±0.8점) -->
+                <g id="layer-mood">
+                  <path d="M60,100 L95,92 L130,85 L165,88 L200,78 L235,72 L270,115 L305,108 L340,92 L375,85 L410,78 L445,72 L480,108 L515,98 L550,82
+                           L550,125 L515,135 L480,145 L445,118 L410,120 L375,128 L340,132 L305,145 L270,150 L235,120 L200,125 L165,130 L130,128 L95,130 L60,135 Z"
+                        fill="url(#bandMood)"/>
+                  <path d="M60,115 L95,110 L130,105 L165,108 L200,100 L235,95 L270,130 L305,125 L340,110 L375,105 L410,98 L445,95 L480,125 L515,115 L550,102"
+                        fill="none" stroke="#ec4899" stroke-width="2.5" stroke-linecap="round"/>
+                  <circle cx="95" cy="110" r="4" fill="white" stroke="#ec4899" stroke-width="2"><title>1/2: 기분 4.1 (±0.8)</title></circle>
+                  <circle cx="340" cy="110" r="4" fill="white" stroke="#ec4899" stroke-width="2"><title>1/9: 기분 4.1 (±0.7)</title></circle>
+                  <circle cx="550" cy="102" r="4" fill="white" stroke="#ec4899" stroke-width="2"><title>1/17: 기분 4.3 (±0.6)</title></circle>
+                </g>
+
+                <!-- 수면 오차범위 밴드 (±1.2h) -->
+                <g id="layer-sleep">
+                  <path d="M60,108 L95,115 L130,102 L165,95 L200,105 L235,100 L270,125 L305,118 L340,108 L375,102 L410,95 L445,92 L480,122 L515,115 L550,100
+                           L550,138 L515,148 L480,158 L445,135 L410,138 L375,142 L340,148 L305,155 L270,160 L235,140 L200,142 L165,138 L130,142 L95,148 L60,145 Z"
+                        fill="url(#bandSleep)"/>
+                  <path d="M60,125 L95,130 L130,120 L165,115 L200,122 L235,118 L270,140 L305,135 L340,125 L375,120 L410,115 L445,112 L480,138 L515,130 L550,118"
+                        fill="none" stroke="#a855f7" stroke-width="2" stroke-linecap="round" stroke-dasharray="5,3"/>
+                  <circle cx="130" cy="120" r="4" fill="white" stroke="#a855f7" stroke-width="2"><title>1/3: 수면 6.8h (±1.2h)</title></circle>
+                  <circle cx="445" cy="112" r="4" fill="white" stroke="#a855f7" stroke-width="2"><title>1/13: 수면 7.1h (±1.0h)</title></circle>
+                </g>
+
+                <!-- 혈당 오차범위 밴드 (±15mg/dL) -->
+                <g id="layer-glucose">
+                  <path d="M60,88 L95,80 L130,75 L165,70 L200,68 L235,62 L270,98 L305,90 L340,78 L375,72 L410,65 L445,60 L480,95 L515,82 L550,68
+                           L550,118 L515,128 L480,138 L445,112 L410,118 L375,120 L340,125 L305,138 L270,142 L235,115 L200,118 L165,122 L130,125 L95,128 L60,132 Z"
+                        fill="url(#bandGlucose)"/>
+                  <path d="M60,108 L95,102 L130,98 L165,95 L200,92 L235,88 L270,118 L305,112 L340,100 L375,95 L410,90 L445,85 L480,115 L515,105 L550,92"
+                        fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round"/>
+                  <circle cx="200" cy="92" r="4" fill="white" stroke="#f59e0b" stroke-width="2"><title>1/5: 혈당 105 (±15)</title></circle>
+                  <circle cx="410" cy="90" r="4" fill="white" stroke="#f59e0b" stroke-width="2"><title>1/12: 혈당 98 (±12)</title></circle>
+                </g>
+              </g>
+
+              <!-- 주말 영역 표시 -->
+              <rect x="255" y="25" width="30" height="230" fill="#fef2f2" opacity="0.3" rx="4"/>
+              <rect x="465" y="25" width="30" height="230" fill="#fef2f2" opacity="0.3" rx="4"/>
+              <text x="270" y="268" font-size="8" fill="#ef4444" text-anchor="middle">주말</text>
+              <text x="480" y="268" font-size="8" fill="#ef4444" text-anchor="middle">주말</text>
+
+              <!-- X축 날짜 -->
+              <text x="60" y="280" font-size="9" fill="#9ca3af" text-anchor="middle">1/1</text>
+              <text x="130" y="280" font-size="9" fill="#9ca3af" text-anchor="middle">1/3</text>
+              <text x="200" y="280" font-size="9" fill="#9ca3af" text-anchor="middle">1/5</text>
+              <text x="270" y="280" font-size="9" fill="#9ca3af" text-anchor="middle">1/7</text>
+              <text x="340" y="280" font-size="9" fill="#9ca3af" text-anchor="middle">1/9</text>
+              <text x="410" y="280" font-size="9" fill="#9ca3af" text-anchor="middle">1/11</text>
+              <text x="480" y="280" font-size="9" fill="#9ca3af" text-anchor="middle">1/13</text>
+              <text x="550" y="280" font-size="9" fill="#9ca3af" text-anchor="middle">1/17</text>
+            </svg>
+
+            <!-- 범례 (오차범위 표시 포함) -->
+            <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; padding: 10px; background: white; border-radius: 8px; border: 1px solid #e5e7eb;">
+              <div style="font-size: 10px; font-weight: 600; color: #374151; margin-right: 6px;">범례:</div>
+              <span style="display: flex; align-items: center; gap: 4px; font-size: 10px;"><span style="width: 16px; height: 8px; background: linear-gradient(180deg, rgba(59,130,246,0.3), rgba(59,130,246,0.05)); border: 1px solid #3b82f6; border-radius: 2px;"></span> 참여인원</span>
+              <span style="display: flex; align-items: center; gap: 4px; font-size: 10px;"><span style="width: 16px; height: 2px; background: #8b5cf6; border-radius: 1px; border-style: dashed;"></span> 응답수</span>
+              <span style="border-left: 1px solid #e5e7eb; margin: 0 2px;"></span>
+              <span style="display: flex; align-items: center; gap: 4px; font-size: 10px;"><span style="width: 16px; height: 8px; background: linear-gradient(180deg, rgba(34,197,94,0.4), rgba(34,197,94,0.1)); border-radius: 2px;"></span><span style="width: 12px; height: 2px; background: #22c55e; border-radius: 1px; margin-left: -6px;"></span> 복약±범위</span>
+              <span style="display: flex; align-items: center; gap: 4px; font-size: 10px;"><span style="width: 16px; height: 8px; background: linear-gradient(180deg, rgba(236,72,153,0.4), rgba(236,72,153,0.1)); border-radius: 2px;"></span><span style="width: 12px; height: 2px; background: #ec4899; border-radius: 1px; margin-left: -6px;"></span> 기분±범위</span>
+              <span style="display: flex; align-items: center; gap: 4px; font-size: 10px;"><span style="width: 16px; height: 8px; background: linear-gradient(180deg, rgba(168,85,247,0.35), rgba(168,85,247,0.1)); border-radius: 2px;"></span><span style="width: 12px; height: 2px; background: #a855f7; border-radius: 1px; margin-left: -6px;"></span> 수면±범위</span>
+              <span style="display: flex; align-items: center; gap: 4px; font-size: 10px;"><span style="width: 16px; height: 8px; background: linear-gradient(180deg, rgba(245,158,11,0.4), rgba(245,158,11,0.1)); border-radius: 2px;"></span><span style="width: 12px; height: 2px; background: #f59e0b; border-radius: 1px; margin-left: -6px;"></span> 혈당±범위</span>
+              <span style="display: flex; align-items: center; gap: 4px; font-size: 10px;"><span style="width: 10px; height: 10px; background: #fef2f2; border: 1px solid #fecaca; border-radius: 2px;"></span> 주말</span>
+            </div>
+
+            <!-- 인사이트 -->
+            <div style="display: flex; gap: 12px; margin-top: 10px; font-size: 11px;">
+              <div style="flex: 1; padding: 10px; background: #fef3c7; border-radius: 6px; border-left: 3px solid #f59e0b;">
+                💡 <strong>주말 패턴:</strong> 응답률 -24% 감소, 복약/수면 오차범위 확대
+              </div>
+              <div style="flex: 1; padding: 10px; background: #dcfce7; border-radius: 6px; border-left: 3px solid #22c55e;">
+                📈 <strong>추세:</strong> 전반적 상승세, 오차범위 점차 축소 (데이터 안정화)
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <script>
+          function switchMainChart(type) {
+            // 모든 콘텐츠 숨기기
+            document.querySelectorAll('.main-chart-content').forEach(c => c.style.display = 'none');
+            // 모든 탭 비활성화
+            document.querySelectorAll('.main-chart-tab').forEach(t => {
+              t.style.background = 'white';
+              t.style.color = '#6b7280';
+              t.style.border = '1px solid #d1d5db';
+            });
+            // 선택된 콘텐츠 표시
+            document.getElementById('chart-' + type).style.display = 'block';
+            // 선택된 탭 활성화
+            event.target.style.background = 'linear-gradient(135deg, #3b82f6, #2563eb)';
+            event.target.style.color = 'white';
+            event.target.style.border = 'none';
+          }
+          function setPeriod(period) {
+            document.querySelectorAll('.period-filter').forEach(f => {
+              f.style.background = 'white';
+              f.style.color = '#6b7280';
+              f.style.border = '1px solid #d1d5db';
+            });
+            event.target.style.background = '#3b82f6';
+            event.target.style.color = 'white';
+            event.target.style.border = '1px solid #3b82f6';
+            console.log('기간 변경:', period);
+          }
+
+          // 개별 데이터 레이어 토글
+          function toggleDataLayer(layer) {
+            const layerEl = document.getElementById('layer-' + layer);
+            const btn = document.getElementById('btn-' + layer);
+            if (!layerEl || !btn) return;
+
+            const colors = {
+              'participants': '#3b82f6',
+              'response': '#8b5cf6',
+              'medication': '#22c55e',
+              'mood': '#ec4899',
+              'sleep': '#a855f7',
+              'glucose': '#f59e0b'
+            };
+            const color = colors[layer];
+
+            if (layerEl.style.display === 'none') {
+              layerEl.style.display = 'block';
+              btn.style.background = color;
+              btn.style.color = 'white';
+              btn.style.borderColor = color;
+            } else {
+              layerEl.style.display = 'none';
+              btn.style.background = 'white';
+              btn.style.color = color;
+              btn.style.borderColor = color;
+            }
+          }
+
+          // 오차범위 밴드 전체 토글
+          function toggleRangeBands() {
+            const checkbox = document.getElementById('show-range');
+            const bands = document.getElementById('range-bands');
+            if (bands) {
+              // 오차범위 밴드 path들만 숨기기 (라인은 유지)
+              const bandPaths = bands.querySelectorAll('path[fill^="url"]');
+              bandPaths.forEach(p => {
+                p.style.display = checkbox.checked ? 'block' : 'none';
+              });
+            }
+          }
+        </script>
+
         <!-- KPI 카드 -->
-        <div class="kpi-grid">
-          <div class="kpi-card highlight">
+        <div class="kpi-grid" data-spec="개요 페이지 KPI: 이 연구의 핵심 지표 4가지. 참여자 현황이 가장 중요." data-spec-type="kpi" data-priority="1">
+          <div class="kpi-card highlight" data-spec="현재 참여자: 목표 대비 현재 등록된 참여자 수. 달성률로 모집 진행 상황 파악." data-spec-type="kpi" data-priority="1">
             <div class="label">현재 참여자</div>
             <div class="value">87</div>
             <div class="sub">목표 100명 중 87%</div>
           </div>
-          <div class="kpi-card">
+          <div class="kpi-card" data-spec="활성 참여자: 최근 7일 내 데이터 제출한 참여자. 이탈 감지 핵심 지표." data-spec-type="kpi" data-priority="2">
             <div class="label">활성 참여자</div>
             <div class="value">82</div>
             <div class="sub">최근 7일 내 데이터 제출</div>
             <div class="change up">+3 이번 주</div>
           </div>
-          <div class="kpi-card">
+          <div class="kpi-card" data-spec="평균 완료율: 일일 데이터 제출 기준 완료율. 5개 항목 전부 입력 시 유효." data-spec-type="kpi" data-priority="2">
             <div class="label">평균 완료율</div>
             <div class="value">85%</div>
             <div class="sub">일일 데이터 제출 기준</div>
             <div class="change up">+2% 지난 주 대비</div>
           </div>
-          <div class="kpi-card">
+          <div class="kpi-card" data-spec="총 데이터 포인트: 수집된 전체 데이터 수. k-Anonymity 적용으로 프라이버시 보호." data-spec-type="data">
             <div class="label">총 데이터 포인트</div>
             <div class="value">12,847</div>
             <div class="sub">k-Anonymity 적용됨</div>
@@ -379,10 +840,10 @@
         <!-- 차트 행 -->
         <div class="chart-row">
           <!-- 참여자 등록 추이 -->
-          <div class="chart-card">
+          <div class="chart-card" data-spec="참여자 등록 추이: 모집 시작일부터 현재까지 참여자 등록 그래프. 목표선 함께 표시. 계약 체결 시점 차이로 날짜별 다름." data-spec-type="data" data-priority="2">
             <h3>
               참여자 등록 추이
-              <span class="filter">지난 30일</span>
+              <span class="filter" data-spec="기간 필터: 30일, 60일, 전체 기간 선택 가능." data-spec-type="action">전체 기간</span>
             </h3>
             <div class="enrollment-chart">
               <div class="y-axis">
@@ -410,8 +871,8 @@
           </div>
 
           <!-- 일별 데이터 수집 현황 (등록 추이 오른쪽) -->
-          <div class="chart-card">
-            <h3>일별 데이터 수집 현황 <span class="filter">최근 30일</span></h3>
+          <div class="chart-card" data-spec="일별 데이터 수집 현황: 히트맵으로 일별 응답률 표시. 색이 진할수록 수집량 많음. 빵꾸(공란) 발생 시 이탈 의심." data-spec-type="data" data-changed="전체 기간 표시, 기간 필터 추가" data-priority="2">
+            <h3>일별 데이터 수집 현황 <span class="filter" data-spec="기간 필터: 30일, 90일, 전체 기간 선택 가능.">전체 기간</span></h3>
             <div class="heatmap-grid">
               <div class="heatmap-cell l4"></div>
               <div class="heatmap-cell l4"></div>
@@ -644,6 +1105,27 @@ Headers: Authorization: Bearer {jwt}<br><br>
           <div class="ai-body">
             <!-- 인사이트 탭 -->
             <div id="tool-insight" class="tool-content">
+              <!-- 핵심 인사이트 (상단 고정) -->
+              <div style="background: linear-gradient(135deg, #1e3a5f, #1e293b); border: 1px solid #3b82f6; border-radius: 12px; padding: 16px; margin-bottom: 16px;">
+                <h3 style="color: #93c5fd; margin-bottom: 12px; font-size: 14px; display: flex; align-items: center; gap: 8px;">
+                  💡 핵심 인사이트
+                </h3>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                  <div style="display: flex; gap: 10px; align-items: flex-start; font-size: 13px;">
+                    <span>📉</span>
+                    <span><span style="color: #60a5fa; font-weight: 600;">복약 순응도</span>가 지난 7일간 <span style="color: #f87171;">15% 감소</span></span>
+                  </div>
+                  <div style="display: flex; gap: 10px; align-items: flex-start; font-size: 13px;">
+                    <span>📈</span>
+                    <span>상위 10%는 <span style="color: #4ade80;">혈당 변동성 25% 낮음</span></span>
+                  </div>
+                  <div style="display: flex; gap: 10px; align-items: flex-start; font-size: 13px;">
+                    <span>⚠️</span>
+                    <span><span style="color: #fbbf24; font-weight: 600;">3명</span> 심박수 데이터 미수집</span>
+                  </div>
+                </div>
+              </div>
+
               <div class="ai-insight">
                 <div class="icon">💡</div>
                 <div class="text">
@@ -776,5 +1258,7 @@ Headers: Authorization: Bearer {jwt}<br><br>
     </div><!-- end main -->
   </div><!-- end layout -->
   <script src="page-spec.js"></script>
+  <link rel="stylesheet" href="../tooltip-spec.css">
+  <script src="../tooltip-spec.js"></script>
 </body>
 </html>
