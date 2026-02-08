@@ -1,298 +1,576 @@
-// UniQdata v4 ERD
+// UniQdata v4 Complete ERD - 전체 40개 엔티티
 // https://dbdiagram.io
+// Generated from backend/src/entities/
 
 // ============================================================
-// 🔗 XRPL 앵커링 시점 (anchor_logs에 기록)
+// 🔗 XRPL 앵커링 시점
 // ============================================================
-// 1. 계정 생성: accounts + owners 생성 시 → anchor_type: 'account_created'
-// 2. 지갑 생성: wallets 생성 시 → anchor_type: 'wallet_created'
-// 3. 동의 부여/철회: consents 생성/수정 시 → anchor_type: 'consent_granted' | 'consent_revoked'
-// 4. 연구 참여: agreements 생성 시 → anchor_type: 'agreement_signed'
-// 5. 팀원 변경: team_members 추가/제거 시 → anchor_type: 'team_member_added' | 'team_member_removed'
-// 6. 정산 완료: settlements 생성 시 → anchor_type: 'settlement_completed'
-// 7. 데이터 접근: audit_logs 민감 데이터 조회 시 → anchor_type: 'data_accessed'
-//
-// ============================================================
-// 📝 계정 생성 플로우
-// ============================================================
-// 1. accounts 생성 (email, type)
-// 2. account_logins 생성 (provider: apple/google/email)
-// 3. owners 생성 (익명 ID, 1:1 with accounts)
-// 4. passkey_credentials 생성 (WebAuthn 등록)
-// 5. wallets 생성 (XRPL 주소 발급)
-// 6. wallet_secrets 생성 (PRF 암호화된 시드)
-// 7. anchor_logs 기록 (계정 생성 증명)
-//
-// ============================================================
-// 💾 데이터 저장 플로우
-// ============================================================
-// 1. 앱에서 data_points 전송 (category, metric, value)
-// 2. idempotency_key로 중복 체크
-// 3. sensitivity_level 자동 분류 (1-4)
-// 4. 암호화 후 저장 (L3-L4는 필드 암호화)
-// 5. audit_logs 기록 (write 액션)
-//
-// ============================================================
-// 📖 데이터 조회 플로우
-// ============================================================
-// 1. 요청자 인증 (세션 or 패스키)
-// 2. consents 확인 (scope, status, expires_at)
-// 3. agreements 확인 (연구용 접근 시)
-// 4. data_points 조회 (owner_id + category + timestamp)
-// 5. audit_logs 기록 (read 액션)
-// 6. L4 데이터는 anchor_logs에도 기록
-//
-// ===== TABLE GROUPS =====
-TableGroup auth [color: #3498db] {
-  accounts
-  account_logins
-  owners
-  passkey_credentials
-  sessions
-}
+// ESCROW_CREATE, ESCROW_FINISH, ESCROW_CANCEL
+// SETTLEMENT, TRANSFER
+// TEAM_MEMBER_ADD/REMOVE, TEAM_ROLE_CHANGE, OWNERSHIP_TRANSFER
+// PROJECT_WALLET_CREATE, PROJECT_DEPOSIT, PROJECT_WITHDRAW
+// WALLET_BINDING, USER_REGISTRATION
+// CONSENT_GRANT, CONSENT_REVOKE
+// DATA_ACCESS, DATA_EXPORT, DATA_SALE, DATA_SUBMIT
+// CONTRACT_SIGN
 
-TableGroup wallet [color: #f39c12] {
-  wallets
-  wallet_secrets
-}
-
-TableGroup data [color: #2ecc71] {
-  data_points
-  consents
-}
-
-TableGroup research [color: #9b59b6] {
-  research_projects
-  data_collection_configs
-  participation_criteria
-  team_members
-  agreements
-  project_wallets
-}
-
-TableGroup settlement [color: #e74c3c] {
-  escrows
-  settlements
-}
-
-TableGroup audit [color: #95a5a6] {
-  audit_logs
-  anchor_logs
-}
-
-TableGroup org [color: #1abc9c] {
-  institutions
-  workspaces
-  workspace_members
-}
-
-// ===== 인증 & 계정 =====
+// ===== 🔑 Core Auth =====
 Table accounts {
   id uuid [pk]
-  email varchar
-  type varchar [note: 'individual | enterprise']
-  status varchar
+  type enum [note: 'user|enterprise|researcher|admin|auditor']
+  status enum [note: 'active|suspended|deleted']
+  identity_hash varchar [unique, note: 'KYC용 1인1계정']
+  kyc_verified_at timestamp
+  kyc_provider varchar
   created_at timestamp
+  updated_at timestamp
 }
 
 Table account_logins {
   id uuid [pk]
   account_id uuid [ref: > accounts.id]
-  provider varchar [note: 'apple | google | email']
+  provider enum [note: 'apple|google|kakao|email|phone']
   provider_user_id varchar
   email varchar
+  phone varchar
+  email_verified boolean
+  phone_verified boolean
+  password_hash varchar
+  created_at timestamp
+
+  indexes {
+    (provider, provider_user_id) [unique]
+  }
 }
 
 Table owners {
   id uuid [pk]
-  account_id uuid [ref: - accounts.id, note: '1:1']
+  account_id uuid [ref: - accounts.id, unique, note: '1:1']
+  created_at timestamp
+}
+
+Table users {
+  id uuid [pk]
+  account_id uuid [ref: - accounts.id, note: '1:1 프로필']
+  name varchar
+  birth_date date
+  gender varchar
+  height decimal
+  weight decimal
+  blood_type varchar
+  allergies text
+  created_at timestamp
+  updated_at timestamp
+
+  indexes {
+    account_id [unique]
+  }
+}
+
+Table sessions {
+  id uuid [pk]
+  user_id uuid [ref: > users.id]
+  app_id uuid [ref: > apps.id]
+  started_at timestamp
+  ended_at timestamp
+  metadata jsonb
+}
+
+Table refresh_tokens {
+  id uuid [pk]
+  token varchar [unique]
+  user_id uuid [ref: > users.id]
+  session_id uuid [ref: > sessions.id]
+  expires_at timestamp
+  revoked_at timestamp
   created_at timestamp
 }
 
 Table passkey_credentials {
   id uuid [pk]
-  owner_id uuid [ref: > owners.id]
-  credential_id varchar
-  public_key bytea
+  user_id uuid [ref: > users.id]
+  credential_id varchar [unique]
+  public_key text
   counter int
+  transports text
   device_name varchar
+  created_at timestamp
+  last_used_at timestamp
 }
 
-Table sessions {
-  id uuid [pk]
-  owner_id uuid [ref: > owners.id]
-  expires_at timestamp
-}
-
-// ===== 지갑 =====
+// ===== 👛 Wallet =====
 Table wallets {
   id uuid [pk]
   owner_id uuid [ref: > owners.id]
+  user_id uuid [note: '@deprecated']
   address varchar [unique, note: 'XRPL rXXX...']
   public_key varchar
-  wallet_type varchar
-  status varchar
+  wallet_type enum [note: 'main|sub']
+  status enum [note: 'active|suspended|recovery']
+  created_at timestamp
 
   indexes {
-    (owner_id, wallet_type) [unique, note: '사용자당 지갑 타입 1개']
-    address [unique, note: '주소로 조회']
+    (owner_id, wallet_type) [unique]
   }
 }
 
 Table wallet_secrets {
   id uuid [pk]
-  wallet_id uuid [ref: - wallets.id, note: '1:1']
-  encrypted_seed_prf bytea
+  wallet_id uuid [ref: - wallets.id, unique, note: '1:1']
+  encrypted_seed_prf bytea [note: 'Passkey PRF 암호화']
   prf_salt bytea
+  encrypted_seed_hsm bytea [note: 'HSM 복구용']
+  hsm_key_id varchar
+  encrypted_seed text [note: '@deprecated']
+  key_id varchar [note: '@deprecated']
+  created_at timestamp
+  updated_at timestamp
 }
 
-// ===== 데이터 =====
+Table wallet_credential_bindings {
+  id uuid [pk]
+  wallet_id uuid [ref: > wallets.id]
+  credential_id uuid [ref: > passkey_credentials.id]
+  encrypted_seed_prf bytea [note: '기기별 PRF 암호화']
+  prf_salt bytea
+  binding_signature text
+  xrpl_tx_hash varchar
+  status enum [note: 'active|revoked']
+  created_at timestamp
+  revoked_at timestamp
+
+  indexes {
+    (wallet_id, credential_id) [unique]
+  }
+}
+
+Table wallet_recovery_requests {
+  id uuid [pk]
+  wallet_id uuid [ref: > wallets.id]
+  owner_id uuid [ref: > owners.id]
+  kyc_verified boolean
+  kyc_verified_at timestamp
+  kyc_identity_hash varchar
+  sms_verified boolean
+  sms_verified_at timestamp
+  status enum [note: 'pending|kyc_required|waiting|admin_review|approved|completed|cancelled|rejected']
+  created_at timestamp
+}
+
+// ===== 📊 Data =====
 Table data_points {
   id uuid [pk]
-  owner_id uuid [ref: > owners.id]
+  user_id uuid [ref: > users.id]
   category varchar
   metric varchar
   value jsonb
   unit varchar
   timestamp timestamp
+  source_id varchar
+  source_type varchar
+  metadata jsonb
   sensitivity_level int [note: '1-4']
-  idempotency_key varchar [unique]
+  created_at timestamp
 
   indexes {
-    (owner_id, category, metric, timestamp) [note: '시계열 조회']
-    (owner_id, sensitivity_level) [note: '민감도별 필터']
-    idempotency_key [unique, note: '중복 방지']
+    (user_id, category, metric, timestamp)
+    (user_id, timestamp)
+  }
+}
+
+Table data_sources {
+  id uuid [pk]
+  user_id uuid [ref: > users.id]
+  name varchar
+  type varchar [note: 'wearable|app|manual|integration']
+  is_active boolean
+  config jsonb
+  created_at timestamp
+  last_sync_at timestamp
+}
+
+Table data_attachments {
+  id uuid [pk]
+  data_point_id uuid [ref: > data_points.id]
+  user_id uuid [ref: > users.id]
+  storage_key varchar
+  file_name varchar
+  file_type varchar [note: 'MIME type']
+  file_size bigint
+  thumbnail_key varchar
+  metadata jsonb [note: 'DICOM 태그 등']
+  storage_provider varchar [note: 'local|s3|minio']
+  sensitivity_level int [default: 4]
+  created_at timestamp
+}
+
+Table data_accesses {
+  id uuid [pk]
+  workspace_id uuid [ref: > workspaces.id]
+  account_id uuid [ref: > accounts.id]
+  data_product_id varchar
+  status enum [note: 'active|expired|revoked']
+  granted_by uuid [ref: > accounts.id]
+  granted_at timestamp
+  expires_at timestamp
+
+  indexes {
+    (workspace_id, account_id)
   }
 }
 
 Table consents {
   id uuid [pk]
-  owner_id uuid [ref: > owners.id]
-  scope varchar
-  status varchar
+  user_id uuid [ref: > users.id]
+  app_id uuid [ref: > apps.id]
+  scopes text [note: '동의 범위 배열']
   purpose varchar
-  project_id uuid [ref: > research_projects.id]
-  granted_at timestamp
+  status enum [note: 'pending|approved|denied|revoked|expired']
+  created_at timestamp
+  approved_at timestamp
+  revoked_at timestamp
   expires_at timestamp
-
-  indexes {
-    (owner_id, status) [note: '활성 동의 조회']
-    (project_id, status) [note: '프로젝트별 동의']
-  }
+  xrpl_tx_hash varchar
+  revocation_tx_hash varchar
+  metadata jsonb
 }
 
-// ===== 연구 =====
+// ===== 🔬 Research =====
 Table research_projects {
   id uuid [pk]
   owner_id uuid [ref: > owners.id, note: 'PI']
+  institution_id uuid [ref: > institutions.id]
   title varchar
-  status varchar
-  escrow_tx_hash varchar
-}
+  description text
+  methodology varchar [note: 'longitudinal|cross_sectional|cohort|case_control']
+  status enum [note: 'draft|recruiting|collecting|analyzing|completed|cancelled']
+  created_at timestamp
+  updated_at timestamp
 
-Table data_collection_configs {
-  id uuid [pk]
-  project_id uuid [ref: - research_projects.id]
-  passive_data jsonb
-  active_data jsonb
+  indexes {
+    (owner_id, status)
+  }
 }
 
 Table participation_criteria {
   id uuid [pk]
-  project_id uuid [ref: - research_projects.id]
-  age_range jsonb
+  project_id uuid [ref: - research_projects.id, unique, note: '1:1']
+  age_min int
+  age_max int
+  conditions jsonb [note: '필수 조건']
+  exclusions jsonb [note: '제외 조건']
+  required_data jsonb [note: '필수 데이터']
+  regions jsonb [note: '지역 제한']
+  created_at timestamp
+}
+
+Table data_collection_configs {
+  id uuid [pk]
+  project_id uuid [ref: - research_projects.id, unique, note: '1:1']
+  passive_data jsonb [note: 'heart_rate, steps...']
+  active_data jsonb [note: 'mood, pain_level...']
+  biomarkers jsonb [note: 'voice_analysis, cgm...']
+  collection_frequency jsonb
+  created_at timestamp
 }
 
 Table team_members {
   id uuid [pk]
   project_id uuid [ref: > research_projects.id]
   owner_id uuid [ref: > owners.id]
-  role varchar [note: 'owner | admin | member']
-  anchor_tx varchar
+  role enum [note: 'owner|admin|member']
+  invited_by uuid [ref: > owners.id]
+  joined_at timestamp
+  created_at timestamp
+
+  indexes {
+    (project_id, owner_id) [unique]
+  }
 }
 
 Table agreements {
   id uuid [pk]
   project_id uuid [ref: > research_projects.id]
-  owner_id uuid [ref: > owners.id]
-  status varchar
-  data_scopes jsonb
-  anchor_tx varchar
+  owner_id uuid [ref: > owners.id, note: '참여자']
+  status enum [note: 'pending|active|completed|withdrawn|expired']
+  data_scopes jsonb [note: '동의한 데이터 범위']
+  start_date date
+  end_date date
+  created_at timestamp
 
   indexes {
-    (project_id, status) [note: '프로젝트별 참여자']
-    (owner_id, status) [note: '내 참여 현황']
+    (project_id, owner_id) [unique]
+    (owner_id, status)
   }
 }
 
 Table project_wallets {
   id uuid [pk]
-  project_id uuid [ref: - research_projects.id]
-  address varchar
+  project_id uuid [ref: - research_projects.id, unique, note: '1:1']
+  wallet_address varchar [unique]
+  encrypted_seed bytea [note: 'KMS 암호화']
+  kms_key_id varchar
+  total_deposited decimal
+  total_spent decimal
+  status enum [note: 'active|suspended|closed']
+  created_at timestamp
 }
 
-// ===== 정산 =====
+Table project_wallet_deposits {
+  id uuid [pk]
+  project_id uuid [ref: > research_projects.id]
+  depositor_owner_id uuid [ref: > owners.id]
+  amount decimal
+  tx_hash varchar [unique]
+  deposited_at timestamp
+}
+
+Table project_wallet_withdrawals {
+  id uuid [pk]
+  project_id uuid [ref: > research_projects.id]
+  withdrawer_owner_id uuid [ref: > owners.id]
+  amount decimal
+  tx_hash varchar [unique]
+  withdrawn_at timestamp
+}
+
+// ===== 💰 Finance =====
 Table escrows {
   id uuid [pk]
   project_id uuid [ref: > research_projects.id]
+  owner_address varchar
   amount decimal
-  status varchar
-  tx_hash varchar
+  condition varchar [note: 'Crypto-Condition']
+  fulfillment varchar
+  sequence int
+  tx_hash varchar [unique]
+  status enum [note: 'created|partial_released|completed|cancelled']
+  created_at timestamp
 }
 
 Table settlements {
   id uuid [pk]
   agreement_id uuid [ref: > agreements.id]
   amount decimal
-  tx_hash varchar
+  tx_hash varchar [unique]
+  type varchar [note: 'data_submit|bonus|completion']
+  memo text
+  settled_at timestamp
 }
 
-// ===== 감사 =====
+// ===== 🔍 Audit =====
 Table audit_logs {
   id uuid [pk]
-  action varchar
+  user_id uuid [ref: > users.id]
+  app_id uuid [ref: > apps.id]
+  action varchar [note: 'read|write|delete|export']
   category varchar
-  owner_id uuid [ref: > owners.id]
-  user_id uuid [ref: > owners.id, note: '요청자']
+  metric varchar
+  data_point_id uuid
   record_count int
-  created_at timestamp
+  xrpl_tx_hash varchar
+  xrpl_anchor_status varchar
+  xrpl_ledger_index int
+  timestamp timestamp
+  ip_address varchar
+  user_agent varchar
+  metadata jsonb
 
   indexes {
-    (owner_id, created_at) [note: '사용자별 로그 조회']
-    (category, created_at) [note: '카테고리별 조회']
+    (user_id, timestamp)
+    (app_id, timestamp)
   }
 }
 
 Table anchor_logs {
   id uuid [pk]
-  anchor_type varchar
-  owner_id uuid [ref: > owners.id]
-  data_hash varchar
+  user_id uuid [ref: > users.id]
+  anchor_type enum [note: 'wallet_binding|consent_grant|escrow_create|settlement...']
   tx_hash varchar [unique]
-  ledger_index int
+  from_address varchar
+  to_address varchar
   created_at timestamp
 
   indexes {
-    (owner_id, anchor_type) [note: '사용자별 앵커 조회']
-    tx_hash [unique, note: 'TX 검증용']
+    (user_id, created_at)
   }
 }
 
-// ===== 기관 =====
+// ===== 🏢 Organization =====
 Table institutions {
   id uuid [pk]
   name varchar
+  type enum [note: 'university|research_institute|hospital|company|government|other']
+  domains text [note: '도메인 배열: snu.ac.kr']
+  status enum [note: 'pending|active|suspended']
+  logo_url varchar
+  website varchar
+  created_at timestamp
+  updated_at timestamp
 }
 
 Table workspaces {
   id uuid [pk]
-  institution_id uuid [ref: > institutions.id]
   name varchar
+  type enum [note: 'individual|team|enterprise']
+  status enum [note: 'pending|active|suspended|archived']
+  institution_id uuid [ref: > institutions.id]
+  description text
+  max_members int
+  created_at timestamp
+  updated_at timestamp
 }
 
 Table workspace_members {
   id uuid [pk]
   workspace_id uuid [ref: > workspaces.id]
   account_id uuid [ref: > accounts.id]
-  role varchar
+  role enum [note: 'owner|admin|member|auditor']
+  status enum [note: 'pending|active|suspended|rejected|left']
+  display_name varchar
+  created_at timestamp
+  updated_at timestamp
+
+  indexes {
+    (workspace_id, account_id) [unique]
+  }
+}
+
+// ===== 📱 App =====
+Table apps {
+  id uuid [pk]
+  slug varchar [unique, note: 'bodab|ready-q|medi-q|uniqdata']
+  name varchar
+  description varchar
+  allowed_scopes text [note: 'health:heart_rate:read:30d']
+  allowed_origins text
+  status enum [note: 'active|inactive|suspended']
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table app_keys {
+  id uuid [pk]
+  app_id uuid [ref: > apps.id]
+  key_type enum [note: 'public|secret|admin']
+  key_prefix varchar [note: 'uq_pub_test_kr_']
+  key_hash varchar [note: 'SHA-256']
+  name varchar
+  status enum [note: 'active|revoked|expired']
+  expires_at timestamp
+  last_used_at timestamp
+  created_at timestamp
+  revoked_at timestamp
+}
+
+// ===== 💊 Medication (보답) =====
+Table user_medications {
+  id uuid [pk]
+  user_id uuid [ref: > users.id]
+  name_encrypted text [note: 'L4 암호화']
+  dosage_encrypted text
+  purpose_encrypted text
+  category_hash varchar [note: 'ZKP용']
+  name_hash varchar
+  schedule_times text [note: 'morning,noon,evening,bedtime']
+  drug_code varchar
+  is_active boolean
+  medication_type varchar [note: 'regular|as_needed']
+  start_date date
+  end_date date
+  xrpl_tx_hash varchar
+  created_at timestamp
+  updated_at timestamp
+
+  indexes {
+    (user_id, name_hash) [unique]
+    (user_id, is_active)
+  }
+}
+
+Table medication_logs {
+  id uuid [pk]
+  user_id uuid [ref: > users.id]
+  medication_id uuid [ref: > user_medications.id]
+  scheduled_time varchar [note: 'morning|noon|evening|bedtime']
+  taken boolean
+  taken_at timestamp
+  skipped_reason text
+  recorded_at timestamp
+  xrpl_tx_hash varchar
+  created_at timestamp
+
+  indexes {
+    (user_id, recorded_at)
+    (medication_id, recorded_at)
+  }
+}
+
+Table medication_proofs {
+  id uuid [pk]
+  user_id uuid [ref: > users.id]
+  proof_type varchar [note: 'category_membership|adherence_rate']
+  category_hash varchar
+  commitment bytea [note: 'Pedersen commitment']
+  proof_data jsonb
+  valid_from timestamp
+  valid_until timestamp
+  created_at timestamp
+}
+
+Table drug_info_cache {
+  drug_code varchar [pk]
+  name varchar
+  category varchar
+  manufacturer varchar
+  ingredients jsonb
+  effects text
+  side_effects text
+  interactions jsonb
+  category_hash varchar [note: 'ZKP용']
+  fetched_at timestamp
+  expires_at timestamp
+}
+
+// ===== 🤖 AI & Analytics =====
+Table ai_analyses {
+  id uuid [pk]
+  user_id uuid [ref: > users.id]
+  type varchar
+  status enum [note: 'pending|processing|completed|failed']
+  input jsonb
+  result jsonb
+  error_message varchar
+  requested_at timestamp
+  completed_at timestamp
+}
+
+Table features {
+  id uuid [pk]
+  user_id uuid [ref: > users.id]
+  category varchar
+  feature_type varchar
+  value jsonb
+  period_start timestamp
+  period_end timestamp
+  source_metrics varchar
+  created_at timestamp
+}
+
+// ===== 🔔 Notifications =====
+Table notifications {
+  id uuid [pk]
+  user_id uuid [ref: > users.id]
+  app_id uuid [ref: > apps.id]
+  type varchar [note: 'data_access|recovery_started|medication_reminder...']
+  title varchar
+  body varchar
+  metadata jsonb
+  read_at timestamp
+  created_at timestamp
+
+  indexes {
+    (user_id, created_at)
+    (user_id, read_at)
+  }
 }
