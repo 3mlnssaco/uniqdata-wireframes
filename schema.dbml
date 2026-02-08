@@ -1,6 +1,50 @@
 // UniQdata v4 ERD
 // https://dbdiagram.io
 
+// ===== TABLE GROUPS =====
+TableGroup auth [color: #3498db] {
+  accounts
+  account_logins
+  owners
+  passkey_credentials
+  sessions
+}
+
+TableGroup wallet [color: #f39c12] {
+  wallets
+  wallet_secrets
+}
+
+TableGroup data [color: #2ecc71] {
+  data_points
+  consents
+}
+
+TableGroup research [color: #9b59b6] {
+  research_projects
+  data_collection_configs
+  participation_criteria
+  team_members
+  agreements
+  project_wallets
+}
+
+TableGroup settlement [color: #e74c3c] {
+  escrows
+  settlements
+}
+
+TableGroup audit [color: #95a5a6] {
+  audit_logs
+  anchor_logs
+}
+
+TableGroup org [color: #1abc9c] {
+  institutions
+  workspaces
+  workspace_members
+}
+
 // ===== 인증 & 계정 =====
 Table accounts {
   id uuid [pk]
