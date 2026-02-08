@@ -1,0 +1,178 @@
+// UniQdata ERD - 🏢 Organization, App & Audit
+// https://dbdiagram.io
+
+// Reference tables (외부 참조용)
+Table accounts {
+  id uuid [pk]
+  type enum
+  status enum
+}
+
+Table users {
+  id uuid [pk]
+  account_id uuid
+  name varchar
+}
+
+// ===== 🏢 Organization =====
+Table institutions {
+  id uuid [pk]
+  name varchar
+  type enum [note: 'university|research_institute|hospital|company|government|other']
+  domains text [note: '도메인 배열: snu.ac.kr']
+  status enum [note: 'pending|active|suspended']
+  logo_url varchar
+  website varchar
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table workspaces {
+  id uuid [pk]
+  name varchar
+  type enum [note: 'individual|team|enterprise']
+  status enum [note: 'pending|active|suspended|archived']
+  institution_id uuid [ref: > institutions.id]
+  description text
+  max_members int
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table workspace_members {
+  id uuid [pk]
+  workspace_id uuid [ref: > workspaces.id]
+  account_id uuid [ref: > accounts.id]
+  role enum [note: 'owner|admin|member|auditor']
+  status enum [note: 'pending|active|suspended|rejected|left']
+  display_name varchar
+  created_at timestamp
+  updated_at timestamp
+
+  indexes {
+    (workspace_id, account_id) [unique]
+  }
+}
+
+Table data_accesses {
+  id uuid [pk]
+  workspace_id uuid [ref: > workspaces.id]
+  account_id uuid [ref: > accounts.id]
+  data_product_id varchar
+  status enum [note: 'active|expired|revoked']
+  granted_by uuid [ref: > accounts.id]
+  granted_at timestamp
+  expires_at timestamp
+
+  indexes {
+    (workspace_id, account_id)
+  }
+}
+
+// ===== 📱 App =====
+Table apps {
+  id uuid [pk]
+  slug varchar [unique, note: 'bodab|ready-q|medi-q|uniqdata']
+  name varchar
+  description varchar
+  allowed_scopes text [note: 'health:heart_rate:read:30d']
+  allowed_origins text
+  status enum [note: 'active|inactive|suspended']
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table app_keys {
+  id uuid [pk]
+  app_id uuid [ref: > apps.id]
+  key_type enum [note: 'public|secret|admin']
+  key_prefix varchar [note: 'uq_pub_test_kr_']
+  key_hash varchar [note: 'SHA-256']
+  name varchar
+  status enum [note: 'active|revoked|expired']
+  expires_at timestamp
+  last_used_at timestamp
+  created_at timestamp
+  revoked_at timestamp
+}
+
+// ===== 🔍 Audit =====
+Table audit_logs {
+  id uuid [pk]
+  user_id uuid [ref: > users.id]
+  app_id uuid [ref: > apps.id]
+  action varchar [note: 'read|write|delete|export']
+  category varchar
+  metric varchar
+  data_point_id uuid
+  record_count int
+  xrpl_tx_hash varchar
+  xrpl_anchor_status varchar
+  xrpl_ledger_index int
+  timestamp timestamp
+  ip_address varchar
+  user_agent varchar
+  metadata jsonb
+
+  indexes {
+    (user_id, timestamp)
+    (app_id, timestamp)
+  }
+}
+
+Table anchor_logs {
+  id uuid [pk]
+  user_id uuid [ref: > users.id]
+  anchor_type enum [note: 'wallet_binding|consent_grant|escrow_create|settlement...']
+  tx_hash varchar [unique]
+  from_address varchar
+  to_address varchar
+  created_at timestamp
+
+  indexes {
+    (user_id, created_at)
+  }
+}
+
+// ===== 🤖 AI & Analytics =====
+Table ai_analyses {
+  id uuid [pk]
+  user_id uuid [ref: > users.id]
+  type varchar
+  status enum [note: 'pending|processing|completed|failed']
+  input jsonb
+  result jsonb
+  error_message varchar
+  requested_at timestamp
+  completed_at timestamp
+}
+
+Table features {
+  id uuid [pk]
+  user_id uuid [ref: > users.id]
+  category varchar
+  feature_type varchar
+  value jsonb
+  period_start timestamp
+  period_end timestamp
+  source_metrics varchar
+  created_at timestamp
+}
+
+// ===== 🔔 Notifications =====
+Table notifications {
+  id uuid [pk]
+  user_id uuid [ref: > users.id]
+  app_id uuid [ref: > apps.id]
+  type varchar [note: 'data_access|recovery_started|medication_reminder...']
+  title varchar
+  body varchar
+  metadata jsonb
+  read_at timestamp
+  created_at timestamp
+
+  indexes {
+    (user_id, created_at)
+    (user_id, read_at)
+  }
+}

@@ -1,0 +1,142 @@
+// UniQdata ERD - 🔑 Core Auth & Wallet
+// https://dbdiagram.io
+
+// ===== 🔑 Core Auth =====
+Table accounts {
+  id uuid [pk]
+  type enum [note: 'user|enterprise|researcher|admin|auditor']
+  status enum [note: 'active|suspended|deleted']
+  identity_hash varchar [unique, note: 'KYC용 1인1계정']
+  kyc_verified_at timestamp
+  kyc_provider varchar
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table account_logins {
+  id uuid [pk]
+  account_id uuid [ref: > accounts.id]
+  provider enum [note: 'apple|google|kakao|email|phone']
+  provider_user_id varchar
+  email varchar
+  phone varchar
+  email_verified boolean
+  phone_verified boolean
+  password_hash varchar
+  created_at timestamp
+
+  indexes {
+    (provider, provider_user_id) [unique]
+  }
+}
+
+Table owners {
+  id uuid [pk]
+  account_id uuid [ref: - accounts.id, unique, note: '1:1']
+  created_at timestamp
+}
+
+Table users {
+  id uuid [pk]
+  account_id uuid [ref: - accounts.id, note: '1:1 프로필']
+  name varchar
+  birth_date date
+  gender varchar
+  height decimal
+  weight decimal
+  blood_type varchar
+  allergies text
+  created_at timestamp
+  updated_at timestamp
+
+  indexes {
+    account_id [unique]
+  }
+}
+
+Table sessions {
+  id uuid [pk]
+  user_id uuid [ref: > users.id]
+  app_id uuid
+  started_at timestamp
+  ended_at timestamp
+  metadata jsonb
+}
+
+Table refresh_tokens {
+  id uuid [pk]
+  token varchar [unique]
+  user_id uuid [ref: > users.id]
+  session_id uuid [ref: > sessions.id]
+  expires_at timestamp
+  revoked_at timestamp
+  created_at timestamp
+}
+
+Table passkey_credentials {
+  id uuid [pk]
+  user_id uuid [ref: > users.id]
+  credential_id varchar [unique]
+  public_key text
+  counter int
+  transports text
+  device_name varchar
+  created_at timestamp
+  last_used_at timestamp
+}
+
+// ===== 👛 Wallet =====
+Table wallets {
+  id uuid [pk]
+  owner_id uuid [ref: > owners.id]
+  address varchar [unique, note: 'XRPL rXXX...']
+  public_key varchar
+  wallet_type enum [note: 'main|sub']
+  status enum [note: 'active|suspended|recovery']
+  created_at timestamp
+
+  indexes {
+    (owner_id, wallet_type) [unique]
+  }
+}
+
+Table wallet_secrets {
+  id uuid [pk]
+  wallet_id uuid [ref: - wallets.id, unique, note: '1:1']
+  encrypted_seed_prf bytea [note: 'Passkey PRF 암호화']
+  prf_salt bytea
+  encrypted_seed_hsm bytea [note: 'HSM 복구용']
+  hsm_key_id varchar
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table wallet_credential_bindings {
+  id uuid [pk]
+  wallet_id uuid [ref: > wallets.id]
+  credential_id uuid [ref: > passkey_credentials.id]
+  encrypted_seed_prf bytea [note: '기기별 PRF 암호화']
+  prf_salt bytea
+  binding_signature text
+  xrpl_tx_hash varchar
+  status enum [note: 'active|revoked']
+  created_at timestamp
+  revoked_at timestamp
+
+  indexes {
+    (wallet_id, credential_id) [unique]
+  }
+}
+
+Table wallet_recovery_requests {
+  id uuid [pk]
+  wallet_id uuid [ref: > wallets.id]
+  owner_id uuid [ref: > owners.id]
+  kyc_verified boolean
+  kyc_verified_at timestamp
+  kyc_identity_hash varchar
+  sms_verified boolean
+  sms_verified_at timestamp
+  status enum [note: 'pending|kyc_required|waiting|admin_review|approved|completed|cancelled|rejected']
+  created_at timestamp
+}

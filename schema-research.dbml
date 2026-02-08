@@ -1,0 +1,144 @@
+// UniQdata ERD - 🔬 Research & Finance
+// https://dbdiagram.io
+
+// Reference tables (외부 참조용)
+Table owners {
+  id uuid [pk]
+  account_id uuid
+  created_at timestamp
+}
+
+Table institutions {
+  id uuid [pk]
+  name varchar
+  type enum [note: 'university|research_institute|hospital|company|government|other']
+  domains text [note: '도메인 배열: snu.ac.kr']
+  status enum [note: 'pending|active|suspended']
+  logo_url varchar
+  website varchar
+  created_at timestamp
+  updated_at timestamp
+}
+
+// ===== 🔬 Research =====
+Table research_projects {
+  id uuid [pk]
+  owner_id uuid [ref: > owners.id, note: 'PI']
+  institution_id uuid [ref: > institutions.id]
+  title varchar
+  description text
+  methodology varchar [note: 'longitudinal|cross_sectional|cohort|case_control']
+  status enum [note: 'draft|recruiting|collecting|analyzing|completed|cancelled']
+  created_at timestamp
+  updated_at timestamp
+
+  indexes {
+    (owner_id, status)
+  }
+}
+
+Table participation_criteria {
+  id uuid [pk]
+  project_id uuid [ref: - research_projects.id, unique, note: '1:1']
+  age_min int
+  age_max int
+  conditions jsonb [note: '필수 조건']
+  exclusions jsonb [note: '제외 조건']
+  required_data jsonb [note: '필수 데이터']
+  regions jsonb [note: '지역 제한']
+  created_at timestamp
+}
+
+Table data_collection_configs {
+  id uuid [pk]
+  project_id uuid [ref: - research_projects.id, unique, note: '1:1']
+  passive_data jsonb [note: 'heart_rate, steps...']
+  active_data jsonb [note: 'mood, pain_level...']
+  biomarkers jsonb [note: 'voice_analysis, cgm...']
+  collection_frequency jsonb
+  created_at timestamp
+}
+
+Table team_members {
+  id uuid [pk]
+  project_id uuid [ref: > research_projects.id]
+  owner_id uuid [ref: > owners.id]
+  role enum [note: 'owner|admin|member']
+  invited_by uuid [ref: > owners.id]
+  joined_at timestamp
+  created_at timestamp
+
+  indexes {
+    (project_id, owner_id) [unique]
+  }
+}
+
+Table agreements {
+  id uuid [pk]
+  project_id uuid [ref: > research_projects.id]
+  owner_id uuid [ref: > owners.id, note: '참여자']
+  status enum [note: 'pending|active|completed|withdrawn|expired']
+  data_scopes jsonb [note: '동의한 데이터 범위']
+  start_date date
+  end_date date
+  created_at timestamp
+
+  indexes {
+    (project_id, owner_id) [unique]
+    (owner_id, status)
+  }
+}
+
+// ===== 💰 Project Wallet & Finance =====
+Table project_wallets {
+  id uuid [pk]
+  project_id uuid [ref: - research_projects.id, unique, note: '1:1']
+  wallet_address varchar [unique]
+  encrypted_seed bytea [note: 'KMS 암호화']
+  kms_key_id varchar
+  total_deposited decimal
+  total_spent decimal
+  status enum [note: 'active|suspended|closed']
+  created_at timestamp
+}
+
+Table project_wallet_deposits {
+  id uuid [pk]
+  project_id uuid [ref: > research_projects.id]
+  depositor_owner_id uuid [ref: > owners.id]
+  amount decimal
+  tx_hash varchar [unique]
+  deposited_at timestamp
+}
+
+Table project_wallet_withdrawals {
+  id uuid [pk]
+  project_id uuid [ref: > research_projects.id]
+  withdrawer_owner_id uuid [ref: > owners.id]
+  amount decimal
+  tx_hash varchar [unique]
+  withdrawn_at timestamp
+}
+
+Table escrows {
+  id uuid [pk]
+  project_id uuid [ref: > research_projects.id]
+  owner_address varchar
+  amount decimal
+  condition varchar [note: 'Crypto-Condition']
+  fulfillment varchar
+  sequence int
+  tx_hash varchar [unique]
+  status enum [note: 'created|partial_released|completed|cancelled']
+  created_at timestamp
+}
+
+Table settlements {
+  id uuid [pk]
+  agreement_id uuid [ref: > agreements.id]
+  amount decimal
+  tx_hash varchar [unique]
+  type varchar [note: 'data_submit|bonus|completion']
+  memo text
+  settled_at timestamp
+}

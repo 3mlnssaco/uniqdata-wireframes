@@ -1,0 +1,153 @@
+// UniQdata ERD - 📊 Data & Consent
+// https://dbdiagram.io
+
+// Reference tables (외부 참조용)
+Table owners {
+  id uuid [pk]
+  account_id uuid
+  created_at timestamp
+}
+
+Table users {
+  id uuid [pk]
+  account_id uuid
+  name varchar
+}
+
+Table apps {
+  id uuid [pk]
+  slug varchar [unique]
+  name varchar
+}
+
+// ===== 📊 Data =====
+Table data_points {
+  id uuid [pk]
+  user_id uuid [ref: > users.id]
+  category varchar
+  metric varchar
+  value jsonb
+  unit varchar
+  timestamp timestamp
+  source_id varchar
+  source_type varchar
+  metadata jsonb
+  sensitivity_level int [note: '1-4']
+  created_at timestamp
+
+  indexes {
+    (user_id, category, metric, timestamp)
+    (user_id, timestamp)
+  }
+}
+
+Table data_sources {
+  id uuid [pk]
+  user_id uuid [ref: > users.id]
+  name varchar
+  type varchar [note: 'wearable|app|manual|integration']
+  is_active boolean
+  config jsonb
+  created_at timestamp
+  last_sync_at timestamp
+}
+
+Table data_attachments {
+  id uuid [pk]
+  data_point_id uuid [ref: > data_points.id]
+  user_id uuid [ref: > users.id]
+  storage_key varchar
+  file_name varchar
+  file_type varchar [note: 'MIME type']
+  file_size bigint
+  thumbnail_key varchar
+  metadata jsonb [note: 'DICOM 태그 등']
+  storage_provider varchar [note: 'local|s3|minio']
+  sensitivity_level int [default: 4]
+  created_at timestamp
+}
+
+Table consents {
+  id uuid [pk]
+  user_id uuid [ref: > users.id]
+  app_id uuid [ref: > apps.id]
+  scopes text [note: '동의 범위 배열']
+  purpose varchar
+  status enum [note: 'pending|approved|denied|revoked|expired']
+  created_at timestamp
+  approved_at timestamp
+  revoked_at timestamp
+  expires_at timestamp
+  xrpl_tx_hash varchar
+  revocation_tx_hash varchar
+  metadata jsonb
+}
+
+// ===== 💊 Medication (보답) =====
+Table user_medications {
+  id uuid [pk]
+  user_id uuid [ref: > users.id]
+  name_encrypted text [note: 'L4 암호화']
+  dosage_encrypted text
+  purpose_encrypted text
+  category_hash varchar [note: 'ZKP용']
+  name_hash varchar
+  schedule_times text [note: 'morning,noon,evening,bedtime']
+  drug_code varchar
+  is_active boolean
+  medication_type varchar [note: 'regular|as_needed']
+  start_date date
+  end_date date
+  xrpl_tx_hash varchar
+  created_at timestamp
+  updated_at timestamp
+
+  indexes {
+    (user_id, name_hash) [unique]
+    (user_id, is_active)
+  }
+}
+
+Table medication_logs {
+  id uuid [pk]
+  user_id uuid [ref: > users.id]
+  medication_id uuid [ref: > user_medications.id]
+  scheduled_time varchar [note: 'morning|noon|evening|bedtime']
+  taken boolean
+  taken_at timestamp
+  skipped_reason text
+  recorded_at timestamp
+  xrpl_tx_hash varchar
+  created_at timestamp
+
+  indexes {
+    (user_id, recorded_at)
+    (medication_id, recorded_at)
+  }
+}
+
+Table medication_proofs {
+  id uuid [pk]
+  user_id uuid [ref: > users.id]
+  proof_type varchar [note: 'category_membership|adherence_rate']
+  category_hash varchar
+  commitment bytea [note: 'Pedersen commitment']
+  proof_data jsonb
+  valid_from timestamp
+  valid_until timestamp
+  created_at timestamp
+}
+
+Table drug_info_cache {
+  drug_code varchar [pk]
+  name varchar
+  category varchar
+  manufacturer varchar
+  ingredients jsonb
+  effects text
+  side_effects text
+  interactions jsonb
+  category_hash varchar [note: 'ZKP용']
+  fetched_at timestamp
+  expires_at timestamp
+}
