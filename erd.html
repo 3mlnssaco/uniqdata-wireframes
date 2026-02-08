@@ -470,65 +470,65 @@ TABLES.forEach(t => {
 // LAYOUT - Tree structure from accounts
 // ============================================================
 
-// Manual positioning for clean tree layout
-const TREE_POS = {
-  // Row 0: Root
-  accounts: { row: 0, col: 3 },
+// Clean grouped layout by functional area
+const AREA_LAYOUT = {
+  // === AUTH (col 0) ===
+  accounts:        { col: 0, row: 0 },
+  account_logins:  { col: 0, row: 1 },
+  owners:          { col: 0, row: 2 },
+  users:           { col: 0, row: 3 },
 
-  // Row 1: Direct children of accounts
-  account_logins: { row: 1, col: 1 },
-  owners: { row: 1, col: 3 },
-  users: { row: 1, col: 5 },
+  // === WALLET (col 1) ===
+  wallets:                     { col: 1, row: 0 },
+  wallet_secrets:              { col: 1, row: 1 },
+  wallet_credential_bindings:  { col: 1, row: 2 },
+  wallet_recovery_requests:    { col: 1, row: 3 },
 
-  // Row 2: From owners + users
-  wallets: { row: 2, col: 0 },
-  institutions: { row: 2, col: 2 },
-  apps: { row: 2, col: 4 },
-  passkey_credentials: { row: 2, col: 5 },
-  data_sources: { row: 2, col: 6 },
+  // === APP & SESSION (col 2) ===
+  apps:                 { col: 2, row: 0 },
+  app_keys:             { col: 2, row: 1 },
+  passkey_credentials:  { col: 2, row: 2 },
+  sessions:             { col: 2, row: 3 },
+  refresh_tokens:       { col: 2, row: 4 },
 
-  // Row 3
-  wallet_secrets: { row: 3, col: 0 },
-  research_projects: { row: 3, col: 2 },
-  workspaces: { row: 3, col: 3 },
-  app_keys: { row: 3, col: 4 },
-  sessions: { row: 3, col: 5 },
-  data_points: { row: 3, col: 6 },
-  drug_info_cache: { row: 3, col: 7 },
+  // === ORG (col 3) ===
+  institutions:       { col: 3, row: 0 },
+  workspaces:         { col: 3, row: 1 },
+  workspace_members:  { col: 3, row: 2 },
+  data_accesses:      { col: 3, row: 3 },
 
-  // Row 4
-  wallet_credential_bindings: { row: 4, col: 0 },
-  wallet_recovery_requests: { row: 4, col: 1 },
-  participation_criteria: { row: 4, col: 2 },
-  workspace_members: { row: 4, col: 3 },
-  refresh_tokens: { row: 4, col: 4 },
-  consents: { row: 4, col: 5 },
-  data_attachments: { row: 4, col: 6 },
-  user_medications: { row: 4, col: 7 },
+  // === RESEARCH (col 4) ===
+  research_projects:       { col: 4, row: 0 },
+  participation_criteria:  { col: 4, row: 1 },
+  data_collection_configs: { col: 4, row: 2 },
+  team_members:            { col: 4, row: 3 },
+  agreements:              { col: 4, row: 4 },
 
-  // Row 5
-  team_members: { row: 5, col: 2 },
-  data_collection_configs: { row: 5, col: 3 },
-  data_accesses: { row: 5, col: 4 },
-  ai_analyses: { row: 5, col: 5 },
-  features: { row: 5, col: 6 },
-  medication_logs: { row: 5, col: 7 },
+  // === FINANCE (col 5) ===
+  project_wallets:            { col: 5, row: 0 },
+  project_wallet_deposits:    { col: 5, row: 1 },
+  project_wallet_withdrawals: { col: 5, row: 2 },
+  escrows:                    { col: 5, row: 3 },
+  settlements:                { col: 5, row: 4 },
 
-  // Row 6
-  agreements: { row: 6, col: 2 },
-  project_wallets: { row: 6, col: 3 },
-  notifications: { row: 6, col: 5 },
-  audit_logs: { row: 6, col: 6 },
-  medication_proofs: { row: 6, col: 7 },
+  // === DATA (col 6) ===
+  data_sources:      { col: 6, row: 0 },
+  data_points:       { col: 6, row: 1 },
+  data_attachments:  { col: 6, row: 2 },
+  consents:          { col: 6, row: 3 },
 
-  // Row 7
-  project_wallet_deposits: { row: 7, col: 2 },
-  project_wallet_withdrawals: { row: 7, col: 3 },
-  escrows: { row: 7, col: 4 },
-  anchor_logs: { row: 7, col: 6 },
+  // === MEDICATION (col 7) ===
+  drug_info_cache:    { col: 7, row: 0 },
+  user_medications:   { col: 7, row: 1 },
+  medication_logs:    { col: 7, row: 2 },
+  medication_proofs:  { col: 7, row: 3 },
 
-  // Row 8
-  settlements: { row: 8, col: 3 },
+  // === ANALYTICS (col 8) ===
+  ai_analyses:    { col: 8, row: 0 },
+  features:       { col: 8, row: 1 },
+  notifications:  { col: 8, row: 2 },
+  audit_logs:     { col: 8, row: 3 },
+  anchor_logs:    { col: 8, row: 4 },
 };
 
 function calculateLayout(client, domain) {
@@ -549,16 +549,16 @@ function calculateLayout(client, domain) {
       });
 
   const positions = {};
-  const CARD_W = 220;
-  const ROW_H = 24;
-  const HEADER_H = 36;
-  const COL_WIDTH = 260;
-  const ROW_HEIGHT = 200;
+  const CARD_W = 200;
+  const ROW_H = 22;
+  const HEADER_H = 32;
+  const COL_WIDTH = 240;
+  const ROW_HEIGHT = 160;
 
   if (domain === "all") {
     visible.forEach(t => {
-      const pos = TREE_POS[t.name] || { row: 8, col: 4 };
-      const h = HEADER_H + t.cols.length * ROW_H + 8;
+      const pos = AREA_LAYOUT[t.name] || { row: 5, col: 4 };
+      const h = HEADER_H + t.cols.length * ROW_H + 6;
       positions[t.name] = {
         x: pos.col * COL_WIDTH,
         y: pos.row * ROW_HEIGHT,
@@ -568,22 +568,22 @@ function calculateLayout(client, domain) {
       };
     });
   } else {
-    // Domain view
+    // Domain view - primary on right, refs on left
     const primary = visible.filter(t => t.domain === domain);
     const refs = visible.filter(t => t.domain !== domain);
 
     let primaryY = 0;
     primary.forEach(t => {
-      const h = HEADER_H + t.cols.length * ROW_H + 8;
-      positions[t.name] = { x: 320, y: primaryY, w: CARD_W, h, ghost: false };
-      primaryY += h + 40;
+      const h = HEADER_H + t.cols.length * ROW_H + 6;
+      positions[t.name] = { x: 280, y: primaryY, w: CARD_W, h, ghost: false };
+      primaryY += h + 30;
     });
 
     let refY = 0;
     refs.forEach(t => {
-      const h = HEADER_H + Math.min(t.cols.length, 4) * ROW_H + 8;
-      positions[t.name] = { x: 0, y: refY, w: 200, h, ghost: true };
-      refY += h + 25;
+      const h = HEADER_H + Math.min(t.cols.length, 4) * ROW_H + 6;
+      positions[t.name] = { x: 0, y: refY, w: 180, h, ghost: true };
+      refY += h + 20;
     });
   }
 
@@ -665,8 +665,8 @@ function App() {
 
   useEffect(() => {
     const isAll = client === "all" && domain === "all";
-    setZoom(isAll ? 0.55 : 0.85);
-    setPan(isAll ? { x: 50, y: 30 } : { x: 50, y: 40 });
+    setZoom(isAll ? 0.65 : 0.9);
+    setPan(isAll ? { x: 30, y: 30 } : { x: 50, y: 40 });
     setSelected(null);
   }, [client, domain]);
 
@@ -761,9 +761,9 @@ function App() {
 
               // Simple: from right edge of FK row to left edge of target header
               const fx = fp.x + fp.w;
-              const fy = fp.y + 40 + fromColIdx * 26 + 13;
+              const fy = fp.y + 32 + fromColIdx * 22 + 11;
               const tx = tp.x;
-              const ty = tp.y + 20;
+              const ty = tp.y + 16;
 
               // Simple bezier curve
               const midX = (fx + tx) / 2;
