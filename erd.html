@@ -45,7 +45,12 @@
       align-items: center;
       gap: 6px;
       padding: 10px 0;
+      overflow-x: auto;
+      scrollbar-width: thin;
+      scrollbar-color: #334155 transparent;
     }
+    .tabs-row::-webkit-scrollbar { height: 4px; }
+    .tabs-row::-webkit-scrollbar-thumb { background: #334155; border-radius: 2px; }
     .tabs-row:first-child { border-bottom: 1px solid #1e293b20; }
     .tabs-label {
       font-size: 11px;
@@ -129,36 +134,39 @@
     .table-card.ghost:hover { opacity: 0.8; }
 
     .table-header {
-      padding: 6px 10px;
+      padding: 8px 12px;
       display: flex;
       align-items: center;
       justify-content: space-between;
     }
     .table-name {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 11px;
+      font-size: 12px;
       font-weight: 600;
       color: #fff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
-    .table-meta { font-size: 9px; color: rgba(255,255,255,0.5); }
+    .table-meta { font-size: 10px; color: rgba(255,255,255,0.6); }
 
-    .table-cols { padding: 4px 0; }
+    .table-cols { padding: 6px 0; }
     .col-row {
-      padding: 3px 10px;
+      padding: 4px 12px;
       display: flex;
       align-items: center;
-      gap: 6px;
-      font-size: 10px;
+      gap: 8px;
+      font-size: 11px;
     }
     .col-row:hover { background: #1e1e2e; }
-    .col-icon { width: 14px; font-size: 10px; flex-shrink: 0; }
+    .col-icon { width: 16px; font-size: 11px; flex-shrink: 0; }
     .col-icon.pk { color: #fbbf24; }
     .col-icon.fk { color: #60a5fa; }
-    .col-name { font-family: 'JetBrains Mono', monospace; flex: 1; }
+    .col-name { font-family: 'JetBrains Mono', monospace; flex: 1; white-space: nowrap; }
     .col-name.pk { color: #fbbf24; }
     .col-name.fk { color: #60a5fa; }
     .col-name.normal { color: #94a3b8; }
-    .col-type { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #475569; }
+    .col-type { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #475569; }
     .table-more { padding: 6px 16px; font-size: 10px; color: #475569; border-top: 1px solid #1e293b; }
 
     /* Relations - cleaner lines */
@@ -171,15 +179,15 @@
     /* Column Headers */
     .col-header {
       position: absolute;
-      top: -30px;
-      width: 180px;
+      top: -35px;
+      width: 200px;
       text-align: center;
-      font-size: 10px;
+      font-size: 11px;
       font-weight: 600;
       color: #64748b;
       text-transform: uppercase;
       letter-spacing: 0.5px;
-      padding: 4px 0;
+      padding: 6px 0;
       border-bottom: 2px solid;
     }
 
@@ -297,6 +305,76 @@ const CLIENT_TABLES = {
     "ai_analyses", "notifications",
     "audit_logs", "anchor_logs"
   ],
+};
+
+// API Endpoints → Tables (Enterprise Portal)
+const API_ENDPOINTS = {
+  all: { label: "전체 API", tables: null, method: "", color: "#64748b" },
+  // Auth
+  auth_login: {
+    label: "POST /auth/login",
+    tables: ["accounts", "account_logins", "sessions", "passkey_credentials", "owners", "institutions"],
+    method: "POST", color: "#22c55e"
+  },
+  auth_logout: {
+    label: "POST /auth/logout",
+    tables: ["sessions"],
+    method: "POST", color: "#22c55e"
+  },
+  // Projects
+  projects_create: {
+    label: "POST /projects",
+    tables: ["research_projects", "participation_criteria", "data_collection_configs", "project_wallets", "owners", "institutions"],
+    method: "POST", color: "#22c55e"
+  },
+  projects_list: {
+    label: "GET /projects",
+    tables: ["research_projects", "team_members", "owners", "institutions"],
+    method: "GET", color: "#3b82f6"
+  },
+  projects_data: {
+    label: "GET /projects/:id/data",
+    tables: ["research_projects", "agreements", "consents", "data_points", "users", "audit_logs"],
+    method: "GET", color: "#3b82f6"
+  },
+  projects_participants: {
+    label: "GET /projects/:id/participants",
+    tables: ["research_projects", "agreements", "users", "participation_criteria"],
+    method: "GET", color: "#3b82f6"
+  },
+  projects_team: {
+    label: "POST /projects/:id/team",
+    tables: ["research_projects", "team_members", "owners", "accounts"],
+    method: "POST", color: "#22c55e"
+  },
+  // Finance
+  projects_deposit: {
+    label: "POST /projects/:id/deposit",
+    tables: ["project_wallets", "project_wallet_deposits", "owners", "anchor_logs"],
+    method: "POST", color: "#22c55e"
+  },
+  settlements_create: {
+    label: "POST /settlements",
+    tables: ["escrows", "settlements", "agreements", "project_wallet_withdrawals", "anchor_logs"],
+    method: "POST", color: "#22c55e"
+  },
+  // Agreements
+  agreements_request: {
+    label: "POST /agreements",
+    tables: ["agreements", "research_projects", "owners", "users"],
+    method: "POST", color: "#22c55e"
+  },
+  agreements_accept: {
+    label: "PUT /agreements/:id/accept",
+    tables: ["agreements", "consents", "anchor_logs"],
+    method: "PUT", color: "#f59e0b"
+  },
+  // AI
+  analyses_create: {
+    label: "POST /analyses",
+    tables: ["ai_analyses", "features", "data_points", "users", "research_projects"],
+    method: "POST", color: "#22c55e"
+  },
 };
 
 const TABLES = [
@@ -545,9 +623,17 @@ const AREA_LAYOUT = {
   anchor_logs:    { col: 8, row: 4 },
 };
 
-function calculateLayout(client, domain) {
+function calculateLayout(client, domain, api = "all") {
   let clientTables = CLIENT_TABLES[client];
   let tables = clientTables ? TABLES.filter(t => clientTables.includes(t.name)) : TABLES;
+
+  // API filter takes priority when selected
+  if (api !== "all" && API_ENDPOINTS[api]) {
+    const apiTables = API_ENDPOINTS[api].tables;
+    if (apiTables) {
+      tables = TABLES.filter(t => apiTables.includes(t.name));
+    }
+  }
 
   const visible = domain === "all"
     ? tables
@@ -563,23 +649,36 @@ function calculateLayout(client, domain) {
       });
 
   const positions = {};
-  const CARD_W = 180;
-  const ROW_H = 18;
-  const HEADER_H = 26;
-  const COL_WIDTH = 210;
-  const ROW_HEIGHT = 180;
+  const CARD_W = 200;
+  const ROW_H = 20;
+  const HEADER_H = 30;
+  const COL_WIDTH = 240;
+  const CARD_GAP = 20;
 
   if (domain === "all") {
-    visible.forEach(t => {
-      const pos = AREA_LAYOUT[t.name] || { row: 5, col: 4 };
+    // Stack cards vertically in each column - no overlapping
+    const colHeights = {};
+    for (let i = 0; i < 9; i++) colHeights[i] = 0;
+
+    // Sort by column then row to maintain order
+    const sortedTables = [...visible].sort((a, b) => {
+      const posA = AREA_LAYOUT[a.name] || { col: 4, row: 5 };
+      const posB = AREA_LAYOUT[b.name] || { col: 4, row: 5 };
+      if (posA.col !== posB.col) return posA.col - posB.col;
+      return posA.row - posB.row;
+    });
+
+    sortedTables.forEach(t => {
+      const pos = AREA_LAYOUT[t.name] || { col: 4, row: 5 };
       const h = HEADER_H + t.cols.length * ROW_H + 6;
       positions[t.name] = {
         x: pos.col * COL_WIDTH,
-        y: pos.row * ROW_HEIGHT,
+        y: colHeights[pos.col],
         w: CARD_W,
         h,
         ghost: false
       };
+      colHeights[pos.col] += h + CARD_GAP;
     });
   } else {
     // Domain view - primary center, refs left
@@ -649,6 +748,7 @@ function TableCard({ table, pos, hovered, selected, onHover, onClick }) {
 function App() {
   const [client, setClient] = useState("all");
   const [domain, setDomain] = useState("all");
+  const [api, setApi] = useState("all");
   const [hovered, setHovered] = useState(null);
   const [selected, setSelected] = useState(null);
   const [zoom, setZoom] = useState(0.85);
@@ -656,7 +756,7 @@ function App() {
   const [dragging, setDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
 
-  const { visible, positions } = calculateLayout(client, domain);
+  const { visible, positions } = calculateLayout(client, domain, api);
 
   // Count tables per domain for current client
   const domainCounts = {};
@@ -680,11 +780,12 @@ function App() {
   );
 
   useEffect(() => {
-    const isAll = client === "all" && domain === "all";
-    setZoom(isAll ? 0.6 : 0.95);
+    const isAll = client === "all" && domain === "all" && api === "all";
+    const isApiView = api !== "all";
+    setZoom(isAll ? 0.6 : isApiView ? 1.0 : 0.95);
     setPan(isAll ? { x: 20, y: 50 } : { x: 50, y: 40 });
     setSelected(null);
-  }, [client, domain]);
+  }, [client, domain, api]);
 
   const handleWheel = useCallback(e => {
     e.preventDefault();
@@ -717,7 +818,10 @@ function App() {
             <span className="primary">UniQ</span>
             <span className="secondary">Data</span>
           </div>
-          <span className="header-stats">ERD v4 · {visible.length} tables</span>
+          <span className="header-stats">
+            ERD v4 · {visible.length} tables
+            {api !== "all" && ` · ${API_ENDPOINTS[api].label}`}
+          </span>
         </div>
         <div className="zoom-controls">
           <button className="zoom-btn" onClick={() => setZoom(z => Math.max(0.3, z - 0.1))}>−</button>
@@ -734,7 +838,7 @@ function App() {
               key={key}
               className={`tab ${client === key ? 'active' : ''}`}
               style={{ '--tab-bg': c.color, '--tab-color': '#fff' }}
-              onClick={() => { setClient(key); setDomain("all"); }}
+              onClick={() => { setClient(key); setDomain("all"); setApi("all"); }}
             >
               <span className="icon">{c.icon}</span>
               {c.label}
@@ -748,13 +852,29 @@ function App() {
               key={key}
               className={`tab ${domain === key ? 'active' : ''}`}
               style={{ '--tab-bg': d.color, '--tab-color': '#fff' }}
-              onClick={() => setDomain(key)}
+              onClick={() => { setDomain(key); setApi("all"); }}
             >
               {d.label}
               <span className="count">{domainCounts[key]}</span>
             </button>
           ))}
         </div>
+        {client === "enterprise" && (
+          <div className="tabs-row">
+            <span className="tabs-label">API</span>
+            {Object.entries(API_ENDPOINTS).map(([key, ep]) => (
+              <button
+                key={key}
+                className={`tab ${api === key ? 'active' : ''}`}
+                style={{ '--tab-bg': ep.color, '--tab-color': '#fff' }}
+                onClick={() => { setApi(key); setDomain("all"); }}
+              >
+                {ep.label}
+                {ep.tables && <span className="count">{ep.tables.length}</span>}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       <div
@@ -777,9 +897,9 @@ function App() {
 
               // Simple: from right edge of FK row to left edge of target header
               const fx = fp.x + fp.w;
-              const fy = fp.y + 26 + fromColIdx * 18 + 9;
+              const fy = fp.y + 30 + fromColIdx * 20 + 10;
               const tx = tp.x;
-              const ty = tp.y + 13;
+              const ty = tp.y + 15;
 
               // Simple bezier curve
               const midX = (fx + tx) / 2;
@@ -795,7 +915,7 @@ function App() {
               );
             })}
           </svg>
-          {domain === "all" && [
+          {domain === "all" && api === "all" && [
             { col: 0, label: "Auth", color: "#818cf8" },
             { col: 1, label: "Wallet", color: "#f59e0b" },
             { col: 2, label: "App", color: "#3b82f6" },
@@ -806,10 +926,25 @@ function App() {
             { col: 7, label: "Meds", color: "#14b8a6" },
             { col: 8, label: "Analytics", color: "#6366f1" },
           ].map(h => (
-            <div key={h.col} className="col-header" style={{ left: h.col * 210, borderColor: h.color, color: h.color }}>
+            <div key={h.col} className="col-header" style={{ left: h.col * 240, borderColor: h.color, color: h.color }}>
               {h.label}
             </div>
           ))}
+          {api !== "all" && (
+            <div style={{
+              position: 'absolute',
+              top: -50,
+              left: 0,
+              background: API_ENDPOINTS[api].color,
+              color: '#fff',
+              padding: '8px 16px',
+              borderRadius: 8,
+              fontSize: 14,
+              fontWeight: 600,
+            }}>
+              {API_ENDPOINTS[api].method} {API_ENDPOINTS[api].label.split(' ').slice(1).join(' ')}
+            </div>
+          )}
           {visible.map(t => (
             <TableCard key={t.name} table={t} pos={positions[t.name]} hovered={hovered} selected={selected} onHover={setHovered} onClick={setSelected} />
           ))}
