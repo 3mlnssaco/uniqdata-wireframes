@@ -465,11 +465,69 @@ TABLES.forEach(t => {
 });
 
 // ============================================================
-// LAYOUT - Simple vertical columns by domain
+// LAYOUT - Tree structure from accounts
 // ============================================================
 
-// Domain column order (grouped logically)
-const DOMAIN_ORDER = ["core", "wallet", "app", "org", "research", "finance", "data", "medication", "analytics"];
+// Manual positioning for clean tree layout
+const TREE_POS = {
+  // Row 0: Root
+  accounts: { row: 0, col: 3 },
+
+  // Row 1: Direct children of accounts
+  account_logins: { row: 1, col: 1 },
+  owners: { row: 1, col: 3 },
+  users: { row: 1, col: 5 },
+
+  // Row 2: From owners + users
+  wallets: { row: 2, col: 0 },
+  institutions: { row: 2, col: 2 },
+  apps: { row: 2, col: 4 },
+  passkey_credentials: { row: 2, col: 5 },
+  data_sources: { row: 2, col: 6 },
+
+  // Row 3
+  wallet_secrets: { row: 3, col: 0 },
+  research_projects: { row: 3, col: 2 },
+  workspaces: { row: 3, col: 3 },
+  app_keys: { row: 3, col: 4 },
+  sessions: { row: 3, col: 5 },
+  data_points: { row: 3, col: 6 },
+  drug_info_cache: { row: 3, col: 7 },
+
+  // Row 4
+  wallet_credential_bindings: { row: 4, col: 0 },
+  wallet_recovery_requests: { row: 4, col: 1 },
+  participation_criteria: { row: 4, col: 2 },
+  workspace_members: { row: 4, col: 3 },
+  refresh_tokens: { row: 4, col: 4 },
+  consents: { row: 4, col: 5 },
+  data_attachments: { row: 4, col: 6 },
+  user_medications: { row: 4, col: 7 },
+
+  // Row 5
+  team_members: { row: 5, col: 2 },
+  data_collection_configs: { row: 5, col: 3 },
+  data_accesses: { row: 5, col: 4 },
+  ai_analyses: { row: 5, col: 5 },
+  features: { row: 5, col: 6 },
+  medication_logs: { row: 5, col: 7 },
+
+  // Row 6
+  agreements: { row: 6, col: 2 },
+  project_wallets: { row: 6, col: 3 },
+  notifications: { row: 6, col: 5 },
+  audit_logs: { row: 6, col: 6 },
+  medication_proofs: { row: 6, col: 7 },
+
+  // Row 7
+  project_wallet_deposits: { row: 7, col: 2 },
+  project_wallet_withdrawals: { row: 7, col: 3 },
+  escrows: { row: 7, col: 4 },
+  anchor_logs: { row: 7, col: 6 },
+
+  // Row 8
+  settlements: { row: 8, col: 3 },
+};
 
 function calculateLayout(client, domain) {
   let clientTables = CLIENT_TABLES[client];
@@ -489,58 +547,41 @@ function calculateLayout(client, domain) {
       });
 
   const positions = {};
-  const CARD_W = 240;
-  const ROW_H = 26;
-  const HEADER_H = 40;
-  const COL_WIDTH = 300;  // Column width including gap
-  const CARD_GAP_Y = 30;  // Vertical gap between cards
+  const CARD_W = 220;
+  const ROW_H = 24;
+  const HEADER_H = 36;
+  const COL_WIDTH = 260;
+  const ROW_HEIGHT = 200;
 
   if (domain === "all") {
-    // Simple: each domain = one vertical column
-    const columnHeights = {};
-    DOMAIN_ORDER.forEach((d, i) => { columnHeights[d] = 0; });
-
-    // Sort tables within each domain by reference count (parents first)
-    const byDomain = {};
     visible.forEach(t => {
-      if (!byDomain[t.domain]) byDomain[t.domain] = [];
-      byDomain[t.domain].push(t);
+      const pos = TREE_POS[t.name] || { row: 8, col: 4 };
+      const h = HEADER_H + t.cols.length * ROW_H + 8;
+      positions[t.name] = {
+        x: pos.col * COL_WIDTH,
+        y: pos.row * ROW_HEIGHT,
+        w: CARD_W,
+        h,
+        ghost: false
+      };
     });
-
-    DOMAIN_ORDER.forEach((domainKey, colIdx) => {
-      const domainTables = byDomain[domainKey] || [];
-      let y = 0;
-
-      domainTables.forEach(t => {
-        const h = HEADER_H + t.cols.length * ROW_H + 10;
-        positions[t.name] = {
-          x: colIdx * COL_WIDTH,
-          y: y,
-          w: CARD_W,
-          h,
-          ghost: false
-        };
-        y += h + CARD_GAP_Y;
-      });
-    });
-
   } else {
-    // Domain view: single column for primary, refs on left
+    // Domain view
     const primary = visible.filter(t => t.domain === domain);
     const refs = visible.filter(t => t.domain !== domain);
 
     let primaryY = 0;
     primary.forEach(t => {
-      const h = HEADER_H + t.cols.length * ROW_H + 10;
+      const h = HEADER_H + t.cols.length * ROW_H + 8;
       positions[t.name] = { x: 320, y: primaryY, w: CARD_W, h, ghost: false };
       primaryY += h + 40;
     });
 
     let refY = 0;
     refs.forEach(t => {
-      const h = HEADER_H + Math.min(t.cols.length, 4) * ROW_H + 10;
-      positions[t.name] = { x: 0, y: refY, w: 220, h, ghost: true };
-      refY += h + 30;
+      const h = HEADER_H + Math.min(t.cols.length, 4) * ROW_H + 8;
+      positions[t.name] = { x: 0, y: refY, w: 200, h, ghost: true };
+      refY += h + 25;
     });
   }
 
@@ -622,8 +663,8 @@ function App() {
 
   useEffect(() => {
     const isAll = client === "all" && domain === "all";
-    setZoom(isAll ? 0.7 : 0.9);
-    setPan(isAll ? { x: 40, y: 30 } : { x: 50, y: 40 });
+    setZoom(isAll ? 0.55 : 0.85);
+    setPan(isAll ? { x: 50, y: 30 } : { x: 50, y: 40 });
     setSelected(null);
   }, [client, domain]);
 
