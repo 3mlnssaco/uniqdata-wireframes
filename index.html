@@ -956,11 +956,11 @@
         <div class="schema-canvas">
           <div class="schema-panzoom">
             <div class="mermaid">flowchart LR
-  accounts["accounts\n- id (PK)\n- type\n- status\n- createdAt"]:::box
-  owners["owners\n- id (PK)\n- accountId (FK)\n(익명 데이터 소유권)"]:::box
-  passkey["passkey_credentials\n- ownerId (FK)\n- credentialId\n- publicKey\n- counter"]:::box
-  wallets["wallets\n- ownerId (FK)\n- address\n- publicKey\n- status"]:::box
-  walletSecrets["wallet_secrets\n- walletId (FK)\n- encrypted_seed_prf\n- encrypted_seed_hsm"]:::box
+  accounts["accounts\nid PK\ntype\nstatus"]:::box
+  owners["owners\nid PK\naccountId FK\n익명 소유권"]:::box
+  passkey["passkey_credentials\nownerId FK\ncredentialId\npublicKey"]:::box
+  wallets["wallets\nownerId FK\naddress\nstatus"]:::box
+  walletSecrets["wallet_secrets\nwalletId FK\nencrypted_seed"]:::box
 
   accounts --> owners
   owners --> passkey
