@@ -7,88 +7,58 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: 'Inter', -apple-system, sans-serif;
-      background: #0a0a12;
-      color: #e2e8f0;
-      overflow: hidden;
-    }
+    body { font-family: 'Inter', -apple-system, sans-serif; background: #0a0a12; color: #e2e8f0; overflow: hidden; }
+    .app { display: flex; flex-direction: column; height: 100vh; }
 
-    .app {
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-    }
-
-    /* Header */
     .header {
-      padding: 16px 24px;
-      background: #0f0f1a;
+      padding: 14px 24px;
+      background: linear-gradient(180deg, #0f0f1a 0%, #0a0a12 100%);
       border-bottom: 1px solid #1e293b;
       display: flex;
       align-items: center;
       justify-content: space-between;
       flex-shrink: 0;
     }
-
-    .logo {
-      font-size: 20px;
-      font-weight: 700;
-      letter-spacing: -0.5px;
-    }
+    .logo { font-size: 20px; font-weight: 700; letter-spacing: -0.5px; }
     .logo .primary { color: #818cf8; }
     .logo .secondary { color: #64748b; }
+    .header-stats { font-size: 12px; color: #64748b; margin-left: 16px; }
 
-    .header-info {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-    }
-    .stats {
-      font-size: 13px;
-      color: #64748b;
-    }
-    .zoom-controls {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
+    .zoom-controls { display: flex; align-items: center; gap: 8px; }
     .zoom-btn {
-      width: 32px;
-      height: 32px;
-      border-radius: 8px;
-      border: 1px solid #334155;
-      background: #1e293b;
-      color: #94a3b8;
-      font-size: 16px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.15s;
+      width: 32px; height: 32px; border-radius: 8px; border: 1px solid #334155;
+      background: #1e293b; color: #94a3b8; font-size: 16px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; transition: all 0.15s;
     }
     .zoom-btn:hover { background: #334155; color: #fff; }
-    .zoom-level {
-      font-size: 12px;
-      color: #64748b;
-      width: 44px;
-      text-align: center;
-    }
+    .zoom-level { font-size: 12px; color: #64748b; width: 44px; text-align: center; }
 
-    /* Domain Tabs */
-    .tabs {
-      padding: 12px 24px;
+    /* Two-row tabs */
+    .tabs-wrapper {
       background: #0f0f1a;
       border-bottom: 1px solid #1e293b;
-      display: flex;
-      gap: 8px;
-      overflow-x: auto;
+      padding: 0 24px;
       flex-shrink: 0;
     }
+    .tabs-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 0;
+    }
+    .tabs-row:first-child { border-bottom: 1px solid #1e293b20; }
+    .tabs-label {
+      font-size: 11px;
+      color: #475569;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-right: 8px;
+      min-width: 60px;
+    }
     .tab {
-      padding: 8px 16px;
-      border-radius: 24px;
-      border: none;
+      padding: 7px 14px;
+      border-radius: 8px;
+      border: 1px solid transparent;
       background: transparent;
       color: #64748b;
       font-size: 13px;
@@ -102,8 +72,16 @@
     }
     .tab:hover { background: #1e293b; color: #94a3b8; }
     .tab.active {
-      background: var(--tab-color, #334155);
-      color: #fff;
+      background: var(--tab-bg, #334155);
+      color: var(--tab-color, #fff);
+      border-color: var(--tab-border, transparent);
+    }
+    .tab .icon { font-size: 14px; }
+    .tab .count {
+      font-size: 10px;
+      background: rgba(255,255,255,0.15);
+      padding: 2px 6px;
+      border-radius: 10px;
     }
 
     /* Canvas */
@@ -114,15 +92,6 @@
       cursor: grab;
     }
     .canvas-wrapper.dragging { cursor: grabbing; }
-
-    .canvas {
-      position: absolute;
-      top: 0;
-      left: 0;
-      transform-origin: 0 0;
-    }
-
-    /* Grid Background */
     .canvas-wrapper::before {
       content: '';
       position: absolute;
@@ -131,6 +100,12 @@
       background-size: 24px 24px;
       pointer-events: none;
     }
+    .canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      transform-origin: 0 0;
+    }
 
     /* Table Card */
     .table-card {
@@ -138,209 +113,133 @@
       background: #151521;
       border: 1px solid #2a2a3e;
       border-radius: 12px;
-      min-width: 280px;
       overflow: hidden;
-      transition: box-shadow 0.2s, border-color 0.2s;
+      transition: box-shadow 0.2s, border-color 0.2s, transform 0.2s;
       cursor: pointer;
     }
     .table-card:hover {
       border-color: #4f46e5;
       box-shadow: 0 0 0 1px #4f46e5, 0 8px 24px rgba(0,0,0,0.4);
+      transform: translateY(-2px);
     }
     .table-card.highlighted {
       border-color: #60a5fa;
       box-shadow: 0 0 0 2px #60a5fa40;
     }
-    .table-card.ghost {
-      opacity: 0.7;
-      min-width: 240px;
-    }
-    .table-card.ghost:hover {
-      opacity: 1;
-    }
+    .table-card.ghost { opacity: 0.6; }
+    .table-card.ghost:hover { opacity: 1; }
 
     .table-header {
       padding: 12px 16px;
-      background: var(--domain-color, #334155);
       display: flex;
       align-items: center;
       justify-content: space-between;
     }
     .table-name {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 600;
       color: #fff;
     }
-    .table-meta {
-      font-size: 11px;
-      color: rgba(255,255,255,0.6);
-    }
+    .table-meta { font-size: 10px; color: rgba(255,255,255,0.5); }
 
-    .table-cols {
-      padding: 8px 0;
-    }
+    .table-cols { padding: 6px 0; }
     .col-row {
-      padding: 6px 16px;
+      padding: 5px 16px;
       display: flex;
       align-items: center;
       gap: 8px;
-      font-size: 13px;
-      transition: background 0.1s;
+      font-size: 12px;
     }
-    .col-row:hover {
-      background: #1e1e2e;
-    }
-    .col-icon {
-      width: 16px;
-      font-size: 11px;
-      flex-shrink: 0;
-    }
+    .col-row:hover { background: #1e1e2e; }
+    .col-icon { width: 14px; font-size: 10px; flex-shrink: 0; }
     .col-icon.pk { color: #fbbf24; }
     .col-icon.fk { color: #60a5fa; }
-    .col-name {
-      font-family: 'JetBrains Mono', monospace;
-      flex: 1;
-    }
+    .col-name { font-family: 'JetBrains Mono', monospace; flex: 1; }
     .col-name.pk { color: #fbbf24; }
     .col-name.fk { color: #60a5fa; }
     .col-name.normal { color: #94a3b8; }
-    .col-type {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 11px;
-      color: #475569;
-    }
+    .col-type { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #475569; }
+    .table-more { padding: 6px 16px; font-size: 10px; color: #475569; border-top: 1px solid #1e293b; }
 
-    .table-more {
-      padding: 8px 16px;
-      font-size: 11px;
-      color: #475569;
-      border-top: 1px solid #1e293b;
-    }
+    /* Relations */
+    .relations-layer { position: absolute; top: 0; left: 0; pointer-events: none; overflow: visible; }
+    .relation-path { fill: none; stroke: #334155; stroke-width: 1.5; stroke-dasharray: 5 3; }
+    .relation-path.highlighted { stroke: #60a5fa; stroke-width: 2; stroke-dasharray: none; }
+    .relation-dot { fill: #334155; }
+    .relation-dot.highlighted { fill: #60a5fa; }
 
-    /* Relation Lines - SVG overlay */
-    .relations-layer {
-      position: absolute;
-      top: 0;
-      left: 0;
-      pointer-events: none;
-      overflow: visible;
-    }
-    .relation-path {
-      fill: none;
-      stroke: #334155;
-      stroke-width: 1.5;
-      stroke-dasharray: 6 4;
-    }
-    .relation-path.highlighted {
-      stroke: #60a5fa;
-      stroke-width: 2;
-      stroke-dasharray: none;
-    }
-    .relation-dot {
-      fill: #334155;
-    }
-    .relation-dot.highlighted {
-      fill: #60a5fa;
-    }
-
-    /* Detail Panel */
-    .detail-panel {
+    /* Info Panels */
+    .legend {
       position: fixed;
-      bottom: 24px;
-      right: 24px;
-      background: #151521ee;
+      bottom: 20px;
+      left: 20px;
+      background: #151521f0;
       backdrop-filter: blur(12px);
       border: 1px solid #2a2a3e;
-      border-radius: 16px;
-      padding: 20px;
-      min-width: 300px;
-      max-width: 360px;
+      border-radius: 12px;
+      padding: 14px 18px;
+      font-size: 11px;
       z-index: 100;
     }
-    .detail-header {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 12px;
+    .legend-title { font-weight: 600; margin-bottom: 10px; color: #94a3b8; font-size: 12px; }
+    .legend-item { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; color: #64748b; }
+    .legend-icon { width: 14px; text-align: center; }
+
+    .detail-panel {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #151521f0;
+      backdrop-filter: blur(12px);
+      border: 1px solid #2a2a3e;
+      border-radius: 14px;
+      padding: 18px 20px;
+      min-width: 280px;
+      max-width: 340px;
+      z-index: 100;
     }
-    .detail-name {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 16px;
-      font-weight: 600;
-    }
-    .detail-badge {
-      font-size: 11px;
-      padding: 4px 10px;
-      border-radius: 12px;
-      background: var(--domain-color, #334155);
-      color: #fff;
-    }
-    .detail-stats {
-      font-size: 13px;
-      color: #64748b;
-      margin-bottom: 16px;
-    }
-    .detail-relations {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
+    .detail-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .detail-name { font-family: 'JetBrains Mono', monospace; font-size: 15px; font-weight: 600; }
+    .detail-badge { font-size: 10px; padding: 3px 8px; border-radius: 10px; color: #fff; }
+    .detail-stats { font-size: 12px; color: #64748b; margin-bottom: 12px; }
+    .detail-relations { display: flex; flex-direction: column; gap: 4px; }
     .detail-rel {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 12px;
+      font-size: 11px;
       color: #60a5fa;
-      padding: 6px 10px;
+      padding: 5px 10px;
       background: #1e293b;
       border-radius: 6px;
     }
-    .detail-close {
-      margin-top: 16px;
-      font-size: 11px;
-      color: #475569;
-      cursor: pointer;
-    }
+    .detail-close { margin-top: 12px; font-size: 10px; color: #475569; cursor: pointer; }
     .detail-close:hover { color: #94a3b8; }
 
-    /* Legend */
-    .legend {
-      position: fixed;
-      bottom: 24px;
-      left: 24px;
-      background: #151521ee;
-      backdrop-filter: blur(12px);
-      border: 1px solid #2a2a3e;
-      border-radius: 12px;
-      padding: 16px;
-      font-size: 12px;
-      z-index: 100;
-    }
-    .legend-title {
-      font-weight: 600;
-      margin-bottom: 12px;
-      color: #94a3b8;
-    }
-    .legend-item {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 6px;
-      color: #64748b;
-    }
-    .legend-icon {
-      width: 16px;
-      text-align: center;
-    }
+    /* Client badge colors */
+    .client-all { --c: #64748b; }
+    .client-enterprise { --c: #8b5cf6; }
+    .client-userapp { --c: #10b981; }
+    .client-bodab { --c: #f59e0b; }
   </style>
 </head>
 <body>
   <div class="app" id="app"></div>
-
   <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <script type="text/babel">
 const { useState, useEffect, useCallback, useRef } = React;
+
+// ============================================================
+// DATA DEFINITIONS
+// ============================================================
+
+const CLIENTS = {
+  all: { label: "전체 UniQData", icon: "🗄️", color: "#64748b", desc: "40 tables" },
+  enterprise: { label: "Enterprise Portal", icon: "🏢", color: "#8b5cf6", desc: "연구자 웹" },
+  userapp: { label: "User App", icon: "📱", color: "#10b981", desc: "개인 앱" },
+  bodab: { label: "보답", icon: "👴", color: "#f59e0b", desc: "노인케어" },
+};
 
 const DOMAINS = {
   all: { label: "전체", color: "#64748b" },
@@ -355,86 +254,113 @@ const DOMAINS = {
   analytics: { label: "AI & Audit", color: "#6366f1" },
 };
 
+// Client → Table mapping
+const CLIENT_TABLES = {
+  all: null, // null = all tables
+  enterprise: [
+    "accounts", "account_logins", "owners", "users",
+    "institutions", "workspaces", "workspace_members",
+    "apps", "app_keys", "sessions", "passkey_credentials",
+    "research_projects", "participation_criteria", "data_collection_configs", "team_members", "agreements",
+    "project_wallets", "project_wallet_deposits", "project_wallet_withdrawals", "escrows", "settlements",
+    "data_accesses", "consents",
+    "audit_logs", "anchor_logs"
+  ],
+  userapp: [
+    "accounts", "account_logins", "owners", "users",
+    "wallets", "wallet_secrets", "wallet_credential_bindings", "wallet_recovery_requests",
+    "passkey_credentials", "sessions", "refresh_tokens",
+    "data_points", "data_sources", "data_attachments", "consents",
+    "agreements",
+    "ai_analyses", "features", "notifications",
+    "audit_logs", "anchor_logs"
+  ],
+  bodab: [
+    "accounts", "account_logins", "owners", "users",
+    "wallets", "wallet_secrets", "passkey_credentials",
+    "data_points", "data_sources", "consents",
+    "user_medications", "medication_logs", "medication_proofs", "drug_info_cache",
+    "ai_analyses", "notifications",
+    "audit_logs", "anchor_logs"
+  ],
+};
+
 const TABLES = [
+  // Core Auth
   { name: "accounts", domain: "core", cols: [
     { n: "id", t: "uuid", pk: true }, { n: "type", t: "enum" }, { n: "status", t: "enum" },
-    { n: "identity_hash", t: "varchar" }, { n: "kyc_verified_at", t: "timestamp" },
-    { n: "kyc_provider", t: "varchar" }, { n: "created_at", t: "timestamp" }, { n: "updated_at", t: "timestamp" }
+    { n: "identity_hash", t: "varchar" }, { n: "kyc_verified_at", t: "ts" }, { n: "created_at", t: "ts" }
   ]},
   { name: "account_logins", domain: "core", cols: [
     { n: "id", t: "uuid", pk: true }, { n: "account_id", t: "uuid", fk: "accounts" },
-    { n: "provider", t: "enum" }, { n: "provider_user_id", t: "varchar" },
-    { n: "email", t: "varchar" }, { n: "phone", t: "varchar" },
-    { n: "email_verified", t: "bool" }, { n: "phone_verified", t: "bool" }
+    { n: "provider", t: "enum" }, { n: "email", t: "varchar" }, { n: "phone", t: "varchar" }
   ]},
   { name: "owners", domain: "core", cols: [
-    { n: "id", t: "uuid", pk: true }, { n: "account_id", t: "uuid", fk: "accounts" }, { n: "created_at", t: "timestamp" }
+    { n: "id", t: "uuid", pk: true }, { n: "account_id", t: "uuid", fk: "accounts" }, { n: "created_at", t: "ts" }
   ]},
   { name: "users", domain: "core", cols: [
     { n: "id", t: "uuid", pk: true }, { n: "account_id", t: "uuid", fk: "accounts" },
-    { n: "name", t: "varchar" }, { n: "birth_date", t: "date" }, { n: "gender", t: "varchar" },
-    { n: "height", t: "decimal" }, { n: "weight", t: "decimal" }, { n: "blood_type", t: "varchar" }
+    { n: "name", t: "varchar" }, { n: "birth_date", t: "date" }, { n: "gender", t: "varchar" }
   ]},
+  // Wallet
   { name: "wallets", domain: "wallet", cols: [
     { n: "id", t: "uuid", pk: true }, { n: "owner_id", t: "uuid", fk: "owners" },
-    { n: "address", t: "varchar" }, { n: "public_key", t: "varchar" },
-    { n: "wallet_type", t: "enum" }, { n: "status", t: "enum" }, { n: "created_at", t: "timestamp" }
+    { n: "address", t: "varchar" }, { n: "wallet_type", t: "enum" }, { n: "status", t: "enum" }
   ]},
   { name: "wallet_secrets", domain: "wallet", cols: [
     { n: "id", t: "uuid", pk: true }, { n: "wallet_id", t: "uuid", fk: "wallets" },
-    { n: "encrypted_seed_prf", t: "bytea" }, { n: "prf_salt", t: "bytea" },
-    { n: "encrypted_seed_hsm", t: "bytea" }, { n: "hsm_key_id", t: "varchar" }
+    { n: "encrypted_seed_prf", t: "bytea" }, { n: "prf_salt", t: "bytea" }
   ]},
   { name: "wallet_credential_bindings", domain: "wallet", cols: [
     { n: "id", t: "uuid", pk: true }, { n: "wallet_id", t: "uuid", fk: "wallets" },
-    { n: "credential_id", t: "uuid", fk: "passkey_credentials" },
-    { n: "encrypted_seed_prf", t: "bytea" }, { n: "xrpl_tx_hash", t: "varchar" }, { n: "status", t: "enum" }
+    { n: "credential_id", t: "uuid", fk: "passkey_credentials" }, { n: "xrpl_tx_hash", t: "varchar" }
   ]},
   { name: "wallet_recovery_requests", domain: "wallet", cols: [
     { n: "id", t: "uuid", pk: true }, { n: "wallet_id", t: "uuid", fk: "wallets" },
-    { n: "owner_id", t: "uuid", fk: "owners" }, { n: "kyc_verified", t: "bool" }, { n: "status", t: "enum" }
+    { n: "owner_id", t: "uuid", fk: "owners" }, { n: "status", t: "enum" }
   ]},
+  // App
   { name: "apps", domain: "app", cols: [
     { n: "id", t: "uuid", pk: true }, { n: "slug", t: "varchar" }, { n: "name", t: "varchar" },
-    { n: "description", t: "varchar" }, { n: "allowed_scopes", t: "text" }, { n: "status", t: "enum" }
+    { n: "allowed_scopes", t: "text" }, { n: "status", t: "enum" }
   ]},
   { name: "app_keys", domain: "app", cols: [
     { n: "id", t: "uuid", pk: true }, { n: "app_id", t: "uuid", fk: "apps" },
-    { n: "key_type", t: "enum" }, { n: "key_prefix", t: "varchar" }, { n: "key_hash", t: "varchar" }, { n: "status", t: "enum" }
+    { n: "key_type", t: "enum" }, { n: "key_hash", t: "varchar" }, { n: "status", t: "enum" }
   ]},
   { name: "sessions", domain: "app", cols: [
     { n: "id", t: "uuid", pk: true }, { n: "user_id", t: "uuid", fk: "users" },
-    { n: "app_id", t: "uuid", fk: "apps" }, { n: "started_at", t: "timestamp" }, { n: "ended_at", t: "timestamp" }
+    { n: "app_id", t: "uuid", fk: "apps" }, { n: "started_at", t: "ts" }
   ]},
   { name: "refresh_tokens", domain: "app", cols: [
-    { n: "id", t: "uuid", pk: true }, { n: "token", t: "varchar" },
-    { n: "user_id", t: "uuid", fk: "users" }, { n: "session_id", t: "uuid", fk: "sessions" },
-    { n: "expires_at", t: "timestamp" }, { n: "revoked_at", t: "timestamp" }
+    { n: "id", t: "uuid", pk: true }, { n: "user_id", t: "uuid", fk: "users" },
+    { n: "session_id", t: "uuid", fk: "sessions" }, { n: "expires_at", t: "ts" }
   ]},
   { name: "passkey_credentials", domain: "app", cols: [
     { n: "id", t: "uuid", pk: true }, { n: "user_id", t: "uuid", fk: "users" },
-    { n: "credential_id", t: "varchar" }, { n: "public_key", t: "text" }, { n: "counter", t: "int" }, { n: "device_name", t: "varchar" }
+    { n: "credential_id", t: "varchar" }, { n: "public_key", t: "text" }, { n: "counter", t: "int" }
   ]},
+  // Org
   { name: "institutions", domain: "org", cols: [
     { n: "id", t: "uuid", pk: true }, { n: "name", t: "varchar" }, { n: "type", t: "enum" },
-    { n: "domains", t: "text" }, { n: "status", t: "enum" }, { n: "website", t: "varchar" }
+    { n: "domains", t: "text" }, { n: "status", t: "enum" }
   ]},
   { name: "workspaces", domain: "org", cols: [
     { n: "id", t: "uuid", pk: true }, { n: "name", t: "varchar" }, { n: "type", t: "enum" },
-    { n: "status", t: "enum" }, { n: "institution_id", t: "uuid", fk: "institutions" }, { n: "max_members", t: "int" }
+    { n: "institution_id", t: "uuid", fk: "institutions" }, { n: "max_members", t: "int" }
   ]},
   { name: "workspace_members", domain: "org", cols: [
     { n: "id", t: "uuid", pk: true }, { n: "workspace_id", t: "uuid", fk: "workspaces" },
-    { n: "account_id", t: "uuid", fk: "accounts" }, { n: "role", t: "enum" }, { n: "status", t: "enum" }
+    { n: "account_id", t: "uuid", fk: "accounts" }, { n: "role", t: "enum" }
   ]},
+  // Data
   { name: "data_points", domain: "data", cols: [
     { n: "id", t: "uuid", pk: true }, { n: "user_id", t: "uuid", fk: "users" },
-    { n: "category", t: "varchar" }, { n: "metric", t: "varchar" }, { n: "value", t: "jsonb" },
-    { n: "unit", t: "varchar" }, { n: "timestamp", t: "timestamp" }, { n: "sensitivity_level", t: "int" }
+    { n: "category", t: "varchar" }, { n: "metric", t: "varchar" }, { n: "value", t: "jsonb" }
   ]},
   { name: "data_attachments", domain: "data", cols: [
     { n: "id", t: "uuid", pk: true }, { n: "data_point_id", t: "uuid", fk: "data_points" },
-    { n: "user_id", t: "uuid", fk: "users" }, { n: "storage_key", t: "varchar" }, { n: "file_name", t: "varchar" }
+    { n: "storage_key", t: "varchar" }, { n: "file_name", t: "varchar" }
   ]},
   { name: "data_sources", domain: "data", cols: [
     { n: "id", t: "uuid", pk: true }, { n: "user_id", t: "uuid", fk: "users" },
@@ -442,16 +368,16 @@ const TABLES = [
   ]},
   { name: "data_accesses", domain: "data", cols: [
     { n: "id", t: "uuid", pk: true }, { n: "workspace_id", t: "uuid", fk: "workspaces" },
-    { n: "account_id", t: "uuid", fk: "accounts" }, { n: "data_product_id", t: "varchar" }, { n: "status", t: "enum" }
+    { n: "account_id", t: "uuid", fk: "accounts" }, { n: "status", t: "enum" }
   ]},
   { name: "consents", domain: "data", cols: [
     { n: "id", t: "uuid", pk: true }, { n: "user_id", t: "uuid", fk: "users" },
-    { n: "app_id", t: "uuid", fk: "apps" }, { n: "scopes", t: "text" }, { n: "status", t: "enum" }, { n: "xrpl_tx_hash", t: "varchar" }
+    { n: "app_id", t: "uuid", fk: "apps" }, { n: "scopes", t: "text" }, { n: "status", t: "enum" }
   ]},
+  // Research
   { name: "research_projects", domain: "research", cols: [
     { n: "id", t: "uuid", pk: true }, { n: "owner_id", t: "uuid", fk: "owners" },
-    { n: "institution_id", t: "uuid", fk: "institutions" }, { n: "title", t: "varchar" },
-    { n: "methodology", t: "varchar" }, { n: "status", t: "enum" }
+    { n: "institution_id", t: "uuid", fk: "institutions" }, { n: "title", t: "varchar" }, { n: "status", t: "enum" }
   ]},
   { name: "participation_criteria", domain: "research", cols: [
     { n: "id", t: "uuid", pk: true }, { n: "project_id", t: "uuid", fk: "research_projects" },
@@ -459,39 +385,41 @@ const TABLES = [
   ]},
   { name: "data_collection_configs", domain: "research", cols: [
     { n: "id", t: "uuid", pk: true }, { n: "project_id", t: "uuid", fk: "research_projects" },
-    { n: "passive_data", t: "jsonb" }, { n: "active_data", t: "jsonb" }, { n: "biomarkers", t: "jsonb" }
+    { n: "passive_data", t: "jsonb" }, { n: "active_data", t: "jsonb" }
   ]},
   { name: "team_members", domain: "research", cols: [
     { n: "id", t: "uuid", pk: true }, { n: "project_id", t: "uuid", fk: "research_projects" },
-    { n: "owner_id", t: "uuid", fk: "owners" }, { n: "role", t: "enum" }, { n: "invited_by", t: "uuid", fk: "owners" }
+    { n: "owner_id", t: "uuid", fk: "owners" }, { n: "role", t: "enum" }
   ]},
   { name: "agreements", domain: "research", cols: [
     { n: "id", t: "uuid", pk: true }, { n: "project_id", t: "uuid", fk: "research_projects" },
-    { n: "owner_id", t: "uuid", fk: "owners" }, { n: "status", t: "enum" }, { n: "data_scopes", t: "jsonb" }
+    { n: "owner_id", t: "uuid", fk: "owners" }, { n: "status", t: "enum" }
   ]},
+  // Finance
   { name: "project_wallets", domain: "finance", cols: [
     { n: "id", t: "uuid", pk: true }, { n: "project_id", t: "uuid", fk: "research_projects" },
-    { n: "wallet_address", t: "varchar" }, { n: "total_deposited", t: "decimal" }, { n: "status", t: "enum" }
+    { n: "wallet_address", t: "varchar" }, { n: "total_deposited", t: "decimal" }
   ]},
   { name: "project_wallet_deposits", domain: "finance", cols: [
     { n: "id", t: "uuid", pk: true }, { n: "project_id", t: "uuid", fk: "research_projects" },
-    { n: "depositor_owner_id", t: "uuid", fk: "owners" }, { n: "amount", t: "decimal" }, { n: "tx_hash", t: "varchar" }
+    { n: "depositor_owner_id", t: "uuid", fk: "owners" }, { n: "amount", t: "decimal" }
   ]},
   { name: "project_wallet_withdrawals", domain: "finance", cols: [
     { n: "id", t: "uuid", pk: true }, { n: "project_id", t: "uuid", fk: "research_projects" },
-    { n: "withdrawer_owner_id", t: "uuid", fk: "owners" }, { n: "amount", t: "decimal" }, { n: "tx_hash", t: "varchar" }
+    { n: "withdrawer_owner_id", t: "uuid", fk: "owners" }, { n: "amount", t: "decimal" }
   ]},
   { name: "escrows", domain: "finance", cols: [
     { n: "id", t: "uuid", pk: true }, { n: "project_id", t: "uuid", fk: "research_projects" },
-    { n: "owner_address", t: "varchar" }, { n: "amount", t: "decimal" }, { n: "tx_hash", t: "varchar" }, { n: "status", t: "enum" }
+    { n: "amount", t: "decimal" }, { n: "tx_hash", t: "varchar" }, { n: "status", t: "enum" }
   ]},
   { name: "settlements", domain: "finance", cols: [
     { n: "id", t: "uuid", pk: true }, { n: "agreement_id", t: "uuid", fk: "agreements" },
-    { n: "amount", t: "decimal" }, { n: "tx_hash", t: "varchar" }, { n: "type", t: "varchar" }
+    { n: "amount", t: "decimal" }, { n: "tx_hash", t: "varchar" }
   ]},
+  // Medication
   { name: "drug_info_cache", domain: "medication", cols: [
     { n: "drug_code", t: "varchar", pk: true }, { n: "name", t: "varchar" },
-    { n: "category", t: "varchar" }, { n: "manufacturer", t: "varchar" }, { n: "ingredients", t: "jsonb" }
+    { n: "category", t: "varchar" }, { n: "ingredients", t: "jsonb" }
   ]},
   { name: "user_medications", domain: "medication", cols: [
     { n: "id", t: "uuid", pk: true }, { n: "user_id", t: "uuid", fk: "users" },
@@ -499,31 +427,32 @@ const TABLES = [
   ]},
   { name: "medication_logs", domain: "medication", cols: [
     { n: "id", t: "uuid", pk: true }, { n: "user_id", t: "uuid", fk: "users" },
-    { n: "medication_id", t: "uuid", fk: "user_medications" }, { n: "taken", t: "bool" }, { n: "taken_at", t: "timestamp" }
+    { n: "medication_id", t: "uuid", fk: "user_medications" }, { n: "taken", t: "bool" }
   ]},
   { name: "medication_proofs", domain: "medication", cols: [
     { n: "id", t: "uuid", pk: true }, { n: "user_id", t: "uuid", fk: "users" },
-    { n: "proof_type", t: "varchar" }, { n: "category_hash", t: "varchar" }, { n: "commitment", t: "bytea" }
+    { n: "proof_type", t: "varchar" }, { n: "commitment", t: "bytea" }
   ]},
+  // Analytics
   { name: "ai_analyses", domain: "analytics", cols: [
     { n: "id", t: "uuid", pk: true }, { n: "user_id", t: "uuid", fk: "users" },
-    { n: "type", t: "varchar" }, { n: "status", t: "enum" }, { n: "input", t: "jsonb" }, { n: "result", t: "jsonb" }
+    { n: "type", t: "varchar" }, { n: "status", t: "enum" }, { n: "result", t: "jsonb" }
   ]},
   { name: "features", domain: "analytics", cols: [
     { n: "id", t: "uuid", pk: true }, { n: "user_id", t: "uuid", fk: "users" },
-    { n: "category", t: "varchar" }, { n: "feature_type", t: "varchar" }, { n: "value", t: "jsonb" }
+    { n: "category", t: "varchar" }, { n: "feature_type", t: "varchar" }
   ]},
   { name: "notifications", domain: "analytics", cols: [
     { n: "id", t: "uuid", pk: true }, { n: "user_id", t: "uuid", fk: "users" },
-    { n: "app_id", t: "uuid", fk: "apps" }, { n: "type", t: "varchar" }, { n: "title", t: "varchar" }
+    { n: "app_id", t: "uuid", fk: "apps" }, { n: "type", t: "varchar" }
   ]},
   { name: "audit_logs", domain: "analytics", cols: [
     { n: "id", t: "uuid", pk: true }, { n: "user_id", t: "uuid", fk: "users" },
-    { n: "app_id", t: "uuid", fk: "apps" }, { n: "action", t: "varchar" }, { n: "xrpl_tx_hash", t: "varchar" }
+    { n: "app_id", t: "uuid", fk: "apps" }, { n: "action", t: "varchar" }
   ]},
   { name: "anchor_logs", domain: "analytics", cols: [
     { n: "id", t: "uuid", pk: true }, { n: "user_id", t: "uuid", fk: "users" },
-    { n: "anchor_type", t: "enum" }, { n: "tx_hash", t: "varchar" }, { n: "from_address", t: "varchar" }
+    { n: "anchor_type", t: "enum" }, { n: "tx_hash", t: "varchar" }
   ]},
 ];
 
@@ -535,83 +464,91 @@ TABLES.forEach(t => {
   });
 });
 
-// Layout calculation
-function calculateLayout(domain) {
+// ============================================================
+// LAYOUT
+// ============================================================
+
+function calculateLayout(client, domain) {
+  // Filter by client first
+  let clientTables = CLIENT_TABLES[client];
+  let tables = clientTables ? TABLES.filter(t => clientTables.includes(t.name)) : TABLES;
+
+  // Then filter by domain
   const visible = domain === "all"
-    ? TABLES
-    : TABLES.filter(t => {
+    ? tables
+    : tables.filter(t => {
         if (t.domain === domain) return true;
         // Include referenced tables
-        const domainTables = TABLES.filter(tt => tt.domain === domain);
+        const domainTables = tables.filter(tt => tt.domain === domain);
         for (const dt of domainTables) {
           for (const c of dt.cols) {
-            if (c.fk === t.name) return true;
+            if (c.fk === t.name && tables.some(x => x.name === t.name)) return true;
           }
         }
         return false;
       });
 
   const positions = {};
-  const CARD_W = 300;
-  const ROW_H = 32;
-  const HEADER_H = 48;
-  const GAP_X = 60;
-  const GAP_Y = 40;
+  const CARD_W = 280;
+  const ROW_H = 28;
+  const HEADER_H = 44;
+  const GAP_X = 50;
+  const GAP_Y = 35;
 
   if (domain === "all") {
-    // Grid by domain
+    // Group by domain, grid layout
     const domainOrder = ["core", "app", "org", "wallet", "data", "research", "finance", "medication", "analytics"];
-    const COLS = 4;
-    let gx = 0, gy = 0;
-    let colHeights = [0, 0, 0, 0];
+    const COLS = client === "all" ? 4 : 3;
+    let colHeights = Array(COLS).fill(0);
+    let currentCol = 0;
 
     domainOrder.forEach(d => {
-      const tables = visible.filter(t => t.domain === d);
-      const col = gx % COLS;
+      const domainTables = visible.filter(t => t.domain === d);
+      if (domainTables.length === 0) return;
 
-      tables.forEach(t => {
-        const h = HEADER_H + t.cols.length * ROW_H + 16;
-        const x = col * (CARD_W + GAP_X);
-        const y = colHeights[col];
-        positions[t.name] = { x, y, w: CARD_W, h, ghost: false };
-        colHeights[col] = y + h + GAP_Y;
+      const col = currentCol % COLS;
+      domainTables.forEach(t => {
+        const h = HEADER_H + t.cols.length * ROW_H + 12;
+        positions[t.name] = { x: col * (CARD_W + GAP_X), y: colHeights[col], w: CARD_W, h, ghost: false };
+        colHeights[col] += h + GAP_Y;
       });
+      currentCol++;
 
-      gx++;
-      if (gx % COLS === 0) {
+      // After every COLS domains, reset to max height
+      if (currentCol % COLS === 0) {
         const maxH = Math.max(...colHeights);
-        colHeights = colHeights.map(() => maxH + 60);
+        colHeights = colHeights.map(() => maxH + 50);
       }
     });
   } else {
-    // Domain view: main tables center, refs on left
+    // Domain view: primary center, refs left
     const primary = visible.filter(t => t.domain === domain);
     const refs = visible.filter(t => t.domain !== domain);
 
-    // Layout primary tables in 2 columns
     const COLS = Math.min(2, Math.ceil(primary.length / 3));
     let colHeights = Array(COLS).fill(0);
 
     primary.forEach((t, i) => {
       const col = i % COLS;
-      const h = HEADER_H + t.cols.length * ROW_H + 16;
-      const x = 350 + col * (CARD_W + GAP_X);
-      const y = colHeights[col];
-      positions[t.name] = { x, y, w: CARD_W, h, ghost: false };
-      colHeights[col] = y + h + GAP_Y;
+      const h = HEADER_H + t.cols.length * ROW_H + 12;
+      positions[t.name] = { x: 320 + col * (CARD_W + GAP_X), y: colHeights[col], w: CARD_W, h, ghost: false };
+      colHeights[col] += h + GAP_Y;
     });
 
-    // Layout ref tables on left
     let refY = 0;
     refs.forEach(t => {
-      const h = HEADER_H + Math.min(t.cols.length, 4) * ROW_H + 16;
-      positions[t.name] = { x: 0, y: refY, w: 280, h, ghost: true };
-      refY += h + 24;
+      const h = HEADER_H + Math.min(t.cols.length, 4) * ROW_H + 12;
+      positions[t.name] = { x: 0, y: refY, w: 260, h, ghost: true };
+      refY += h + 20;
     });
   }
 
   return { visible, positions };
 }
+
+// ============================================================
+// COMPONENTS
+// ============================================================
 
 function TableCard({ table, pos, hovered, selected, onHover, onClick }) {
   const domain = DOMAINS[table.domain];
@@ -622,12 +559,7 @@ function TableCard({ table, pos, hovered, selected, onHover, onClick }) {
   return (
     <div
       className={`table-card ${isHighlighted ? 'highlighted' : ''} ${pos.ghost ? 'ghost' : ''}`}
-      style={{
-        left: pos.x,
-        top: pos.y,
-        width: pos.w,
-        '--domain-color': domain.color + '20',
-      }}
+      style={{ left: pos.x, top: pos.y, width: pos.w }}
       onMouseEnter={() => onHover(table.name)}
       onMouseLeave={() => onHover(null)}
       onClick={() => onClick(table.name)}
@@ -648,25 +580,32 @@ function TableCard({ table, pos, hovered, selected, onHover, onClick }) {
         ))}
       </div>
       {pos.ghost && table.cols.length > 4 && (
-        <div className="table-more">+{table.cols.length - 4} more columns</div>
+        <div className="table-more">+{table.cols.length - 4} more</div>
       )}
     </div>
   );
 }
 
 function App() {
-  const [domain, setDomain] = useState("core");
+  const [client, setClient] = useState("all");
+  const [domain, setDomain] = useState("all");
   const [hovered, setHovered] = useState(null);
   const [selected, setSelected] = useState(null);
-  const [zoom, setZoom] = useState(1);
-  const [pan, setPan] = useState({ x: 60, y: 40 });
+  const [zoom, setZoom] = useState(0.85);
+  const [pan, setPan] = useState({ x: 50, y: 40 });
   const [dragging, setDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
-  const wrapperRef = useRef(null);
 
-  const { visible, positions } = calculateLayout(domain);
+  const { visible, positions } = calculateLayout(client, domain);
 
-  // Get related tables for highlighting
+  // Count tables per domain for current client
+  const domainCounts = {};
+  const clientTables = CLIENT_TABLES[client];
+  const filteredTables = clientTables ? TABLES.filter(t => clientTables.includes(t.name)) : TABLES;
+  Object.keys(DOMAINS).forEach(d => {
+    domainCounts[d] = d === "all" ? filteredTables.length : filteredTables.filter(t => t.domain === d).length;
+  });
+
   const activeTable = hovered || selected;
   const relatedTables = new Set();
   if (activeTable) {
@@ -680,18 +619,16 @@ function App() {
     visible.some(t => t.name === r.from) && visible.some(t => t.name === r.to)
   );
 
-  // Reset view on domain change
   useEffect(() => {
-    setZoom(domain === "all" ? 0.65 : 0.9);
-    setPan(domain === "all" ? { x: 40, y: 40 } : { x: 60, y: 40 });
+    const isAll = client === "all" && domain === "all";
+    setZoom(isAll ? 0.6 : 0.9);
+    setPan(isAll ? { x: 40, y: 30 } : { x: 50, y: 40 });
     setSelected(null);
-  }, [domain]);
+  }, [client, domain]);
 
-  // Mouse handlers
   const handleWheel = useCallback(e => {
     e.preventDefault();
-    const delta = e.deltaY > 0 ? -0.05 : 0.05;
-    setZoom(z => Math.max(0.3, Math.min(2, z + delta)));
+    setZoom(z => Math.max(0.3, Math.min(2, z + (e.deltaY > 0 ? -0.05 : 0.05))));
   }, []);
 
   const handleMouseDown = e => {
@@ -699,15 +636,11 @@ function App() {
     setDragging(true);
     setDragStart({ x: e.clientX - pan.x, y: e.clientY - pan.y });
   };
-
   const handleMouseMove = e => {
-    if (!dragging) return;
-    setPan({ x: e.clientX - dragStart.x, y: e.clientY - dragStart.y });
+    if (dragging) setPan({ x: e.clientX - dragStart.x, y: e.clientY - dragStart.y });
   };
-
   const handleMouseUp = () => setDragging(false);
 
-  // Calculate canvas size
   let maxX = 1200, maxY = 800;
   Object.values(positions).forEach(p => {
     if (p.x !== undefined) {
@@ -716,42 +649,55 @@ function App() {
     }
   });
 
-  const totalTables = domain === "all" ? TABLES.length : visible.filter(t => t.domain === domain).length;
-
   return (
     <div className="app">
       <div className="header">
-        <div className="logo">
-          <span className="primary">UniQ</span>
-          <span className="secondary">Data</span>
-          <span style={{ marginLeft: 12, fontSize: 13, color: '#64748b', fontWeight: 400 }}>
-            ERD v4 · {totalTables} tables
-          </span>
-        </div>
-        <div className="header-info">
-          <div className="zoom-controls">
-            <button className="zoom-btn" onClick={() => setZoom(z => Math.max(0.3, z - 0.1))}>−</button>
-            <span className="zoom-level">{Math.round(zoom * 100)}%</span>
-            <button className="zoom-btn" onClick={() => setZoom(z => Math.min(2, z + 0.1))}>+</button>
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <div className="logo">
+            <span className="primary">UniQ</span>
+            <span className="secondary">Data</span>
           </div>
+          <span className="header-stats">ERD v4 · {visible.length} tables</span>
+        </div>
+        <div className="zoom-controls">
+          <button className="zoom-btn" onClick={() => setZoom(z => Math.max(0.3, z - 0.1))}>−</button>
+          <span className="zoom-level">{Math.round(zoom * 100)}%</span>
+          <button className="zoom-btn" onClick={() => setZoom(z => Math.min(2, z + 0.1))}>+</button>
         </div>
       </div>
 
-      <div className="tabs">
-        {Object.entries(DOMAINS).map(([key, d]) => (
-          <button
-            key={key}
-            className={`tab ${domain === key ? 'active' : ''}`}
-            style={{ '--tab-color': d.color }}
-            onClick={() => setDomain(key)}
-          >
-            {d.label}
-          </button>
-        ))}
+      <div className="tabs-wrapper">
+        <div className="tabs-row">
+          <span className="tabs-label">클라이언트</span>
+          {Object.entries(CLIENTS).map(([key, c]) => (
+            <button
+              key={key}
+              className={`tab ${client === key ? 'active' : ''}`}
+              style={{ '--tab-bg': c.color, '--tab-color': '#fff' }}
+              onClick={() => { setClient(key); setDomain("all"); }}
+            >
+              <span className="icon">{c.icon}</span>
+              {c.label}
+            </button>
+          ))}
+        </div>
+        <div className="tabs-row">
+          <span className="tabs-label">도메인</span>
+          {Object.entries(DOMAINS).filter(([k]) => domainCounts[k] > 0).map(([key, d]) => (
+            <button
+              key={key}
+              className={`tab ${domain === key ? 'active' : ''}`}
+              style={{ '--tab-bg': d.color, '--tab-color': '#fff' }}
+              onClick={() => setDomain(key)}
+            >
+              {d.label}
+              <span className="count">{domainCounts[key]}</span>
+            </button>
+          ))}
+        </div>
       </div>
 
       <div
-        ref={wrapperRef}
         className={`canvas-wrapper ${dragging ? 'dragging' : ''}`}
         onWheel={handleWheel}
         onMouseDown={handleMouseDown}
@@ -759,46 +705,30 @@ function App() {
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
       >
-        <div
-          className="canvas"
-          style={{ transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})` }}
-        >
+        <div className="canvas" style={{ transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})` }}>
           <svg className="relations-layer" width={maxX} height={maxY}>
             {visibleRelations.map((r, i) => {
               const fp = positions[r.from];
               const tp = positions[r.to];
               if (!fp || !tp) return null;
-
               const fromTable = TABLES.find(t => t.name === r.from);
               const fromColIdx = fromTable ? fromTable.cols.findIndex(c => c.n === r.fromCol) : 0;
-
               const fx = fp.x + fp.w;
-              const fy = fp.y + 48 + fromColIdx * 32 + 16;
+              const fy = fp.y + 44 + fromColIdx * 28 + 14;
               const tx = tp.x;
-              const ty = tp.y + 24;
-
+              const ty = tp.y + 22;
               const isHighlighted = activeTable && (r.from === activeTable || r.to === activeTable);
-              const d = `M ${fx} ${fy} C ${fx + 50} ${fy}, ${tx - 50} ${ty}, ${tx} ${ty}`;
-
+              const d = `M ${fx} ${fy} C ${fx + 40} ${fy}, ${tx - 40} ${ty}, ${tx} ${ty}`;
               return (
                 <g key={i}>
                   <path d={d} className={`relation-path ${isHighlighted ? 'highlighted' : ''}`} />
-                  <circle cx={tx} cy={ty} r={4} className={`relation-dot ${isHighlighted ? 'highlighted' : ''}`} />
+                  <circle cx={tx} cy={ty} r={3.5} className={`relation-dot ${isHighlighted ? 'highlighted' : ''}`} />
                 </g>
               );
             })}
           </svg>
-
           {visible.map(t => (
-            <TableCard
-              key={t.name}
-              table={t}
-              pos={positions[t.name]}
-              hovered={hovered}
-              selected={selected}
-              onHover={setHovered}
-              onClick={setSelected}
-            />
+            <TableCard key={t.name} table={t} pos={positions[t.name]} hovered={hovered} selected={selected} onHover={setHovered} onClick={setSelected} />
           ))}
         </div>
       </div>
@@ -807,7 +737,6 @@ function App() {
         <div className="legend-title">범례</div>
         <div className="legend-item"><span className="legend-icon" style={{color:'#fbbf24'}}>🔑</span> Primary Key</div>
         <div className="legend-item"><span className="legend-icon" style={{color:'#60a5fa'}}>→</span> Foreign Key</div>
-        <div className="legend-item"><span className="legend-icon">━</span> Relationship</div>
       </div>
 
       {selected && (() => {
@@ -821,19 +750,18 @@ function App() {
               <span className="detail-name" style={{color: d.color}}>{t.name}</span>
               <span className="detail-badge" style={{background: d.color}}>{d.label}</span>
             </div>
-            <div className="detail-stats">{t.cols.length} columns · {rels.length} relationships</div>
+            <div className="detail-stats">{t.cols.length} columns · {rels.length} relations</div>
             {rels.length > 0 && (
               <div className="detail-relations">
-                {rels.map((r, i) => (
+                {rels.slice(0, 6).map((r, i) => (
                   <div key={i} className="detail-rel">
-                    {r.from === t.name ? `→ ${r.to}.${r.toCol}` : `← ${r.from}.${r.fromCol}`}
+                    {r.from === t.name ? `→ ${r.to}` : `← ${r.from}`}
                   </div>
                 ))}
+                {rels.length > 6 && <div className="detail-rel" style={{color:'#475569'}}>+{rels.length - 6} more</div>}
               </div>
             )}
-            <div className="detail-close" onClick={() => setSelected(null)}>
-              클릭하여 닫기
-            </div>
+            <div className="detail-close" onClick={() => setSelected(null)}>클릭하여 닫기</div>
           </div>
         );
       })()}
