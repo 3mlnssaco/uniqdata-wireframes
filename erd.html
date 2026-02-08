@@ -465,83 +465,17 @@ TABLES.forEach(t => {
 });
 
 // ============================================================
-// LAYOUT - Hierarchical flow from accounts
+// LAYOUT - Connection-based smart layout
 // ============================================================
 
-// Define hierarchical structure (level, lane within level)
-// Level 0: Root (accounts)
-// Level 1: Direct children of accounts
-// Level 2: Children of Level 1
-// etc.
-const HIERARCHY = {
-  // Level 0 - Root
-  accounts: { level: 0, lane: 2 },
-
-  // Level 1 - Direct account relations
-  account_logins: { level: 1, lane: 0 },
-  owners: { level: 1, lane: 1 },
-  users: { level: 1, lane: 3 },
-
-  // Level 2 - From owners and users
-  wallets: { level: 2, lane: 0 },
-  institutions: { level: 2, lane: 1 },
-  research_projects: { level: 2, lane: 1.5 },
-  apps: { level: 2, lane: 2.5 },
-  passkey_credentials: { level: 2, lane: 3 },
-  data_sources: { level: 2, lane: 4 },
-
-  // Level 3 - More specific
-  wallet_secrets: { level: 3, lane: 0 },
-  wallet_credential_bindings: { level: 3.5, lane: 0 },
-  wallet_recovery_requests: { level: 3.5, lane: 0.5 },
-  workspaces: { level: 3, lane: 1 },
-  participation_criteria: { level: 3, lane: 1.5 },
-  data_collection_configs: { level: 3.5, lane: 1.5 },
-  team_members: { level: 3, lane: 2 },
-  agreements: { level: 3.5, lane: 2 },
-  app_keys: { level: 3, lane: 2.5 },
-  sessions: { level: 3, lane: 3 },
-  data_points: { level: 3, lane: 4 },
-  consents: { level: 3, lane: 3.5 },
-
-  // Level 4
-  workspace_members: { level: 4, lane: 1 },
-  data_accesses: { level: 4, lane: 1.5 },
-  project_wallets: { level: 4, lane: 2 },
-  refresh_tokens: { level: 4, lane: 3 },
-  data_attachments: { level: 4, lane: 4 },
-
-  // Level 5 - Finance
-  project_wallet_deposits: { level: 5, lane: 1.5 },
-  project_wallet_withdrawals: { level: 5, lane: 2 },
-  escrows: { level: 5, lane: 2.5 },
-  settlements: { level: 5, lane: 3 },
-
-  // Side - Medication (separate branch)
-  drug_info_cache: { level: 2, lane: 5 },
-  user_medications: { level: 3, lane: 5 },
-  medication_logs: { level: 4, lane: 5 },
-  medication_proofs: { level: 4, lane: 5.5 },
-
-  // Bottom - Analytics
-  ai_analyses: { level: 4, lane: 4.5 },
-  features: { level: 5, lane: 4 },
-  notifications: { level: 5, lane: 4.5 },
-  audit_logs: { level: 5, lane: 5 },
-  anchor_logs: { level: 5, lane: 5.5 },
-};
-
 function calculateLayout(client, domain) {
-  // Filter by client first
   let clientTables = CLIENT_TABLES[client];
   let tables = clientTables ? TABLES.filter(t => clientTables.includes(t.name)) : TABLES;
 
-  // Then filter by domain
   const visible = domain === "all"
     ? tables
     : tables.filter(t => {
         if (t.domain === domain) return true;
-        // Include referenced tables
         const domainTables = tables.filter(tt => tt.domain === domain);
         for (const dt of domainTables) {
           for (const c of dt.cols) {
@@ -552,82 +486,97 @@ function calculateLayout(client, domain) {
       });
 
   const positions = {};
-  const CARD_W = 280;
+  const CARD_W = 260;
   const ROW_H = 28;
   const HEADER_H = 44;
-  const LEVEL_GAP = 320; // Vertical gap between levels
-  const LANE_GAP = 420;  // Horizontal gap between lanes
+
+  // Count incoming references (how many tables reference this one)
+  const incomingCount = {};
+  visible.forEach(t => { incomingCount[t.name] = 0; });
+  visible.forEach(t => {
+    t.cols.forEach(c => {
+      if (c.fk && incomingCount[c.fk] !== undefined) {
+        incomingCount[c.fk]++;
+      }
+    });
+  });
+
+  // Sort tables: most referenced first (these are "parent" tables)
+  const sorted = [...visible].sort((a, b) => incomingCount[b.name] - incomingCount[a.name]);
 
   if (domain === "all") {
-    // Hierarchical layout based on HIERARCHY definition
-    visible.forEach(t => {
-      const h = HEADER_H + t.cols.length * ROW_H + 12;
-      const hier = HIERARCHY[t.name] || { level: 6, lane: 3 }; // Default for unmapped
+    // Layered layout: Level 0 = most referenced, then their children, etc.
+    const placed = new Set();
+    const levels = [];
 
-      positions[t.name] = {
-        x: hier.lane * LANE_GAP,
-        y: hier.level * LEVEL_GAP,
-        w: CARD_W,
-        h,
-        ghost: false
-      };
-    });
+    // Level 0: tables with high incoming refs (accounts, users, owners, apps, etc.)
+    const level0 = sorted.filter(t => incomingCount[t.name] >= 2);
+    levels.push(level0);
+    level0.forEach(t => placed.add(t.name));
 
-    // Adjust for overlaps - group by level and offset within same level/lane
-    const byLevelLane = {};
-    visible.forEach(t => {
-      const hier = HIERARCHY[t.name] || { level: 6, lane: 3 };
-      const key = `${Math.floor(hier.level)}-${Math.floor(hier.lane)}`;
-      if (!byLevelLane[key]) byLevelLane[key] = [];
-      byLevelLane[key].push(t.name);
-    });
+    // Level 1: tables that reference level 0
+    const level1 = sorted.filter(t => !placed.has(t.name) && t.cols.some(c => c.fk && level0.some(l => l.name === c.fk)));
+    levels.push(level1);
+    level1.forEach(t => placed.add(t.name));
 
-    Object.entries(byLevelLane).forEach(([key, names]) => {
-      if (names.length > 1) {
-        let offsetY = 0;
-        names.forEach((name, idx) => {
-          if (idx > 0) {
-            const prevH = positions[names[idx-1]].h;
-            offsetY += prevH + 60; // More space between stacked tables
-            positions[name].y += offsetY;
-          }
-        });
-      }
+    // Level 2: tables that reference level 1
+    const level2 = sorted.filter(t => !placed.has(t.name) && t.cols.some(c => c.fk && level1.some(l => l.name === c.fk)));
+    levels.push(level2);
+    level2.forEach(t => placed.add(t.name));
+
+    // Level 3: remaining
+    const level3 = sorted.filter(t => !placed.has(t.name));
+    levels.push(level3);
+
+    const LEVEL_Y_START = [0, 280, 600, 950];
+    const COL_GAP = 320;
+    const CARD_GAP = 50;
+
+    levels.forEach((levelTables, levelIdx) => {
+      // Sort within level by domain for grouping
+      const byDomain = levelTables.sort((a, b) => a.domain.localeCompare(b.domain));
+
+      let x = 0;
+      let y = LEVEL_Y_START[levelIdx] || (levelIdx * 350);
+      let maxRowHeight = 0;
+      let colCount = 0;
+      const MAX_COLS = levelIdx === 0 ? 6 : 5; // Fewer columns for lower levels
+
+      byDomain.forEach(t => {
+        const h = HEADER_H + t.cols.length * ROW_H + 12;
+
+        if (colCount >= MAX_COLS) {
+          // New row
+          x = 0;
+          y += maxRowHeight + CARD_GAP;
+          maxRowHeight = 0;
+          colCount = 0;
+        }
+
+        positions[t.name] = { x, y, w: CARD_W, h, ghost: false };
+        x += CARD_W + COL_GAP;
+        maxRowHeight = Math.max(maxRowHeight, h);
+        colCount++;
+      });
     });
 
   } else {
-    // Domain view: primary tables with generous spacing, refs on left
+    // Domain view
     const primary = visible.filter(t => t.domain === domain);
     const refs = visible.filter(t => t.domain !== domain);
 
-    const PRIMARY_GAP_X = 100; // Horizontal gap between primary cards
-    const PRIMARY_GAP_Y = 60;  // Vertical gap between primary cards
-    const REF_X = 0;
-    const PRIMARY_X = 350;     // Start X for primary tables (space for refs)
-
-    // Layout primary in 2 columns with proper spacing
-    const colHeights = [0, 0];
-    primary.forEach((t, i) => {
+    let primaryY = 0;
+    primary.forEach(t => {
       const h = HEADER_H + t.cols.length * ROW_H + 12;
-      const col = i % 2;
-
-      positions[t.name] = {
-        x: PRIMARY_X + col * (CARD_W + PRIMARY_GAP_X),
-        y: colHeights[col],
-        w: CARD_W,
-        h,
-        ghost: false
-      };
-      colHeights[col] += h + PRIMARY_GAP_Y;
+      positions[t.name] = { x: 400, y: primaryY, w: CARD_W, h, ghost: false };
+      primaryY += h + 60;
     });
 
-    // References on left, with generous spacing
-    const REF_GAP_Y = 40;
     let refY = 0;
     refs.forEach(t => {
       const h = HEADER_H + Math.min(t.cols.length, 4) * ROW_H + 12;
-      positions[t.name] = { x: REF_X, y: refY, w: 260, h, ghost: true };
-      refY += h + REF_GAP_Y;
+      positions[t.name] = { x: 0, y: refY, w: 240, h, ghost: true };
+      refY += h + 40;
     });
   }
 
@@ -709,9 +658,8 @@ function App() {
 
   useEffect(() => {
     const isAll = client === "all" && domain === "all";
-    // Adjust zoom for larger spacing
-    setZoom(isAll ? 0.45 : 0.75);
-    setPan(isAll ? { x: -200, y: 40 } : { x: 40, y: 40 });
+    setZoom(isAll ? 0.6 : 0.85);
+    setPan(isAll ? { x: 30, y: 30 } : { x: 50, y: 40 });
     setSelected(null);
   }, [client, domain]);
 
