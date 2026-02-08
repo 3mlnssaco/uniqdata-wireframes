@@ -164,9 +164,9 @@
 
     /* Relations */
     .relations-layer { position: absolute; top: 0; left: 0; pointer-events: none; overflow: visible; }
-    .relation-path { fill: none; stroke: #334155; stroke-width: 1.5; stroke-dasharray: 5 3; }
-    .relation-path.highlighted { stroke: #60a5fa; stroke-width: 2; stroke-dasharray: none; }
-    .relation-dot { fill: #334155; }
+    .relation-path { fill: none; stroke: #475569; stroke-width: 2; opacity: 0.6; }
+    .relation-path.highlighted { stroke: #60a5fa; stroke-width: 2.5; opacity: 1; }
+    .relation-dot { fill: #475569; }
     .relation-dot.highlighted { fill: #60a5fa; }
 
     /* Info Panels */
@@ -552,11 +552,11 @@ function calculateLayout(client, domain) {
       });
 
   const positions = {};
-  const CARD_W = 260;
+  const CARD_W = 280;
   const ROW_H = 28;
   const HEADER_H = 44;
-  const LEVEL_GAP = 200; // Vertical gap between levels
-  const LANE_GAP = 300;  // Horizontal gap between lanes
+  const LEVEL_GAP = 240; // Vertical gap between levels (increased)
+  const LANE_GAP = 340;  // Horizontal gap between lanes (increased)
 
   if (domain === "all") {
     // Hierarchical layout based on HIERARCHY definition
@@ -588,7 +588,7 @@ function calculateLayout(client, domain) {
         names.forEach((name, idx) => {
           if (idx > 0) {
             const prevH = positions[names[idx-1]].h;
-            offsetY += prevH + 30;
+            offsetY += prevH + 40;
             positions[name].y += offsetY;
           }
         });
@@ -596,31 +596,38 @@ function calculateLayout(client, domain) {
     });
 
   } else {
-    // Domain view: primary tables in hierarchy, refs on left
+    // Domain view: primary tables with generous spacing, refs on left
     const primary = visible.filter(t => t.domain === domain);
     const refs = visible.filter(t => t.domain !== domain);
 
-    // Use mini-hierarchy for primary
-    let yPos = 0;
+    const PRIMARY_GAP_X = 100; // Horizontal gap between primary cards
+    const PRIMARY_GAP_Y = 60;  // Vertical gap between primary cards
+    const REF_X = 0;
+    const PRIMARY_X = 350;     // Start X for primary tables (space for refs)
+
+    // Layout primary in 2 columns with proper spacing
+    const colHeights = [0, 0];
     primary.forEach((t, i) => {
       const h = HEADER_H + t.cols.length * ROW_H + 12;
       const col = i % 2;
-      if (col === 0) yPos = i > 0 ? positions[primary[i-1]?.name]?.y + positions[primary[i-1]?.name]?.h + 40 || 0 : 0;
+
       positions[t.name] = {
-        x: 320 + col * (CARD_W + 50),
-        y: col === 0 ? yPos : (positions[primary[i-1]?.name]?.y || 0),
+        x: PRIMARY_X + col * (CARD_W + PRIMARY_GAP_X),
+        y: colHeights[col],
         w: CARD_W,
         h,
         ghost: false
       };
+      colHeights[col] += h + PRIMARY_GAP_Y;
     });
 
-    // References on left, stacked
+    // References on left, with generous spacing
+    const REF_GAP_Y = 40;
     let refY = 0;
     refs.forEach(t => {
       const h = HEADER_H + Math.min(t.cols.length, 4) * ROW_H + 12;
-      positions[t.name] = { x: 0, y: refY, w: 240, h, ghost: true };
-      refY += h + 20;
+      positions[t.name] = { x: REF_X, y: refY, w: 260, h, ghost: true };
+      refY += h + REF_GAP_Y;
     });
   }
 
@@ -793,18 +800,76 @@ function App() {
               const fp = positions[r.from];
               const tp = positions[r.to];
               if (!fp || !tp) return null;
+
               const fromTable = TABLES.find(t => t.name === r.from);
               const fromColIdx = fromTable ? fromTable.cols.findIndex(c => c.n === r.fromCol) : 0;
-              const fx = fp.x + fp.w;
-              const fy = fp.y + 44 + fromColIdx * 28 + 14;
-              const tx = tp.x;
-              const ty = tp.y + 22;
+
+              // Calculate centers
+              const fromCx = fp.x + fp.w / 2;
+              const toCx = tp.x + tp.w / 2;
+              const fromCy = fp.y + fp.h / 2;
+              const toCy = tp.y + tp.h / 2;
+
+              // Determine best connection direction based on relative positions
+              const dx = toCx - fromCx;
+              const dy = toCy - fromCy;
+
+              let fx, fy, tx, ty, cpx1, cpy1, cpx2, cpy2;
+
+              // FK column Y position
+              const fkColY = fp.y + 44 + fromColIdx * 28 + 14;
+              // Target PK (id) Y position - always first row
+              const pkColY = tp.y + 44 + 14;
+
+              if (Math.abs(dx) > Math.abs(dy) * 0.5) {
+                // Primarily horizontal relationship
+                if (dx > 0) {
+                  // Target is to the right
+                  fx = fp.x + fp.w;
+                  fy = fkColY;
+                  tx = tp.x;
+                  ty = pkColY;
+                } else {
+                  // Target is to the left
+                  fx = fp.x;
+                  fy = fkColY;
+                  tx = tp.x + tp.w;
+                  ty = pkColY;
+                }
+                const gap = Math.abs(tx - fx);
+                cpx1 = fx + (dx > 0 ? gap * 0.4 : -gap * 0.4);
+                cpy1 = fy;
+                cpx2 = tx + (dx > 0 ? -gap * 0.4 : gap * 0.4);
+                cpy2 = ty;
+              } else {
+                // Primarily vertical relationship
+                if (dy > 0) {
+                  // Target is below
+                  fx = fp.x + fp.w / 2;
+                  fy = fp.y + fp.h;
+                  tx = tp.x + tp.w / 2;
+                  ty = tp.y;
+                } else {
+                  // Target is above
+                  fx = fp.x + fp.w / 2;
+                  fy = fp.y;
+                  tx = tp.x + tp.w / 2;
+                  ty = tp.y + tp.h;
+                }
+                const gap = Math.abs(ty - fy);
+                cpx1 = fx;
+                cpy1 = fy + (dy > 0 ? gap * 0.4 : -gap * 0.4);
+                cpx2 = tx;
+                cpy2 = ty + (dy > 0 ? -gap * 0.4 : gap * 0.4);
+              }
+
               const isHighlighted = activeTable && (r.from === activeTable || r.to === activeTable);
-              const d = `M ${fx} ${fy} C ${fx + 40} ${fy}, ${tx - 40} ${ty}, ${tx} ${ty}`;
+              const d = `M ${fx} ${fy} C ${cpx1} ${cpy1}, ${cpx2} ${cpy2}, ${tx} ${ty}`;
+
               return (
                 <g key={i}>
                   <path d={d} className={`relation-path ${isHighlighted ? 'highlighted' : ''}`} />
-                  <circle cx={tx} cy={ty} r={3.5} className={`relation-dot ${isHighlighted ? 'highlighted' : ''}`} />
+                  <circle cx={tx} cy={ty} r={4} className={`relation-dot ${isHighlighted ? 'highlighted' : ''}`} />
                 </g>
               );
             })}
