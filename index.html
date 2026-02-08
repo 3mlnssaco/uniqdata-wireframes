@@ -612,65 +612,75 @@
           <div class="schema-canvas">
             <div class="schema-panzoom">
               <div class="mermaid">erDiagram
+  %% ===== 핵심 흐름 요약 (v4 아키텍처) =====
+
   accounts {
     uuid id PK
     enum type
   }
-  users {
+  owners {
     uuid id PK
-    uuid accountId
-  }
-  passkey_credentials {
-    uuid id PK
-    uuid userId
+    uuid accountId FK
   }
   wallets {
     uuid id PK
-    uuid ownerId
+    uuid ownerId FK
   }
-  wallet_secrets {
+
+  research_projects {
     uuid id PK
-    uuid walletId
+    uuid ownerId FK
+    enum status
   }
-  consents {
+  team_members {
     uuid id PK
-    uuid userId
+    uuid projectId FK
+    uuid ownerId FK
+    enum role
   }
-  audit_logs {
+  agreements {
     uuid id PK
-    uuid userId
+    uuid projectId FK
+    uuid ownerId FK
+    enum status
+  }
+  settlements {
+    uuid id PK
+    uuid agreementId FK
+  }
+  escrows {
+    uuid id PK
+    uuid projectId FK
+  }
+  project_wallets {
+    uuid id PK
+    uuid projectId FK
   }
   data_points {
     uuid id PK
-    uuid userId
+    uuid ownerId FK
     datetime timestamp
   }
-  workspaces {
+  anchor_logs {
     uuid id PK
-    uuid institutionId
-  }
-  workspace_members {
-    uuid id PK
-    uuid workspaceId
-    uuid accountId
-  }
-  data_accesses {
-    uuid id PK
-    uuid workspaceId
-    uuid accountId
+    enum anchorType
+    string txHash
   }
 
-  accounts ||--o| users : profile
-  users ||--o{ passkey_credentials : auth
-  users ||--o{ consents : grants
-  users ||--o{ audit_logs : audits
-  users ||--o{ data_points : writes
-  accounts ||--o{ workspace_members : member
-  workspaces ||--o{ workspace_members : members
-  accounts ||--o{ data_accesses : access
-  workspaces ||--o{ data_accesses : grants
-  users ||--o{ wallets : owns
-  wallets ||--o{ wallet_secrets : secures</div>
+  accounts ||--o| owners : has
+  owners ||--o{ wallets : owns
+  owners ||--o{ research_projects : creates
+  owners ||--o{ agreements : signs
+  owners ||--o{ team_members : joins
+
+  research_projects ||--o{ team_members : has
+  research_projects ||--o{ agreements : receives
+  research_projects ||--|| project_wallets : has
+  research_projects ||--o{ escrows : funded_by
+
+  agreements ||--o{ settlements : earns
+  owners ||--o{ data_points : provides
+  owners ||--o{ anchor_logs : anchors</div>
             </div>
           </div>
         </div>
@@ -689,413 +699,252 @@
           <div class="schema-canvas">
             <div class="schema-panzoom">
               <div class="mermaid">erDiagram
+  %% ===== v4 아키텍처 전체 ERD (40개 엔티티) =====
+
+  %% ===== USER & AUTH =====
   accounts {
     uuid id PK
     enum type
     enum status
-    string identityHash
     datetime createdAt
   }
   account_logins {
     uuid id PK
-    uuid accountId
+    uuid accountId FK
     string provider
     string email
-    string phone
-  }
-  users {
-    uuid id PK
-    uuid accountId
-    date birthDate
-    string gender
   }
   owners {
     uuid id PK
-    uuid accountId
+    uuid accountId FK
   }
-
   passkey_credentials {
     uuid id PK
-    uuid userId
+    uuid ownerId FK
     string credentialId
+    bytes publicKey
   }
   sessions {
     uuid id PK
-    uuid userId
-    string appId
-  }
-  refresh_tokens {
-    uuid id PK
-    uuid userId
-    uuid sessionId
+    uuid ownerId FK
   }
 
+  %% ===== WALLET =====
   wallets {
     uuid id PK
-    uuid ownerId
+    uuid ownerId FK
     string address
   }
   wallet_secrets {
     uuid id PK
-    uuid walletId
+    uuid walletId FK
   }
   wallet_credential_bindings {
     uuid id PK
-    uuid walletId
-    uuid credentialId
+    uuid walletId FK
+    uuid credentialId FK
   }
-  wallet_recovery_requests {
+
+  %% ===== RESEARCH (🟣 블록체인) =====
+  research_projects {
     uuid id PK
-    uuid walletId
-    uuid ownerId
+    uuid ownerId FK
+    string title
+    enum status
+    string escrowTxHash
+  }
+  data_collection_configs {
+    uuid id PK
+    uuid projectId FK
+    jsonb passiveData
+    jsonb activeData
+  }
+  participation_criteria {
+    uuid id PK
+    uuid projectId FK
+    jsonb ageRange
+  }
+  team_members {
+    uuid id PK
+    uuid projectId FK
+    uuid ownerId FK
+    enum role
+  }
+  agreements {
+    uuid id PK
+    uuid projectId FK
+    uuid ownerId FK
+    enum status
+    jsonb dataScopes
+    string anchorTx
+  }
+  project_wallets {
+    uuid id PK
+    uuid projectId FK
+    string address
+  }
+  escrows {
+    uuid id PK
+    uuid projectId FK
+    decimal amount
     enum status
   }
-  anchor_logs {
+  settlements {
     uuid id PK
-    uuid userId
-    enum anchorType
+    uuid agreementId FK
+    decimal amount
     string txHash
   }
 
-  apps {
-    uuid id PK
-    string slug
-  }
-  app_keys {
-    uuid id PK
-    uuid appId
-  }
-
-  consents {
-    uuid id PK
-    uuid userId
-    string appId
-  }
-  audit_logs {
-    uuid id PK
-    uuid userId
-    string appId
-    string action
-  }
-
+  %% ===== DATA =====
   data_points {
     uuid id PK
-    uuid userId
+    uuid ownerId FK
     string category
     string metric
     jsonb value
     datetime timestamp
+    int sensitivityLevel
   }
   data_sources {
     uuid id PK
-    uuid userId
     string type
   }
   data_attachments {
     uuid id PK
-    uuid dataPointId
-    uuid userId
-  }
-  features {
-    uuid id PK
-    uuid userId
-    string featureType
+    uuid dataPointId FK
   }
 
+  %% ===== CONSENT & AUDIT =====
+  consents {
+    uuid id PK
+    uuid ownerId FK
+    string scope
+    enum status
+  }
+  audit_logs {
+    uuid id PK
+    string action
+    uuid ownerId FK
+  }
+  anchor_logs {
+    uuid id PK
+    enum anchorType
+    string txHash UK
+    jsonb metadata
+  }
+
+  %% ===== APP =====
   user_medications {
     uuid id PK
-    uuid userId
+    uuid ownerId FK
   }
   medication_logs {
     uuid id PK
-    uuid userId
-    uuid medicationId
-  }
-  medication_proofs {
-    uuid id PK
-    uuid userId
-  }
-  drug_info_cache {
-    string drugCode PK
-  }
-  ai_analyses {
-    uuid id PK
-    uuid userId
+    uuid medicationId FK
   }
   notifications {
     uuid id PK
-    uuid userId
+    uuid ownerId FK
   }
 
+  %% ===== WORKSPACE =====
   institutions {
     uuid id PK
     string name
   }
   workspaces {
     uuid id PK
-    uuid institutionId
-    string name
+    uuid institutionId FK
   }
   workspace_members {
     uuid id PK
-    uuid workspaceId
-    uuid accountId
-    enum role
-  }
-  data_accesses {
-    uuid id PK
-    uuid workspaceId
-    uuid accountId
-    string dataProductId
+    uuid workspaceId FK
+    uuid accountId FK
   }
 
+  %% ===== RELATIONS =====
   accounts ||--o{ account_logins : has
-  accounts ||--o| owners : owns
-  accounts ||--o| users : profile
+  accounts ||--o| owners : has
   accounts ||--o{ workspace_members : member
-  accounts ||--o{ data_accesses : access
 
-  users ||--o{ passkey_credentials : owns
-  users ||--o{ sessions : uses
-  users ||--o{ refresh_tokens : issues
-  users ||--o{ data_points : writes
-  users ||--o{ data_sources : connects
-  users ||--o{ data_attachments : uploads
-  users ||--o{ features : derives
-  users ||--o{ user_medications : has
-  users ||--o{ medication_logs : logs
-  users ||--o{ medication_proofs : proves
-  users ||--o{ notifications : receives
-  users ||--o{ ai_analyses : runs
-  users ||--o{ anchor_logs : anchors
-  users ||--o{ consents : grants
-  users ||--o{ audit_logs : audits
+  owners ||--o{ passkey_credentials : has
+  owners ||--o{ wallets : owns
+  owners ||--o{ sessions : uses
+  owners ||--o{ data_points : provides
+  owners ||--o{ consents : grants
+  owners ||--o{ anchor_logs : creates
+  owners ||--o{ notifications : receives
+
+  wallets ||--|| wallet_secrets : encrypted_by
+  wallets ||--o{ wallet_credential_bindings : binds
+
+  owners ||--o{ research_projects : creates
+  research_projects ||--|| data_collection_configs : has
+  research_projects ||--|| participation_criteria : has
+  research_projects ||--o{ team_members : has
+  research_projects ||--o{ agreements : receives
+  research_projects ||--|| project_wallets : has
+  research_projects ||--o{ escrows : funded_by
+
+  agreements ||--o{ settlements : earns
 
   data_points ||--o{ data_attachments : has
   user_medications ||--o{ medication_logs : logs
 
-  apps ||--o{ app_keys : has
-  apps ||--o{ audit_logs : logs
-  apps ||--o{ consents : scopes
-  apps ||--o{ sessions : usedBy</div>
+  institutions ||--o{ workspaces : owns
+  workspaces ||--o{ workspace_members : has</div>
             </div>
           </div>
         </div>
         <details class="schema-details">
-          <summary>Mermaid 원문 보기</summary>
-          <pre class="schema-code">erDiagram
-  accounts {
-    uuid id PK
-    enum type
-    enum status
-    string identityHash
-    datetime createdAt
-  }
-  account_logins {
-    uuid id PK
-    uuid accountId
-    string provider
-    string email
-    string phone
-  }
-  users {
-    uuid id PK
-    uuid accountId
-    date birthDate
-    string gender
-  }
-  owners {
-    uuid id PK
-    uuid accountId
-  }
+          <summary>Mermaid 원문 보기 (v4 아키텍처)</summary>
+          <pre class="schema-code">상세 ERD는 backend/docs/ERD.md 참조
 
-  passkey_credentials {
-    uuid id PK
-    uuid userId
-    string credentialId
-  }
-  sessions {
-    uuid id PK
-    uuid userId
-    string appId
-  }
-  refresh_tokens {
-    uuid id PK
-    uuid userId
-    uuid sessionId
-  }
+주요 엔티티 (40개):
+- 계정: accounts, account_logins, owners
+- 인증: passkey_credentials, sessions, wallets, wallet_secrets
+- 연구: research_projects, data_collection_configs, participation_criteria
+- 팀: team_members (role: owner/admin/member)
+- 동의: agreements, consents
+- 정산: settlements, escrows, project_wallets
+- 데이터: data_points, data_sources, data_attachments
+- 앵커: anchor_logs (XRPL 트랜잭션)
+- 앱: user_medications, medication_logs, notifications
+- 기관: institutions, workspaces, workspace_members
 
-  wallets {
-    uuid id PK
-    uuid ownerId
-    string address
-  }
-  wallet_secrets {
-    uuid id PK
-    uuid walletId
-  }
-  wallet_credential_bindings {
-    uuid id PK
-    uuid walletId
-    uuid credentialId
-  }
-  wallet_recovery_requests {
-    uuid id PK
-    uuid walletId
-    uuid ownerId
-    enum status
-  }
-  anchor_logs {
-    uuid id PK
-    uuid userId
-    enum anchorType
-    string txHash
-  }
-
-  apps {
-    uuid id PK
-    string slug
-  }
-  app_keys {
-    uuid id PK
-    uuid appId
-  }
-
-  consents {
-    uuid id PK
-    uuid userId
-    string appId
-  }
-  audit_logs {
-    uuid id PK
-    uuid userId
-    string appId
-    string action
-  }
-
-  data_points {
-    uuid id PK
-    uuid userId
-    string category
-    string metric
-    jsonb value
-    datetime timestamp
-  }
-  data_sources {
-    uuid id PK
-    uuid userId
-    string type
-  }
-  data_attachments {
-    uuid id PK
-    uuid dataPointId
-    uuid userId
-  }
-  features {
-    uuid id PK
-    uuid userId
-    string featureType
-  }
-
-  user_medications {
-    uuid id PK
-    uuid userId
-  }
-  medication_logs {
-    uuid id PK
-    uuid userId
-    uuid medicationId
-  }
-  medication_proofs {
-    uuid id PK
-    uuid userId
-  }
-  drug_info_cache {
-    string drugCode PK
-  }
-  ai_analyses {
-    uuid id PK
-    uuid userId
-  }
-  notifications {
-    uuid id PK
-    uuid userId
-  }
-
-  institutions {
-    uuid id PK
-    string name
-  }
-  workspaces {
-    uuid id PK
-    uuid institutionId
-    string name
-  }
-  workspace_members {
-    uuid id PK
-    uuid workspaceId
-    uuid accountId
-    enum role
-  }
-  data_accesses {
-    uuid id PK
-    uuid workspaceId
-    uuid accountId
-    string dataProductId
-  }
-
-  accounts ||--o{ account_logins : has
-  accounts ||--o| owners : owns
-  accounts ||--o| users : profile
-  accounts ||--o{ workspace_members : member
-  accounts ||--o{ data_accesses : access
-
-  users ||--o{ passkey_credentials : owns
-  users ||--o{ sessions : uses
-  users ||--o{ refresh_tokens : issues
-  users ||--o{ data_points : writes
-  users ||--o{ data_sources : connects
-  users ||--o{ data_attachments : uploads
-  users ||--o{ features : derives
-  users ||--o{ user_medications : has
-  users ||--o{ medication_logs : logs
-  users ||--o{ medication_proofs : proves
-  users ||--o{ notifications : receives
-  users ||--o{ ai_analyses : runs
-  users ||--o{ anchor_logs : anchors
-  users ||--o{ consents : grants
-  users ||--o{ audit_logs : audits
-
-  data_points ||--o{ data_attachments : has
-  user_medications ||--o{ medication_logs : logs
-
-  apps ||--o{ app_keys : has
-  apps ||--o{ audit_logs : logs
-  apps ||--o{ consents : scopes
-  apps ||--o{ sessions : usedBy</pre>
+서버 분리:
+🟣 블록체인: 민감 데이터 (data_points, agreements, settlements, anchor_logs)
+🔵 백엔드: 비민감 데이터 (research_projects, configs, criteria)
+📱 앱: 복약/알림 (medications, notifications)</pre>
         </details>
         <div class="schema-links">
-          <a href="../../../../../../backend/docs/architecture/DB_ERD.md">DB_ERD.md 열기</a>
-          <a href="../../../../../../backend/docs/architecture/DATA_SCHEMA_MASTER.md">DATA_SCHEMA_MASTER.md 열기</a>
+          <a href="../../../../../../backend/docs/ERD.md">📊 ERD.md (40개 엔티티)</a>
+          <a href="../../../../../../backend/docs/API_SEPARATION.md">🔀 API_SEPARATION.md</a>
+          <a href="../../../../../../backend/docs/ARCHITECTURE_QA.md">❓ Q&A 문서</a>
         </div>
       </div>
       <div class="schema-card">
-        <h3>핵심 엔티티 (요약)</h3>
-        <p>기능 중심으로 자주 보는 테이블만 요약했습니다.</p>
+        <h3>핵심 엔티티 (v4 아키텍처)</h3>
+        <p>서버 분리 기준으로 정리했습니다. 총 40개 엔티티.</p>
         <ul class="schema-list">
-          <li>계정/인증: accounts, users, owners, passkey_credentials, sessions, refresh_tokens</li>
-          <li>지갑/앵커: wallets, wallet_secrets, wallet_credential_bindings, anchor_logs</li>
-          <li>데이터 수집: data_points, data_sources, data_attachments, features</li>
-          <li>복약/의약: user_medications, medication_logs, medication_proofs, drug_info_cache</li>
-          <li>정책/감사: consents, audit_logs, data_accesses</li>
-          <li>기관/워크스페이스: institutions, workspaces, workspace_members</li>
-          <li>AI/알림: ai_analyses, notifications</li>
+          <li><strong>🟣 블록체인 서버 (민감)</strong></li>
+          <li>연구: research_projects, team_members, agreements</li>
+          <li>정산: settlements, escrows, project_wallets</li>
+          <li>동의: consents, anchor_logs, audit_logs</li>
+          <li>데이터: data_points (sensitivityLevel >= 3)</li>
+          <li><strong>🔵 백엔드 서버 (비민감)</strong></li>
+          <li>설정: data_collection_configs, participation_criteria</li>
+          <li>계정: accounts, owners, account_logins</li>
+          <li><strong>📱 앱 전용</strong></li>
+          <li>복약: user_medications, medication_logs</li>
+          <li>알림: notifications</li>
         </ul>
       </div>
     </div>
 
-    <div class="group-title">👤 사용자/지갑/패스키 관계 (확대)</div>
-    <div class="group-note">요청하신 “ASCII 박스” 스타일에 가깝게, 사용자 관련 테이블만 확대해서 보여줍니다.</div>
+    <div class="group-title">👤 계정/Owner/지갑/패스키 관계 (v4)</div>
+    <div class="group-note">v4 아키텍처 기준 계정-Owner-지갑 관계입니다. Owner가 데이터 소유권의 핵심입니다.</div>
     <div class="schema-card">
       <div class="schema-mermaid" data-zoom="1">
         <div class="schema-controls">
@@ -1107,13 +956,15 @@
         <div class="schema-canvas">
           <div class="schema-panzoom">
             <div class="mermaid">flowchart LR
-  users["users\n- id (PK)\n- email\n- phone\n- createdAt\n- updatedAt"]:::box
-  passkey["passkey_credentials\n- userId\n- credentialId\n- publicKey\n- counter"]:::box
-  wallets["wallets\n- userId\n- address\n- publicKey\n- type\n- isActive"]:::box
-  walletSecrets["wallet_secrets\n- walletId\n- encryptedSeed\n- keyId"]:::box
+  accounts["accounts\n- id (PK)\n- type\n- status\n- createdAt"]:::box
+  owners["owners\n- id (PK)\n- accountId (FK)\n(익명 데이터 소유권)"]:::box
+  passkey["passkey_credentials\n- ownerId (FK)\n- credentialId\n- publicKey\n- counter"]:::box
+  wallets["wallets\n- ownerId (FK)\n- address\n- publicKey\n- status"]:::box
+  walletSecrets["wallet_secrets\n- walletId (FK)\n- encrypted_seed_prf\n- encrypted_seed_hsm"]:::box
 
-  users --> passkey
-  users --> wallets
+  accounts --> owners
+  owners --> passkey
+  owners --> wallets
   wallets --> walletSecrets
 
   classDef box fill:#ffffff,stroke:#d1d5db,stroke-width:1px,rx:8,ry:8,color:#111827;</div>
