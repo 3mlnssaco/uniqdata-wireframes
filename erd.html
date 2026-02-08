@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UniQData ERD v4 - Interactive</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { overflow: hidden; }
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script type="text/babel">
+const { useState, useRef, useEffect, useCallback } = React;
+
+const DOMAINS = {
+  all: { label: "전체 보기", icon: "🗺️", color: "#64748b" },
+  core: { label: "Core Auth", icon: "🔑", color: "#6366f1" },
+  wallet: { label: "Wallet", icon: "👛", color: "#f59e0b" },
+  org: { label: "Organization", icon: "🏢", color: "#10b981" },
+  app: { label: "App & Session", icon: "📱", color: "#3b82f6" },
+  data: { label: "Data", icon: "📊", color: "#8b5cf6" },
+  research: { label: "Research", icon: "🔬", color: "#ec4899" },
+  finance: { label: "Finance", icon: "💰", color: "#f97316" },
+  medication: { label: "Medication", icon: "💊", color: "#14b8a6" },
+  analytics: { label: "AI & Audit", icon: "🤖", color: "#64748b" },
+};
+
+const TABLES = [
+  // Core Auth
+  { name: "accounts", domain: "core", pk: "id", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "type", t: "enum" }, { n: "status", t: "enum" },
+    { n: "identity_hash", t: "varchar" }, { n: "kyc_verified_at", t: "timestamp" },
+    { n: "kyc_provider", t: "varchar" }, { n: "created_at", t: "timestamp" }, { n: "updated_at", t: "timestamp" }
+  ]},
+  { name: "account_logins", domain: "core", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "account_id", t: "uuid", fk: "accounts" },
+    { n: "provider", t: "enum" }, { n: "provider_user_id", t: "varchar" },
+    { n: "email", t: "varchar" }, { n: "phone", t: "varchar" },
+    { n: "email_verified", t: "bool" }, { n: "phone_verified", t: "bool" },
+    { n: "password_hash", t: "varchar" }, { n: "created_at", t: "timestamp" }
+  ]},
+  { name: "owners", domain: "core", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "account_id", t: "uuid", fk: "accounts" }, { n: "created_at", t: "timestamp" }
+  ]},
+  { name: "users", domain: "core", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "account_id", t: "uuid", fk: "accounts" },
+    { n: "name", t: "varchar" }, { n: "birth_date", t: "date" }, { n: "gender", t: "varchar" },
+    { n: "height", t: "decimal" }, { n: "weight", t: "decimal" }, { n: "blood_type", t: "varchar" },
+    { n: "allergies", t: "text" }, { n: "created_at", t: "timestamp" }, { n: "updated_at", t: "timestamp" }
+  ]},
+  // Wallet
+  { name: "wallets", domain: "wallet", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "owner_id", t: "uuid", fk: "owners" },
+    { n: "address", t: "varchar" }, { n: "public_key", t: "varchar" },
+    { n: "wallet_type", t: "enum" }, { n: "status", t: "enum" }, { n: "created_at", t: "timestamp" }
+  ]},
+  { name: "wallet_secrets", domain: "wallet", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "wallet_id", t: "uuid", fk: "wallets" },
+    { n: "encrypted_seed_prf", t: "bytea" }, { n: "prf_salt", t: "bytea" },
+    { n: "encrypted_seed_hsm", t: "bytea" }, { n: "hsm_key_id", t: "varchar" },
+    { n: "created_at", t: "timestamp" }, { n: "updated_at", t: "timestamp" }
+  ]},
+  { name: "wallet_credential_bindings", domain: "wallet", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "wallet_id", t: "uuid", fk: "wallets" },
+    { n: "credential_id", t: "uuid", fk: "passkey_credentials" },
+    { n: "encrypted_seed_prf", t: "bytea" }, { n: "prf_salt", t: "bytea" },
+    { n: "binding_signature", t: "text" }, { n: "xrpl_tx_hash", t: "varchar" },
+    { n: "status", t: "enum" }, { n: "created_at", t: "timestamp" }
+  ]},
+  { name: "wallet_recovery_requests", domain: "wallet", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "wallet_id", t: "uuid", fk: "wallets" },
+    { n: "owner_id", t: "uuid", fk: "owners" }, { n: "kyc_verified", t: "bool" },
+    { n: "kyc_identity_hash", t: "varchar" }, { n: "sms_verified", t: "bool" },
+    { n: "status", t: "enum" }, { n: "created_at", t: "timestamp" }
+  ]},
+  // App & Session
+  { name: "apps", domain: "app", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "slug", t: "varchar" }, { n: "name", t: "varchar" },
+    { n: "description", t: "varchar" }, { n: "allowed_scopes", t: "text" },
+    { n: "status", t: "enum" }, { n: "created_at", t: "timestamp" }
+  ]},
+  { name: "app_keys", domain: "app", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "app_id", t: "uuid", fk: "apps" },
+    { n: "key_type", t: "enum" }, { n: "key_prefix", t: "varchar" },
+    { n: "key_hash", t: "varchar" }, { n: "status", t: "enum" }, { n: "expires_at", t: "timestamp" }
+  ]},
+  { name: "sessions", domain: "app", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "user_id", t: "uuid", fk: "users" },
+    { n: "app_id", t: "uuid", fk: "apps" }, { n: "started_at", t: "timestamp" },
+    { n: "ended_at", t: "timestamp" }, { n: "metadata", t: "jsonb" }
+  ]},
+  { name: "refresh_tokens", domain: "app", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "token", t: "varchar" },
+    { n: "user_id", t: "uuid", fk: "users" }, { n: "session_id", t: "uuid", fk: "sessions" },
+    { n: "expires_at", t: "timestamp" }, { n: "revoked_at", t: "timestamp" }
+  ]},
+  { name: "passkey_credentials", domain: "app", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "user_id", t: "uuid", fk: "users" },
+    { n: "credential_id", t: "varchar" }, { n: "public_key", t: "text" },
+    { n: "counter", t: "int" }, { n: "device_name", t: "varchar" },
+    { n: "created_at", t: "timestamp" }, { n: "last_used_at", t: "timestamp" }
+  ]},
+  // Org
+  { name: "institutions", domain: "org", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "name", t: "varchar" }, { n: "type", t: "enum" },
+    { n: "domains", t: "text" }, { n: "status", t: "enum" },
+    { n: "website", t: "varchar" }, { n: "created_at", t: "timestamp" }
+  ]},
+  { name: "workspaces", domain: "org", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "name", t: "varchar" }, { n: "type", t: "enum" },
+    { n: "status", t: "enum" }, { n: "institution_id", t: "uuid", fk: "institutions" },
+    { n: "max_members", t: "int" }, { n: "created_at", t: "timestamp" }
+  ]},
+  { name: "workspace_members", domain: "org", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "workspace_id", t: "uuid", fk: "workspaces" },
+    { n: "account_id", t: "uuid", fk: "accounts" }, { n: "role", t: "enum" },
+    { n: "status", t: "enum" }, { n: "display_name", t: "varchar" }, { n: "created_at", t: "timestamp" }
+  ]},
+  // Data
+  { name: "data_points", domain: "data", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "user_id", t: "uuid", fk: "users" },
+    { n: "category", t: "varchar" }, { n: "metric", t: "varchar" }, { n: "value", t: "jsonb" },
+    { n: "unit", t: "varchar" }, { n: "timestamp", t: "timestamp" },
+    { n: "sensitivity_level", t: "int" }, { n: "created_at", t: "timestamp" }
+  ]},
+  { name: "data_attachments", domain: "data", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "data_point_id", t: "uuid", fk: "data_points" },
+    { n: "user_id", t: "uuid", fk: "users" }, { n: "storage_key", t: "varchar" },
+    { n: "file_name", t: "varchar" }, { n: "file_type", t: "varchar" },
+    { n: "file_size", t: "bigint" }, { n: "sensitivity_level", t: "int" }
+  ]},
+  { name: "data_sources", domain: "data", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "user_id", t: "uuid", fk: "users" },
+    { n: "name", t: "varchar" }, { n: "type", t: "varchar" }, { n: "is_active", t: "bool" },
+    { n: "config", t: "jsonb" }, { n: "last_sync_at", t: "timestamp" }
+  ]},
+  { name: "data_accesses", domain: "data", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "workspace_id", t: "uuid", fk: "workspaces" },
+    { n: "account_id", t: "uuid", fk: "accounts" }, { n: "data_product_id", t: "varchar" },
+    { n: "status", t: "enum" }, { n: "granted_by", t: "uuid", fk: "accounts" },
+    { n: "granted_at", t: "timestamp" }, { n: "expires_at", t: "timestamp" }
+  ]},
+  { name: "consents", domain: "data", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "user_id", t: "uuid", fk: "users" },
+    { n: "app_id", t: "uuid", fk: "apps" }, { n: "scopes", t: "text" },
+    { n: "purpose", t: "varchar" }, { n: "status", t: "enum" },
+    { n: "xrpl_tx_hash", t: "varchar" }, { n: "created_at", t: "timestamp" }
+  ]},
+  // Research
+  { name: "research_projects", domain: "research", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "owner_id", t: "uuid", fk: "owners" },
+    { n: "institution_id", t: "uuid", fk: "institutions" }, { n: "title", t: "varchar" },
+    { n: "description", t: "text" }, { n: "methodology", t: "varchar" },
+    { n: "status", t: "enum" }, { n: "created_at", t: "timestamp" }
+  ]},
+  { name: "participation_criteria", domain: "research", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "project_id", t: "uuid", fk: "research_projects" },
+    { n: "age_min", t: "int" }, { n: "age_max", t: "int" }, { n: "conditions", t: "jsonb" },
+    { n: "exclusions", t: "jsonb" }, { n: "required_data", t: "jsonb" }
+  ]},
+  { name: "data_collection_configs", domain: "research", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "project_id", t: "uuid", fk: "research_projects" },
+    { n: "passive_data", t: "jsonb" }, { n: "active_data", t: "jsonb" },
+    { n: "biomarkers", t: "jsonb" }, { n: "collection_frequency", t: "jsonb" }
+  ]},
+  { name: "team_members", domain: "research", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "project_id", t: "uuid", fk: "research_projects" },
+    { n: "owner_id", t: "uuid", fk: "owners" }, { n: "role", t: "enum" },
+    { n: "invited_by", t: "uuid", fk: "owners" }, { n: "joined_at", t: "timestamp" }
+  ]},
+  { name: "agreements", domain: "research", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "project_id", t: "uuid", fk: "research_projects" },
+    { n: "owner_id", t: "uuid", fk: "owners" }, { n: "status", t: "enum" },
+    { n: "data_scopes", t: "jsonb" }, { n: "start_date", t: "date" }, { n: "end_date", t: "date" }
+  ]},
+  // Finance
+  { name: "project_wallets", domain: "finance", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "project_id", t: "uuid", fk: "research_projects" },
+    { n: "wallet_address", t: "varchar" }, { n: "encrypted_seed", t: "bytea" },
+    { n: "total_deposited", t: "decimal" }, { n: "total_spent", t: "decimal" }, { n: "status", t: "enum" }
+  ]},
+  { name: "project_wallet_deposits", domain: "finance", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "project_id", t: "uuid", fk: "research_projects" },
+    { n: "depositor_owner_id", t: "uuid", fk: "owners" }, { n: "amount", t: "decimal" },
+    { n: "tx_hash", t: "varchar" }, { n: "deposited_at", t: "timestamp" }
+  ]},
+  { name: "project_wallet_withdrawals", domain: "finance", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "project_id", t: "uuid", fk: "research_projects" },
+    { n: "withdrawer_owner_id", t: "uuid", fk: "owners" }, { n: "amount", t: "decimal" },
+    { n: "tx_hash", t: "varchar" }, { n: "withdrawn_at", t: "timestamp" }
+  ]},
+  { name: "escrows", domain: "finance", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "project_id", t: "uuid", fk: "research_projects" },
+    { n: "owner_address", t: "varchar" }, { n: "amount", t: "decimal" },
+    { n: "condition", t: "varchar" }, { n: "tx_hash", t: "varchar" }, { n: "status", t: "enum" }
+  ]},
+  { name: "settlements", domain: "finance", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "agreement_id", t: "uuid", fk: "agreements" },
+    { n: "amount", t: "decimal" }, { n: "tx_hash", t: "varchar" },
+    { n: "type", t: "varchar" }, { n: "memo", t: "text" }, { n: "settled_at", t: "timestamp" }
+  ]},
+  // Medication
+  { name: "drug_info_cache", domain: "medication", cols: [
+    { n: "drug_code", t: "varchar", pk: true }, { n: "name", t: "varchar" },
+    { n: "category", t: "varchar" }, { n: "manufacturer", t: "varchar" },
+    { n: "ingredients", t: "jsonb" }, { n: "effects", t: "text" },
+    { n: "side_effects", t: "text" }, { n: "interactions", t: "jsonb" }
+  ]},
+  { name: "user_medications", domain: "medication", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "user_id", t: "uuid", fk: "users" },
+    { n: "name_encrypted", t: "text" }, { n: "dosage_encrypted", t: "text" },
+    { n: "category_hash", t: "varchar" }, { n: "drug_code", t: "varchar" },
+    { n: "is_active", t: "bool" }, { n: "medication_type", t: "varchar" },
+    { n: "xrpl_tx_hash", t: "varchar" }
+  ]},
+  { name: "medication_logs", domain: "medication", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "user_id", t: "uuid", fk: "users" },
+    { n: "medication_id", t: "uuid", fk: "user_medications" },
+    { n: "scheduled_time", t: "varchar" }, { n: "taken", t: "bool" },
+    { n: "taken_at", t: "timestamp" }, { n: "xrpl_tx_hash", t: "varchar" }
+  ]},
+  { name: "medication_proofs", domain: "medication", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "user_id", t: "uuid", fk: "users" },
+    { n: "proof_type", t: "varchar" }, { n: "category_hash", t: "varchar" },
+    { n: "commitment", t: "bytea" }, { n: "proof_data", t: "jsonb" }
+  ]},
+  // AI & Audit
+  { name: "ai_analyses", domain: "analytics", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "user_id", t: "uuid", fk: "users" },
+    { n: "type", t: "varchar" }, { n: "status", t: "enum" },
+    { n: "input", t: "jsonb" }, { n: "result", t: "jsonb" }
+  ]},
+  { name: "features", domain: "analytics", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "user_id", t: "uuid", fk: "users" },
+    { n: "category", t: "varchar" }, { n: "feature_type", t: "varchar" },
+    { n: "value", t: "jsonb" }, { n: "period_start", t: "timestamp" }
+  ]},
+  { name: "notifications", domain: "analytics", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "user_id", t: "uuid", fk: "users" },
+    { n: "app_id", t: "uuid", fk: "apps" }, { n: "type", t: "varchar" },
+    { n: "title", t: "varchar" }, { n: "body", t: "varchar" }, { n: "read_at", t: "timestamp" }
+  ]},
+  { name: "audit_logs", domain: "analytics", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "user_id", t: "uuid", fk: "users" },
+    { n: "app_id", t: "uuid", fk: "apps" }, { n: "action", t: "varchar" },
+    { n: "category", t: "varchar" }, { n: "xrpl_tx_hash", t: "varchar" },
+    { n: "timestamp", t: "timestamp" }
+  ]},
+  { name: "anchor_logs", domain: "analytics", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "user_id", t: "uuid", fk: "users" },
+    { n: "anchor_type", t: "enum" }, { n: "tx_hash", t: "varchar" },
+    { n: "from_address", t: "varchar" }, { n: "to_address", t: "varchar" }
+  ]},
+];
+
+const RELATIONS = [];
+TABLES.forEach(t => {
+  t.cols.forEach(c => {
+    if (c.fk) {
+      RELATIONS.push({ from: t.name, fromCol: c.n, to: c.fk, toCol: "id" });
+    }
+  });
+});
+
+function getPositions(domain) {
+  const visible = domain === "all" ? TABLES : TABLES.filter(t => {
+    if (t.domain === domain) return true;
+    const domainTables = TABLES.filter(tt => tt.domain === domain);
+    for (const dt of domainTables) {
+      for (const c of dt.cols) {
+        if (c.fk === t.name) return true;
+      }
+    }
+    return false;
+  });
+
+  const positions = {};
+  const COL_W = 260;
+  const ROW_H_BASE = 42;
+  const GAP_X = 40;
+  const GAP_Y = 30;
+
+  if (domain === "all") {
+    const domainOrder = ["core", "app", "org", "wallet", "data", "research", "finance", "medication", "analytics"];
+    const gridCols = 4;
+    let gx = 0, gy = 0;
+    let maxHeightInRow = 0;
+
+    domainOrder.forEach((d) => {
+      const tables = visible.filter(t => t.domain === d);
+      const col = gx;
+      let localY = gy;
+
+      tables.forEach((t) => {
+        const h = 28 + t.cols.length * ROW_H_BASE;
+        positions[t.name] = { x: col * (COL_W + GAP_X), y: localY, w: COL_W, h, ghost: false };
+        localY += h + GAP_Y;
+        maxHeightInRow = Math.max(maxHeightInRow, localY);
+      });
+
+      gx++;
+      if (gx >= gridCols) {
+        gx = 0;
+        gy = maxHeightInRow + 40;
+        maxHeightInRow = 0;
+      }
+    });
+  } else {
+    const primary = visible.filter(t => t.domain === domain);
+    const ghost = visible.filter(t => t.domain !== domain);
+
+    const cols = Math.min(Math.ceil(primary.length / 4), 3);
+
+    primary.forEach((t, i) => {
+      const col = i % cols;
+      const h = 28 + t.cols.length * ROW_H_BASE;
+      if (!positions[`_col_${col}`]) positions[`_col_${col}`] = 0;
+      const cy = positions[`_col_${col}`] || 0;
+      positions[t.name] = { x: 200 + col * (COL_W + GAP_X), y: cy, w: COL_W, h, ghost: false };
+      positions[`_col_${col}`] = cy + h + GAP_Y;
+    });
+
+    let gy2 = 0;
+    ghost.forEach((t) => {
+      const h = 28 + Math.min(t.cols.length, 3) * ROW_H_BASE;
+      positions[t.name] = { x: -120, y: gy2, w: 180, h, ghost: true };
+      gy2 += h + 15;
+    });
+
+    Object.keys(positions).filter(k => k.startsWith("_col_")).forEach(k => delete positions[k]);
+  }
+
+  return { visible, positions };
+}
+
+function TableCard({ table, pos, isHighlighted, highlightColor, onHover, onClick, selected }) {
+  const domainInfo = DOMAINS[table.domain];
+  const isGhost = pos.ghost;
+  const maxCols = isGhost ? 3 : table.cols.length;
+  const visibleCols = table.cols.slice(0, maxCols);
+
+  return (
+    <g
+      transform={`translate(${pos.x}, ${pos.y})`}
+      onMouseEnter={() => onHover(table.name)}
+      onMouseLeave={() => onHover(null)}
+      onClick={() => onClick(table.name)}
+      style={{ cursor: "pointer" }}
+    >
+      <rect
+        width={pos.w}
+        height={pos.h}
+        rx={6}
+        fill={isGhost ? "#1e1e2e" : "#1a1a2e"}
+        stroke={selected ? "#fff" : isHighlighted ? highlightColor || domainInfo.color : isGhost ? "#2a2a3e" : domainInfo.color + "60"}
+        strokeWidth={selected ? 2 : isHighlighted ? 2 : 1}
+        opacity={isGhost ? 0.5 : 1}
+      />
+      <rect width={pos.w} height={28} rx={6} fill={domainInfo.color + (isGhost ? "30" : "20")} />
+      <rect y={22} width={pos.w} height={6} fill={domainInfo.color + (isGhost ? "30" : "20")} />
+      <text x={10} y={18} fill={domainInfo.color} fontSize={isGhost ? 10 : 12} fontWeight="700" fontFamily="'JetBrains Mono', monospace">
+        {isGhost ? `↗ ${table.name}` : table.name}
+      </text>
+      <text x={pos.w - 8} y={18} fill={domainInfo.color + "80"} fontSize={9} textAnchor="end" fontFamily="sans-serif">
+        {isGhost ? "(ref)" : `${table.cols.length} cols`}
+      </text>
+      {visibleCols.map((col, i) => (
+        <g key={col.n} transform={`translate(0, ${28 + i * 26})`}>
+          <rect x={0} width={pos.w} height={26} fill={i % 2 === 0 ? "transparent" : "#ffffff04"} />
+          {col.pk && <text x={8} y={17} fill="#fbbf24" fontSize={9}>🔑</text>}
+          {col.fk && !col.pk && <text x={8} y={17} fill="#60a5fa" fontSize={9}>→</text>}
+          <text x={col.pk || col.fk ? 24 : 10} y={17} fill={col.pk ? "#fbbf24" : col.fk ? "#60a5fa" : "#94a3b8"} fontSize={11} fontFamily="'JetBrains Mono', monospace">
+            {col.n}
+          </text>
+          <text x={pos.w - 8} y={17} fill="#475569" fontSize={10} textAnchor="end" fontFamily="'JetBrains Mono', monospace">
+            {col.t}
+          </text>
+        </g>
+      ))}
+      {isGhost && table.cols.length > 3 && (
+        <text x={pos.w / 2} y={pos.h - 5} fill="#475569" fontSize={9} textAnchor="middle">
+          +{table.cols.length - 3} more...
+        </text>
+      )}
+    </g>
+  );
+}
+
+function RelationLine({ from, positions, highlighted }) {
+  const fp = positions[from.from];
+  const tp = positions[from.to];
+  if (!fp || !tp) return null;
+
+  const fromTable = TABLES.find(t => t.name === from.from);
+  const fromColIdx = fromTable ? fromTable.cols.findIndex(c => c.n === from.fromCol) : 0;
+
+  const fx = fp.x + fp.w;
+  const fy = fp.y + 28 + fromColIdx * 26 + 13;
+  const tx = tp.x;
+  const ty = tp.y + 14;
+
+  const d = `M ${fx} ${fy} C ${fx + 40} ${fy}, ${tx - 40} ${ty}, ${tx} ${ty}`;
+
+  return (
+    <g>
+      <path
+        d={d}
+        fill="none"
+        stroke={highlighted ? "#60a5fa" : "#334155"}
+        strokeWidth={highlighted ? 1.5 : 0.8}
+        opacity={highlighted ? 0.9 : 0.3}
+        strokeDasharray={highlighted ? "none" : "4 2"}
+      />
+      <circle cx={tx} cy={ty} r={2.5} fill={highlighted ? "#60a5fa" : "#334155"} opacity={highlighted ? 0.9 : 0.3} />
+    </g>
+  );
+}
+
+function UniQDataERD() {
+  const [domain, setDomain] = useState("core");
+  const [hovered, setHovered] = useState(null);
+  const [selected, setSelected] = useState(null);
+  const [zoom, setZoom] = useState(1);
+  const [pan, setPan] = useState({ x: 50, y: 30 });
+  const [dragging, setDragging] = useState(false);
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const svgRef = useRef(null);
+
+  const { visible, positions } = getPositions(domain);
+
+  const activeTable = hovered || selected;
+  const relatedTables = new Set();
+  if (activeTable) {
+    RELATIONS.forEach(r => {
+      if (r.from === activeTable) relatedTables.add(r.to);
+      if (r.to === activeTable) relatedTables.add(r.from);
+    });
+  }
+
+  const visibleRelations = RELATIONS.filter(r =>
+    visible.some(t => t.name === r.from) && visible.some(t => t.name === r.to)
+  );
+
+  const handleWheel = useCallback((e) => {
+    e.preventDefault();
+    const delta = e.deltaY > 0 ? -0.05 : 0.05;
+    setZoom(z => Math.max(0.3, Math.min(2, z + delta)));
+  }, []);
+
+  const handleMouseDown = (e) => {
+    if (e.target.closest("g[style]")) return;
+    setDragging(true);
+    setDragStart({ x: e.clientX - pan.x, y: e.clientY - pan.y });
+  };
+  const handleMouseMove = (e) => {
+    if (!dragging) return;
+    setPan({ x: e.clientX - dragStart.x, y: e.clientY - dragStart.y });
+  };
+  const handleMouseUp = () => setDragging(false);
+
+  useEffect(() => {
+    setZoom(domain === "all" ? 0.55 : 0.85);
+    setPan(domain === "all" ? { x: 30, y: 20 } : { x: 80, y: 30 });
+    setSelected(null);
+  }, [domain]);
+
+  const totalTables = domain === "all" ? TABLES.length : visible.filter(t => t.domain === domain).length;
+  const totalRels = visibleRelations.length;
+
+  const zoomBtnStyle = {
+    width: 24, height: 24, borderRadius: 6, border: "1px solid #1e293b",
+    background: "#1a1a2e", color: "#64748b", cursor: "pointer", fontSize: 14,
+    display: "flex", alignItems: "center", justifyContent: "center"
+  };
+
+  return (
+    <div style={{
+      width: "100%", height: "100vh", background: "#0f0f1a",
+      fontFamily: "'Segoe UI', system-ui, sans-serif", display: "flex", flexDirection: "column",
+      color: "#e2e8f0", overflow: "hidden"
+    }}>
+      <div style={{
+        padding: "12px 20px", borderBottom: "1px solid #1e293b",
+        display: "flex", alignItems: "center", justifyContent: "space-between",
+        background: "#0f0f1a", zIndex: 10, flexShrink: 0
+      }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <span style={{ fontSize: 18, fontWeight: 800, letterSpacing: "-0.5px" }}>
+            <span style={{ color: "#6366f1" }}>UniQ</span>
+            <span style={{ color: "#94a3b8" }}>Data</span>
+          </span>
+          <span style={{ color: "#475569", fontSize: 12 }}>ERD v4 · {totalTables} tables · {totalRels} relations</span>
+        </div>
+        <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+          <span style={{ color: "#475569", fontSize: 11, marginRight: 4 }}>zoom</span>
+          <button onClick={() => setZoom(z => Math.max(0.3, z - 0.1))} style={zoomBtnStyle}>−</button>
+          <span style={{ color: "#64748b", fontSize: 11, width: 36, textAlign: "center" }}>{Math.round(zoom * 100)}%</span>
+          <button onClick={() => setZoom(z => Math.min(2, z + 0.1))} style={zoomBtnStyle}>+</button>
+        </div>
+      </div>
+
+      <div style={{
+        padding: "8px 20px", display: "flex", gap: 4, overflowX: "auto",
+        borderBottom: "1px solid #1e293b", flexShrink: 0, background: "#0f0f1a"
+      }}>
+        {Object.entries(DOMAINS).map(([key, d]) => (
+          <button
+            key={key}
+            onClick={() => setDomain(key)}
+            style={{
+              padding: "6px 14px", borderRadius: 20, border: "none",
+              background: domain === key ? d.color + "25" : "transparent",
+              color: domain === key ? d.color : "#64748b",
+              fontSize: 12, fontWeight: domain === key ? 700 : 500,
+              cursor: "pointer", whiteSpace: "nowrap",
+              outline: domain === key ? `1px solid ${d.color}40` : "none",
+              transition: "all 0.15s"
+            }}
+          >
+            {d.icon} {d.label}
+          </button>
+        ))}
+      </div>
+
+      <div
+        style={{ flex: 1, overflow: "hidden", cursor: dragging ? "grabbing" : "grab", position: "relative" }}
+        onWheel={handleWheel}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseUp}
+      >
+        <svg ref={svgRef} width="100%" height="100%" style={{ display: "block" }}>
+          <defs>
+            <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"
+              patternTransform={`translate(${pan.x}, ${pan.y}) scale(${zoom})`}>
+              <circle cx="1" cy="1" r="0.5" fill="#1e293b" />
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#grid)" />
+          <g transform={`translate(${pan.x}, ${pan.y}) scale(${zoom})`}>
+            {domain === "all" && (() => {
+              const groups = {};
+              visible.forEach(t => {
+                const p = positions[t.name];
+                if (!p) return;
+                if (!groups[t.domain]) groups[t.domain] = { minX: p.x, minY: p.y, maxX: p.x + p.w, maxY: p.y + p.h };
+                else {
+                  groups[t.domain].minX = Math.min(groups[t.domain].minX, p.x);
+                  groups[t.domain].minY = Math.min(groups[t.domain].minY, p.y);
+                  groups[t.domain].maxX = Math.max(groups[t.domain].maxX, p.x + p.w);
+                  groups[t.domain].maxY = Math.max(groups[t.domain].maxY, p.y + p.h);
+                }
+              });
+              return Object.entries(groups).map(([d, b]) => {
+                const info = DOMAINS[d];
+                return (
+                  <g key={d}>
+                    <rect
+                      x={b.minX - 16} y={b.minY - 28} width={b.maxX - b.minX + 32} height={b.maxY - b.minY + 44}
+                      rx={10} fill={info.color + "06"} stroke={info.color + "15"} strokeWidth={1} strokeDasharray="6 3"
+                    />
+                    <text x={b.minX - 8} y={b.minY - 12} fill={info.color + "60"} fontSize={11} fontWeight={700}>
+                      {info.icon} {info.label}
+                    </text>
+                  </g>
+                );
+              });
+            })()}
+
+            {visibleRelations.map((r, i) => (
+              <RelationLine
+                key={i}
+                from={r}
+                positions={positions}
+                highlighted={activeTable && (r.from === activeTable || r.to === activeTable)}
+              />
+            ))}
+
+            {visible.map(t => {
+              const p = positions[t.name];
+              if (!p) return null;
+              const isHighlighted = activeTable === t.name || relatedTables.has(t.name);
+              return (
+                <TableCard
+                  key={t.name}
+                  table={t}
+                  pos={p}
+                  isHighlighted={isHighlighted}
+                  highlightColor={activeTable === t.name ? DOMAINS[t.domain].color : "#60a5fa"}
+                  onHover={setHovered}
+                  onClick={setSelected}
+                  selected={selected === t.name}
+                />
+              );
+            })}
+          </g>
+        </svg>
+
+        {selected && (() => {
+          const t = TABLES.find(t => t.name === selected);
+          if (!t) return null;
+          const info = DOMAINS[t.domain];
+          const rels = RELATIONS.filter(r => r.from === t.name || r.to === t.name);
+          return (
+            <div style={{
+              position: "absolute", bottom: 16, right: 16, background: "#1a1a2eee",
+              border: `1px solid ${info.color}40`, borderRadius: 10, padding: "14px 18px",
+              maxWidth: 280, backdropFilter: "blur(8px)"
+            }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+                <span style={{ color: info.color, fontSize: 14, fontWeight: 700, fontFamily: "'JetBrains Mono', monospace" }}>{t.name}</span>
+                <span style={{ color: "#475569", fontSize: 10 }}>{info.icon} {info.label}</span>
+              </div>
+              <div style={{ color: "#64748b", fontSize: 11, lineHeight: 1.6 }}>
+                {t.cols.length} columns · {rels.length} relationships
+              </div>
+              {rels.length > 0 && (
+                <div style={{ marginTop: 8, display: "flex", flexDirection: "column", gap: 3 }}>
+                  {rels.map((r, i) => (
+                    <div key={i} style={{ color: "#60a5fa", fontSize: 10, fontFamily: "'JetBrains Mono', monospace" }}>
+                      {r.from === t.name ? `→ ${r.to}.${r.toCol}` : `← ${r.from}.${r.fromCol}`}
+                    </div>
+                  ))}
+                </div>
+              )}
+              <div style={{ marginTop: 8, color: "#334155", fontSize: 10, cursor: "pointer" }} onClick={() => setSelected(null)}>
+                click elsewhere to dismiss
+              </div>
+            </div>
+          );
+        })()}
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<UniQDataERD />);
+  </script>
+</body>
+</html>
