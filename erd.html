@@ -703,11 +703,23 @@ const TABLES = [
   ]},
 ];
 
-// Build relations
+// Cardinality map (1:1 relations, rest are N:1)
+const ONE_TO_ONE = new Set([
+  "wallet_secrets→wallets",
+  "project_wallets→research_projects",
+  "owners→accounts",
+  "users→accounts"
+]);
+
+// Build relations with cardinality
 const RELATIONS = [];
 TABLES.forEach(t => {
   t.cols.forEach(c => {
-    if (c.fk) RELATIONS.push({ from: t.name, fromCol: c.n, to: c.fk, toCol: "id" });
+    if (c.fk) {
+      const key = `${t.name}→${c.fk}`;
+      const card = ONE_TO_ONE.has(key) ? "1:1" : "N:1";
+      RELATIONS.push({ from: t.name, fromCol: c.n, to: c.fk, toCol: "id", card });
+    }
   });
 });
 
@@ -804,10 +816,10 @@ function calculateLayout(client, domain, api = "all") {
 
   const positions = {};
   const CARD_W = 200;
-  const ROW_H = 20;
-  const HEADER_H = 30;
+  const ROW_H = 22;
+  const HEADER_H = 36;
   const COL_WIDTH = 240;
-  const CARD_GAP = 20;
+  const CARD_GAP = 28;
 
   // API view - simple grid layout (no overlap)
   if (api !== "all") {
@@ -818,7 +830,7 @@ function calculateLayout(client, domain, api = "all") {
     visible.forEach((t, idx) => {
       const col = idx % GRID_COLS;
       const row = Math.floor(idx / GRID_COLS);
-      const h = HEADER_H + t.cols.length * ROW_H + 6;
+      const h = HEADER_H + t.cols.length * ROW_H + 16;
 
       // Calculate Y based on max height in previous rows
       let y = 0;
@@ -828,7 +840,7 @@ function calculateLayout(client, domain, api = "all") {
           const prevIdx = r * GRID_COLS + c;
           if (prevIdx < visible.length) {
             const prevT = visible[prevIdx];
-            const prevH = HEADER_H + prevT.cols.length * ROW_H + 6;
+            const prevH = HEADER_H + prevT.cols.length * ROW_H + 16;
             maxH = Math.max(maxH, prevH);
           }
         }
@@ -858,7 +870,7 @@ function calculateLayout(client, domain, api = "all") {
 
     sortedTables.forEach(t => {
       const pos = AREA_LAYOUT[t.name] || { col: 4, row: 5 };
-      const h = HEADER_H + t.cols.length * ROW_H + 6;
+      const h = HEADER_H + t.cols.length * ROW_H + 16;
       positions[t.name] = {
         x: pos.col * COL_WIDTH,
         y: colHeights[pos.col],
@@ -876,17 +888,17 @@ function calculateLayout(client, domain, api = "all") {
     // Primary tables in center
     let primaryY = 0;
     primary.forEach(t => {
-      const h = HEADER_H + t.cols.length * ROW_H + 6;
+      const h = HEADER_H + t.cols.length * ROW_H + 16;
       positions[t.name] = { x: 250, y: primaryY, w: CARD_W + 20, h, ghost: false };
-      primaryY += h + 25;
+      primaryY += h + 32;
     });
 
     // Refs on left, compact
     let refY = 0;
     refs.forEach(t => {
-      const h = HEADER_H + Math.min(t.cols.length, 3) * ROW_H + 6;
+      const h = HEADER_H + Math.min(t.cols.length, 3) * ROW_H + 16;
       positions[t.name] = { x: 0, y: refY, w: 160, h, ghost: true };
-      refY += h + 15;
+      refY += h + 20;
     });
   }
 
