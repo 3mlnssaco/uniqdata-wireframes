@@ -655,7 +655,41 @@ function calculateLayout(client, domain, api = "all") {
   const COL_WIDTH = 240;
   const CARD_GAP = 20;
 
-  if (domain === "all") {
+  // API view - simple grid layout (no overlap)
+  if (api !== "all") {
+    const GRID_COLS = 3;
+    const GRID_GAP_X = 250;
+    const GRID_GAP_Y = 30;
+
+    visible.forEach((t, idx) => {
+      const col = idx % GRID_COLS;
+      const row = Math.floor(idx / GRID_COLS);
+      const h = HEADER_H + t.cols.length * ROW_H + 6;
+
+      // Calculate Y based on max height in previous rows
+      let y = 0;
+      for (let r = 0; r < row; r++) {
+        let maxH = 0;
+        for (let c = 0; c < GRID_COLS; c++) {
+          const prevIdx = r * GRID_COLS + c;
+          if (prevIdx < visible.length) {
+            const prevT = visible[prevIdx];
+            const prevH = HEADER_H + prevT.cols.length * ROW_H + 6;
+            maxH = Math.max(maxH, prevH);
+          }
+        }
+        y += maxH + GRID_GAP_Y;
+      }
+
+      positions[t.name] = {
+        x: col * GRID_GAP_X,
+        y,
+        w: CARD_W + 20,
+        h,
+        ghost: false
+      };
+    });
+  } else if (domain === "all") {
     // Stack cards vertically in each column - no overlapping
     const colHeights = {};
     for (let i = 0; i < 9; i++) colHeights[i] = 0;
