@@ -272,6 +272,15 @@
   <section class="tab-section is-active" data-tab="concept">
     <!-- 컨셉별 보기 -->
     <h2 id="by-concept">🧩 컨셉별 보기</h2>
+    <div class="group-title">0) 아키텍처 (최우선 진입)</div>
+    <div class="grid">
+    <a href="research/SportiQue_Architecture_v4.html" class="card highlight">
+      <h3>SportiQue 아키텍처 v4</h3>
+      <p>입력 → DB → 출력, FLOW 1~4, 민감/비민감 라우팅</p>
+      <span class="badge p0">Phase 0</span>
+      <span class="badge new">NEW</span>
+    </a>
+    </div>
     <div class="group-note">현재 우선순위 흐름: 연구 세션 생성 → 수집 데이터 확정 → 데이터 구매</div>
 
     <div class="group-title">1) 연구 세션 생성</div>
@@ -387,35 +396,27 @@
     </a>
     </div>
 
-    <div class="group-title">🔬 인과/AI 분석 (후순위)</div>
-    <div class="group-note">AI 분석은 Phase 3 이후로 미룸</div>
+    <div class="group-title">🔬 AI 허브 (통합)</div>
+    <div class="group-note" data-spec="회의 결정: 인과발견, SHAP, CATE, What-If, 이상추적을 AI 허브로 통합. 연구 방법론별 최적화된 AI 알고리즘 선택." data-spec-type="ai" data-changed="메뉴 통합">AI 분석 도구들이 AI 허브로 통합되었습니다. 연구 방법론별 최적화된 알고리즘 선택.</div>
     <div class="grid">
-    <a href="research/analysis-discovery.html" class="card highlight">
-      <h3>인과발견 (3D 통합)</h3>
-      <p>3계층 데이터 구조 + 3D 그래프 + 인사이트 배지</p>
-      <span class="badge ai">3D + AI</span>
+    <a href="research/analysis-discovery.html" class="card highlight" data-spec="AI 허브: 인과발견/SHAP/CATE/What-If/이상추적 통합. 연구 방법론별 최적화된 AI 알고리즘 선택." data-spec-type="ai" data-added="통합 메뉴">
+      <h3>AI 허브</h3>
+      <p>연구 방법론별 AI 도구 통합: 인과발견, SHAP, CATE, What-If, 이상추적</p>
+      <span class="badge ai">AI 통합</span>
       <span class="badge p3">Phase 3</span>
+      <span class="badge new">통합됨</span>
     </a>
-    <a href="research/analysis-importance.html" class="card">
-      <h3>SHAP</h3>
-      <p>인과 기여도 요약 + AI 해석</p>
-      <span class="badge p3">Phase 3</span>
-    </a>
-    <a href="research/analysis-personalized.html" class="card">
-      <h3>CATE</h3>
-      <p>개인/세그먼트 효과 분포</p>
-      <span class="badge p3">Phase 3</span>
-    </a>
-    <a href="research/analysis-whatif.html" class="card">
-      <h3>What-If</h3>
-      <p>반사실 시뮬레이션</p>
-      <span class="badge p3">Phase 3</span>
-    </a>
-    <a href="research/analysis-rootcause.html" class="card">
-      <h3>이상추적</h3>
-      <p>Root Cause / 이상치 경로</p>
-      <span class="badge p3">Phase 3</span>
-    </a>
+    </div>
+
+    <div class="group-note" style="margin-top: 16px; padding: 12px; background: #f1f5f9; border-radius: 8px; font-size: 12px;">
+      <strong>AI 허브에 포함된 기능:</strong>
+      <ul style="margin: 8px 0 0 20px; line-height: 1.8;">
+        <li>인과발견 (3D 통합): 3계층 데이터 구조 + 3D 그래프 + 인사이트 배지</li>
+        <li>SHAP: 인과 기여도 요약 + AI 해석</li>
+        <li>CATE: 개인/세그먼트 효과 분포</li>
+        <li>What-If: 반사실 시뮬레이션</li>
+        <li>이상추적: Root Cause / 이상치 경로</li>
+      </ul>
     </div>
 
     <div class="group-title">⚙️ 운영/관리</div>
@@ -437,6 +438,15 @@
   <section class="tab-section" data-tab="phase">
     <!-- Phase별 보기 -->
     <h2 id="by-phase">🧭 Phase별 보기</h2>
+    <div class="group-title">Architecture (진입 우선)</div>
+    <div class="grid">
+    <a href="research/SportiQue_Architecture_v4.html" class="card highlight">
+      <h3>SportiQue 아키텍처 v4</h3>
+      <p>플로우 중심 구조 + 무가로스크롤 아키텍처 화면</p>
+      <span class="badge p0">Phase 0</span>
+      <span class="badge new">NEW</span>
+    </a>
+    </div>
 
     <div class="group-title">Phase 0 (최우선 · 코어 플로우)</div>
     <div class="grid">
@@ -554,33 +564,14 @@
       </a>
     </div>
 
-    <div class="group-title">Phase 3 (AI/인과 분석)</div>
+    <div class="group-title">Phase 3 (AI 허브 - 통합)</div>
     <div class="grid">
-    <a href="research/analysis-discovery.html" class="card highlight">
-      <h3>인과발견 (3D 통합)</h3>
-      <p>3계층 데이터 구조 + 3D 그래프 + 인사이트 배지</p>
-      <span class="badge ai">3D + AI</span>
+    <a href="research/analysis-discovery.html" class="card highlight" data-spec="AI 허브: 연구 방법론별 AI 도구 통합. 인과발견/SHAP/CATE/What-If/이상추적 포함." data-spec-type="ai" data-added="통합 메뉴">
+      <h3>AI 허브</h3>
+      <p>연구 방법론별 AI 도구 통합: 인과발견, SHAP, CATE, What-If, 이상추적</p>
+      <span class="badge ai">AI 통합</span>
       <span class="badge p3">Phase 3</span>
-    </a>
-    <a href="research/analysis-importance.html" class="card">
-      <h3>SHAP</h3>
-      <p>인과 기여도 요약 + AI 해석</p>
-      <span class="badge p3">Phase 3</span>
-    </a>
-    <a href="research/analysis-personalized.html" class="card">
-      <h3>CATE</h3>
-      <p>개인/세그먼트 효과 분포</p>
-      <span class="badge p3">Phase 3</span>
-    </a>
-    <a href="research/analysis-whatif.html" class="card">
-      <h3>What-If</h3>
-      <p>반사실 시뮬레이션</p>
-      <span class="badge p3">Phase 3</span>
-    </a>
-    <a href="research/analysis-rootcause.html" class="card">
-      <h3>이상추적</h3>
-      <p>Root Cause / 이상치 경로</p>
-      <span class="badge p3">Phase 3</span>
+      <span class="badge new">통합됨</span>
     </a>
     </div>
   </section>
@@ -1311,6 +1302,7 @@
       document.querySelectorAll('.schema-mermaid').forEach(setupPanZoom);
     })();
   </script>
-
+  <link rel="stylesheet" href="tooltip-spec.css">
+  <script src="tooltip-spec.js"></script>
 </body>
 </html>
