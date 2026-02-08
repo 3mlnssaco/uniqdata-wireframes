@@ -555,8 +555,8 @@ function calculateLayout(client, domain) {
   const CARD_W = 280;
   const ROW_H = 28;
   const HEADER_H = 44;
-  const LEVEL_GAP = 240; // Vertical gap between levels (increased)
-  const LANE_GAP = 340;  // Horizontal gap between lanes (increased)
+  const LEVEL_GAP = 320; // Vertical gap between levels
+  const LANE_GAP = 420;  // Horizontal gap between lanes
 
   if (domain === "all") {
     // Hierarchical layout based on HIERARCHY definition
@@ -588,7 +588,7 @@ function calculateLayout(client, domain) {
         names.forEach((name, idx) => {
           if (idx > 0) {
             const prevH = positions[names[idx-1]].h;
-            offsetY += prevH + 40;
+            offsetY += prevH + 60; // More space between stacked tables
             positions[name].y += offsetY;
           }
         });
@@ -709,9 +709,9 @@ function App() {
 
   useEffect(() => {
     const isAll = client === "all" && domain === "all";
-    // Center on accounts (level 0, lane 2 = x:600, y:0)
-    setZoom(isAll ? 0.55 : 0.85);
-    setPan(isAll ? { x: -100, y: 50 } : { x: 50, y: 40 });
+    // Adjust zoom for larger spacing
+    setZoom(isAll ? 0.45 : 0.75);
+    setPan(isAll ? { x: -200, y: 40 } : { x: 40, y: 40 });
     setSelected(null);
   }, [client, domain]);
 
