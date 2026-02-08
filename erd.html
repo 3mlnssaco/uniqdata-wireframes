@@ -164,10 +164,25 @@
 
     /* Relations */
     .relations-layer { position: absolute; top: 0; left: 0; pointer-events: none; overflow: visible; }
-    .relation-path { fill: none; stroke: #334155; stroke-width: 1.5; opacity: 0.5; }
+    .relation-path { fill: none; stroke: #334155; stroke-width: 1.5; opacity: 0.4; }
     .relation-path.highlighted { stroke: #60a5fa; stroke-width: 2; opacity: 1; }
-    .relation-dot { fill: #334155; opacity: 0.5; }
+    .relation-dot { fill: #334155; opacity: 0.4; }
     .relation-dot.highlighted { fill: #60a5fa; opacity: 1; }
+
+    /* Column Headers */
+    .col-header {
+      position: absolute;
+      top: -40px;
+      width: 200px;
+      text-align: center;
+      font-size: 11px;
+      font-weight: 600;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 6px 0;
+      border-bottom: 2px solid;
+    }
 
     /* Info Panels */
     .legend {
@@ -779,6 +794,21 @@ function App() {
               );
             })}
           </svg>
+          {domain === "all" && [
+            { col: 0, label: "Auth", color: "#818cf8" },
+            { col: 1, label: "Wallet", color: "#f59e0b" },
+            { col: 2, label: "App", color: "#3b82f6" },
+            { col: 3, label: "Org", color: "#10b981" },
+            { col: 4, label: "Research", color: "#ec4899" },
+            { col: 5, label: "Finance", color: "#f97316" },
+            { col: 6, label: "Data", color: "#a855f7" },
+            { col: 7, label: "Medication", color: "#14b8a6" },
+            { col: 8, label: "Analytics", color: "#6366f1" },
+          ].map(h => (
+            <div key={h.col} className="col-header" style={{ left: h.col * 240, borderColor: h.color, color: h.color }}>
+              {h.label}
+            </div>
+          ))}
           {visible.map(t => (
             <TableCard key={t.name} table={t} pos={positions[t.name]} hovered={hovered} selected={selected} onHover={setHovered} onClick={setSelected} />
           ))}
