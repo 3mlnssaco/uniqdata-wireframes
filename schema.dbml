@@ -1,20 +1,145 @@
-// UniQdata v4 Complete ERD - 전체 40개 엔티티
-// https://dbdiagram.io
-// Generated from backend/src/entities/
+// UniQdata v4 Complete ERD — 40 Entities (Layout-Optimized)
+// 선 꼬임 최소화를 위해 의존성 순서 + TableGroup 적용
 
-// ============================================================
-// 🔗 XRPL 앵커링 시점
-// ============================================================
-// ESCROW_CREATE, ESCROW_FINISH, ESCROW_CANCEL
-// SETTLEMENT, TRANSFER
-// TEAM_MEMBER_ADD/REMOVE, TEAM_ROLE_CHANGE, OWNERSHIP_TRANSFER
-// PROJECT_WALLET_CREATE, PROJECT_DEPOSIT, PROJECT_WITHDRAW
-// WALLET_BINDING, USER_REGISTRATION
-// CONSENT_GRANT, CONSENT_REVOKE
-// DATA_ACCESS, DATA_EXPORT, DATA_SALE, DATA_SUBMIT
-// CONTRACT_SIGN
+// ═══════════════════════════════════════
+// TableGroup 선언 (레이아웃 그룹핑)
+// ═══════════════════════════════════════
 
-// ===== 🔑 Core Auth =====
+TableGroup core_auth {
+  accounts
+  account_logins
+  owners
+  users
+}
+
+TableGroup session_auth {
+  sessions
+  refresh_tokens
+  passkey_credentials
+}
+
+TableGroup wallet_group {
+  wallets
+  wallet_secrets
+  wallet_credential_bindings
+  wallet_recovery_requests
+}
+
+TableGroup org_group {
+  institutions
+  workspaces
+  workspace_members
+}
+
+TableGroup app_group {
+  apps
+  app_keys
+  consents
+}
+
+TableGroup data_group {
+  data_points
+  data_attachments
+  data_sources
+  data_accesses
+}
+
+TableGroup research_group {
+  research_projects
+  participation_criteria
+  data_collection_configs
+  team_members
+  agreements
+}
+
+TableGroup finance_group {
+  project_wallets
+  project_wallet_deposits
+  project_wallet_withdrawals
+  escrows
+  settlements
+}
+
+TableGroup medication_group {
+  drug_info_cache
+  user_medications
+  medication_logs
+  medication_proofs
+}
+
+TableGroup analytics_group {
+  ai_analyses
+  features
+  notifications
+}
+
+TableGroup audit_group {
+  audit_logs
+  anchor_logs
+}
+
+// ═══════════════════════════════════════
+// 1. 📱 App (독립 — 최상단 좌측)
+// ═══════════════════════════════════════
+
+Table apps {
+  id uuid [pk]
+  slug varchar [unique, note: 'bodab|ready-q|medi-q|uniqdata']
+  name varchar
+  description varchar
+  allowed_scopes text [note: 'health:heart_rate:read:30d']
+  allowed_origins text
+  status enum [note: 'active|inactive|suspended']
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table app_keys {
+  id uuid [pk]
+  app_id uuid [ref: > apps.id]
+  key_type enum [note: 'public|secret|admin']
+  key_prefix varchar [note: 'uq_pub_test_kr_']
+  key_hash varchar [note: 'SHA-256']
+  name varchar
+  status enum [note: 'active|revoked|expired']
+  expires_at timestamp
+  last_used_at timestamp
+  created_at timestamp
+  revoked_at timestamp
+}
+
+// ═══════════════════════════════════════
+// 2. 🏢 Organization (독립 — 최상단 우측)
+// ═══════════════════════════════════════
+
+Table institutions {
+  id uuid [pk]
+  name varchar
+  type enum [note: 'university|research_institute|hospital|company|government|other']
+  domains text [note: '도메인 배열: snu.ac.kr']
+  status enum [note: 'pending|active|suspended']
+  logo_url varchar
+  website varchar
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table workspaces {
+  id uuid [pk]
+  name varchar
+  type enum [note: 'individual|team|enterprise']
+  status enum [note: 'pending|active|suspended|archived']
+  institution_id uuid [ref: > institutions.id]
+  description text
+  max_members int
+  created_at timestamp
+  updated_at timestamp
+}
+
+// ═══════════════════════════════════════
+// 3. 🔑 Core Auth (중심 허브)
+// ═══════════════════════════════════════
+
 Table accounts {
   id uuid [pk]
   type enum [note: 'user|enterprise|researcher|admin|auditor']
@@ -67,6 +192,44 @@ Table users {
   }
 }
 
+// ═══════════════════════════════════════
+// 4. 🏢 Org Members (accounts + workspaces 의존)
+// ═══════════════════════════════════════
+
+Table workspace_members {
+  id uuid [pk]
+  workspace_id uuid [ref: > workspaces.id]
+  account_id uuid [ref: > accounts.id]
+  role enum [note: 'owner|admin|member|auditor']
+  status enum [note: 'pending|active|suspended|rejected|left']
+  display_name varchar
+  created_at timestamp
+  updated_at timestamp
+
+  indexes {
+    (workspace_id, account_id) [unique]
+  }
+}
+
+Table data_accesses {
+  id uuid [pk]
+  workspace_id uuid [ref: > workspaces.id]
+  account_id uuid [ref: > accounts.id]
+  data_product_id varchar
+  status enum [note: 'active|expired|revoked']
+  granted_by uuid [ref: > accounts.id]
+  granted_at timestamp
+  expires_at timestamp
+
+  indexes {
+    (workspace_id, account_id)
+  }
+}
+
+// ═══════════════════════════════════════
+// 5. 🔐 Session & Passkey (users + apps 의존)
+// ═══════════════════════════════════════
+
 Table sessions {
   id uuid [pk]
   user_id uuid [ref: > users.id]
@@ -98,7 +261,10 @@ Table passkey_credentials {
   last_used_at timestamp
 }
 
-// ===== 👛 Wallet =====
+// ═══════════════════════════════════════
+// 6. 👛 Wallet (owners + passkey 의존)
+// ═══════════════════════════════════════
+
 Table wallets {
   id uuid [pk]
   owner_id uuid [ref: > owners.id]
@@ -157,7 +323,10 @@ Table wallet_recovery_requests {
   created_at timestamp
 }
 
-// ===== 📊 Data =====
+// ═══════════════════════════════════════
+// 7. 📊 Data (users 의존)
+// ═══════════════════════════════════════
+
 Table data_points {
   id uuid [pk]
   user_id uuid [ref: > users.id]
@@ -178,17 +347,6 @@ Table data_points {
   }
 }
 
-Table data_sources {
-  id uuid [pk]
-  user_id uuid [ref: > users.id]
-  name varchar
-  type varchar [note: 'wearable|app|manual|integration']
-  is_active boolean
-  config jsonb
-  created_at timestamp
-  last_sync_at timestamp
-}
-
 Table data_attachments {
   id uuid [pk]
   data_point_id uuid [ref: > data_points.id]
@@ -204,19 +362,15 @@ Table data_attachments {
   created_at timestamp
 }
 
-Table data_accesses {
+Table data_sources {
   id uuid [pk]
-  workspace_id uuid [ref: > workspaces.id]
-  account_id uuid [ref: > accounts.id]
-  data_product_id varchar
-  status enum [note: 'active|expired|revoked']
-  granted_by uuid [ref: > accounts.id]
-  granted_at timestamp
-  expires_at timestamp
-
-  indexes {
-    (workspace_id, account_id)
-  }
+  user_id uuid [ref: > users.id]
+  name varchar
+  type varchar [note: 'wearable|app|manual|integration']
+  is_active boolean
+  config jsonb
+  created_at timestamp
+  last_sync_at timestamp
 }
 
 Table consents {
@@ -235,7 +389,10 @@ Table consents {
   metadata jsonb
 }
 
-// ===== 🔬 Research =====
+// ═══════════════════════════════════════
+// 8. 🔬 Research (owners + institutions 의존)
+// ═══════════════════════════════════════
+
 Table research_projects {
   id uuid [pk]
   owner_id uuid [ref: > owners.id, note: 'PI']
@@ -304,6 +461,10 @@ Table agreements {
   }
 }
 
+// ═══════════════════════════════════════
+// 9. 💰 Finance (research 의존)
+// ═══════════════════════════════════════
+
 Table project_wallets {
   id uuid [pk]
   project_id uuid [ref: - research_projects.id, unique, note: '1:1']
@@ -334,7 +495,6 @@ Table project_wallet_withdrawals {
   withdrawn_at timestamp
 }
 
-// ===== 💰 Finance =====
 Table escrows {
   id uuid [pk]
   project_id uuid [ref: > research_projects.id]
@@ -358,112 +518,24 @@ Table settlements {
   settled_at timestamp
 }
 
-// ===== 🔍 Audit =====
-Table audit_logs {
-  id uuid [pk]
-  user_id uuid [ref: > users.id]
-  app_id uuid [ref: > apps.id]
-  action varchar [note: 'read|write|delete|export']
+// ═══════════════════════════════════════
+// 10. 💊 Medication (users 의존)
+// ═══════════════════════════════════════
+
+Table drug_info_cache {
+  drug_code varchar [pk]
+  name varchar
   category varchar
-  metric varchar
-  data_point_id uuid
-  record_count int
-  xrpl_tx_hash varchar
-  xrpl_anchor_status varchar
-  xrpl_ledger_index int
-  timestamp timestamp
-  ip_address varchar
-  user_agent varchar
-  metadata jsonb
-
-  indexes {
-    (user_id, timestamp)
-    (app_id, timestamp)
-  }
-}
-
-Table anchor_logs {
-  id uuid [pk]
-  user_id uuid [ref: > users.id]
-  anchor_type enum [note: 'wallet_binding|consent_grant|escrow_create|settlement...']
-  tx_hash varchar [unique]
-  from_address varchar
-  to_address varchar
-  created_at timestamp
-
-  indexes {
-    (user_id, created_at)
-  }
-}
-
-// ===== 🏢 Organization =====
-Table institutions {
-  id uuid [pk]
-  name varchar
-  type enum [note: 'university|research_institute|hospital|company|government|other']
-  domains text [note: '도메인 배열: snu.ac.kr']
-  status enum [note: 'pending|active|suspended']
-  logo_url varchar
-  website varchar
-  created_at timestamp
-  updated_at timestamp
-}
-
-Table workspaces {
-  id uuid [pk]
-  name varchar
-  type enum [note: 'individual|team|enterprise']
-  status enum [note: 'pending|active|suspended|archived']
-  institution_id uuid [ref: > institutions.id]
-  description text
-  max_members int
-  created_at timestamp
-  updated_at timestamp
-}
-
-Table workspace_members {
-  id uuid [pk]
-  workspace_id uuid [ref: > workspaces.id]
-  account_id uuid [ref: > accounts.id]
-  role enum [note: 'owner|admin|member|auditor']
-  status enum [note: 'pending|active|suspended|rejected|left']
-  display_name varchar
-  created_at timestamp
-  updated_at timestamp
-
-  indexes {
-    (workspace_id, account_id) [unique]
-  }
-}
-
-// ===== 📱 App =====
-Table apps {
-  id uuid [pk]
-  slug varchar [unique, note: 'bodab|ready-q|medi-q|uniqdata']
-  name varchar
-  description varchar
-  allowed_scopes text [note: 'health:heart_rate:read:30d']
-  allowed_origins text
-  status enum [note: 'active|inactive|suspended']
-  created_at timestamp
-  updated_at timestamp
-}
-
-Table app_keys {
-  id uuid [pk]
-  app_id uuid [ref: > apps.id]
-  key_type enum [note: 'public|secret|admin']
-  key_prefix varchar [note: 'uq_pub_test_kr_']
-  key_hash varchar [note: 'SHA-256']
-  name varchar
-  status enum [note: 'active|revoked|expired']
+  manufacturer varchar
+  ingredients jsonb
+  effects text
+  side_effects text
+  interactions jsonb
+  category_hash varchar [note: 'ZKP용']
+  fetched_at timestamp
   expires_at timestamp
-  last_used_at timestamp
-  created_at timestamp
-  revoked_at timestamp
 }
 
-// ===== 💊 Medication (보답) =====
 Table user_medications {
   id uuid [pk]
   user_id uuid [ref: > users.id]
@@ -518,21 +590,10 @@ Table medication_proofs {
   created_at timestamp
 }
 
-Table drug_info_cache {
-  drug_code varchar [pk]
-  name varchar
-  category varchar
-  manufacturer varchar
-  ingredients jsonb
-  effects text
-  side_effects text
-  interactions jsonb
-  category_hash varchar [note: 'ZKP용']
-  fetched_at timestamp
-  expires_at timestamp
-}
+// ═══════════════════════════════════════
+// 11. 🤖 AI & Analytics (users 의존)
+// ═══════════════════════════════════════
 
-// ===== 🤖 AI & Analytics =====
 Table ai_analyses {
   id uuid [pk]
   user_id uuid [ref: > users.id]
@@ -557,7 +618,10 @@ Table features {
   created_at timestamp
 }
 
-// ===== 🔔 Notifications =====
+// ═══════════════════════════════════════
+// 12. 🔔 Notifications (users + apps 의존)
+// ═══════════════════════════════════════
+
 Table notifications {
   id uuid [pk]
   user_id uuid [ref: > users.id]
@@ -572,5 +636,46 @@ Table notifications {
   indexes {
     (user_id, created_at)
     (user_id, read_at)
+  }
+}
+
+// ═══════════════════════════════════════
+// 13. 🔍 Audit (users + apps 의존)
+// ═══════════════════════════════════════
+
+Table audit_logs {
+  id uuid [pk]
+  user_id uuid [ref: > users.id]
+  app_id uuid [ref: > apps.id]
+  action varchar [note: 'read|write|delete|export']
+  category varchar
+  metric varchar
+  data_point_id uuid
+  record_count int
+  xrpl_tx_hash varchar
+  xrpl_anchor_status varchar
+  xrpl_ledger_index int
+  timestamp timestamp
+  ip_address varchar
+  user_agent varchar
+  metadata jsonb
+
+  indexes {
+    (user_id, timestamp)
+    (app_id, timestamp)
+  }
+}
+
+Table anchor_logs {
+  id uuid [pk]
+  user_id uuid [ref: > users.id]
+  anchor_type enum [note: 'wallet_binding|consent_grant|escrow_create|settlement...']
+  tx_hash varchar [unique]
+  from_address varchar
+  to_address varchar
+  created_at timestamp
+
+  indexes {
+    (user_id, created_at)
   }
 }
