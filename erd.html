@@ -465,8 +465,71 @@ TABLES.forEach(t => {
 });
 
 // ============================================================
-// LAYOUT
+// LAYOUT - Hierarchical flow from accounts
 // ============================================================
+
+// Define hierarchical structure (level, lane within level)
+// Level 0: Root (accounts)
+// Level 1: Direct children of accounts
+// Level 2: Children of Level 1
+// etc.
+const HIERARCHY = {
+  // Level 0 - Root
+  accounts: { level: 0, lane: 2 },
+
+  // Level 1 - Direct account relations
+  account_logins: { level: 1, lane: 0 },
+  owners: { level: 1, lane: 1 },
+  users: { level: 1, lane: 3 },
+
+  // Level 2 - From owners and users
+  wallets: { level: 2, lane: 0 },
+  institutions: { level: 2, lane: 1 },
+  research_projects: { level: 2, lane: 1.5 },
+  apps: { level: 2, lane: 2.5 },
+  passkey_credentials: { level: 2, lane: 3 },
+  data_sources: { level: 2, lane: 4 },
+
+  // Level 3 - More specific
+  wallet_secrets: { level: 3, lane: 0 },
+  wallet_credential_bindings: { level: 3.5, lane: 0 },
+  wallet_recovery_requests: { level: 3.5, lane: 0.5 },
+  workspaces: { level: 3, lane: 1 },
+  participation_criteria: { level: 3, lane: 1.5 },
+  data_collection_configs: { level: 3.5, lane: 1.5 },
+  team_members: { level: 3, lane: 2 },
+  agreements: { level: 3.5, lane: 2 },
+  app_keys: { level: 3, lane: 2.5 },
+  sessions: { level: 3, lane: 3 },
+  data_points: { level: 3, lane: 4 },
+  consents: { level: 3, lane: 3.5 },
+
+  // Level 4
+  workspace_members: { level: 4, lane: 1 },
+  data_accesses: { level: 4, lane: 1.5 },
+  project_wallets: { level: 4, lane: 2 },
+  refresh_tokens: { level: 4, lane: 3 },
+  data_attachments: { level: 4, lane: 4 },
+
+  // Level 5 - Finance
+  project_wallet_deposits: { level: 5, lane: 1.5 },
+  project_wallet_withdrawals: { level: 5, lane: 2 },
+  escrows: { level: 5, lane: 2.5 },
+  settlements: { level: 5, lane: 3 },
+
+  // Side - Medication (separate branch)
+  drug_info_cache: { level: 2, lane: 5 },
+  user_medications: { level: 3, lane: 5 },
+  medication_logs: { level: 4, lane: 5 },
+  medication_proofs: { level: 4, lane: 5.5 },
+
+  // Bottom - Analytics
+  ai_analyses: { level: 4, lane: 4.5 },
+  features: { level: 5, lane: 4 },
+  notifications: { level: 5, lane: 4.5 },
+  audit_logs: { level: 5, lane: 5 },
+  anchor_logs: { level: 5, lane: 5.5 },
+};
 
 function calculateLayout(client, domain) {
   // Filter by client first
@@ -489,56 +552,74 @@ function calculateLayout(client, domain) {
       });
 
   const positions = {};
-  const CARD_W = 280;
+  const CARD_W = 260;
   const ROW_H = 28;
   const HEADER_H = 44;
-  const GAP_X = 50;
-  const GAP_Y = 35;
+  const LEVEL_GAP = 200; // Vertical gap between levels
+  const LANE_GAP = 300;  // Horizontal gap between lanes
 
   if (domain === "all") {
-    // Group by domain, grid layout
-    const domainOrder = ["core", "app", "org", "wallet", "data", "research", "finance", "medication", "analytics"];
-    const COLS = client === "all" ? 4 : 3;
-    let colHeights = Array(COLS).fill(0);
-    let currentCol = 0;
+    // Hierarchical layout based on HIERARCHY definition
+    visible.forEach(t => {
+      const h = HEADER_H + t.cols.length * ROW_H + 12;
+      const hier = HIERARCHY[t.name] || { level: 6, lane: 3 }; // Default for unmapped
 
-    domainOrder.forEach(d => {
-      const domainTables = visible.filter(t => t.domain === d);
-      if (domainTables.length === 0) return;
+      positions[t.name] = {
+        x: hier.lane * LANE_GAP,
+        y: hier.level * LEVEL_GAP,
+        w: CARD_W,
+        h,
+        ghost: false
+      };
+    });
 
-      const col = currentCol % COLS;
-      domainTables.forEach(t => {
-        const h = HEADER_H + t.cols.length * ROW_H + 12;
-        positions[t.name] = { x: col * (CARD_W + GAP_X), y: colHeights[col], w: CARD_W, h, ghost: false };
-        colHeights[col] += h + GAP_Y;
-      });
-      currentCol++;
+    // Adjust for overlaps - group by level and offset within same level/lane
+    const byLevelLane = {};
+    visible.forEach(t => {
+      const hier = HIERARCHY[t.name] || { level: 6, lane: 3 };
+      const key = `${Math.floor(hier.level)}-${Math.floor(hier.lane)}`;
+      if (!byLevelLane[key]) byLevelLane[key] = [];
+      byLevelLane[key].push(t.name);
+    });
 
-      // After every COLS domains, reset to max height
-      if (currentCol % COLS === 0) {
-        const maxH = Math.max(...colHeights);
-        colHeights = colHeights.map(() => maxH + 50);
+    Object.entries(byLevelLane).forEach(([key, names]) => {
+      if (names.length > 1) {
+        let offsetY = 0;
+        names.forEach((name, idx) => {
+          if (idx > 0) {
+            const prevH = positions[names[idx-1]].h;
+            offsetY += prevH + 30;
+            positions[name].y += offsetY;
+          }
+        });
       }
     });
+
   } else {
-    // Domain view: primary center, refs left
+    // Domain view: primary tables in hierarchy, refs on left
     const primary = visible.filter(t => t.domain === domain);
     const refs = visible.filter(t => t.domain !== domain);
 
-    const COLS = Math.min(2, Math.ceil(primary.length / 3));
-    let colHeights = Array(COLS).fill(0);
-
+    // Use mini-hierarchy for primary
+    let yPos = 0;
     primary.forEach((t, i) => {
-      const col = i % COLS;
       const h = HEADER_H + t.cols.length * ROW_H + 12;
-      positions[t.name] = { x: 320 + col * (CARD_W + GAP_X), y: colHeights[col], w: CARD_W, h, ghost: false };
-      colHeights[col] += h + GAP_Y;
+      const col = i % 2;
+      if (col === 0) yPos = i > 0 ? positions[primary[i-1]?.name]?.y + positions[primary[i-1]?.name]?.h + 40 || 0 : 0;
+      positions[t.name] = {
+        x: 320 + col * (CARD_W + 50),
+        y: col === 0 ? yPos : (positions[primary[i-1]?.name]?.y || 0),
+        w: CARD_W,
+        h,
+        ghost: false
+      };
     });
 
+    // References on left, stacked
     let refY = 0;
     refs.forEach(t => {
       const h = HEADER_H + Math.min(t.cols.length, 4) * ROW_H + 12;
-      positions[t.name] = { x: 0, y: refY, w: 260, h, ghost: true };
+      positions[t.name] = { x: 0, y: refY, w: 240, h, ghost: true };
       refY += h + 20;
     });
   }
@@ -621,8 +702,9 @@ function App() {
 
   useEffect(() => {
     const isAll = client === "all" && domain === "all";
-    setZoom(isAll ? 0.6 : 0.9);
-    setPan(isAll ? { x: 40, y: 30 } : { x: 50, y: 40 });
+    // Center on accounts (level 0, lane 2 = x:600, y:0)
+    setZoom(isAll ? 0.55 : 0.85);
+    setPan(isAll ? { x: -100, y: 50 } : { x: 50, y: 40 });
     setSelected(null);
   }, [client, domain]);
 
