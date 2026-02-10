@@ -309,73 +309,73 @@
     </div>
     <div class="group-note">현재 우선순위 흐름: 연구 세션 생성 → 수집 데이터 확정 → 데이터 구매</div>
 
-    <!-- 2026-02-08 업데이트: 5단계로 변경 (AI 도구 제거, 예산+지갑 통합) -->
-    <div class="group-title">1) 연구 세션 생성</div>
-    <div class="grid">
-    <a href="research/create.html" class="card highlight">
-      <h3>Step 1: AI 설계</h3>
-      <p>AI 기반 연구 설계 (제목, 목적, 기간)</p>
-      <span class="badge p0">Phase 0</span>
-    </a>
-    <a href="research/create-step2.html" class="card highlight">
-      <h3>Step 2: 설계 확인</h3>
-      <p>연령, 성별, 건강조건 (대상자)</p>
-      <span class="badge p0">Phase 0</span>
-    </a>
-    </div>
-
-    <div class="group-title">2) 수집 데이터 확정</div>
-    <div class="grid">
-    <a href="research/create-step3.html" class="card highlight">
-      <h3>Step 3: 데이터 수집</h3>
-      <p>심박수, 혈당, 복약, 수면, 기분...</p>
-      <span class="badge p0">Phase 0</span>
-    </a>
-    </div>
-
-    <div class="group-title">3) 예산 및 발행</div>
-    <div class="grid">
-    <a href="research/create-step4.html" class="card highlight">
-      <h3>Step 4: 예산 + 지갑</h3>
-      <p>프로젝트 지갑 생성, 예산 설정</p>
-      <span class="badge p0">Phase 0</span>
-      <span class="badge new">통합</span>
-    </a>
-    <a href="research/create-step5.html" class="card highlight">
-      <h3>Step 5: 에스크로</h3>
-      <p>XRPL 에스크로 예치 + 최종 검토</p>
-      <span class="badge p0">Phase 0</span>
-    </a>
-    </div>
-    
-    <div class="group-title">4) 홈, 데이터 조회, 출력</div>
+    <!-- Phase 0: 데이터 조회/관리 먼저, Phase 1: 연구 생성 -->
+    <div class="group-title">1) 홈, 데이터 조회, 출력 (Phase 0 - 최우선)</div>
     <div class="grid">
     <a href="research/list.html" class="card highlight">
       <h3>홈 (연구 목록)</h3>
       <p>내 할 일 + 연구 목록 + 상태/필터 + 빠른 액션</p>
-      <span class="badge p1">Phase 1</span>
+      <span class="badge p0">Phase 0</span>
       <span class="badge new">개선됨</span>
     </a>
-    <a href="research/data-overview.html" class="card">
+    <a href="research/data-overview.html" class="card highlight">
       <h3>개요</h3>
       <p>KPI, 참여자 추이, 수집률, 인사이트</p>
-      <span class="badge p1">Phase 1</span>
+      <span class="badge p0">Phase 0</span>
     </a>
-    <a href="research/data-table.html" class="card">
+    <a href="research/data-table.html" class="card highlight">
       <h3>테이블</h3>
       <p>필터/정렬 중심 스프레드시트 뷰</p>
-      <span class="badge p1">Phase 1</span>
+      <span class="badge p0">Phase 0</span>
     </a>
     <a href="research/data-table.html" class="card">
       <h3>CSV / Excel Export</h3>
       <p>테이블 상단 Export 버튼 사용</p>
-      <span class="badge p1">Phase 1</span>
+      <span class="badge p0">Phase 0</span>
     </a>
     <a href="research/action-center.html" class="card highlight">
       <h3>🎯 조치 센터</h3>
       <p>권장 조치, 알림 관리, 조치 이력</p>
-      <span class="badge p1">Phase 1</span>
+      <span class="badge p0">Phase 0</span>
       <span class="badge new">NEW</span>
+    </a>
+    </div>
+
+    <div class="group-title">2) 연구 세션 생성 (Phase 1)</div>
+    <div class="grid">
+    <a href="research/create.html" class="card">
+      <h3>Step 1: AI 설계</h3>
+      <p>AI 기반 연구 설계 (제목, 목적, 기간)</p>
+      <span class="badge p1">Phase 1</span>
+    </a>
+    <a href="research/create-step2.html" class="card">
+      <h3>Step 2: 설계 확인</h3>
+      <p>연령, 성별, 건강조건 (대상자)</p>
+      <span class="badge p1">Phase 1</span>
+    </a>
+    </div>
+
+    <div class="group-title">3) 수집 데이터 확정 (Phase 1)</div>
+    <div class="grid">
+    <a href="research/create-step3.html" class="card">
+      <h3>Step 3: 데이터 수집</h3>
+      <p>심박수, 혈당, 복약, 수면, 기분...</p>
+      <span class="badge p1">Phase 1</span>
+    </a>
+    </div>
+
+    <div class="group-title">4) 예산 및 발행 (Phase 1)</div>
+    <div class="grid">
+    <a href="research/create-step4.html" class="card">
+      <h3>Step 4: 예산 + 지갑</h3>
+      <p>프로젝트 지갑 생성, 예산 설정</p>
+      <span class="badge p1">Phase 1</span>
+      <span class="badge new">통합</span>
+    </a>
+    <a href="research/create-step5.html" class="card">
+      <h3>Step 5: 에스크로</h3>
+      <p>XRPL 에스크로 예치 + 최종 검토</p>
+      <span class="badge p1">Phase 1</span>
     </a>
     </div>
 
@@ -477,69 +477,74 @@
     </a>
     </div>
 
-    <!-- 2026-02-08 업데이트: 5단계로 변경 -->
-    <div class="group-title">Phase 0 (최우선 · 코어 플로우)</div>
-    <div class="grid">
-    <a href="research/create.html" class="card highlight">
-      <h3>Step 1: AI 설계</h3>
-      <p>AI 기반 연구 설계 (제목, 목적, 기간)</p>
-      <span class="badge p0">Phase 0</span>
-    </a>
-    <a href="research/create-step2.html" class="card highlight">
-      <h3>Step 2: 설계 확인</h3>
-      <p>연령, 성별, 건강조건 (대상자)</p>
-      <span class="badge p0">Phase 0</span>
-    </a>
-    <a href="research/create-step3.html" class="card highlight">
-      <h3>Step 3: 데이터 수집</h3>
-      <p>심박수, 혈당, 복약, 수면, 기분...</p>
-      <span class="badge p0">Phase 0</span>
-    </a>
-    <a href="research/create-step4.html" class="card highlight">
-      <h3>Step 4: 예산 + 지갑</h3>
-      <p>프로젝트 지갑 생성, 예산 설정</p>
-      <span class="badge p0">Phase 0</span>
-      <span class="badge new">통합</span>
-    </a>
-    <a href="research/create-step5.html" class="card highlight">
-      <h3>Step 5: 에스크로</h3>
-      <p>XRPL 에스크로 예치 + 최종 검토</p>
-      <span class="badge p0">Phase 0</span>
-    </a>
-    </div>
-
-    <div class="group-title">Phase 1 (운영/관리 및 데이터 조회)</div>
+    <!-- 2026-02-11 업데이트: Phase 0=데이터조회, Phase 1=연구생성 -->
+    <div class="group-title">Phase 0 (최우선 · 데이터 조회/관리)</div>
     <div class="grid">
     <a href="research/list.html" class="card highlight">
       <h3>홈 (연구 목록)</h3>
       <p>내 할 일 + 연구 목록 + 상태/필터 + 빠른 액션</p>
-      <span class="badge p1">Phase 1</span>
+      <span class="badge p0">Phase 0</span>
       <span class="badge new">개선됨</span>
+    </a>
+    <a href="research/data-overview.html" class="card highlight">
+      <h3>개요</h3>
+      <p>KPI, 참여자 추이, 수집률, 인사이트</p>
+      <span class="badge p0">Phase 0</span>
+    </a>
+    <a href="research/data-table.html" class="card highlight">
+      <h3>테이블</h3>
+      <p>필터/정렬 중심 스프레드시트 뷰</p>
+      <span class="badge p0">Phase 0</span>
+    </a>
+    <a href="research/action-center.html" class="card highlight">
+      <h3>🎯 조치 센터</h3>
+      <p>권장 조치, 알림 관리, 조치 이력</p>
+      <span class="badge p0">Phase 0</span>
+      <span class="badge new">NEW</span>
+    </a>
+    <a href="research/data-table.html" class="card">
+      <h3>CSV / Excel Export</h3>
+      <p>테이블 상단 Export 버튼 사용</p>
+      <span class="badge p0">Phase 0</span>
+    </a>
+    </div>
+
+    <div class="group-title">Phase 1 (연구 생성 플로우)</div>
+    <div class="grid">
+    <a href="research/create.html" class="card">
+      <h3>Step 1: AI 설계</h3>
+      <p>AI 기반 연구 설계 (제목, 목적, 기간)</p>
+      <span class="badge p1">Phase 1</span>
+    </a>
+    <a href="research/create-step2.html" class="card">
+      <h3>Step 2: 설계 확인</h3>
+      <p>연령, 성별, 건강조건 (대상자)</p>
+      <span class="badge p1">Phase 1</span>
+    </a>
+    <a href="research/create-step3.html" class="card">
+      <h3>Step 3: 데이터 수집</h3>
+      <p>심박수, 혈당, 복약, 수면, 기분...</p>
+      <span class="badge p1">Phase 1</span>
+    </a>
+    <a href="research/create-step4.html" class="card">
+      <h3>Step 4: 예산 + 지갑</h3>
+      <p>프로젝트 지갑 생성, 예산 설정</p>
+      <span class="badge p1">Phase 1</span>
+      <span class="badge new">통합</span>
+    </a>
+    <a href="research/create-step5.html" class="card">
+      <h3>Step 5: 에스크로</h3>
+      <p>XRPL 에스크로 예치 + 최종 검토</p>
+      <span class="badge p1">Phase 1</span>
     </a>
     <a href="team.html" class="card" style="opacity: 0.6;">
       <h3>팀 관리</h3>
       <p>멤버 초대, ABAC 권한 관리</p>
       <span class="badge p1">Phase 1</span>
     </a>
-    <a href="billing.html" class="card highlight">
+    <a href="billing.html" class="card">
       <h3>결제/에스크로</h3>
-      <p>연구별 지출/정산 원장 + 외부 입출금 + 출금 팝업(MFA)</p>
-      <span class="badge p1">Phase 1</span>
-      <span class="badge new">팝업</span>
-    </a>
-    <a href="research/data-overview.html" class="card">
-      <h3>개요</h3>
-      <p>KPI, 참여자 추이, 수집률, 인사이트</p>
-      <span class="badge p1">Phase 1</span>
-    </a>
-    <a href="research/data-table.html" class="card">
-      <h3>테이블</h3>
-      <p>필터/정렬 중심 스프레드시트 뷰</p>
-      <span class="badge p1">Phase 1</span>
-    </a>
-    <a href="research/data-table.html" class="card">
-      <h3>CSV / Excel Export</h3>
-      <p>테이블 상단 Export 버튼 사용</p>
+      <p>연구별 지출/정산 원장 + 외부 입출금</p>
       <span class="badge p1">Phase 1</span>
     </a>
     </div>
