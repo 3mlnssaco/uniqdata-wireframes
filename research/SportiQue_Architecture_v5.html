@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UniQdata Architecture v5 - 2-Server Model</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    background: #0d1117;
+    color: #e6edf3;
+    padding: 24px;
+    line-height: 1.5;
+  }
+  h1 { text-align: center; font-size: 22px; margin-bottom: 4px; letter-spacing: 1px; }
+  .subtitle { text-align: center; font-size: 12px; color: #8b949e; margin-bottom: 8px; }
+  .warning-banner {
+    background: linear-gradient(135deg, #7f1d1d, #991b1b);
+    border: 2px solid #ef4444;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 24px;
+    text-align: center;
+  }
+  .warning-banner .title { font-size: 14px; font-weight: 700; color: #fecaca; margin-bottom: 8px; }
+  .warning-banner .content { font-size: 12px; color: #fca5a5; }
+  .warning-banner code { background: #450a0a; padding: 2px 6px; border-radius: 4px; }
+
+  .section-divider { display: flex; align-items: center; gap: 14px; margin: 28px 0 16px; }
+  .section-divider::before, .section-divider::after { content: ''; flex: 1; height: 1px; background: #30363d; }
+  .section-divider span { font-size: 15px; font-weight: 700; white-space: nowrap; letter-spacing: 1px; }
+
+  /* 서버 박스 */
+  .server-diagram { display: flex; gap: 24px; margin-bottom: 24px; }
+  .server-box { flex: 1; border-radius: 12px; overflow: hidden; }
+  .server-box.core { border: 2px solid #a78bfa; }
+  .server-box.business { border: 2px solid #34d399; }
+  .server-header { padding: 16px; font-weight: 700; font-size: 14px; }
+  .server-box.core .server-header { background: linear-gradient(135deg, #4c1d95, #5b21b6); color: #e9d5ff; }
+  .server-box.business .server-header { background: linear-gradient(135deg, #064e3b, #065f46); color: #a7f3d0; }
+  .server-header .tech { font-size: 11px; font-weight: 400; opacity: 0.8; margin-top: 4px; }
+  .server-body { padding: 16px; background: #161b22; }
+  .server-body ul { list-style: none; }
+  .server-body li { padding: 8px 12px; margin-bottom: 6px; background: #0d1117; border-radius: 6px; font-size: 12px; border-left: 3px solid; }
+  .server-box.core .server-body li { border-left-color: #a78bfa; }
+  .server-box.business .server-body li { border-left-color: #34d399; }
+  .server-body li .label { font-weight: 600; }
+  .server-body li .desc { color: #8b949e; font-size: 11px; margin-top: 2px; }
+
+  /* 핵심 원칙 */
+  .principle-box { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 20px; margin-bottom: 24px; }
+  .principle-box h3 { font-size: 14px; margin-bottom: 16px; color: #58a6ff; }
+  .principle-row { display: flex; gap: 24px; }
+  .principle-item { flex: 1; }
+  .principle-item .wrong { color: #f87171; font-size: 13px; margin-bottom: 8px; }
+  .principle-item .right { color: #4ade80; font-size: 13px; }
+  .principle-item code { background: #21262d; padding: 2px 6px; border-radius: 4px; font-size: 11px; }
+
+  /* 통신 흐름 */
+  .flow-section { margin-bottom: 24px; }
+  .flow-title { font-size: 14px; font-weight: 700; margin-bottom: 12px; color: #e6edf3; }
+  .flow-diagram { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 20px; }
+  .flow-row { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 12px; }
+  .flow-node { padding: 10px 16px; border-radius: 8px; font-size: 12px; font-weight: 600; }
+  .flow-node.client { background: #1e3a5f; border: 1px solid #3b82f6; color: #93c5fd; }
+  .flow-node.gateway { background: #3f3f46; border: 1px solid #71717a; color: #d4d4d8; }
+  .flow-node.core { background: #4c1d95; border: 1px solid #a78bfa; color: #e9d5ff; }
+  .flow-node.business { background: #064e3b; border: 1px solid #34d399; color: #a7f3d0; }
+  .flow-node.db { background: #1e293b; border: 1px solid #64748b; color: #cbd5e1; }
+  .flow-node.xrpl { background: #312e81; border: 1px solid #818cf8; color: #c7d2fe; }
+  .flow-arrow { font-size: 18px; color: #6b7280; }
+
+  /* API 테이블 */
+  .api-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 24px; }
+  .api-table th { background: #21262d; padding: 12px; text-align: left; border-bottom: 1px solid #30363d; }
+  .api-table td { padding: 10px 12px; border-bottom: 1px solid #21262d; }
+  .api-table tr:hover { background: #161b22; }
+  .tag { padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 600; }
+  .tag-core { background: #4c1d95; color: #e9d5ff; }
+  .tag-business { background: #064e3b; color: #a7f3d0; }
+
+  /* 데이터 흐름 예시 */
+  .example-section { margin-bottom: 24px; }
+  .example-box { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 20px; margin-bottom: 16px; }
+  .example-title { font-size: 13px; font-weight: 700; color: #fbbf24; margin-bottom: 12px; }
+  .example-step { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 10px; }
+  .step-num { width: 24px; height: 24px; background: #3b82f6; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+  .step-content { font-size: 12px; }
+  .step-content .server { font-weight: 600; }
+  .step-content .server.core { color: #a78bfa; }
+  .step-content .server.business { color: #34d399; }
+  .step-content .action { color: #8b949e; }
+
+  /* FAQ */
+  .faq-section { margin-bottom: 24px; }
+  .faq-item { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 16px; margin-bottom: 12px; }
+  .faq-q { font-size: 13px; font-weight: 700; color: #f87171; margin-bottom: 8px; }
+  .faq-a { font-size: 12px; color: #4ade80; }
+  .faq-a code { background: #21262d; padding: 2px 6px; border-radius: 4px; }
+
+  /* 레포 링크 */
+  .repo-links { display: flex; gap: 16px; justify-content: center; margin-top: 24px; }
+  .repo-link { padding: 12px 24px; border-radius: 8px; text-decoration: none; font-size: 13px; font-weight: 600; }
+  .repo-link.core { background: #4c1d95; color: #e9d5ff; border: 1px solid #a78bfa; }
+  .repo-link.business { background: #064e3b; color: #a7f3d0; border: 1px solid #34d399; }
+  .repo-link:hover { opacity: 0.8; }
+
+  .nav-links { display: flex; gap: 12px; justify-content: center; margin-bottom: 24px; }
+  .nav-links a { color: #58a6ff; font-size: 12px; text-decoration: none; }
+  .nav-links a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<h1>UniQdata Architecture v5</h1>
+<p class="subtitle">2-Server Model: Core + Business</p>
+
+<div class="nav-links">
+  <a href="../index.html">← 와이어프레임 목록</a>
+  <a href="SportiQue_Architecture_v4.html">v4 (구버전)</a>
+</div>
+
+<!-- 경고 배너 -->
+<div class="warning-banner">
+  <div class="title">⚠️ 중요: "민감/비민감 라우팅" 아님</div>
+  <div class="content">
+    <code>❌ 민감 데이터 → 서버A, 비민감 → 서버B</code><br>
+    <code>✅ Core 기능 → NestJS, Business 기능 → Spring Boot</code>
+  </div>
+</div>
+
+<div class="section-divider"><span>🏗️ 서버 구성</span></div>
+
+<div class="server-diagram">
+  <div class="server-box core">
+    <div class="server-header">
+      🔐 uniqdata-core
+      <div class="tech">NestJS (TypeScript)</div>
+    </div>
+    <div class="server-body">
+      <ul>
+        <li>
+          <div class="label">Auth</div>
+          <div class="desc">로그인, 세션, Passkey 등록/검증</div>
+        </li>
+        <li>
+          <div class="label">Consent</div>
+          <div class="desc">동의서 생성, 서명, 범위 관리, 철회</div>
+        </li>
+        <li>
+          <div class="label">Wallet</div>
+          <div class="desc">XRPL 지갑 생성, 잔액 조회, 서명</div>
+        </li>
+        <li>
+          <div class="label">Escrow</div>
+          <div class="desc">에스크로 생성, 조건 설정, 해제</div>
+        </li>
+        <li>
+          <div class="label">Anchor</div>
+          <div class="desc">중요 이벤트 XRPL 앵커링, 증적</div>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="server-box business">
+    <div class="server-header">
+      📊 uniqdata-enterprise-backend
+      <div class="tech">Spring Boot (Kotlin)</div>
+    </div>
+    <div class="server-body">
+      <ul>
+        <li>
+          <div class="label">Research</div>
+          <div class="desc">프로젝트 CRUD, 상태, 팀 관리</div>
+        </li>
+        <li>
+          <div class="label">Data</div>
+          <div class="desc">수집 설정, 데이터 저장, 품질 검증</div>
+        </li>
+        <li>
+          <div class="label">Participant</div>
+          <div class="desc">참여자 매칭, 모집, 상태 추적</div>
+        </li>
+        <li>
+          <div class="label">Analysis</div>
+          <div class="desc">AI 분석 요청, 결과, 인사이트</div>
+        </li>
+        <li>
+          <div class="label">Settlement</div>
+          <div class="desc">보상 계산, 정산 스케줄, 지급</div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="section-divider"><span>📐 핵심 원칙</span></div>
+
+<div class="principle-box">
+  <h3>서버 역할 분리</h3>
+  <div class="principle-row">
+    <div class="principle-item">
+      <div class="wrong">❌ "민감한 데이터니까 Core로"</div>
+      <div class="right">✅ <code>Core</code> = 신원/동의/블록체인</div>
+    </div>
+    <div class="principle-item">
+      <div class="wrong">❌ "비민감 데이터니까 Business로"</div>
+      <div class="right">✅ <code>Business</code> = 연구/데이터/분석</div>
+    </div>
+  </div>
+</div>
+
+<div class="principle-box">
+  <h3>서버 간 통신 규칙</h3>
+  <div class="principle-row">
+    <div class="principle-item">
+      <div class="wrong">❌ Core → Business 호출</div>
+      <div class="right">✅ Core는 Business를 모름</div>
+    </div>
+    <div class="principle-item">
+      <div class="wrong">❌ Business가 XRPL 직접 호출</div>
+      <div class="right">✅ Business → Core → XRPL</div>
+    </div>
+  </div>
+</div>
+
+<div class="section-divider"><span>🔄 통신 흐름</span></div>
+
+<div class="flow-section">
+  <div class="flow-title">전체 아키텍처</div>
+  <div class="flow-diagram">
+    <div class="flow-row">
+      <div class="flow-node client">Client (Web/App)</div>
+    </div>
+    <div class="flow-row">
+      <span class="flow-arrow">↓</span>
+    </div>
+    <div class="flow-row">
+      <div class="flow-node gateway">API Gateway</div>
+    </div>
+    <div class="flow-row">
+      <span class="flow-arrow">↙</span>
+      <span style="width: 60px;"></span>
+      <span class="flow-arrow">↘</span>
+    </div>
+    <div class="flow-row">
+      <div class="flow-node core">Core (NestJS)</div>
+      <span style="width: 40px;"></span>
+      <div class="flow-node business">Business (Spring)</div>
+    </div>
+    <div class="flow-row">
+      <span class="flow-arrow">↓</span>
+      <span style="width: 40px;"></span>
+      <span class="flow-arrow">↓</span>
+      <span style="width: 40px;"></span>
+      <span class="flow-arrow">← 동의/지갑 검증</span>
+    </div>
+    <div class="flow-row">
+      <div class="flow-node xrpl">XRPL</div>
+      <span style="width: 40px;"></span>
+      <div class="flow-node db">PostgreSQL</div>
+    </div>
+  </div>
+</div>
+
+<div class="section-divider"><span>🛣️ API 라우팅</span></div>
+
+<table class="api-table">
+  <thead>
+    <tr>
+      <th>엔드포인트</th>
+      <th>서버</th>
+      <th>설명</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>POST /auth/login</code></td>
+      <td><span class="tag tag-core">Core</span></td>
+      <td>로그인</td>
+    </tr>
+    <tr>
+      <td><code>POST /auth/passkey/register</code></td>
+      <td><span class="tag tag-core">Core</span></td>
+      <td>Passkey 등록</td>
+    </tr>
+    <tr>
+      <td><code>GET /consents/me</code></td>
+      <td><span class="tag tag-core">Core</span></td>
+      <td>내 동의 목록</td>
+    </tr>
+    <tr>
+      <td><code>POST /wallets/create</code></td>
+      <td><span class="tag tag-core">Core</span></td>
+      <td>지갑 생성</td>
+    </tr>
+    <tr>
+      <td><code>POST /escrows</code></td>
+      <td><span class="tag tag-core">Core</span></td>
+      <td>에스크로 생성</td>
+    </tr>
+    <tr>
+      <td><code>POST /escrows/{id}/release</code></td>
+      <td><span class="tag tag-core">Core</span></td>
+      <td>에스크로 해제</td>
+    </tr>
+    <tr style="background: #0d1117;">
+      <td colspan="3" style="text-align: center; color: #6b7280; font-size: 11px;">───</td>
+    </tr>
+    <tr>
+      <td><code>POST /projects</code></td>
+      <td><span class="tag tag-business">Business</span></td>
+      <td>연구 생성</td>
+    </tr>
+    <tr>
+      <td><code>GET /projects/{id}/data</code></td>
+      <td><span class="tag tag-business">Business</span></td>
+      <td>데이터 조회</td>
+    </tr>
+    <tr>
+      <td><code>POST /projects/{id}/participants</code></td>
+      <td><span class="tag tag-business">Business</span></td>
+      <td>참여자 등록</td>
+    </tr>
+    <tr>
+      <td><code>POST /analyses</code></td>
+      <td><span class="tag tag-business">Business</span></td>
+      <td>AI 분석 요청</td>
+    </tr>
+    <tr>
+      <td><code>GET /settlements</code></td>
+      <td><span class="tag tag-business">Business</span></td>
+      <td>정산 내역</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="section-divider"><span>📋 데이터 흐름 예시</span></div>
+
+<div class="example-section">
+  <div class="example-box">
+    <div class="example-title">연구 생성 + 에스크로</div>
+    <div class="example-step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <span class="server business">[Business]</span>
+        <span class="action">POST /projects → 프로젝트 메타 저장</span>
+      </div>
+    </div>
+    <div class="example-step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <span class="server business">[Business]</span> →
+        <span class="server core">[Core]</span>
+        <span class="action">POST /escrows → 에스크로 생성 요청</span>
+      </div>
+    </div>
+    <div class="example-step">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <span class="server core">[Core]</span>
+        <span class="action">→ XRPL EscrowCreate 트랜잭션</span>
+      </div>
+    </div>
+    <div class="example-step">
+      <div class="step-num">4</div>
+      <div class="step-content">
+        <span class="server core">[Core]</span>
+        <span class="action">→ escrow 레코드 + anchor_logs 저장</span>
+      </div>
+    </div>
+    <div class="example-step">
+      <div class="step-num">5</div>
+      <div class="step-content">
+        <span class="server business">[Business]</span>
+        <span class="action">← escrow_id 받아서 프로젝트에 연결</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="example-box">
+    <div class="example-title">정산 실행</div>
+    <div class="example-step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <span class="server business">[Business]</span>
+        <span class="action">정산 대상 계산: "김철수에게 100 XRP"</span>
+      </div>
+    </div>
+    <div class="example-step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <span class="server business">[Business]</span> →
+        <span class="server core">[Core]</span>
+        <span class="action">POST /escrows/{id}/release</span>
+      </div>
+    </div>
+    <div class="example-step">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <span class="server core">[Core]</span>
+        <span class="action">→ XRPL EscrowFinish 트랜잭션</span>
+      </div>
+    </div>
+    <div class="example-step">
+      <div class="step-num">4</div>
+      <div class="step-content">
+        <span class="server business">[Business]</span>
+        <span class="action">← 정산 완료, settlements 기록</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="example-box">
+    <div class="example-title">데이터 조회 (동의 검증)</div>
+    <div class="example-step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <span class="server business">[Business]</span>
+        <span class="action">GET /projects/{id}/data 요청 받음</span>
+      </div>
+    </div>
+    <div class="example-step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <span class="server business">[Business]</span> →
+        <span class="server core">[Core]</span>
+        <span class="action">GET /consents?projectId={id}</span>
+      </div>
+    </div>
+    <div class="example-step">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <span class="server core">[Core]</span>
+        <span class="action">→ 동의한 참여자 목록 + 범위 반환</span>
+      </div>
+    </div>
+    <div class="example-step">
+      <div class="step-num">4</div>
+      <div class="step-content">
+        <span class="server business">[Business]</span>
+        <span class="action">동의 범위 내 data_points만 조회</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section-divider"><span>❓ FAQ (흔한 오해)</span></div>
+
+<div class="faq-section">
+  <div class="faq-item">
+    <div class="faq-q">Q: 민감 데이터는 Core로, 비민감은 Business로?</div>
+    <div class="faq-a">
+      A: ❌ 아님. 모든 데이터는 <code>Business</code>에서 처리.<br>
+      <code>Core</code>는 "동의 검증"과 "정산 실행"만 담당.
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q">Q: 블록체인 서버 = Core?</div>
+    <div class="faq-a">
+      A: ❌ Core ≠ 블록체인 서버.<br>
+      <code>Core</code> = XRPL과 통신하는 일반 서버.<br>
+      블록체인은 외부 시스템 (rippled).
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q">Q: 데이터 저장 위치가 다름?</div>
+    <div class="faq-a">
+      A: ❌ 민감→Core DB, 비민감→Business DB 아님.<br>
+      대부분 데이터는 <code>Business DB</code> (PostgreSQL).<br>
+      <code>Core DB</code>는 인증/동의/지갑 정보만.
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q">Q: 정산은 어디서?</div>
+    <div class="faq-a">
+      A: 정산 <strong>계산</strong> → <code>Business</code><br>
+      정산 <strong>실행</strong> (XRPL 트랜잭션) → <code>Core</code>
+    </div>
+  </div>
+</div>
+
+<div class="section-divider"><span>🔗 레포지토리</span></div>
+
+<div class="repo-links">
+  <a href="https://github.com/SportiQue-UniQdata/uniqdata-core" class="repo-link core" target="_blank">
+    uniqdata-core (NestJS)
+  </a>
+  <a href="https://github.com/SportiQue-UniQdata/uniqdata-enterprise-backend" class="repo-link business" target="_blank">
+    uniqdata-enterprise-backend (Spring)
+  </a>
+</div>
+
+<p style="text-align: center; color: #6b7280; font-size: 11px; margin-top: 32px;">
+  v5.0 | 2026-02-11 | "민감/비민감 라우팅" 폐기, 기능 도메인 기반 분리
+</p>
+
+</body>
+</html>
