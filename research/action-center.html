@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>조치 센터 - Wireframe</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, sans-serif; background: #f5f5f5; }
+    .layout { display: flex; min-height: 100vh; }
+    .sidebar { width: 240px; background: #1a1a1a; color: white; padding: 20px; flex-shrink: 0; }
+    .logo { font-size: 18px; font-weight: bold; margin-bottom: 30px; padding: 10px; }
+    .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 8px; margin-bottom: 4px; color: #9ca3af; text-decoration: none; }
+    .nav-item:hover { background: #252525; }
+    .nav-item.active { background: #3b82f6; color: white; }
+
+    .main { flex: 1; padding: 32px; max-width: 1200px; }
+    .main h1 { font-size: 28px; margin-bottom: 8px; }
+    .main .subtitle { color: #6b7280; margin-bottom: 32px; }
+
+    /* 알림 요약 */
+    .alert-summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 32px; }
+    .alert-box { padding: 20px; border-radius: 12px; }
+    .alert-box.critical { background: linear-gradient(135deg, #fef2f2, #fee2e2); border: 2px solid #ef4444; }
+    .alert-box.warning { background: linear-gradient(135deg, #fffbeb, #fef3c7); border: 2px solid #f59e0b; }
+    .alert-box.info { background: linear-gradient(135deg, #eff6ff, #dbeafe); border: 2px solid #3b82f6; }
+    .alert-box .count { font-size: 36px; font-weight: 700; }
+    .alert-box.critical .count { color: #dc2626; }
+    .alert-box.warning .count { color: #d97706; }
+    .alert-box.info .count { color: #2563eb; }
+    .alert-box .label { font-size: 14px; color: #6b7280; margin-top: 4px; }
+
+    /* 권장 조치 카드 */
+    .action-section { margin-bottom: 32px; }
+    .action-section h2 { font-size: 18px; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+    .action-card { background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 20px; margin-bottom: 12px; }
+    .action-card.urgent { border-left: 4px solid #ef4444; }
+    .action-card.warning { border-left: 4px solid #f59e0b; }
+    .action-card.info { border-left: 4px solid #3b82f6; }
+
+    .action-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+    .action-title { font-size: 16px; font-weight: 600; }
+    .action-badge { font-size: 11px; padding: 4px 10px; border-radius: 12px; font-weight: 600; }
+    .action-badge.urgent { background: #fef2f2; color: #dc2626; }
+    .action-badge.warning { background: #fffbeb; color: #d97706; }
+    .action-badge.info { background: #eff6ff; color: #2563eb; }
+
+    .action-detail { color: #6b7280; font-size: 14px; margin-bottom: 16px; line-height: 1.6; }
+    .action-detail strong { color: #111827; }
+
+    .action-context { background: #f9fafb; border-radius: 8px; padding: 12px; margin-bottom: 16px; font-size: 13px; }
+    .action-context .row { display: flex; justify-content: space-between; margin-bottom: 6px; }
+    .action-context .row:last-child { margin-bottom: 0; }
+    .action-context .label { color: #6b7280; }
+    .action-context .value { font-weight: 600; }
+    .action-context .value.bad { color: #dc2626; }
+    .action-context .value.warn { color: #d97706; }
+    .action-context .value.good { color: #22c55e; }
+
+    .action-buttons { display: flex; gap: 8px; }
+    .btn { padding: 10px 20px; border-radius: 8px; font-size: 14px; cursor: pointer; border: none; font-weight: 500; }
+    .btn-primary { background: #3b82f6; color: white; }
+    .btn-secondary { background: #f3f4f6; color: #374151; border: 1px solid #d1d5db; }
+    .btn-danger { background: #ef4444; color: white; }
+
+    /* 이력 */
+    .history-section { margin-top: 32px; }
+    .history-item { display: flex; gap: 16px; padding: 16px 0; border-bottom: 1px solid #e5e7eb; }
+    .history-icon { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+    .history-icon.success { background: #dcfce7; }
+    .history-icon.pending { background: #fef3c7; }
+    .history-content { flex: 1; }
+    .history-title { font-weight: 500; margin-bottom: 4px; }
+    .history-meta { font-size: 13px; color: #6b7280; }
+    .history-result { font-size: 13px; margin-top: 8px; padding: 8px 12px; background: #f9fafb; border-radius: 6px; }
+    .history-result.positive { background: #f0fdf4; color: #166534; }
+
+    /* 디자이너 노트 */
+    .designer-note { background: #fefce8; border: 2px dashed #eab308; border-radius: 12px; padding: 20px; margin-top: 40px; }
+    .designer-note h3 { color: #a16207; margin-bottom: 12px; }
+    .designer-note .content { font-size: 13px; color: #713f12; line-height: 1.8; }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <!-- 사이드바 -->
+    <div class="sidebar">
+      <div class="logo">🔬 UniQdata</div>
+      <a href="list.html" class="nav-item">📋 연구 목록</a>
+      <a href="data-overview.html" class="nav-item">📊 연구 개요</a>
+      <a href="action-center.html" class="nav-item active">🎯 조치 센터</a>
+      <a href="analysis-discovery.html" class="nav-item">🤖 AI 허브</a>
+    </div>
+
+    <!-- 메인 -->
+    <div class="main">
+      <h1>🎯 조치 센터</h1>
+      <p class="subtitle">당뇨병 환자 생활습관 연구 - 권장 조치 및 알림 관리</p>
+
+      <!-- 알림 요약 -->
+      <div class="alert-summary"
+           data-spec="알림 요약: 긴급/주의/정보 3단계로 현재 상태 한눈에 파악"
+           data-intent="즉시 확인해야 할 사항 우선순위 파악">
+        <div class="alert-box critical"
+             data-intent="즉시 조치 필요한 긴급 사항"
+             data-action="당일 내 조치 필수">
+          <div class="count">2</div>
+          <div class="label">🚨 긴급 조치 필요</div>
+        </div>
+        <div class="alert-box warning"
+             data-intent="이번 주 내 확인 필요한 사항"
+             data-action="주간 내 조치 권장">
+          <div class="count">3</div>
+          <div class="label">⚠️ 주의 관찰</div>
+        </div>
+        <div class="alert-box info"
+             data-intent="참고용 긍정적 알림"
+             data-action="확인 후 기록">
+          <div class="count">5</div>
+          <div class="label">ℹ️ 정보</div>
+        </div>
+      </div>
+
+      <!-- 긴급 조치 -->
+      <div class="action-section">
+        <h2>🚨 긴급 조치 필요</h2>
+
+        <div class="action-card urgent"
+             data-spec="이탈 경고: 7일+ 미응답 참여자 다수 발생"
+             data-intent="대량 이탈 방지"
+             data-trigger="7일 연속 미응답자 >= 10명"
+             data-action="개별 연락 리스트 작성 → 순차 연락">
+          <div class="action-header">
+            <div class="action-title">참여자 이탈 경고</div>
+            <span class="action-badge urgent">즉시 조치</span>
+          </div>
+          <div class="action-detail">
+            <strong>12명</strong>의 참여자가 <strong>7일 이상</strong> 데이터를 제출하지 않았습니다.<br>
+            이탈 가능성이 높으며, 즉시 개별 연락이 필요합니다.
+          </div>
+          <div class="action-context">
+            <div class="row">
+              <span class="label">영향받는 참여자</span>
+              <span class="value bad">12명 (전체의 14%)</span>
+            </div>
+            <div class="row">
+              <span class="label">마지막 응답일</span>
+              <span class="value">7-14일 전</span>
+            </div>
+            <div class="row">
+              <span class="label">자동 리마인더 발송</span>
+              <span class="value">완료 (응답 없음)</span>
+            </div>
+          </div>
+          <div class="action-buttons">
+            <button class="btn btn-danger">📞 연락 리스트 다운로드</button>
+            <button class="btn btn-secondary">👁️ 참여자 목록 보기</button>
+            <button class="btn btn-secondary">📧 2차 리마인더 발송</button>
+          </div>
+        </div>
+
+        <div class="action-card urgent"
+             data-spec="예산 경고: 잔액 5% 미만"
+             data-intent="연구 중단 방지"
+             data-trigger="예산 잔액 < 5%"
+             data-action="추가 입금 or 모집 중단 결정">
+          <div class="action-header">
+            <div class="action-title">예산 잔액 부족</div>
+            <span class="action-badge urgent">즉시 조치</span>
+          </div>
+          <div class="action-detail">
+            프로젝트 지갑 잔액이 <strong>4.2%</strong>입니다.<br>
+            현재 참여자 보상을 지급하기 어려울 수 있습니다.
+          </div>
+          <div class="action-context">
+            <div class="row">
+              <span class="label">현재 잔액</span>
+              <span class="value bad">420 XRP</span>
+            </div>
+            <div class="row">
+              <span class="label">예상 필요 금액</span>
+              <span class="value">1,200 XRP (이번 주)</span>
+            </div>
+            <div class="row">
+              <span class="label">부족 금액</span>
+              <span class="value bad">780 XRP</span>
+            </div>
+          </div>
+          <div class="action-buttons">
+            <button class="btn btn-primary">💰 예산 추가 입금</button>
+            <button class="btn btn-secondary">⏸️ 모집 일시 중단</button>
+            <button class="btn btn-secondary">📊 예산 상세 보기</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 주의 관찰 -->
+      <div class="action-section">
+        <h2>⚠️ 주의 관찰</h2>
+
+        <div class="action-card warning"
+             data-spec="완료율 저하: 특정 항목 제출률 낮음"
+             data-intent="데이터 품질 유지"
+             data-trigger="특정 항목 완료율 < 60%"
+             data-action="해당 항목 UX 개선 or 필수→선택 전환">
+          <div class="action-header">
+            <div class="action-title">수면 데이터 완료율 저하</div>
+            <span class="action-badge warning">이번 주 내</span>
+          </div>
+          <div class="action-detail">
+            '수면 시간' 항목 완료율이 <strong>58%</strong>로 하락했습니다.<br>
+            참여자들이 해당 항목 입력에 어려움을 겪는 것으로 보입니다.
+          </div>
+          <div class="action-context">
+            <div class="row">
+              <span class="label">해당 항목</span>
+              <span class="value">수면 시간 기록</span>
+            </div>
+            <div class="row">
+              <span class="label">현재 완료율</span>
+              <span class="value warn">58%</span>
+            </div>
+            <div class="row">
+              <span class="label">지난 주 완료율</span>
+              <span class="value">72%</span>
+            </div>
+          </div>
+          <div class="action-buttons">
+            <button class="btn btn-primary">📝 항목 설정 변경</button>
+            <button class="btn btn-secondary">📢 입력 가이드 발송</button>
+            <button class="btn btn-secondary">🔄 필수→선택 전환</button>
+          </div>
+        </div>
+
+        <div class="action-card warning"
+             data-spec="모집 속도 둔화"
+             data-intent="목표 달성 보장"
+             data-trigger="일일 등록 < 목표의 50%"
+             data-action="조건 완화 / 보상 상향 / 채널 확대">
+          <div class="action-header">
+            <div class="action-title">모집 속도 둔화</div>
+            <span class="action-badge warning">이번 주 내</span>
+          </div>
+          <div class="action-detail">
+            최근 7일간 신규 등록이 <strong>3명</strong>에 그쳤습니다.<br>
+            현재 속도로는 목표 달성까지 <strong>45일</strong> 추가 소요 예상됩니다.
+          </div>
+          <div class="action-context">
+            <div class="row">
+              <span class="label">현재 달성률</span>
+              <span class="value">87/100명 (87%)</span>
+            </div>
+            <div class="row">
+              <span class="label">최근 7일 등록</span>
+              <span class="value warn">3명</span>
+            </div>
+            <div class="row">
+              <span class="label">목표 일일 등록</span>
+              <span class="value">2명</span>
+            </div>
+          </div>
+          <div class="action-buttons">
+            <button class="btn btn-primary">🎁 보상 상향 검토</button>
+            <button class="btn btn-secondary">📋 조건 완화 검토</button>
+            <button class="btn btn-secondary">📢 추가 홍보</button>
+          </div>
+        </div>
+
+        <div class="action-card warning">
+          <div class="action-header">
+            <div class="action-title">3일 미응답자 증가</div>
+            <span class="action-badge warning">모니터링</span>
+          </div>
+          <div class="action-detail">
+            <strong>8명</strong>의 참여자가 3일 연속 미응답 상태입니다.<br>
+            자동 리마인더가 발송되었으며, 응답률을 모니터링 중입니다.
+          </div>
+          <div class="action-context">
+            <div class="row">
+              <span class="label">3일 미응답자</span>
+              <span class="value warn">8명</span>
+            </div>
+            <div class="row">
+              <span class="label">리마인더 발송</span>
+              <span class="value good">완료</span>
+            </div>
+            <div class="row">
+              <span class="label">예상 복귀율</span>
+              <span class="value">70%</span>
+            </div>
+          </div>
+          <div class="action-buttons">
+            <button class="btn btn-secondary">👁️ 대상자 목록</button>
+            <button class="btn btn-secondary">📊 이전 복귀율 확인</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 정보 -->
+      <div class="action-section">
+        <h2>ℹ️ 정보</h2>
+
+        <div class="action-card info">
+          <div class="action-header">
+            <div class="action-title">품질 점수 90% 달성</div>
+            <span class="action-badge info">긍정</span>
+          </div>
+          <div class="action-detail">
+            이번 주 데이터 품질 점수가 <strong>90%</strong>를 달성했습니다. 우수한 데이터 품질을 유지하고 있습니다.
+          </div>
+          <div class="action-buttons">
+            <button class="btn btn-secondary">📊 품질 리포트 보기</button>
+          </div>
+        </div>
+
+        <div class="action-card info">
+          <div class="action-header">
+            <div class="action-title">AI 분석 완료</div>
+            <span class="action-badge info">알림</span>
+          </div>
+          <div class="action-detail">
+            요청하신 '복약 순응도-혈당 관계' 인과 분석이 완료되었습니다.
+          </div>
+          <div class="action-buttons">
+            <button class="btn btn-primary">🤖 결과 확인</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 조치 이력 -->
+      <div class="history-section">
+        <h2>📜 최근 조치 이력</h2>
+
+        <div class="history-item">
+          <div class="history-icon success">✓</div>
+          <div class="history-content">
+            <div class="history-title">리마인더 발송 완료</div>
+            <div class="history-meta">2026-02-10 14:30 · 대상: 5일 미응답자 15명</div>
+            <div class="history-result positive">결과: 48시간 내 9명 응답 (60% 복귀율)</div>
+          </div>
+        </div>
+
+        <div class="history-item">
+          <div class="history-icon success">✓</div>
+          <div class="history-content">
+            <div class="history-title">예산 추가 입금</div>
+            <div class="history-meta">2026-02-08 10:15 · 금액: 2,000 XRP</div>
+            <div class="history-result">트랜잭션: rHb9CJA...xyz</div>
+          </div>
+        </div>
+
+        <div class="history-item">
+          <div class="history-icon success">✓</div>
+          <div class="history-content">
+            <div class="history-title">수집 항목 변경</div>
+            <div class="history-meta">2026-02-05 16:45 · '운동 상세' 필수→선택 전환</div>
+            <div class="history-result positive">결과: 완료율 68% → 82% 상승</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 디자이너 노트 -->
+      <div class="designer-note">
+        <h3>📋 디자이너 노트: 조치 센터</h3>
+        <div class="content">
+          <strong>페이지 목적:</strong><br>
+          • 연구자가 "지금 뭘 해야 하는지" 한눈에 파악<br>
+          • 알림 → 컨텍스트 → 권장 조치 → 실행 버튼 흐름<br>
+          • 조치 이력으로 효과 추적<br><br>
+
+          <strong>UX 원칙:</strong><br>
+          • 긴급도에 따른 시각적 구분 (빨강/노랑/파랑)<br>
+          • 각 알림에 "왜 이게 문제인지" 컨텍스트 제공<br>
+          • 구체적인 액션 버튼 (모호한 "자세히 보기" 지양)<br>
+          • 조치 결과 피드백으로 학습 효과<br><br>
+
+          <strong>알림 기준:</strong><br>
+          • 🚨 긴급: 활성률 <50%, 예산 <5%, 7일+ 미응답 10명+<br>
+          • ⚠️ 주의: 활성률 50-70%, 품질 <75%, 특정항목 <60%<br>
+          • ℹ️ 정보: 목표 달성, 품질 우수, 분석 완료 등<br><br>
+
+          <strong>연결 페이지:</strong><br>
+          • data-overview.html → KPI 클릭 시 여기로 이동 가능<br>
+          • 각 조치 버튼 → 해당 기능 페이지/모달로 이동
+        </div>
+      </div>
+
+    </div>
+  </div>
+</body>
+</html>
