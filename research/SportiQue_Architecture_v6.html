@@ -188,15 +188,15 @@
       <div style="font-weight: 700;">환자 앱 (Flutter)</div>
       <div style="font-size: 10px; color: #60a5fa; margin-top: 4px;">데이터 입력 &middot; AI 건강 레포트 &middot; UQD 보상</div>
     </div>
-    <div style="background: #064e3b; border: 2px solid #34d399; padding: 14px 20px; border-radius: 10px; font-size: 12px; color: #a7f3d0; min-width: 180px; text-align: center;">
+    <div style="background: #064e3b; border: 2px solid #34d399; padding: 14px 20px; border-radius: 10px; font-size: 12px; color: #a7f3d0; min-width: 240px; text-align: center;">
       <div style="font-size: 16px; margin-bottom: 4px;">&#x1F5A5;&#xFE0F;</div>
-      <div style="font-weight: 700;">Enterprise Portal (React)</div>
-      <div style="font-size: 10px; color: #6ee7b7; margin-top: 4px;">연구 관리 &middot; IRB 신청/추적 &middot; 데이터 분석</div>
-    </div>
-    <div style="background: #422006; border: 2px solid #fbbf24; padding: 14px 20px; border-radius: 10px; font-size: 12px; color: #fcd34d; min-width: 180px; text-align: center;">
-      <div style="font-size: 16px; margin-bottom: 4px;">&#x1F4CB;</div>
-      <div style="font-weight: 700;">IRB 위원 포털</div>
-      <div style="font-size: 10px; color: #fbbf24; margin-top: 4px;">심의 &middot; 투표</div>
+      <div style="font-weight: 700;">Enterprise Portal (React) &mdash; 역할 기반</div>
+      <div style="font-size: 10px; color: #6ee7b7; margin-top: 6px; line-height: 1.6;">
+        <span style="color: #34d399;">[연구자]</span> 프로젝트 관리 &middot; IRB 신청<br>
+        <span style="color: #fbbf24;">[IRB위원]</span> 심의 &middot; 투표 &middot; 의견<br>
+        <span style="color: #c4b5fd;">[기관관리]</span> 전체 현황 &middot; 설정
+      </div>
+      <div style="font-size: 9px; color: #4ade80; margin-top: 6px; border-top: 1px solid #065f46; padding-top: 4px;">같은 도메인 &middot; 같은 로그인 &middot; role 분기</div>
     </div>
   </div>
 
@@ -360,6 +360,8 @@
       <span class="status-badge" style="background: #422006; color: #fbbf24; border: 1px solid #d97706;">FULL_BOARD_REVIEW</span>
       <span style="color: #6b7280; font-size: 14px;">&rarr;</span>
       <span class="status-badge" style="background: #064e3b; color: #4ade80; border: 1px solid #22c55e;">APPROVED</span>
+      <span style="color: #6b7280; font-size: 14px;">&rarr;</span>
+      <span class="status-badge" style="background: #312e81; color: #c7d2fe; border: 1px solid #6366f1;">&#x26D3;&#xFE0F; XRPL 앵커링</span>
     </div>
 
     <!-- Branch arrows -->
@@ -522,7 +524,7 @@
     <div class="example-step">
       <div class="step-num b2b">4</div>
       <div class="step-content">
-        <span style="color: #fcd34d; font-weight: 600;">&#x1F4CB; IRB 위원</span>
+        <span style="color: #fcd34d; font-weight: 600;">&#x1F4CB; IRB 위원 (Enterprise Portal)</span>
         <span class="action">&rarr;</span>
         <span class="server business">[Business]</span>
         <span class="action">심의 (approve/revise/reject)</span>
@@ -533,7 +535,7 @@
       <div class="step-content">
         <span class="action">승인 후 &rarr;</span>
         <span class="server core">[Core]</span>
-        <span class="action">동의 검증 &rarr; health_db 조회 &rarr; 가명처리 &rarr; 반환</span>
+        <span class="action"><span style="color: #c7d2fe; font-weight: 600;">XRPL 승인 앵커링</span> + 동의 검증 &rarr; health_db 조회 &rarr; 가명처리 &rarr; 반환</span>
       </div>
     </div>
     <div class="example-step">
@@ -598,7 +600,7 @@
       </div>
       <div>
         <code style="font-size: 11px; color: #34d399; background: #21262d; padding: 3px 8px; border-radius: 4px;">irb.approved</code>
-        <div style="font-size: 10px; color: #8b949e; margin-top: 4px; padding-left: 8px;">데이터 접근 활성화</div>
+        <div style="font-size: 10px; color: #8b949e; margin-top: 4px; padding-left: 8px;">데이터 접근 활성화 + <span style="color: #c7d2fe; font-weight: 600;">XRPL 앵커링 (tx hash 기록)</span></div>
       </div>
     </div>
   </div>
@@ -731,6 +733,7 @@
       &#x2713; 건강 데이터 수신/저장<br>
       &#x2713; 동의 관리<br>
       &#x2713; XRPL / 에스크로 / UQD<br>
+      &#x2713; <span style="color: #fbbf24;">IRB 승인 XRPL 앵커링</span><br>
       &#x2713; AI 건강 레포트
     </div>
   </div>
@@ -768,7 +771,7 @@
   </div>
 
   <p style="text-align: center; color: #6b7280; font-size: 11px; margin-top: 24px;">
-    v6.0 | 2026-02-11 | 양면 플랫폼 + IRB SaaS 피봇 반영
+    v6.1 | 2026-02-11 | Enterprise+IRB 포털 통합 (역할 기반) + IRB 승인 XRPL 앵커링
   </p>
 </div>
 
