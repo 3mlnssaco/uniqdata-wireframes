@@ -237,317 +237,174 @@
   </div>
 </div>
 
-<div class="section-divider"><span>📥 입력 소스별 상세 흐름</span></div>
+<!-- ====== 독립 영역 먼저 ====== -->
+<div class="section-divider"><span>📊 Business 독립 영역 (대부분의 작업)</span></div>
 
-<!-- 입력 소스별 상세 -->
-<div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 24px;">
-
-  <!-- UniQdata App -->
-  <div style="background: #161b22; border: 1px solid #30363d; border-radius: 8px; overflow: hidden;">
-    <div style="background: #1e3a5f; padding: 12px 16px; font-size: 13px; font-weight: 700; color: #93c5fd;">
-      📱 UniQdata App
-    </div>
-    <table style="width: 100%; font-size: 10px; border-collapse: collapse;">
-      <tr style="background: #21262d;">
-        <th style="padding: 8px; text-align: left; border-bottom: 1px solid #30363d;">데이터</th>
-        <th style="padding: 8px; text-align: left; border-bottom: 1px solid #30363d;">엔드포인트</th>
-        <th style="padding: 8px; text-align: left; border-bottom: 1px solid #30363d;">처리</th>
-        <th style="padding: 8px; text-align: left; border-bottom: 1px solid #30363d;">저장</th>
-      </tr>
-      <tr>
-        <td style="padding: 6px 8px; border-bottom: 1px solid #21262d;">심박/혈압/혈당</td>
-        <td style="padding: 6px 8px; border-bottom: 1px solid #21262d; color: #6ee7b7;"><code>POST /data/vitals</code></td>
-        <td style="padding: 6px 8px; border-bottom: 1px solid #21262d;"><span style="background: #064e3b; padding: 1px 4px; border-radius: 3px; color: #a7f3d0; font-size: 9px;">Business</span></td>
-        <td style="padding: 6px 8px; border-bottom: 1px solid #21262d; color: #8b949e;">data_points(source=app)</td>
-      </tr>
-      <tr>
-        <td style="padding: 6px 8px; border-bottom: 1px solid #21262d;">복약 기록</td>
-        <td style="padding: 6px 8px; border-bottom: 1px solid #21262d; color: #6ee7b7;"><code>POST /data/medication</code></td>
-        <td style="padding: 6px 8px; border-bottom: 1px solid #21262d;"><span style="background: #064e3b; padding: 1px 4px; border-radius: 3px; color: #a7f3d0; font-size: 9px;">Business</span></td>
-        <td style="padding: 6px 8px; border-bottom: 1px solid #21262d; color: #8b949e;">data_points(source=app)</td>
-      </tr>
-      <tr>
-        <td style="padding: 6px 8px; border-bottom: 1px solid #21262d;">수면 데이터</td>
-        <td style="padding: 6px 8px; border-bottom: 1px solid #21262d; color: #6ee7b7;"><code>POST /data/sleep</code></td>
-        <td style="padding: 6px 8px; border-bottom: 1px solid #21262d;"><span style="background: #064e3b; padding: 1px 4px; border-radius: 3px; color: #a7f3d0; font-size: 9px;">Business</span></td>
-        <td style="padding: 6px 8px; border-bottom: 1px solid #21262d; color: #8b949e;">data_points(source=app)</td>
-      </tr>
-      <tr>
-        <td style="padding: 6px 8px; border-bottom: 1px solid #21262d;">증상 기록</td>
-        <td style="padding: 6px 8px; border-bottom: 1px solid #21262d; color: #6ee7b7;"><code>POST /data/symptoms</code></td>
-        <td style="padding: 6px 8px; border-bottom: 1px solid #21262d;"><span style="background: #064e3b; padding: 1px 4px; border-radius: 3px; color: #a7f3d0; font-size: 9px;">Business</span></td>
-        <td style="padding: 6px 8px; border-bottom: 1px solid #21262d; color: #8b949e;">data_points(source=app)</td>
-      </tr>
-      <tr>
-        <td style="padding: 6px 8px; color: #c4b5fd;">동의 서명</td>
-        <td style="padding: 6px 8px; color: #c4b5fd;"><code>POST /consents/sign</code></td>
-        <td style="padding: 6px 8px;"><span style="background: #4c1d95; padding: 1px 4px; border-radius: 3px; color: #e9d5ff; font-size: 9px;">Core</span></td>
-        <td style="padding: 6px 8px; color: #8b949e;">consents + anchor_logs</td>
-      </tr>
-    </table>
+<div style="background: #022c22; border: 2px solid #34d399; border-radius: 12px; padding: 20px; margin-bottom: 24px;">
+  <div style="font-size: 14px; font-weight: 700; color: #a7f3d0; margin-bottom: 16px;">
+    📊 Business (Spring Boot) - Core 호출 없이 독립 처리
   </div>
 
-  <!-- Medi-Q -->
-  <div style="background: #161b22; border: 1px solid #30363d; border-radius: 8px; overflow: hidden;">
-    <div style="background: #1e3a5f; padding: 12px 16px; font-size: 13px; font-weight: 700; color: #93c5fd;">
-      💊 Medi-Q (문진)
+  <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px;">
+    <!-- 데이터 수신/저장 -->
+    <div style="background: #0d1117; border-radius: 8px; padding: 16px;">
+      <div style="font-size: 12px; font-weight: 600; color: #6ee7b7; margin-bottom: 12px;">📥 데이터 수신 & 저장</div>
+      <table style="width: 100%; font-size: 10px; border-collapse: collapse;">
+        <tr><td style="padding: 4px 0; color: #8b949e;">바이탈 (심박/혈압/혈당)</td><td style="color: #6ee7b7;"><code>POST /data/vitals</code></td></tr>
+        <tr><td style="padding: 4px 0; color: #8b949e;">복약 기록</td><td style="color: #6ee7b7;"><code>POST /data/medication</code></td></tr>
+        <tr><td style="padding: 4px 0; color: #8b949e;">수면/활동</td><td style="color: #6ee7b7;"><code>POST /data/sleep</code></td></tr>
+        <tr><td style="padding: 4px 0; color: #8b949e;">문진/PRO 설문</td><td style="color: #6ee7b7;"><code>POST /survey/submit</code></td></tr>
+        <tr><td style="padding: 4px 0; color: #8b949e;">웨어러블 스트림</td><td style="color: #6ee7b7;"><code>POST /stream/*</code></td></tr>
+        <tr><td style="padding: 4px 0; color: #8b949e;">CSV 업로드</td><td style="color: #6ee7b7;"><code>POST /data/upload</code></td></tr>
+      </table>
+      <div style="margin-top: 8px; font-size: 9px; color: #4ade80;">→ 모두 Business DB (data_points)에 저장</div>
     </div>
-    <table style="width: 100%; font-size: 10px; border-collapse: collapse;">
-      <tr style="background: #21262d;">
-        <th style="padding: 8px; text-align: left; border-bottom: 1px solid #30363d;">데이터</th>
-        <th style="padding: 8px; text-align: left; border-bottom: 1px solid #30363d;">엔드포인트</th>
-        <th style="padding: 8px; text-align: left; border-bottom: 1px solid #30363d;">처리</th>
-        <th style="padding: 8px; text-align: left; border-bottom: 1px solid #30363d;">저장</th>
-      </tr>
-      <tr>
-        <td style="padding: 6px 8px; border-bottom: 1px solid #21262d;">문진 응답</td>
-        <td style="padding: 6px 8px; border-bottom: 1px solid #21262d; color: #6ee7b7;"><code>POST /survey/submit</code></td>
-        <td style="padding: 6px 8px; border-bottom: 1px solid #21262d;"><span style="background: #064e3b; padding: 1px 4px; border-radius: 3px; color: #a7f3d0; font-size: 9px;">Business</span></td>
-        <td style="padding: 6px 8px; border-bottom: 1px solid #21262d; color: #8b949e;">data_points(source=mediq)</td>
-      </tr>
-      <tr>
-        <td style="padding: 6px 8px; border-bottom: 1px solid #21262d;">PRO 설문</td>
-        <td style="padding: 6px 8px; border-bottom: 1px solid #21262d; color: #6ee7b7;"><code>POST /pro/submit</code></td>
-        <td style="padding: 6px 8px; border-bottom: 1px solid #21262d;"><span style="background: #064e3b; padding: 1px 4px; border-radius: 3px; color: #a7f3d0; font-size: 9px;">Business</span></td>
-        <td style="padding: 6px 8px; border-bottom: 1px solid #21262d; color: #8b949e;">data_points(source=mediq)</td>
-      </tr>
-      <tr>
-        <td style="padding: 6px 8px; border-bottom: 1px solid #21262d;">증상 기록</td>
-        <td style="padding: 6px 8px; border-bottom: 1px solid #21262d; color: #6ee7b7;"><code>POST /symptoms</code></td>
-        <td style="padding: 6px 8px; border-bottom: 1px solid #21262d;"><span style="background: #064e3b; padding: 1px 4px; border-radius: 3px; color: #a7f3d0; font-size: 9px;">Business</span></td>
-        <td style="padding: 6px 8px; border-bottom: 1px solid #21262d; color: #8b949e;">data_points(source=mediq)</td>
-      </tr>
-      <tr>
-        <td style="padding: 6px 8px; color: #c4b5fd;">복약 인증</td>
-        <td style="padding: 6px 8px; color: #c4b5fd;"><code>POST /medication/verify</code></td>
-        <td style="padding: 6px 8px;"><span style="background: #064e3b; padding: 1px 4px; border-radius: 3px; color: #a7f3d0; font-size: 9px;">Business</span> → <span style="background: #4c1d95; padding: 1px 4px; border-radius: 3px; color: #e9d5ff; font-size: 9px;">Core</span></td>
-        <td style="padding: 6px 8px; color: #8b949e;">data_points + anchor_logs</td>
-      </tr>
-    </table>
-  </div>
 
-  <!-- Enterprise Web -->
-  <div style="background: #161b22; border: 1px solid #30363d; border-radius: 8px; overflow: hidden;">
-    <div style="background: #1e3a5f; padding: 12px 16px; font-size: 13px; font-weight: 700; color: #93c5fd;">
-      🏥 Enterprise Web (연구자)
+    <!-- 연구 관리 -->
+    <div style="background: #0d1117; border-radius: 8px; padding: 16px;">
+      <div style="font-size: 12px; font-weight: 600; color: #6ee7b7; margin-bottom: 12px;">🔬 연구 & 참여자 관리</div>
+      <table style="width: 100%; font-size: 10px; border-collapse: collapse;">
+        <tr><td style="padding: 4px 0; color: #8b949e;">연구 생성/수정</td><td style="color: #6ee7b7;"><code>POST /projects</code></td></tr>
+        <tr><td style="padding: 4px 0; color: #8b949e;">참여자 등록</td><td style="color: #6ee7b7;"><code>POST /projects/:id/participants</code></td></tr>
+        <tr><td style="padding: 4px 0; color: #8b949e;">팀원 관리</td><td style="color: #6ee7b7;"><code>POST /projects/:id/team</code></td></tr>
+        <tr><td style="padding: 4px 0; color: #8b949e;">수집 설정</td><td style="color: #6ee7b7;"><code>PUT /projects/:id/config</code></td></tr>
+      </table>
+      <div style="margin-top: 8px; font-size: 9px; color: #4ade80;">→ research_projects, team_members 저장</div>
     </div>
-    <table style="width: 100%; font-size: 10px; border-collapse: collapse;">
-      <tr style="background: #21262d;">
-        <th style="padding: 8px; text-align: left; border-bottom: 1px solid #30363d;">기능</th>
-        <th style="padding: 8px; text-align: left; border-bottom: 1px solid #30363d;">엔드포인트</th>
-        <th style="padding: 8px; text-align: left; border-bottom: 1px solid #30363d;">처리</th>
-        <th style="padding: 8px; text-align: left; border-bottom: 1px solid #30363d;">저장</th>
-      </tr>
-      <tr>
-        <td style="padding: 6px 8px; border-bottom: 1px solid #21262d;">연구 생성</td>
-        <td style="padding: 6px 8px; border-bottom: 1px solid #21262d; color: #6ee7b7;"><code>POST /projects</code></td>
-        <td style="padding: 6px 8px; border-bottom: 1px solid #21262d;"><span style="background: #064e3b; padding: 1px 4px; border-radius: 3px; color: #a7f3d0; font-size: 9px;">Business</span></td>
-        <td style="padding: 6px 8px; border-bottom: 1px solid #21262d; color: #8b949e;">research_projects</td>
-      </tr>
-      <tr>
-        <td style="padding: 6px 8px; border-bottom: 1px solid #21262d;">CSV 업로드</td>
-        <td style="padding: 6px 8px; border-bottom: 1px solid #21262d; color: #6ee7b7;"><code>POST /data/upload</code></td>
-        <td style="padding: 6px 8px; border-bottom: 1px solid #21262d;"><span style="background: #064e3b; padding: 1px 4px; border-radius: 3px; color: #a7f3d0; font-size: 9px;">Business</span></td>
-        <td style="padding: 6px 8px; border-bottom: 1px solid #21262d; color: #8b949e;">data_points(source=upload)</td>
-      </tr>
-      <tr>
-        <td style="padding: 6px 8px; border-bottom: 1px solid #21262d;">데이터 조회</td>
-        <td style="padding: 6px 8px; border-bottom: 1px solid #21262d; color: #6ee7b7;"><code>GET /projects/:id/data</code></td>
-        <td style="padding: 6px 8px; border-bottom: 1px solid #21262d;"><span style="background: #064e3b; padding: 1px 4px; border-radius: 3px; color: #a7f3d0; font-size: 9px;">Business</span> → <span style="background: #4c1d95; padding: 1px 4px; border-radius: 3px; color: #e9d5ff; font-size: 9px;">Core</span></td>
-        <td style="padding: 6px 8px; border-bottom: 1px solid #21262d; color: #8b949e;">(동의 검증 후)</td>
-      </tr>
-      <tr>
-        <td style="padding: 6px 8px; border-bottom: 1px solid #21262d;">AI 분석 요청</td>
-        <td style="padding: 6px 8px; border-bottom: 1px solid #21262d; color: #fcd34d;"><code>POST /analyses</code></td>
-        <td style="padding: 6px 8px; border-bottom: 1px solid #21262d;"><span style="background: #064e3b; padding: 1px 4px; border-radius: 3px; color: #a7f3d0; font-size: 9px;">Business</span> → AI</td>
-        <td style="padding: 6px 8px; border-bottom: 1px solid #21262d; color: #8b949e;">ai_analyses</td>
-      </tr>
-      <tr>
-        <td style="padding: 6px 8px; color: #c4b5fd;">에스크로 생성</td>
-        <td style="padding: 6px 8px; color: #c4b5fd;"><code>POST /escrows</code></td>
-        <td style="padding: 6px 8px;"><span style="background: #064e3b; padding: 1px 4px; border-radius: 3px; color: #a7f3d0; font-size: 9px;">Business</span> → <span style="background: #4c1d95; padding: 1px 4px; border-radius: 3px; color: #e9d5ff; font-size: 9px;">Core</span></td>
-        <td style="padding: 6px 8px; color: #8b949e;">escrows + XRPL</td>
-      </tr>
-    </table>
-  </div>
 
-  <!-- 웨어러블 -->
-  <div style="background: #161b22; border: 1px solid #30363d; border-radius: 8px; overflow: hidden;">
-    <div style="background: #1e3a5f; padding: 12px 16px; font-size: 13px; font-weight: 700; color: #93c5fd;">
-      ⌚ 웨어러블/IoT
+    <!-- AI 분석 -->
+    <div style="background: #0d1117; border-radius: 8px; padding: 16px;">
+      <div style="font-size: 12px; font-weight: 600; color: #fbbf24; margin-bottom: 12px;">🤖 AI 분석</div>
+      <table style="width: 100%; font-size: 10px; border-collapse: collapse;">
+        <tr><td style="padding: 4px 0; color: #8b949e;">분석 요청</td><td style="color: #fbbf24;"><code>POST /analyses</code></td></tr>
+        <tr><td style="padding: 4px 0; color: #8b949e;">결과 조회</td><td style="color: #fbbf24;"><code>GET /analyses/:id</code></td></tr>
+      </table>
+      <div style="margin-top: 8px; font-size: 9px; color: #fbbf24;">→ Business → AI Server (Core 미개입)</div>
     </div>
-    <table style="width: 100%; font-size: 10px; border-collapse: collapse;">
-      <tr style="background: #21262d;">
-        <th style="padding: 8px; text-align: left; border-bottom: 1px solid #30363d;">데이터</th>
-        <th style="padding: 8px; text-align: left; border-bottom: 1px solid #30363d;">엔드포인트</th>
-        <th style="padding: 8px; text-align: left; border-bottom: 1px solid #30363d;">처리</th>
-        <th style="padding: 8px; text-align: left; border-bottom: 1px solid #30363d;">저장</th>
-      </tr>
-      <tr>
-        <td style="padding: 6px 8px; border-bottom: 1px solid #21262d;">심박 (실시간)</td>
-        <td style="padding: 6px 8px; border-bottom: 1px solid #21262d; color: #6ee7b7;"><code>POST /stream/heartrate</code></td>
-        <td style="padding: 6px 8px; border-bottom: 1px solid #21262d;"><span style="background: #064e3b; padding: 1px 4px; border-radius: 3px; color: #a7f3d0; font-size: 9px;">Business</span></td>
-        <td style="padding: 6px 8px; border-bottom: 1px solid #21262d; color: #8b949e;">data_points(source=watch)</td>
-      </tr>
-      <tr>
-        <td style="padding: 6px 8px; border-bottom: 1px solid #21262d;">수면 단계</td>
-        <td style="padding: 6px 8px; border-bottom: 1px solid #21262d; color: #6ee7b7;"><code>POST /stream/sleep</code></td>
-        <td style="padding: 6px 8px; border-bottom: 1px solid #21262d;"><span style="background: #064e3b; padding: 1px 4px; border-radius: 3px; color: #a7f3d0; font-size: 9px;">Business</span></td>
-        <td style="padding: 6px 8px; border-bottom: 1px solid #21262d; color: #8b949e;">data_points(source=watch)</td>
-      </tr>
-      <tr>
-        <td style="padding: 6px 8px; border-bottom: 1px solid #21262d;">활동량</td>
-        <td style="padding: 6px 8px; border-bottom: 1px solid #21262d; color: #6ee7b7;"><code>POST /stream/activity</code></td>
-        <td style="padding: 6px 8px; border-bottom: 1px solid #21262d;"><span style="background: #064e3b; padding: 1px 4px; border-radius: 3px; color: #a7f3d0; font-size: 9px;">Business</span></td>
-        <td style="padding: 6px 8px; border-bottom: 1px solid #21262d; color: #8b949e;">data_points(source=watch)</td>
-      </tr>
-      <tr>
-        <td style="padding: 6px 8px;">CGM (혈당)</td>
-        <td style="padding: 6px 8px; color: #6ee7b7;"><code>POST /stream/glucose</code></td>
-        <td style="padding: 6px 8px;"><span style="background: #064e3b; padding: 1px 4px; border-radius: 3px; color: #a7f3d0; font-size: 9px;">Business</span></td>
-        <td style="padding: 6px 8px; color: #8b949e;">data_points(source=cgm)</td>
-      </tr>
-    </table>
-  </div>
 
+    <!-- 정산 계산 -->
+    <div style="background: #0d1117; border-radius: 8px; padding: 16px;">
+      <div style="font-size: 12px; font-weight: 600; color: #6ee7b7; margin-bottom: 12px;">💵 정산 계산 (실행 전)</div>
+      <table style="width: 100%; font-size: 10px; border-collapse: collapse;">
+        <tr><td style="padding: 4px 0; color: #8b949e;">대상자 산정</td><td style="color: #6ee7b7;">참여율, 품질 기반</td></tr>
+        <tr><td style="padding: 4px 0; color: #8b949e;">금액 계산</td><td style="color: #6ee7b7;">보상 규칙 적용</td></tr>
+        <tr><td style="padding: 4px 0; color: #8b949e;">settlements 생성</td><td style="color: #6ee7b7;">레코드 저장</td></tr>
+      </table>
+      <div style="margin-top: 8px; font-size: 9px; color: #4ade80;">→ 실제 지급은 Core에 요청</div>
+    </div>
+  </div>
 </div>
 
-<div class="section-divider"><span>📤 출력 (조회/분석/정산)</span></div>
+<div class="section-divider"><span>🔐 Core 독립 영역</span></div>
 
-<!-- 출력 상세 -->
-<div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px;">
-
-  <!-- 데이터 조회 -->
-  <div style="background: #161b22; border: 1px solid #34d399; border-radius: 8px; overflow: hidden;">
-    <div style="background: #064e3b; padding: 12px 16px; font-size: 13px; font-weight: 700; color: #a7f3d0;">
-      📊 데이터 조회
-    </div>
-    <div style="padding: 12px; font-size: 10px; color: #8b949e; line-height: 1.8;">
-      <code style="color: #6ee7b7;">GET /projects/:id/data</code><br>
-      1. <span style="color: #a7f3d0;">Business</span>: 요청자 권한 확인<br>
-      2. <span style="color: #a7f3d0;">Business</span> → <span style="color: #c4b5fd;">Core</span>: 동의 범위 조회<br>
-      3. <span style="color: #a7f3d0;">Business</span>: 동의 범위 내 data_points 필터<br>
-      4. <span style="color: #a7f3d0;">Business</span>: audit_logs 기록<br>
-      5. 응답 반환
-    </div>
+<div style="background: #2e1065; border: 2px solid #a78bfa; border-radius: 12px; padding: 20px; margin-bottom: 24px;">
+  <div style="font-size: 14px; font-weight: 700; color: #e9d5ff; margin-bottom: 16px;">
+    🔐 Core (NestJS) - Business 호출 없이 독립 처리
   </div>
 
-  <!-- AI 분석 -->
-  <div style="background: #161b22; border: 1px solid #d97706; border-radius: 8px; overflow: hidden;">
-    <div style="background: #422006; padding: 12px 16px; font-size: 13px; font-weight: 700; color: #fcd34d;">
-      🤖 AI 분석
+  <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;">
+    <!-- 인증 -->
+    <div style="background: #0d1117; border-radius: 8px; padding: 16px;">
+      <div style="font-size: 12px; font-weight: 600; color: #c4b5fd; margin-bottom: 12px;">🔑 인증/세션</div>
+      <table style="width: 100%; font-size: 10px; border-collapse: collapse;">
+        <tr><td style="padding: 4px 0; color: #8b949e;">로그인</td><td style="color: #c4b5fd;"><code>POST /auth/login</code></td></tr>
+        <tr><td style="padding: 4px 0; color: #8b949e;">Passkey 등록</td><td style="color: #c4b5fd;"><code>POST /auth/passkey</code></td></tr>
+        <tr><td style="padding: 4px 0; color: #8b949e;">세션 검증</td><td style="color: #c4b5fd;"><code>GET /auth/verify</code></td></tr>
+      </table>
     </div>
-    <div style="padding: 12px; font-size: 10px; color: #8b949e; line-height: 1.8;">
-      <code style="color: #fbbf24;">POST /analyses</code><br>
-      1. <span style="color: #a7f3d0;">Business</span>: 분석 요청 생성<br>
-      2. <span style="color: #a7f3d0;">Business</span>: 집계 데이터 준비<br>
-      3. <span style="color: #a7f3d0;">Business</span> → <span style="color: #fbbf24;">AI Server</span><br>
-      4. AI: 분석 실행 (원본 미저장)<br>
-      5. <span style="color: #a7f3d0;">Business</span>: ai_analyses 결과 저장
+
+    <!-- 동의 -->
+    <div style="background: #0d1117; border-radius: 8px; padding: 16px;">
+      <div style="font-size: 12px; font-weight: 600; color: #c4b5fd; margin-bottom: 12px;">📝 동의 관리</div>
+      <table style="width: 100%; font-size: 10px; border-collapse: collapse;">
+        <tr><td style="padding: 4px 0; color: #8b949e;">동의 서명</td><td style="color: #c4b5fd;"><code>POST /consents/sign</code></td></tr>
+        <tr><td style="padding: 4px 0; color: #8b949e;">동의 철회</td><td style="color: #c4b5fd;"><code>DELETE /consents/:id</code></td></tr>
+        <tr><td style="padding: 4px 0; color: #8b949e;">내 동의 조회</td><td style="color: #c4b5fd;"><code>GET /consents/me</code></td></tr>
+      </table>
+    </div>
+
+    <!-- 지갑 -->
+    <div style="background: #0d1117; border-radius: 8px; padding: 16px;">
+      <div style="font-size: 12px; font-weight: 600; color: #c4b5fd; margin-bottom: 12px;">👛 XRPL 지갑</div>
+      <table style="width: 100%; font-size: 10px; border-collapse: collapse;">
+        <tr><td style="padding: 4px 0; color: #8b949e;">지갑 생성</td><td style="color: #c4b5fd;"><code>POST /wallets/create</code></td></tr>
+        <tr><td style="padding: 4px 0; color: #8b949e;">잔액 조회</td><td style="color: #c4b5fd;"><code>GET /wallets/:id/balance</code></td></tr>
+      </table>
     </div>
   </div>
-
-  <!-- 정산 -->
-  <div style="background: #161b22; border: 1px solid #a78bfa; border-radius: 8px; overflow: hidden;">
-    <div style="background: #4c1d95; padding: 12px 16px; font-size: 13px; font-weight: 700; color: #e9d5ff;">
-      💰 정산
-    </div>
-    <div style="padding: 12px; font-size: 10px; color: #8b949e; line-height: 1.8;">
-      <code style="color: #c4b5fd;">POST /escrows/:id/release</code><br>
-      1. <span style="color: #a7f3d0;">Business</span>: 정산 대상/금액 계산<br>
-      2. <span style="color: #a7f3d0;">Business</span>: settlements 레코드 생성<br>
-      3. <span style="color: #a7f3d0;">Business</span> → <span style="color: #c4b5fd;">Core</span>: 에스크로 해제 요청<br>
-      4. <span style="color: #c4b5fd;">Core</span>: XRPL EscrowFinish<br>
-      5. <span style="color: #c4b5fd;">Core</span>: anchor_logs 기록
-    </div>
-  </div>
-
 </div>
 
-<div class="section-divider"><span>📋 단계별 요약</span></div>
+<!-- ====== 연동 지점 (예외) ====== -->
+<div class="section-divider"><span>🔗 연동 지점 (Business → Core 호출하는 3가지 경우)</span></div>
 
-<!-- 데이터 흐름 상세 테이블 -->
-<table style="width: 100%; border-collapse: collapse; font-size: 11px; margin-bottom: 24px;">
-  <thead>
-    <tr style="background: #21262d;">
-      <th style="padding: 10px; text-align: left; border-bottom: 1px solid #30363d;">단계</th>
-      <th style="padding: 10px; text-align: left; border-bottom: 1px solid #30363d;">처리 서버</th>
-      <th style="padding: 10px; text-align: left; border-bottom: 1px solid #30363d;">처리 내용</th>
-      <th style="padding: 10px; text-align: left; border-bottom: 1px solid #30363d;">저장 위치</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td style="padding: 8px; border-bottom: 1px solid #21262d; color: #93c5fd;">1. 데이터 수신</td>
-      <td style="padding: 8px; border-bottom: 1px solid #21262d;"><span style="background: #064e3b; padding: 2px 6px; border-radius: 4px; color: #a7f3d0;">Business</span></td>
-      <td style="padding: 8px; border-bottom: 1px solid #21262d;">앱/웹에서 데이터 수신, 포맷 검증</td>
-      <td style="padding: 8px; border-bottom: 1px solid #21262d; color: #8b949e;">-</td>
-    </tr>
-    <tr>
-      <td style="padding: 8px; border-bottom: 1px solid #21262d; color: #93c5fd;">2. 동의 확인</td>
-      <td style="padding: 8px; border-bottom: 1px solid #21262d;"><span style="background: #064e3b; padding: 2px 6px; border-radius: 4px; color: #a7f3d0;">Business</span> → <span style="background: #4c1d95; padding: 2px 6px; border-radius: 4px; color: #e9d5ff;">Core</span></td>
-      <td style="padding: 8px; border-bottom: 1px solid #21262d;">해당 사용자 동의 범위 조회</td>
-      <td style="padding: 8px; border-bottom: 1px solid #21262d; color: #8b949e;">Core DB (consents)</td>
-    </tr>
-    <tr>
-      <td style="padding: 8px; border-bottom: 1px solid #21262d; color: #93c5fd;">3. 데이터 저장</td>
-      <td style="padding: 8px; border-bottom: 1px solid #21262d;"><span style="background: #064e3b; padding: 2px 6px; border-radius: 4px; color: #a7f3d0;">Business</span></td>
-      <td style="padding: 8px; border-bottom: 1px solid #21262d;">동의 범위 내 데이터 저장, 품질 점수 계산</td>
-      <td style="padding: 8px; border-bottom: 1px solid #21262d; color: #8b949e;">Business DB (data_points)</td>
-    </tr>
-    <tr>
-      <td style="padding: 8px; border-bottom: 1px solid #21262d; color: #93c5fd;">4. 앵커링 (선택)</td>
-      <td style="padding: 8px; border-bottom: 1px solid #21262d;"><span style="background: #064e3b; padding: 2px 6px; border-radius: 4px; color: #a7f3d0;">Business</span> → <span style="background: #4c1d95; padding: 2px 6px; border-radius: 4px; color: #e9d5ff;">Core</span></td>
-      <td style="padding: 8px; border-bottom: 1px solid #21262d;">중요 이벤트 XRPL 기록</td>
-      <td style="padding: 8px; border-bottom: 1px solid #21262d; color: #8b949e;">Core DB (anchor_logs) + XRPL</td>
-    </tr>
-    <tr>
-      <td style="padding: 8px; border-bottom: 1px solid #21262d; color: #fcd34d;">5. AI 분석</td>
-      <td style="padding: 8px; border-bottom: 1px solid #21262d;"><span style="background: #064e3b; padding: 2px 6px; border-radius: 4px; color: #a7f3d0;">Business</span> → AI</td>
-      <td style="padding: 8px; border-bottom: 1px solid #21262d;">집계 데이터로 분석 요청</td>
-      <td style="padding: 8px; border-bottom: 1px solid #21262d; color: #8b949e;">Business DB (ai_analyses)</td>
-    </tr>
-    <tr>
-      <td style="padding: 8px; border-bottom: 1px solid #21262d; color: #a7f3d0;">6. 데이터 조회</td>
-      <td style="padding: 8px; border-bottom: 1px solid #21262d;"><span style="background: #064e3b; padding: 2px 6px; border-radius: 4px; color: #a7f3d0;">Business</span></td>
-      <td style="padding: 8px; border-bottom: 1px solid #21262d;">권한/동의 검증 후 데이터 반환</td>
-      <td style="padding: 8px; border-bottom: 1px solid #21262d; color: #8b949e;">-</td>
-    </tr>
-    <tr>
-      <td style="padding: 8px; border-bottom: 1px solid #21262d; color: #c4b5fd;">7. 정산</td>
-      <td style="padding: 8px; border-bottom: 1px solid #21262d;"><span style="background: #064e3b; padding: 2px 6px; border-radius: 4px; color: #a7f3d0;">Business</span> → <span style="background: #4c1d95; padding: 2px 6px; border-radius: 4px; color: #e9d5ff;">Core</span></td>
-      <td style="padding: 8px; border-bottom: 1px solid #21262d;">정산 계산 → 에스크로 해제 요청</td>
-      <td style="padding: 8px; border-bottom: 1px solid #21262d; color: #8b949e;">Business DB (settlements) + XRPL</td>
-    </tr>
-  </tbody>
-</table>
+<div style="background: linear-gradient(135deg, #1e1b4b, #312e81); border: 2px solid #6366f1; border-radius: 12px; padding: 20px; margin-bottom: 24px;">
+  <div style="font-size: 12px; color: #a5b4fc; margin-bottom: 16px; text-align: center;">
+    ⚡ Business는 대부분 독립 동작. <strong style="color: #fbbf24;">아래 3가지 경우에만</strong> Core 호출
+  </div>
 
-<!-- 핵심 규칙 박스 -->
+  <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;">
+    <!-- 동의 검증 -->
+    <div style="background: #0d1117; border-radius: 8px; padding: 16px; border-left: 4px solid #22c55e;">
+      <div style="font-size: 13px; font-weight: 700; color: #4ade80; margin-bottom: 8px;">1️⃣ 동의 범위 조회</div>
+      <div style="font-size: 10px; color: #8b949e; margin-bottom: 8px;">데이터 조회 시 동의 범위 확인 필요</div>
+      <code style="font-size: 9px; color: #6ee7b7;">GET /core/consents?userId=&projectId=</code>
+      <div style="margin-top: 8px; font-size: 9px; color: #6b7280;">
+        📌 시점: 연구자가 참여자 데이터 조회 시<br>
+        📌 빈도: 조회 요청마다
+      </div>
+    </div>
+
+    <!-- 에스크로 -->
+    <div style="background: #0d1117; border-radius: 8px; padding: 16px; border-left: 4px solid #a78bfa;">
+      <div style="font-size: 13px; font-weight: 700; color: #c4b5fd; margin-bottom: 8px;">2️⃣ 에스크로 생성/해제</div>
+      <div style="font-size: 10px; color: #8b949e; margin-bottom: 8px;">XRPL 트랜잭션 실행 필요</div>
+      <code style="font-size: 9px; color: #c4b5fd;">POST /core/escrows</code><br>
+      <code style="font-size: 9px; color: #c4b5fd;">POST /core/escrows/:id/release</code>
+      <div style="margin-top: 8px; font-size: 9px; color: #6b7280;">
+        📌 시점: 연구 시작, 정산 실행 시<br>
+        📌 빈도: 연구당 1회 생성, 정산당 N회
+      </div>
+    </div>
+
+    <!-- 앵커링 -->
+    <div style="background: #0d1117; border-radius: 8px; padding: 16px; border-left: 4px solid #818cf8;">
+      <div style="font-size: 13px; font-weight: 700; color: #a5b4fc; margin-bottom: 8px;">3️⃣ 앵커링 (증적)</div>
+      <div style="font-size: 10px; color: #8b949e; margin-bottom: 8px;">중요 이벤트 XRPL 기록</div>
+      <code style="font-size: 9px; color: #a5b4fc;">POST /core/anchor</code>
+      <div style="margin-top: 8px; font-size: 9px; color: #6b7280;">
+        📌 시점: 동의 완료, 정산 완료 등<br>
+        📌 빈도: 이벤트당 (배치 가능)
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== 핵심 규칙 ====== -->
 <div style="display: flex; gap: 16px; margin-bottom: 24px;">
   <div style="flex: 1; background: #022c22; border: 1px solid #34d399; border-radius: 8px; padding: 16px;">
-    <div style="font-size: 12px; font-weight: 700; color: #a7f3d0; margin-bottom: 8px;">📊 Business가 하는 것</div>
+    <div style="font-size: 12px; font-weight: 700; color: #a7f3d0; margin-bottom: 8px;">📊 Business 영역 (90%)</div>
     <div style="font-size: 11px; color: #6ee7b7; line-height: 1.6;">
-      ✓ 모든 데이터 수신/저장/조회<br>
+      ✓ 모든 데이터 CRUD<br>
       ✓ 연구/참여자 관리<br>
-      ✓ AI 분석 요청<br>
-      ✓ 정산 금액 계산
+      ✓ AI 분석<br>
+      ✓ 정산 계산
     </div>
   </div>
   <div style="flex: 1; background: #2e1065; border: 1px solid #a78bfa; border-radius: 8px; padding: 16px;">
-    <div style="font-size: 12px; font-weight: 700; color: #e9d5ff; margin-bottom: 8px;">🔐 Core가 하는 것</div>
+    <div style="font-size: 12px; font-weight: 700; color: #e9d5ff; margin-bottom: 8px;">🔐 Core 영역 (10%)</div>
     <div style="font-size: 11px; color: #c4b5fd; line-height: 1.6;">
-      ✓ 인증/세션 관리<br>
-      ✓ 동의 범위 검증<br>
-      ✓ XRPL 트랜잭션 실행<br>
-      ✓ 앵커링 (증적)
+      ✓ 인증/세션<br>
+      ✓ 동의 관리<br>
+      ✓ XRPL 트랜잭션<br>
+      ✓ 앵커링
     </div>
   </div>
   <div style="flex: 1; background: #450a0a; border: 1px solid #ef4444; border-radius: 8px; padding: 16px;">
-    <div style="font-size: 12px; font-weight: 700; color: #fecaca; margin-bottom: 8px;">❌ 하지 않는 것</div>
+    <div style="font-size: 12px; font-weight: 700; color: #fecaca; margin-bottom: 8px;">❌ 절대 안함</div>
     <div style="font-size: 11px; color: #fca5a5; line-height: 1.6;">
       ✗ Core가 데이터 저장<br>
-      ✗ Business가 XRPL 직접 호출<br>
       ✗ Core가 Business 호출<br>
+      ✗ Business가 XRPL 직접<br>
       ✗ 민감/비민감 분류
     </div>
   </div>
