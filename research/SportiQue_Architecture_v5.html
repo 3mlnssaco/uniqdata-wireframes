@@ -118,7 +118,18 @@
 
 <div class="nav-links">
   <a href="../index.html">← 와이어프레임 목록</a>
+  <a href="SportiQue_Architecture_v6.html" style="color: #fbbf24; font-weight: 700;">v6 (최신 - 피봇 후) →</a>
   <a href="SportiQue_Architecture_v4.html">v4 (구버전)</a>
+</div>
+
+<!-- 피봇 후 경고 -->
+<div style="background: linear-gradient(135deg, #422006, #78350f); border: 2px solid #fbbf24; border-radius: 8px; padding: 16px; margin-bottom: 24px; text-align: center;">
+  <div style="font-size: 14px; font-weight: 700; color: #fde68a; margin-bottom: 8px;">⚠️ 이 문서는 피봇 전(2026-02-10) 아키텍처입니다</div>
+  <div style="font-size: 12px; color: #fcd34d;">
+    B2B 피봇 후 양면 플랫폼 + IRB SaaS 아키텍처는 <a href="SportiQue_Architecture_v6.html" style="color: #fbbf24; font-weight: 700;">v6</a>를 참조하세요.<br>
+    이 문서는 2-서버 모델 원칙(Core/Business 분리)의 참고용으로 유지됩니다.<br>
+    <strong>변경점:</strong> IRB 모듈 추가, AI 건강 레포트(Core), Medi-Q/Ready-Q 제거, 건강 데이터가 Core(health_db)로 이동
+  </div>
 </div>
 
 <!-- 경고 배너 -->
@@ -402,10 +413,9 @@
   <div style="flex: 1; background: #450a0a; border: 1px solid #ef4444; border-radius: 8px; padding: 16px;">
     <div style="font-size: 12px; font-weight: 700; color: #fecaca; margin-bottom: 8px;">❌ 절대 안함</div>
     <div style="font-size: 11px; color: #fca5a5; line-height: 1.6;">
-      ✗ Core가 데이터 저장<br>
       ✗ Core가 Business 호출<br>
-      ✗ Business가 XRPL 직접<br>
-      ✗ 민감/비민감 분류
+      ✗ Business가 XRPL 직접 호출<br>
+      ✗ 민감/비민감 기준으로 서버 분류
     </div>
   </div>
 </div>

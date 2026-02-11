@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UniQdata Architecture v6 - 양면 플랫폼 + IRB SaaS</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    background: #0d1117;
+    color: #e6edf3;
+    padding: 24px;
+    line-height: 1.5;
+  }
+  h1 { text-align: center; font-size: 22px; margin-bottom: 4px; letter-spacing: 1px; }
+  .subtitle { text-align: center; font-size: 12px; color: #8b949e; margin-bottom: 4px; }
+  .date { text-align: center; font-size: 11px; color: #6b7280; margin-bottom: 8px; }
+
+  .nav-links { display: flex; gap: 12px; justify-content: center; margin-bottom: 24px; }
+  .nav-links a { color: #58a6ff; font-size: 12px; text-decoration: none; }
+  .nav-links a:hover { text-decoration: underline; }
+
+  .section-divider { display: flex; align-items: center; gap: 14px; margin: 32px 0 16px; }
+  .section-divider::before, .section-divider::after { content: ''; flex: 1; height: 1px; background: #30363d; }
+  .section-divider span { font-size: 15px; font-weight: 700; white-space: nowrap; letter-spacing: 1px; }
+
+  /* Server boxes */
+  .server-box { border-radius: 12px; overflow: hidden; }
+  .server-box.core { border: 2px solid #a78bfa; }
+  .server-box.business { border: 2px solid #34d399; }
+  .server-header { padding: 16px; font-weight: 700; font-size: 14px; }
+  .server-box.core .server-header { background: linear-gradient(135deg, #4c1d95, #5b21b6); color: #e9d5ff; }
+  .server-box.business .server-header { background: linear-gradient(135deg, #064e3b, #065f46); color: #a7f3d0; }
+  .server-header .tech { font-size: 11px; font-weight: 400; opacity: 0.8; margin-top: 4px; }
+  .server-body { padding: 16px; background: #161b22; }
+  .server-body ul { list-style: none; }
+  .server-body li { padding: 8px 12px; margin-bottom: 6px; background: #0d1117; border-radius: 6px; font-size: 12px; border-left: 3px solid; }
+  .server-box.core .server-body li { border-left-color: #a78bfa; }
+  .server-box.business .server-body li { border-left-color: #34d399; }
+  .server-body li .label { font-weight: 600; }
+  .server-body li .desc { color: #8b949e; font-size: 11px; margin-top: 2px; }
+
+  /* Tables */
+  .data-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 16px; }
+  .data-table th { background: #21262d; padding: 12px; text-align: left; border-bottom: 1px solid #30363d; font-weight: 600; }
+  .data-table td { padding: 10px 12px; border-bottom: 1px solid #21262d; }
+  .data-table tr:hover { background: #161b22; }
+  .data-table code { background: #21262d; padding: 2px 6px; border-radius: 4px; font-size: 11px; }
+
+  /* Tags */
+  .tag { padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 600; display: inline-block; }
+  .tag-core { background: #4c1d95; color: #e9d5ff; }
+  .tag-business { background: #064e3b; color: #a7f3d0; }
+  .tag-irb { background: #422006; color: #fbbf24; }
+  .tag-b2c { background: #1e3a5f; color: #93c5fd; }
+  .tag-xrpl { background: #312e81; color: #c7d2fe; }
+
+  /* Card */
+  .card { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 20px; margin-bottom: 16px; }
+  .card h3 { font-size: 14px; margin-bottom: 12px; }
+
+  /* Flow nodes */
+  .flow-node { padding: 10px 16px; border-radius: 8px; font-size: 12px; font-weight: 600; display: inline-block; }
+  .flow-node.client { background: #1e3a5f; border: 1px solid #3b82f6; color: #93c5fd; }
+  .flow-node.gateway { background: #3f3f46; border: 1px solid #71717a; color: #d4d4d8; }
+  .flow-node.core { background: #4c1d95; border: 1px solid #a78bfa; color: #e9d5ff; }
+  .flow-node.business { background: #064e3b; border: 1px solid #34d399; color: #a7f3d0; }
+  .flow-node.db { background: #1e293b; border: 1px solid #64748b; color: #cbd5e1; }
+  .flow-node.xrpl { background: #312e81; border: 1px solid #818cf8; color: #c7d2fe; }
+  .flow-node.irb { background: #422006; border: 1px solid #fbbf24; color: #fcd34d; }
+  .flow-node.redis { background: #4a1c1c; border: 1px solid #ef4444; color: #fca5a5; }
+
+  /* Example steps */
+  .example-box { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 20px; margin-bottom: 16px; }
+  .example-title { font-size: 13px; font-weight: 700; color: #fbbf24; margin-bottom: 12px; }
+  .example-step { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 10px; }
+  .step-num { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+  .step-num.b2c { background: #3b82f6; }
+  .step-num.b2b { background: #34d399; color: #0d1117; }
+  .step-content { font-size: 12px; }
+  .step-content .server { font-weight: 600; }
+  .step-content .server.core { color: #a78bfa; }
+  .step-content .server.business { color: #34d399; }
+  .step-content .action { color: #8b949e; }
+
+  /* Status badges */
+  .status-badge { padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 700; display: inline-block; margin: 2px; }
+
+  /* Repo links */
+  .repo-links { display: flex; gap: 16px; justify-content: center; margin-top: 24px; flex-wrap: wrap; }
+  .repo-link { padding: 12px 24px; border-radius: 8px; text-decoration: none; font-size: 13px; font-weight: 600; }
+  .repo-link.core { background: #4c1d95; color: #e9d5ff; border: 1px solid #a78bfa; }
+  .repo-link.business { background: #064e3b; color: #a7f3d0; border: 1px solid #34d399; }
+  .repo-link:hover { opacity: 0.8; }
+
+  /* Vision banner */
+  .vision-banner {
+    background: linear-gradient(135deg, #1e1b4b, #0c4a6e);
+    border: 2px solid #6366f1;
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 24px;
+    text-align: center;
+  }
+
+  /* Phase table highlight */
+  .phase-current { background: #064e3b !important; }
+  .phase-future { background: #1e1b4b !important; }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    body { padding: 12px; }
+    h1 { font-size: 18px; }
+    .server-diagram-v6 { flex-direction: column !important; }
+    .server-diagram-v6 > div { width: 100% !important; }
+    .clients-row { flex-direction: column !important; }
+    .clients-row > div { width: 100% !important; }
+    .three-col { flex-direction: column !important; }
+    .three-col > div { width: 100% !important; }
+    .comm-grid { grid-template-columns: 1fr !important; }
+    .db-row { flex-direction: column !important; }
+    .db-row > div { width: 100% !important; }
+    .flow-scenarios { grid-template-columns: 1fr !important; }
+    .phase-table { font-size: 10px; }
+    .phase-table td, .phase-table th { padding: 6px 4px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== HEADER ===== -->
+<h1>UniQdata Architecture v6</h1>
+<p class="subtitle">양면 플랫폼: B2C 건강 데이터 + B2B IRB SaaS — 2-Server Model</p>
+<p class="date">2026-02-11</p>
+
+<div class="nav-links">
+  <a href="../index.html">&larr; 와이어프레임 목록</a>
+  <a href="SportiQue_Architecture_v5.html">v5 (구버전)</a>
+</div>
+
+<!-- ===== SECTION 1: 양면 플랫폼 비전 ===== -->
+<div class="section-divider"><span>&#x1F3AF; Section 1: 양면 플랫폼 비전</span></div>
+
+<div class="vision-banner">
+  <div style="font-size: 16px; font-weight: 700; color: #e9d5ff; margin-bottom: 16px;">
+    health_db.data_points (건강 데이터 풀)
+  </div>
+  <div style="display: flex; justify-content: center; gap: 48px; flex-wrap: wrap; margin-bottom: 20px;">
+    <!-- B2C -->
+    <div style="text-align: left;">
+      <div style="font-size: 13px; color: #93c5fd; font-weight: 700; margin-bottom: 8px;">
+        <span style="background: #1e3a5f; padding: 2px 8px; border-radius: 4px; border: 1px solid #3b82f6;">B2C</span>
+        환자 데이터 입력
+      </div>
+      <div style="font-size: 11px; color: #60a5fa; line-height: 1.8; padding-left: 8px; border-left: 2px solid #3b82f6;">
+        + AI 건강 레포트<br>
+        + UQD 보상 (XRPL)
+      </div>
+    </div>
+    <!-- B2B -->
+    <div style="text-align: left;">
+      <div style="font-size: 13px; color: #a7f3d0; font-weight: 700; margin-bottom: 8px;">
+        <span style="background: #064e3b; padding: 2px 8px; border-radius: 4px; border: 1px solid #34d399;">B2B</span>
+        연구자 IRB 신청
+      </div>
+      <div style="font-size: 11px; color: #6ee7b7; line-height: 1.8; padding-left: 8px; border-left: 2px solid #34d399;">
+        + 데이터 분석<br>
+        + 정산/에스크로 (XRPL)
+      </div>
+    </div>
+  </div>
+  <div style="background: #0d1117; border-radius: 8px; padding: 12px 20px; display: inline-block; font-size: 12px; color: #fbbf24; border: 1px solid #422006;">
+    "환자는 데이터를 넣고 AI 분석을 받는다. 연구자는 동의된 데이터로 연구한다. 같은 데이터 풀, 같은 인프라."
+  </div>
+</div>
+
+<!-- ===== SECTION 2: 전체 아키텍처 ===== -->
+<div class="section-divider"><span>&#x1F3D7;&#xFE0F; Section 2: 전체 아키텍처</span></div>
+
+<div style="background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 24px; margin-bottom: 24px; overflow-x: auto;">
+
+  <!-- CLIENTS LAYER -->
+  <div style="text-align: center; margin-bottom: 8px; font-size: 11px; color: #8b949e; letter-spacing: 2px;">CLIENTS</div>
+  <div class="clients-row" style="display: flex; justify-content: center; gap: 16px; margin-bottom: 16px; flex-wrap: wrap;">
+    <div style="background: #1e3a5f; border: 2px solid #3b82f6; padding: 14px 20px; border-radius: 10px; font-size: 12px; color: #93c5fd; min-width: 180px; text-align: center;">
+      <div style="font-size: 16px; margin-bottom: 4px;">&#x1F4F1;</div>
+      <div style="font-weight: 700;">환자 앱 (Flutter)</div>
+      <div style="font-size: 10px; color: #60a5fa; margin-top: 4px;">데이터 입력 &middot; AI 건강 레포트 &middot; UQD 보상</div>
+    </div>
+    <div style="background: #064e3b; border: 2px solid #34d399; padding: 14px 20px; border-radius: 10px; font-size: 12px; color: #a7f3d0; min-width: 180px; text-align: center;">
+      <div style="font-size: 16px; margin-bottom: 4px;">&#x1F5A5;&#xFE0F;</div>
+      <div style="font-weight: 700;">Enterprise Portal (React)</div>
+      <div style="font-size: 10px; color: #6ee7b7; margin-top: 4px;">연구 관리 &middot; IRB 신청/추적 &middot; 데이터 분석</div>
+    </div>
+    <div style="background: #422006; border: 2px solid #fbbf24; padding: 14px 20px; border-radius: 10px; font-size: 12px; color: #fcd34d; min-width: 180px; text-align: center;">
+      <div style="font-size: 16px; margin-bottom: 4px;">&#x1F4CB;</div>
+      <div style="font-weight: 700;">IRB 위원 포털</div>
+      <div style="font-size: 10px; color: #fbbf24; margin-top: 4px;">심의 &middot; 투표</div>
+    </div>
+  </div>
+
+  <div style="text-align: center; font-size: 18px; color: #6b7280; margin-bottom: 16px;">&#x25BC;</div>
+
+  <!-- API GATEWAY -->
+  <div style="display: flex; justify-content: center; margin-bottom: 16px;">
+    <div style="background: #3f3f46; border: 2px solid #71717a; padding: 16px 32px; border-radius: 10px; font-size: 13px; color: #d4d4d8; font-weight: 700; text-align: center; max-width: 520px; width: 100%;">
+      &#x1F6AA; API Gateway (nginx)
+      <div style="display: flex; gap: 16px; justify-content: center; margin-top: 10px; flex-wrap: wrap;">
+        <div style="font-size: 10px; font-weight: 400; color: #a1a1aa;">
+          <code style="color: #c4b5fd;">/api/auth/*</code>
+          <code style="color: #c4b5fd;">/api/health/*</code>
+          <code style="color: #c4b5fd;">/api/consents/*</code>
+          <code style="color: #c4b5fd;">/api/wallets/*</code>
+          <span style="color: #6b7280;">&rarr; Core</span>
+        </div>
+        <div style="font-size: 10px; font-weight: 400; color: #a1a1aa;">
+          <code style="color: #6ee7b7;">/enterprise/*</code>
+          <code style="color: #6ee7b7;">/enterprise/irb/*</code>
+          <span style="color: #6b7280;">&rarr; Business</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="text-align: center; font-size: 18px; color: #6b7280; margin-bottom: 4px;">
+    <span style="margin-right: 80px;">&#x2199;&#xFE0F;</span>
+    <span style="margin-left: 80px;">&#x2198;&#xFE0F;</span>
+  </div>
+
+  <!-- SERVERS -->
+  <div class="server-diagram-v6" style="display: flex; gap: 24px; margin-bottom: 20px;">
+    <!-- Core -->
+    <div style="flex: 1;" class="server-box core">
+      <div class="server-header">
+        &#x1F510; Core (NestJS) &mdash; Port 3000
+        <div class="tech">uniqdata-core &middot; TypeScript</div>
+      </div>
+      <div class="server-body">
+        <ul>
+          <li><div class="label">&#x1F511; 인증 (Passkey/JWT)</div></li>
+          <li><div class="label">&#x1F4CA; 건강 데이터 수신/저장/암호화</div></li>
+          <li style="border-left-color: #fbbf24; background: linear-gradient(90deg, #1a1500, #0d1117);">
+            <div class="label" style="color: #fbbf24;">&#x2B50; AI 건강 레포트 (환자용) <span class="tag tag-b2c" style="margin-left: 4px;">NEW</span></div>
+          </li>
+          <li><div class="label">&#x1F4DD; 동의 관리 + XRPL 앵커링</div></li>
+          <li><div class="label">&#x26D3;&#xFE0F; XRPL / 에스크로 / UQD</div></li>
+          <li><div class="label">&#x1F514; 알림 통합</div></li>
+          <li><div class="label">&#x1F517; Internal API (Business용)</div></li>
+        </ul>
+      </div>
+    </div>
+    <!-- Communication arrows -->
+    <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; min-width: 100px; color: #6b7280; font-size: 11px; gap: 8px;">
+      <div style="color: #34d399;">&larr; Internal API</div>
+      <div style="font-size: 20px;">&harr;</div>
+      <div style="color: #a78bfa;">Webhook &rarr;</div>
+    </div>
+    <!-- Business -->
+    <div style="flex: 1;" class="server-box business">
+      <div class="server-header">
+        &#x1F4CA; Business Engine (Spring Boot) &mdash; Port 8080
+        <div class="tech">uniqdata-enterprise-backend &middot; Kotlin</div>
+      </div>
+      <div class="server-body">
+        <ul>
+          <li><div class="label">&#x1F52C; 연구 프로젝트 + 마일스톤</div></li>
+          <li style="border-left-color: #fbbf24; background: linear-gradient(90deg, #1a1500, #0d1117);">
+            <div class="label" style="color: #fbbf24;">&#x2B50; IRB 워크플로우 <span class="tag tag-irb" style="margin-left: 4px;">NEW</span></div>
+          </li>
+          <li><div class="label">&#x1F465; 참여자 매칭/관리</div></li>
+          <li><div class="label">&#x1F4B0; 정산 계산</div></li>
+          <li><div class="label">&#x1F3E2; 기관/팀 관리</div></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div style="text-align: center; font-size: 18px; color: #6b7280; margin-bottom: 16px;">&#x25BC;</div>
+
+  <!-- DATABASES -->
+  <div style="text-align: center; margin-bottom: 8px; font-size: 11px; color: #8b949e; letter-spacing: 2px;">STORAGE</div>
+  <div class="db-row" style="display: flex; justify-content: center; gap: 16px; flex-wrap: wrap;">
+    <div style="background: #1e293b; border: 2px solid #a78bfa; padding: 14px 18px; border-radius: 10px; font-size: 11px; color: #cbd5e1; text-align: center; min-width: 160px;">
+      <div style="font-weight: 700; color: #e9d5ff; margin-bottom: 4px;">&#x1F4E6; health_db</div>
+      <div style="font-size: 10px; color: #94a3b8;">Core 전용</div>
+      <div style="font-size: 9px; color: #64748b; margin-top: 4px;">data_points &middot; consents<br>wallets &middot; notifications</div>
+    </div>
+    <div style="background: #1e293b; border: 2px solid #34d399; padding: 14px 18px; border-radius: 10px; font-size: 11px; color: #cbd5e1; text-align: center; min-width: 160px;">
+      <div style="font-weight: 700; color: #a7f3d0; margin-bottom: 4px;">&#x1F4E6; uniqdata_db</div>
+      <div style="font-size: 10px; color: #94a3b8;">Business 전용</div>
+      <div style="font-size: 9px; color: #64748b; margin-top: 4px;">projects &middot; irb_submissions<br>irb_documents &middot; irb_review_comments<br>settlements</div>
+    </div>
+    <div style="background: #1e1b4b; border: 2px solid #818cf8; padding: 14px 18px; border-radius: 10px; font-size: 11px; color: #c7d2fe; text-align: center; min-width: 140px;">
+      <div style="font-weight: 700; margin-bottom: 4px;">&#x26D3;&#xFE0F; XRPL Ledger</div>
+      <div style="font-size: 9px; color: #a5b4fc;">지갑 &middot; UQD &middot; 에스크로</div>
+    </div>
+    <div style="background: #3b1111; border: 2px solid #ef4444; padding: 14px 18px; border-radius: 10px; font-size: 11px; color: #fca5a5; text-align: center; min-width: 120px;">
+      <div style="font-weight: 700; margin-bottom: 4px;">&#x1F534; Redis</div>
+      <div style="font-size: 9px; color: #f87171;">세션/캐시 (공유)</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SECTION 3: DB 접근 매트릭스 ===== -->
+<div class="section-divider"><span>&#x1F5C3;&#xFE0F; Section 3: DB 접근 매트릭스</span></div>
+
+<div class="card">
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th style="width: 200px;"></th>
+        <th style="text-align: center;"><span class="tag tag-core">health_db</span></th>
+        <th style="text-align: center;"><span class="tag tag-business">uniqdata_db</span></th>
+        <th style="text-align: center;"><span class="tag tag-xrpl">XRPL</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong style="color: #a78bfa;">Core (NestJS)</strong></td>
+        <td style="text-align: center;"><span style="color: #4ade80; font-weight: 700;">R/W</span></td>
+        <td style="text-align: center;"><span style="color: #6b7280;">&mdash;</span></td>
+        <td style="text-align: center;"><span style="color: #4ade80; font-weight: 700;">R/W</span></td>
+      </tr>
+      <tr>
+        <td><strong style="color: #34d399;">Business (Spring)</strong></td>
+        <td style="text-align: center;">
+          <span style="color: #fbbf24; font-size: 11px;">Internal API<br>Read만</span>
+        </td>
+        <td style="text-align: center;"><span style="color: #4ade80; font-weight: 700;">R/W</span></td>
+        <td style="text-align: center;">
+          <span style="color: #fbbf24; font-size: 11px;">Core 통해<br>요청만</span>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <div style="font-size: 10px; color: #6b7280; text-align: center;">
+    Business는 절대 health_db에 직접 접근하지 않음. XRPL도 Core를 통해서만 접근.
+  </div>
+</div>
+
+<!-- ===== SECTION 4: IRB 상태 머신 ===== -->
+<div class="section-divider"><span>&#x1F504; Section 4: IRB 상태 머신</span></div>
+
+<div style="background: #161b22; border: 2px solid #fbbf24; border-radius: 12px; padding: 24px; margin-bottom: 24px; overflow-x: auto;">
+  <div style="text-align: center; margin-bottom: 20px; font-size: 13px; font-weight: 700; color: #fcd34d;">
+    IRB Submission State Machine
+  </div>
+
+  <!-- Main flow -->
+  <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+    <!-- Row 1: DRAFT → SUBMITTED -->
+    <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap; justify-content: center;">
+      <span class="status-badge" style="background: #374151; color: #9ca3af; border: 1px solid #6b7280;">DRAFT</span>
+      <span style="color: #6b7280; font-size: 14px;">&rarr;</span>
+      <span class="status-badge" style="background: #1e3a5f; color: #93c5fd; border: 1px solid #3b82f6;">SUBMITTED</span>
+      <span style="color: #6b7280; font-size: 14px;">&rarr;</span>
+      <span class="status-badge" style="background: #422006; color: #fbbf24; border: 1px solid #d97706;">PRELIMINARY_REVIEW</span>
+      <span style="color: #6b7280; font-size: 14px;">&rarr;</span>
+      <span class="status-badge" style="background: #422006; color: #fbbf24; border: 1px solid #d97706;">FULL_BOARD_REVIEW</span>
+      <span style="color: #6b7280; font-size: 14px;">&rarr;</span>
+      <span class="status-badge" style="background: #064e3b; color: #4ade80; border: 1px solid #22c55e;">APPROVED</span>
+    </div>
+
+    <!-- Branch arrows -->
+    <div style="display: flex; gap: 48px; margin-top: 8px; flex-wrap: wrap; justify-content: center;">
+      <div style="display: flex; flex-direction: column; align-items: center;">
+        <span style="color: #6b7280; font-size: 11px;">&#x25BC; (예비/본 심의에서)</span>
+        <span class="status-badge" style="background: #4a2000; color: #fb923c; border: 1px solid #f97316; margin-top: 4px;">REVISION_REQUESTED</span>
+        <span style="color: #6b7280; font-size: 11px; margin-top: 4px;">&#x25BC; (재제출)</span>
+        <span class="status-badge" style="background: #1e3a5f; color: #93c5fd; border: 1px solid #3b82f6; margin-top: 4px;">SUBMITTED</span>
+      </div>
+      <div style="display: flex; flex-direction: column; align-items: center;">
+        <span style="color: #6b7280; font-size: 11px;">&#x25BC; (거절 시)</span>
+        <span class="status-badge" style="background: #450a0a; color: #f87171; border: 1px solid #ef4444; margin-top: 4px;">REJECTED</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Legend -->
+  <div style="display: flex; gap: 12px; justify-content: center; margin-top: 20px; flex-wrap: wrap; font-size: 10px;">
+    <span style="color: #9ca3af;">&#x25CF; 초기</span>
+    <span style="color: #93c5fd;">&#x25CF; 제출</span>
+    <span style="color: #fbbf24;">&#x25CF; 심의중</span>
+    <span style="color: #fb923c;">&#x25CF; 수정요청</span>
+    <span style="color: #4ade80;">&#x25CF; 승인</span>
+    <span style="color: #f87171;">&#x25CF; 거절</span>
+  </div>
+</div>
+
+<!-- ===== SECTION 5: Phase 구분 ===== -->
+<div class="section-divider"><span>&#x1F4C5; Section 5: Phase 구분 (MVP Phases)</span></div>
+
+<div class="card" style="overflow-x: auto;">
+  <table class="data-table phase-table">
+    <thead>
+      <tr>
+        <th>Phase</th>
+        <th>기간</th>
+        <th>범위</th>
+        <th>팀</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="phase-current">
+        <td><span class="tag tag-core">1A: Core 기반</span></td>
+        <td style="color: #fbbf24; font-weight: 600;">0&ndash;3개월</td>
+        <td>인증 + 데이터 입력 + AI 건강 레포트 + XRPL</td>
+        <td>Core Team</td>
+      </tr>
+      <tr class="phase-current">
+        <td><span class="tag tag-business">1B: 연구 기초</span></td>
+        <td style="color: #fbbf24; font-weight: 600;">3&ndash;6개월</td>
+        <td>연구 프로젝트 + 참여자 매칭 + 정산</td>
+        <td>Core + 백엔드팀</td>
+      </tr>
+      <tr style="background: #1a1500;">
+        <td><span class="tag tag-irb">1C: IRB 핵심</span></td>
+        <td style="color: #fbbf24; font-weight: 600;">5&ndash;6개월</td>
+        <td>IRB 서류 AI 생성 + 심의 트래킹 + 대시보드</td>
+        <td>백엔드팀 + AI</td>
+      </tr>
+      <tr class="phase-future">
+        <td><span class="tag" style="background: #312e81; color: #c7d2fe;">2: 확장</span></td>
+        <td style="color: #8b949e;">6&ndash;18개월</td>
+        <td style="color: #8b949e;">FL + 다기관 IRB + DaaS</td>
+        <td style="color: #8b949e;">PMF 검증 후</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ===== SECTION 6: 데이터 흐름 예시 ===== -->
+<div class="section-divider"><span>&#x1F500; Section 6: 데이터 흐름 예시</span></div>
+
+<div class="flow-scenarios" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px;">
+
+  <!-- Scenario 1: B2C -->
+  <div class="example-box" style="border-left: 4px solid #3b82f6;">
+    <div class="example-title" style="color: #93c5fd;">
+      Scenario 1: 환자 데이터 입력 + AI 레포트 <span class="tag tag-b2c">B2C</span>
+    </div>
+    <div class="example-step">
+      <div class="step-num b2c">1</div>
+      <div class="step-content">
+        <span style="color: #93c5fd; font-weight: 600;">&#x1F4F1; 환자 앱</span>
+        <span class="action">&rarr; POST /api/health/data-points &rarr;</span>
+        <span class="server core">[Core]</span>
+      </div>
+    </div>
+    <div class="example-step">
+      <div class="step-num b2c">2</div>
+      <div class="step-content">
+        <span class="server core">[Core]</span>
+        <span class="action">검증 &rarr; 암호화 &rarr; health_db 저장</span>
+      </div>
+    </div>
+    <div class="example-step">
+      <div class="step-num b2c">3</div>
+      <div class="step-content">
+        <span class="server core">[Core]</span>
+        <span class="action">UQD 크레딧 적립</span>
+        <span class="flow-node xrpl" style="padding: 2px 6px; font-size: 10px;">XRPL</span>
+      </div>
+    </div>
+    <div class="example-step">
+      <div class="step-num b2c">4</div>
+      <div class="step-content">
+        <span class="server core">[Core]</span>
+        <span class="action">Webhook <code style="background:#21262d; padding:1px 4px; border-radius:3px; font-size:10px;">data.submitted</code> &rarr;</span>
+        <span class="server business">[Business]</span>
+        <span class="action">(마일스톤)</span>
+      </div>
+    </div>
+    <div class="example-step">
+      <div class="step-num b2c">5</div>
+      <div class="step-content">
+        <span style="color: #93c5fd; font-weight: 600;">&#x1F4F1; 환자 앱</span>
+        <span class="action">&rarr; GET /api/health/dashboard &rarr;</span>
+        <span class="server core">[Core]</span>
+      </div>
+    </div>
+    <div class="example-step">
+      <div class="step-num b2c">6</div>
+      <div class="step-content">
+        <span class="server core">[Core]</span>
+        <span class="action">AI 건강 레포트 생성 &rarr; 환자에게 반환</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scenario 2: B2B -->
+  <div class="example-box" style="border-left: 4px solid #34d399;">
+    <div class="example-title" style="color: #a7f3d0;">
+      Scenario 2: 연구자 IRB 신청 + 데이터 분석 <span class="tag tag-business">B2B</span>
+    </div>
+    <div class="example-step">
+      <div class="step-num b2b">1</div>
+      <div class="step-content">
+        <span style="color: #a7f3d0; font-weight: 600;">&#x1F5A5;&#xFE0F; Enterprise Portal</span>
+        <span class="action">&rarr;</span>
+        <span class="server business">[Business]</span>
+        <span class="action">POST /enterprise/projects</span>
+      </div>
+    </div>
+    <div class="example-step">
+      <div class="step-num b2b">2</div>
+      <div class="step-content">
+        <span style="color: #a7f3d0; font-weight: 600;">&#x1F5A5;&#xFE0F; Enterprise Portal</span>
+        <span class="action">&rarr;</span>
+        <span class="server business">[Business]</span>
+        <span class="action">POST /enterprise/irb/submissions</span>
+      </div>
+    </div>
+    <div class="example-step">
+      <div class="step-num b2b">3</div>
+      <div class="step-content">
+        <span class="server business">[Business]</span>
+        <span class="action">AI로 프로토콜/동의서 초안 생성</span>
+      </div>
+    </div>
+    <div class="example-step">
+      <div class="step-num b2b">4</div>
+      <div class="step-content">
+        <span style="color: #fcd34d; font-weight: 600;">&#x1F4CB; IRB 위원</span>
+        <span class="action">&rarr;</span>
+        <span class="server business">[Business]</span>
+        <span class="action">심의 (approve/revise/reject)</span>
+      </div>
+    </div>
+    <div class="example-step">
+      <div class="step-num b2b">5</div>
+      <div class="step-content">
+        <span class="action">승인 후 &rarr;</span>
+        <span class="server core">[Core]</span>
+        <span class="action">동의 검증 &rarr; health_db 조회 &rarr; 가명처리 &rarr; 반환</span>
+      </div>
+    </div>
+    <div class="example-step">
+      <div class="step-num b2b">6</div>
+      <div class="step-content">
+        <span class="server business">[Business]</span>
+        <span class="action">정산 계산 &rarr;</span>
+        <span class="server core">[Core]</span>
+        <span class="action">XRPL 에스크로 실행</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SECTION 7: 통신 패턴 ===== -->
+<div class="section-divider"><span>&#x1F4E1; Section 7: 통신 패턴</span></div>
+
+<div class="comm-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px;">
+
+  <!-- Internal API -->
+  <div style="background: #161b22; border: 2px solid #34d399; border-radius: 12px; overflow: hidden;">
+    <div style="background: linear-gradient(135deg, #064e3b, #065f46); padding: 14px 20px; font-size: 13px; font-weight: 700; color: #a7f3d0;">
+      Internal API <span style="font-size: 11px; font-weight: 400; color: #6ee7b7;">(Business &rarr; Core)</span>
+    </div>
+    <div style="padding: 16px;">
+      <div style="margin-bottom: 10px;">
+        <code style="font-size: 11px; color: #a78bfa; background: #21262d; padding: 3px 8px; border-radius: 4px;">POST /internal/data/query</code>
+        <div style="font-size: 10px; color: #8b949e; margin-top: 4px; padding-left: 8px;">IRB 승인 후 데이터 조회</div>
+      </div>
+      <div style="margin-bottom: 10px;">
+        <code style="font-size: 11px; color: #a78bfa; background: #21262d; padding: 3px 8px; border-radius: 4px;">GET /internal/consents/verify</code>
+        <div style="font-size: 10px; color: #8b949e; margin-top: 4px; padding-left: 8px;">동의 상태 확인</div>
+      </div>
+      <div style="margin-bottom: 10px;">
+        <code style="font-size: 11px; color: #a78bfa; background: #21262d; padding: 3px 8px; border-radius: 4px;">POST /internal/escrow/create</code>
+        <div style="font-size: 10px; color: #8b949e; margin-top: 4px; padding-left: 8px;">에스크로 생성</div>
+      </div>
+      <div>
+        <code style="font-size: 11px; color: #a78bfa; background: #21262d; padding: 3px 8px; border-radius: 4px;">POST /internal/notification/send</code>
+        <div style="font-size: 10px; color: #8b949e; margin-top: 4px; padding-left: 8px;">알림</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Webhook -->
+  <div style="background: #161b22; border: 2px solid #a78bfa; border-radius: 12px; overflow: hidden;">
+    <div style="background: linear-gradient(135deg, #4c1d95, #5b21b6); padding: 14px 20px; font-size: 13px; font-weight: 700; color: #e9d5ff;">
+      Webhook <span style="font-size: 11px; font-weight: 400; color: #c4b5fd;">(Core &rarr; Business)</span>
+    </div>
+    <div style="padding: 16px;">
+      <div style="margin-bottom: 10px;">
+        <code style="font-size: 11px; color: #34d399; background: #21262d; padding: 3px 8px; border-radius: 4px;">data.submitted</code>
+        <div style="font-size: 10px; color: #8b949e; margin-top: 4px; padding-left: 8px;">마일스톤 업데이트</div>
+      </div>
+      <div style="margin-bottom: 10px;">
+        <code style="font-size: 11px; color: #34d399; background: #21262d; padding: 3px 8px; border-radius: 4px;">consent.signed</code>
+        <div style="font-size: 10px; color: #8b949e; margin-top: 4px; padding-left: 8px;">참여자 등록</div>
+      </div>
+      <div style="margin-bottom: 10px;">
+        <code style="font-size: 11px; color: #34d399; background: #21262d; padding: 3px 8px; border-radius: 4px;">consent.revoked</code>
+        <div style="font-size: 10px; color: #8b949e; margin-top: 4px; padding-left: 8px;">참여자 삭제</div>
+      </div>
+      <div>
+        <code style="font-size: 11px; color: #34d399; background: #21262d; padding: 3px 8px; border-radius: 4px;">irb.approved</code>
+        <div style="font-size: 10px; color: #8b949e; margin-top: 4px; padding-left: 8px;">데이터 접근 활성화</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SECTION 8: 기술 스택 ===== -->
+<div class="section-divider"><span>&#x1F9F0; Section 8: 기술 스택</span></div>
+
+<div class="card" style="overflow-x: auto;">
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>구분</th>
+        <th>기술</th>
+        <th>비고</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="tag tag-core">Core</span></td>
+        <td>NestJS (TypeScript)</td>
+        <td style="color: #8b949e;">기존</td>
+      </tr>
+      <tr>
+        <td><span class="tag tag-business">Business</span></td>
+        <td>Spring Boot (Kotlin)</td>
+        <td style="color: #8b949e;">기존</td>
+      </tr>
+      <tr>
+        <td><span class="tag" style="background: #1e293b; color: #cbd5e1;">DB</span></td>
+        <td>PostgreSQL x 2</td>
+        <td style="color: #8b949e;">health_db + uniqdata_db</td>
+      </tr>
+      <tr>
+        <td><span class="tag" style="background: #4a1c1c; color: #fca5a5;">Cache</span></td>
+        <td>Redis</td>
+        <td style="color: #8b949e;">세션/캐시 공유</td>
+      </tr>
+      <tr>
+        <td><span class="tag tag-xrpl">Blockchain</span></td>
+        <td>XRPL (xrpl.js)</td>
+        <td style="color: #8b949e;">Testnet &rarr; Mainnet</td>
+      </tr>
+      <tr>
+        <td><span class="tag tag-irb">AI (IRB)</span></td>
+        <td>Claude API / GPT-4o</td>
+        <td style="color: #fbbf24; font-weight: 600;">NEW</td>
+      </tr>
+      <tr>
+        <td><span class="tag tag-b2c">AI (건강)</span></td>
+        <td>Claude API / 자체 모델</td>
+        <td style="color: #fbbf24; font-weight: 600;">NEW</td>
+      </tr>
+      <tr>
+        <td><span class="tag tag-business">Frontend</span></td>
+        <td>React + Vite</td>
+        <td style="color: #8b949e;">Enterprise Portal</td>
+      </tr>
+      <tr>
+        <td><span class="tag tag-b2c">Mobile</span></td>
+        <td>Flutter</td>
+        <td style="color: #8b949e;">환자 앱</td>
+      </tr>
+      <tr>
+        <td><span class="tag" style="background: #1e293b; color: #cbd5e1;">Infra</span></td>
+        <td>Railway</td>
+        <td style="color: #8b949e;">~$35-40/월</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ===== SECTION 9: 인프라 비용 ===== -->
+<div class="section-divider"><span>&#x1F4B5; Section 9: 인프라 비용</span></div>
+
+<div class="card" style="overflow-x: auto;">
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Service</th>
+        <th>Spec</th>
+        <th style="text-align: right;">Cost</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="tag tag-core" style="font-size: 11px;">Core (NestJS)</span></td>
+        <td style="color: #8b949e;">256MB+</td>
+        <td style="text-align: right; color: #4ade80; font-weight: 600;">$5</td>
+      </tr>
+      <tr>
+        <td><span class="tag tag-business" style="font-size: 11px;">Business (Spring Boot)</span></td>
+        <td style="color: #8b949e;">1GB+ (JVM)</td>
+        <td style="text-align: right; color: #4ade80; font-weight: 600;">$10&ndash;15</td>
+      </tr>
+      <tr>
+        <td>health-db</td>
+        <td style="color: #8b949e;">2GB</td>
+        <td style="text-align: right; color: #4ade80; font-weight: 600;">$10</td>
+      </tr>
+      <tr>
+        <td>uniqdata-db</td>
+        <td style="color: #8b949e;">1GB</td>
+        <td style="text-align: right; color: #4ade80; font-weight: 600;">$5</td>
+      </tr>
+      <tr>
+        <td>Redis</td>
+        <td style="color: #8b949e;">shared</td>
+        <td style="text-align: right; color: #4ade80; font-weight: 600;">$5</td>
+      </tr>
+      <tr style="border-top: 2px solid #30363d;">
+        <td colspan="2" style="font-weight: 700; color: #e6edf3;">Total</td>
+        <td style="text-align: right; font-weight: 700; color: #fbbf24; font-size: 14px;">$35&ndash;40/월</td>
+      </tr>
+    </tbody>
+  </table>
+  <div style="background: #422006; border: 1px solid #d97706; border-radius: 6px; padding: 10px 16px; font-size: 11px; color: #fcd34d; margin-top: 8px;">
+    &#x26A0;&#xFE0F; AI API 비용: ~$100/월 별도 (Claude API + GPT-4o usage)
+  </div>
+</div>
+
+<!-- ===== SECTION 10: 핵심 규칙 ===== -->
+<div class="section-divider"><span>&#x1F6A7; Section 10: 핵심 규칙 (Key Rules)</span></div>
+
+<div class="three-col" style="display: flex; gap: 16px; margin-bottom: 24px;">
+  <div style="flex: 1; background: #2e1065; border: 2px solid #a78bfa; border-radius: 10px; padding: 18px;">
+    <div style="font-size: 13px; font-weight: 700; color: #e9d5ff; margin-bottom: 12px;">&#x1F510; Core 영역</div>
+    <div style="font-size: 11px; color: #c4b5fd; line-height: 1.8;">
+      &#x2713; 인증 (Passkey/JWT)<br>
+      &#x2713; 건강 데이터 수신/저장<br>
+      &#x2713; 동의 관리<br>
+      &#x2713; XRPL / 에스크로 / UQD<br>
+      &#x2713; AI 건강 레포트
+    </div>
+  </div>
+  <div style="flex: 1; background: #022c22; border: 2px solid #34d399; border-radius: 10px; padding: 18px;">
+    <div style="font-size: 13px; font-weight: 700; color: #a7f3d0; margin-bottom: 12px;">&#x1F4CA; Business 영역</div>
+    <div style="font-size: 11px; color: #6ee7b7; line-height: 1.8;">
+      &#x2713; 연구 프로젝트<br>
+      &#x2713; IRB 워크플로우<br>
+      &#x2713; 정산 계산<br>
+      &#x2713; 기관/팀 관리<br>
+      &#x2713; 참여자 매칭
+    </div>
+  </div>
+  <div style="flex: 1; background: #450a0a; border: 2px solid #ef4444; border-radius: 10px; padding: 18px;">
+    <div style="font-size: 13px; font-weight: 700; color: #fecaca; margin-bottom: 12px;">&#x274C; 절대 안함</div>
+    <div style="font-size: 11px; color: #fca5a5; line-height: 1.8;">
+      &#x2717; Core &rarr; Business 직접 호출<br>
+      <span style="font-size: 10px; color: #6b7280;">&nbsp;&nbsp;(Webhook만 허용)</span><br>
+      &#x2717; Business &rarr; XRPL 직접 호출<br>
+      <span style="font-size: 10px; color: #6b7280;">&nbsp;&nbsp;(Core Internal API만)</span><br>
+      &#x2717; Business &rarr; health_db 직접 접근
+    </div>
+  </div>
+</div>
+
+<!-- ===== FOOTER ===== -->
+<div style="border-top: 1px solid #30363d; margin-top: 32px; padding-top: 24px;">
+  <div class="repo-links">
+    <a href="https://github.com/SportiQue-UniQdata/uniqdata-core" class="repo-link core" target="_blank">
+      uniqdata-core (NestJS)
+    </a>
+    <a href="https://github.com/SportiQue-UniQdata/uniqdata-enterprise-backend" class="repo-link business" target="_blank">
+      uniqdata-enterprise-backend (Spring)
+    </a>
+  </div>
+
+  <p style="text-align: center; color: #6b7280; font-size: 11px; margin-top: 24px;">
+    v6.0 | 2026-02-11 | 양면 플랫폼 + IRB SaaS 피봇 반영
+  </p>
+</div>
+
+</body>
+</html>
