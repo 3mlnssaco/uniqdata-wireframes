@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>연구 생성 Step 6 - 참가자 모집 설정 - Wireframe</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, sans-serif; background: #f5f5f5; }
+    .layout { display: flex; min-height: 100vh; }
+    .sidebar { width: 240px; background: #1a1a1a; color: white; padding: 20px; flex-shrink: 0; }
+    .logo { font-size: 18px; font-weight: bold; margin-bottom: 30px; padding: 10px; }
+    .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 8px; margin-bottom: 4px; color: #9ca3af; text-decoration: none; }
+    .nav-item.active { background: #3b82f6; color: white; }
+
+    .main { flex: 1; padding: 32px; max-width: 900px; margin: 0 auto; }
+    .main h1 { font-size: 28px; margin-bottom: 8px; }
+    .main .subtitle { color: #6b7280; margin-bottom: 32px; }
+
+    /* 스텝 인디케이터 */
+    .steps { display: flex; justify-content: space-between; margin-bottom: 32px; }
+    .step { display: flex; flex-direction: column; align-items: center; flex: 1; }
+    .step-num { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; margin-bottom: 8px; font-size: 14px; }
+    .step-num.done { background: #22c55e; color: white; }
+    .step-num.active { background: #8b5cf6; color: white; }
+    .step-num.pending { background: #e5e7eb; color: #9ca3af; }
+    .step-label { font-size: 12px; color: #6b7280; text-align: center; }
+    .step-line { flex: 1; height: 2px; background: #e5e7eb; margin: 20px 8px 0; }
+    .step-line.done { background: #22c55e; }
+
+    /* 카드 */
+    .card { background: white; border: 1px solid #e5e7eb; border-radius: 12px; margin-bottom: 20px; overflow: hidden; }
+    .card-header { background: #f9fafb; padding: 16px 20px; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center; }
+    .card-header h3 { font-size: 16px; font-weight: 600; }
+    .card-body { padding: 20px; }
+
+    /* 상태 뱃지 */
+    .status-badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 500; }
+    .status-badge.green { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
+
+    /* IRB 승인 카드 */
+    .irb-success-card { background: linear-gradient(135deg, #f0fdf4, #dcfce7); border: 2px solid #22c55e; border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+    .irb-success-card h4 { font-size: 16px; color: #166534; margin-bottom: 12px; }
+    .irb-success-card .detail { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #bbf7d0; font-size: 14px; }
+    .irb-success-card .detail:last-child { border-bottom: none; }
+    .irb-success-card .detail .label { color: #166534; font-weight: 500; }
+    .irb-success-card .detail .value { color: #15803d; }
+    .irb-success-card .detail .value a { color: #8b5cf6; text-decoration: underline; }
+
+    /* 검색바 */
+    .search-bar { display: flex; gap: 8px; margin-bottom: 16px; }
+    .search-bar input { flex: 1; height: 44px; border: 1px solid #e5e7eb; border-radius: 8px; padding: 0 16px; font-size: 14px; }
+    .search-bar input:focus { outline: none; border-color: #8b5cf6; box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1); }
+    .search-bar button { height: 44px; padding: 0 20px; background: #8b5cf6; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; }
+    .search-bar button:hover { background: #7c3aed; }
+
+    /* 필터 칩 */
+    .filter-chips { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+    .filter-chip { padding: 6px 14px; border-radius: 20px; font-size: 13px; border: 1px solid #e5e7eb; background: white; color: #374151; cursor: pointer; }
+    .filter-chip.active { background: #8b5cf6; color: white; border-color: #8b5cf6; }
+    .filter-chip:hover { border-color: #8b5cf6; }
+
+    /* 초대자 리스트 */
+    .invitee-list { margin: 16px 0; }
+    .invitee-item { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; margin-bottom: 8px; }
+    .invitee-info { display: flex; align-items: center; gap: 12px; }
+    .invitee-avatar { width: 36px; height: 36px; background: linear-gradient(135deg, #8b5cf6, #6366f1); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 13px; font-weight: 600; }
+    .invitee-details .name { font-size: 14px; font-weight: 500; color: #1f2937; }
+    .invitee-details .meta { font-size: 12px; color: #6b7280; margin-top: 2px; }
+    .invitee-remove { padding: 6px 12px; border: 1px solid #fca5a5; background: #fef2f2; color: #dc2626; border-radius: 6px; font-size: 12px; cursor: pointer; }
+    .invitee-remove:hover { background: #fee2e2; }
+
+    .add-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 12px; border: 2px dashed #d1d5db; border-radius: 8px; background: white; color: #6b7280; font-size: 14px; cursor: pointer; }
+    .add-btn:hover { border-color: #8b5cf6; color: #8b5cf6; }
+
+    .invitee-counter { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background: #f5f3ff; border: 1px solid #ddd6fe; border-radius: 8px; margin-top: 12px; }
+    .invitee-counter .text { font-size: 14px; font-weight: 500; color: #5b21b6; }
+    .invitee-counter .progress { font-size: 13px; color: #7c3aed; }
+
+    /* 모집 비율 슬라이더 */
+    .ratio-section { margin: 20px 0; }
+    .ratio-bar { display: flex; height: 40px; border-radius: 8px; overflow: hidden; margin-bottom: 12px; }
+    .ratio-bar .pre-invite { background: linear-gradient(135deg, #8b5cf6, #7c3aed); display: flex; align-items: center; justify-content: center; color: white; font-size: 13px; font-weight: 600; transition: width 0.3s; }
+    .ratio-bar .open-recruit { background: linear-gradient(135deg, #3b82f6, #2563eb); display: flex; align-items: center; justify-content: center; color: white; font-size: 13px; font-weight: 600; transition: width 0.3s; }
+    .ratio-slider { width: 100%; height: 8px; border-radius: 4px; background: #e5e7eb; appearance: none; cursor: pointer; margin: 12px 0; }
+    .ratio-slider::-webkit-slider-thumb { appearance: none; width: 24px; height: 24px; border-radius: 50%; background: #8b5cf6; cursor: pointer; border: 3px solid white; box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
+    .ratio-slider::-webkit-slider-track { height: 8px; border-radius: 4px; background: linear-gradient(to right, #8b5cf6 0%, #8b5cf6 40%, #3b82f6 40%, #3b82f6 100%); }
+    .ratio-labels { display: flex; justify-content: space-between; font-size: 12px; color: #6b7280; }
+
+    .ratio-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; }
+    .ratio-info-box { padding: 16px; border-radius: 10px; }
+    .ratio-info-box.pre-invite { background: #f5f3ff; border: 1px solid #ddd6fe; }
+    .ratio-info-box.open-recruit { background: #eff6ff; border: 1px solid #bfdbfe; }
+    .ratio-info-box h4 { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+    .ratio-info-box.pre-invite h4 { color: #5b21b6; }
+    .ratio-info-box.open-recruit h4 { color: #1e40af; }
+    .ratio-info-box .count { font-size: 24px; font-weight: 700; margin-bottom: 8px; }
+    .ratio-info-box.pre-invite .count { color: #8b5cf6; }
+    .ratio-info-box.open-recruit .count { color: #3b82f6; }
+    .ratio-info-box p { font-size: 12px; color: #6b7280; line-height: 1.6; }
+
+    /* 설정 옵션 */
+    .setting-row { display: flex; align-items: center; justify-content: space-between; padding: 16px 0; border-bottom: 1px solid #e5e7eb; }
+    .setting-row:last-child { border-bottom: none; }
+    .setting-left { flex: 1; }
+    .setting-left .title { font-size: 14px; font-weight: 500; color: #1f2937; margin-bottom: 2px; }
+    .setting-left .desc { font-size: 12px; color: #6b7280; }
+    .setting-right { display: flex; align-items: center; gap: 8px; }
+    .setting-input { width: 80px; height: 40px; border: 1px solid #e5e7eb; border-radius: 8px; padding: 0 12px; font-size: 15px; font-weight: 600; text-align: center; }
+    .setting-unit { font-size: 13px; color: #6b7280; }
+
+    /* 토글 */
+    .toggle { position: relative; width: 48px; height: 26px; border-radius: 13px; background: #22c55e; cursor: pointer; }
+    .toggle.off { background: #d1d5db; }
+    .toggle::after { content: ''; position: absolute; top: 3px; left: 25px; width: 20px; height: 20px; border-radius: 50%; background: white; transition: left 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+    .toggle.off::after { left: 3px; }
+
+    /* 체크박스 그룹 */
+    .checkbox-group { display: flex; gap: 16px; }
+    .checkbox-item { display: flex; align-items: center; gap: 8px; padding: 8px 16px; border: 1px solid #e5e7eb; border-radius: 8px; font-size: 13px; color: #374151; cursor: pointer; }
+    .checkbox-item.checked { border-color: #8b5cf6; background: #f5f3ff; color: #5b21b6; }
+    .checkbox-item input { accent-color: #8b5cf6; width: 16px; height: 16px; }
+
+    /* 폰 목업 */
+    .phone-mockup { width: 280px; margin: 0 auto; background: #1f2937; border-radius: 28px; padding: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.2); }
+    .phone-screen { background: white; border-radius: 20px; overflow: hidden; }
+    .phone-statusbar { background: #f9fafb; padding: 8px 16px; display: flex; justify-content: space-between; font-size: 11px; color: #6b7280; }
+    .phone-notification { padding: 16px; }
+    .phone-notification .notif-header { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+    .phone-notification .notif-icon { width: 32px; height: 32px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; color: white; }
+    .phone-notification .notif-title { font-size: 14px; font-weight: 600; color: #1f2937; }
+    .phone-notification .notif-subtitle { font-size: 11px; color: #6b7280; }
+    .phone-notification .research-title { font-size: 15px; font-weight: 600; color: #1f2937; margin-bottom: 12px; line-height: 1.4; }
+    .phone-notification .research-meta { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+    .phone-notification .research-meta-item { display: flex; justify-content: space-between; font-size: 13px; padding: 8px 0; border-bottom: 1px solid #f3f4f6; }
+    .phone-notification .research-meta-item .label { color: #6b7280; }
+    .phone-notification .research-meta-item .value { font-weight: 500; color: #1f2937; }
+    .phone-notification .research-meta-item .value.highlight { color: #8b5cf6; font-weight: 600; }
+    .phone-buttons { display: flex; gap: 8px; padding: 0 16px 16px; }
+    .phone-buttons .btn-accept { flex: 1; padding: 12px; background: linear-gradient(135deg, #22c55e, #16a34a); color: white; border: none; border-radius: 10px; font-size: 14px; font-weight: 600; text-align: center; cursor: pointer; }
+    .phone-buttons .btn-decline { flex: 1; padding: 12px; background: #f3f4f6; color: #6b7280; border: none; border-radius: 10px; font-size: 14px; font-weight: 500; text-align: center; cursor: pointer; }
+
+    /* 경고 박스 */
+    .warning-box { background: #fef3c7; border: 1px solid #fcd34d; border-radius: 12px; padding: 16px; margin: 20px 0; }
+    .warning-box h4 { font-size: 14px; color: #92400e; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+    .warning-box p { font-size: 13px; color: #a16207; line-height: 1.5; }
+
+    /* 버튼 */
+    .btn-row { display: flex; justify-content: space-between; align-items: center; margin-top: 24px; padding-top: 24px; border-top: 1px solid #e5e7eb; }
+    .btn { padding: 14px 32px; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; text-decoration: none; display: inline-block; }
+    .btn-secondary { background: white; border: 1px solid #e5e7eb; color: #374151; }
+    .btn-launch { background: linear-gradient(135deg, #22c55e, #16a34a); border: none; color: white; padding: 16px 48px; font-size: 17px; border-radius: 12px; box-shadow: 0 4px 14px rgba(34, 197, 94, 0.4); }
+    .btn-launch:hover { background: linear-gradient(135deg, #16a34a, #15803d); box-shadow: 0 6px 20px rgba(34, 197, 94, 0.5); }
+    .launch-note { text-align: center; font-size: 12px; color: #dc2626; margin-top: 12px; }
+
+    /* 스텝 네비게이션 */
+    .step-nav { display: flex; gap: 10px; margin-top: 24px; flex-wrap: wrap; }
+    .step-nav a { padding: 8px 16px; background: #eee; border-radius: 6px; text-decoration: none; color: #333; font-size: 14px; }
+
+    /* 디자이너 노트 */
+    .designer-note { background: linear-gradient(135deg, #fdf4ff, #fae8ff); border: 2px solid #d946ef; border-radius: 12px; padding: 20px; margin-top: 24px; }
+    .designer-note h3 { color: #a21caf; margin-bottom: 12px; font-size: 14px; }
+    .designer-note .content { font-size: 12px; color: #374151; line-height: 1.7; }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <div class="sidebar">
+      <div class="logo" style="display: flex; align-items: center; gap: 8px;">
+        <div style="width: 32px; height: 32px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: bold;">U</div>
+        UniQdata
+      </div>
+
+      <div style="margin-top: 24px;">
+        <a href="list.html" class="nav-item">
+          <span>🏠</span> 연구 허브
+        </a>
+      </div>
+
+      <div style="margin-top: 16px;">
+        <div style="font-size: 11px; color: #6b7280; padding: 8px 12px; text-transform: uppercase;">연구</div>
+        <a href="create.html" class="nav-item active">
+          <span>➕</span> 새 연구
+        </a>
+      </div>
+
+      <div style="margin-top: 16px;">
+        <div style="font-size: 11px; color: #6b7280; padding: 8px 12px; text-transform: uppercase;">관리</div>
+        <a href="../team.html" class="nav-item">
+          <span>👥</span> 팀
+        </a>
+        <a href="../billing.html" class="nav-item">
+          <span>💳</span> 결제
+        </a>
+        <a href="#" class="nav-item">
+          <span>⚙️</span> 설정
+        </a>
+      </div>
+
+      <div style="margin-top: auto; padding-top: 20px; border-top: 1px solid #374151;">
+        <div style="display: flex; align-items: center; gap: 10px; padding: 12px;">
+          <div style="width: 36px; height: 36px; background: #3b82f6; border-radius: 50%; display: flex; align-items: center; justify-content: center;">김</div>
+          <div>
+            <div style="font-size: 13px; font-weight: 500;">김연구</div>
+            <div style="font-size: 11px; color: #9ca3af;">서울대학교병원</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="main">
+      <!-- 페이지 헤더 -->
+      <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 8px;">
+        <h1>참가자 모집 설정</h1>
+        <span class="status-badge green">IRB 승인 완료</span>
+      </div>
+      <p class="subtitle">사전 초대자를 지정하고 모집 전략을 설정합니다</p>
+
+      <!-- 스텝 인디케이터 (6 Steps) -->
+      <div class="steps">
+        <div class="step"><div class="step-num done">✓</div><div class="step-label">AI 설계</div></div>
+        <div class="step-line done"></div>
+        <div class="step"><div class="step-num done">✓</div><div class="step-label">설계 확인</div></div>
+        <div class="step-line done"></div>
+        <div class="step"><div class="step-num done">✓</div><div class="step-label">데이터 수집</div></div>
+        <div class="step-line done"></div>
+        <div class="step"><div class="step-num done">✓</div><div class="step-label">IRB + 예산</div></div>
+        <div class="step-line done"></div>
+        <div class="step"><div class="step-num done">✓</div><div class="step-label">에스크로</div></div>
+        <div class="step-line done"></div>
+        <div class="step"><div class="step-num active">6</div><div class="step-label">모집 설정</div></div>
+      </div>
+
+      <!-- Section 1: IRB 승인 확인 -->
+      <div class="irb-success-card">
+        <h4>✅ IRB 승인 완료 (2026-03-15)</h4>
+        <div class="detail">
+          <span class="label">IRB 승인번호</span>
+          <span class="value">SNUH-IRB-2026-0142</span>
+        </div>
+        <div class="detail">
+          <span class="label">XRPL 앵커링</span>
+          <span class="value">tx hash: <a href="https://livenet.xrpl.org/transactions/A1B2C3D4E5F6" target="_blank">A1B2C3...D4E5F6</a></span>
+        </div>
+        <div class="detail">
+          <span class="label">에스크로 상태</span>
+          <span class="value" style="display: flex; align-items: center; gap: 6px;">
+            <span style="width: 8px; height: 8px; background: #22c55e; border-radius: 50; display: inline-block;"></span>
+            에스크로 예치 완료 - 모집 준비 완료
+          </span>
+        </div>
+      </div>
+
+      <!-- Section 2: 사전 초대자 지정 -->
+      <div class="card">
+        <div class="card-header">
+          <h3>👥 사전 초대자 지정</h3>
+          <span style="font-size: 12px; color: #8b5cf6; font-weight: 500;">핵심 기능</span>
+        </div>
+        <div class="card-body">
+          <p style="font-size: 13px; color: #6b7280; margin-bottom: 16px;">병원 내 특정 환자를 연구에 미리 초대할 수 있습니다</p>
+
+          <!-- 검색바 -->
+          <div class="search-bar">
+            <input type="text" placeholder="환자 검색 (이름, 환자번호, 진단코드)">
+            <button>검색</button>
+          </div>
+
+          <!-- 필터 칩 -->
+          <div class="filter-chips">
+            <span class="filter-chip">전체</span>
+            <span class="filter-chip active">당뇨 (T2DM)</span>
+            <span class="filter-chip">고혈압</span>
+            <span class="filter-chip">심장질환</span>
+            <span class="filter-chip">비만</span>
+          </div>
+
+          <!-- 초대자 리스트 -->
+          <div class="invitee-list">
+            <div class="invitee-item">
+              <div class="invitee-info">
+                <div class="invitee-avatar">박</div>
+                <div class="invitee-details">
+                  <div class="name">박○○ (56세/F)</div>
+                  <div class="meta">T2DM, CGM 사용 중</div>
+                </div>
+              </div>
+              <button class="invitee-remove">제거</button>
+            </div>
+            <div class="invitee-item">
+              <div class="invitee-info">
+                <div class="invitee-avatar">이</div>
+                <div class="invitee-details">
+                  <div class="name">이○○ (62세/M)</div>
+                  <div class="meta">T2DM, 복약 관리 중</div>
+                </div>
+              </div>
+              <button class="invitee-remove">제거</button>
+            </div>
+            <div class="invitee-item">
+              <div class="invitee-info">
+                <div class="invitee-avatar">최</div>
+                <div class="invitee-details">
+                  <div class="name">최○○ (48세/F)</div>
+                  <div class="meta">T2DM, 인슐린 펌프</div>
+                </div>
+              </div>
+              <button class="invitee-remove">제거</button>
+            </div>
+            <div class="invitee-item">
+              <div class="invitee-info">
+                <div class="invitee-avatar">정</div>
+                <div class="invitee-details">
+                  <div class="name">정○○ (55세/M)</div>
+                  <div class="meta">T2DM + 고혈압</div>
+                </div>
+              </div>
+              <button class="invitee-remove">제거</button>
+            </div>
+          </div>
+
+          <!-- 추가 버튼 -->
+          <button class="add-btn">+ 초대자 추가</button>
+
+          <!-- 카운터 -->
+          <div class="invitee-counter">
+            <span class="text">사전 초대자: 4명 / 목표: 100명</span>
+            <span class="progress">4%</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 3: 모집 비율 설정 -->
+      <div class="card">
+        <div class="card-header">
+          <h3>📊 모집 비율 설정</h3>
+        </div>
+        <div class="card-body">
+          <!-- 비율 바 -->
+          <div class="ratio-section">
+            <div class="ratio-bar">
+              <div class="pre-invite" style="width: 40%;">사전 초대 40%</div>
+              <div class="open-recruit" style="width: 60%;">공개 모집 60%</div>
+            </div>
+
+            <!-- 슬라이더 -->
+            <input type="range" class="ratio-slider" min="0" max="100" value="40" id="ratioSlider">
+            <div class="ratio-labels">
+              <span>0% 사전 초대</span>
+              <span>50 / 50</span>
+              <span>100% 사전 초대</span>
+            </div>
+          </div>
+
+          <!-- 비율 정보 박스 -->
+          <div class="ratio-info-grid">
+            <div class="ratio-info-box pre-invite">
+              <h4>사전 초대</h4>
+              <div class="count">40명</div>
+              <p>선택한 환자에게 직접 초대 알림 발송. 수락 시 자동 등록.</p>
+            </div>
+            <div class="ratio-info-box open-recruit">
+              <h4>공개 모집</h4>
+              <div class="count">60명</div>
+              <p>조건 맞는 전체 환자에게 모집 공고. 신청 후 선착순/조건 매칭.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 4: 모집 설정 -->
+      <div class="card">
+        <div class="card-header">
+          <h3>⚙️ 모집 설정</h3>
+        </div>
+        <div class="card-body">
+          <!-- 모집 기간 -->
+          <div class="setting-row">
+            <div class="setting-left">
+              <div class="title">모집 기간</div>
+              <div class="desc">참가자 모집을 진행할 기간</div>
+            </div>
+            <div class="setting-right">
+              <input type="number" class="setting-input" value="14">
+              <span class="setting-unit">일</span>
+            </div>
+          </div>
+
+          <!-- 최소 참여자 -->
+          <div class="setting-row">
+            <div class="setting-left">
+              <div class="title">최소 참여자</div>
+              <div class="desc">이하이면 연구 자동 취소 + 에스크로 환불</div>
+            </div>
+            <div class="setting-right">
+              <input type="number" class="setting-input" value="50">
+              <span class="setting-unit">명</span>
+            </div>
+          </div>
+
+          <!-- 대기자 설정 -->
+          <div class="setting-row">
+            <div class="setting-left">
+              <div class="title">대기자 설정</div>
+              <div class="desc">초대 거절/미응답 시 대기자 자동 배정</div>
+            </div>
+            <div class="setting-right">
+              <div class="toggle" title="ON"></div>
+              <span class="setting-unit" style="min-width: 24px;">ON</span>
+            </div>
+          </div>
+
+          <!-- 알림 방식 -->
+          <div class="setting-row">
+            <div class="setting-left">
+              <div class="title">알림 방식</div>
+              <div class="desc">참가자에게 모집 알림을 보낼 채널</div>
+            </div>
+            <div class="setting-right">
+              <div class="checkbox-group">
+                <label class="checkbox-item checked">
+                  <input type="checkbox" checked> 앱 푸시
+                </label>
+                <label class="checkbox-item">
+                  <input type="checkbox"> SMS
+                </label>
+                <label class="checkbox-item">
+                  <input type="checkbox"> 이메일
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 5: 모집 미리보기 -->
+      <div class="card">
+        <div class="card-header">
+          <h3>📱 모집 미리보기</h3>
+          <span style="font-size: 12px; color: #6b7280;">참가자에게 보이는 화면</span>
+        </div>
+        <div class="card-body" style="display: flex; justify-content: center; padding: 32px 20px;">
+          <!-- 폰 목업 -->
+          <div class="phone-mockup">
+            <div class="phone-screen">
+              <div class="phone-statusbar">
+                <span>9:41</span>
+                <span>UniQdata</span>
+              </div>
+              <div class="phone-notification">
+                <div class="notif-header">
+                  <div class="notif-icon">U</div>
+                  <div>
+                    <div class="notif-title">연구 참여 요청</div>
+                    <div class="notif-subtitle">서울대학교병원 김연구 교수</div>
+                  </div>
+                </div>
+                <div class="research-title">저탄수화물 식단의 혈당 변동 개선 효과 연구</div>
+                <div class="research-meta">
+                  <div class="research-meta-item">
+                    <span class="label">연구 기간</span>
+                    <span class="value">56일 (8주)</span>
+                  </div>
+                  <div class="research-meta-item">
+                    <span class="label">보상</span>
+                    <span class="value highlight">50 XRP + 보너스</span>
+                  </div>
+                  <div class="research-meta-item">
+                    <span class="label">수집 데이터</span>
+                    <span class="value">CGM, 활동량, 식단</span>
+                  </div>
+                  <div class="research-meta-item">
+                    <span class="label">에스크로</span>
+                    <span class="value" style="color: #22c55e;">보상 보장됨</span>
+                  </div>
+                </div>
+              </div>
+              <div class="phone-buttons">
+                <button class="btn-accept">참여하기</button>
+                <button class="btn-decline">거절</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 경고 박스 -->
+      <div class="warning-box">
+        <h4>⚠️ 중요 안내</h4>
+        <p>모집 시작 후 연구 설정을 변경할 수 없습니다. 수집 데이터 항목, 참여자 조건, 동의서 내용, 보상 금액이 확정됩니다. 변경이 필요한 경우 새로운 연구를 생성해야 합니다.</p>
+      </div>
+
+      <!-- 네비게이션 버튼 -->
+      <div class="btn-row">
+        <a href="create-step5.html" class="btn btn-secondary">← 이전</a>
+        <div style="display: flex; flex-direction: column; align-items: center;">
+          <a href="list.html" class="btn btn-launch">🚀 모집 시작</a>
+          <div class="launch-note">모집 시작 후 연구 설정을 변경할 수 없습니다</div>
+        </div>
+      </div>
+
+      <!-- 스텝 네비게이션 -->
+      <div class="step-nav">
+        <a href="create-step5.html">← Step 5</a>
+        <a href="list.html">연구 목록 →</a>
+      </div>
+
+      <!-- 디자이너 노트 -->
+      <div class="designer-note">
+        <h3>📋 디자이너 노트: Step 6 - 참가자 모집 설정</h3>
+        <div class="content">
+          <strong>사전 초대자:</strong><br>
+          • 병원 내 특정 환자를 PI가 직접 선택하여 초대<br>
+          • 환자 검색: 이름, 환자번호, 진단코드로 검색 가능<br>
+          • 필터링: 진단별 빠른 필터 제공<br><br>
+
+          <strong>공개 모집:</strong><br>
+          • 조건 매칭으로 자동 모집 (IRB 승인된 모집 공고문 사용)<br>
+          • 선착순 또는 조건 매칭 기반 참가자 선정<br><br>
+
+          <strong>비율 조정:</strong><br>
+          • 100% 초대만 가능 (소규모 연구)<br>
+          • 100% 공개만 가능 (대규모 모집)<br>
+          • 혼합 비율 자유 조정 가능<br><br>
+
+          <strong>IRB 연결:</strong><br>
+          • IRB 면제 시: Step 5에서 바로 여기로 연결<br>
+          • IRB 심의 시: 승인 알림 후 이 페이지 활성화<br>
+          • IRB 미승인 시: 이 페이지 접근 불가<br><br>
+
+          <strong>Safety Net:</strong><br>
+          • 최소 참여자 미달 시: 에스크로 자동 환불<br>
+          • 대기자 자동 배정으로 탈락 보충<br>
+          • 모집 기간 종료 후 미달 시 연구 자동 취소
+        </div>
+      </div>
+
+      <!-- 기능 명세 -->
+      <div style="background: linear-gradient(135deg, #ecfdf5, #d1fae5); border: 2px solid #10b981; border-radius: 12px; padding: 16px; margin-top: 12px;">
+        <h3 style="color: #047857; margin-bottom: 12px; font-size: 14px;">⚙️ 기능 명세</h3>
+        <div style="font-size: 12px; color: #374151; line-height: 1.8;">
+          <strong>핵심 기능:</strong><br>
+          • 사전 초대자 검색 및 선택<br>
+          • 모집 비율 (사전 초대 / 공개 모집) 조정<br>
+          • 모집 기간, 최소 참여자, 대기자 설정<br>
+          • 알림 채널 선택 (앱 푸시, SMS, 이메일)<br>
+          • 모집 미리보기 (참가자 시점)<br><br>
+
+          <strong>비즈니스 로직:</strong><br>
+          • IRB 승인 완료 후에만 접근 가능<br>
+          • 에스크로 예치 완료 확인 필수<br>
+          • 최소 참여자 미달 시 자동 취소 + 환불<br>
+          • 모집 시작 후 설정 변경 불가 (immutable)
+        </div>
+      </div>
+
+      <!-- 백엔드 호출 -->
+      <div style="background: linear-gradient(135deg, #f5f3ff, #ede9fe); border: 2px solid #8b5cf6; border-radius: 12px; padding: 16px; margin-top: 12px;">
+        <h3 style="color: #6d28d9; margin-bottom: 12px; font-size: 14px;">🔗 백엔드 호출</h3>
+        <div style="font-size: 11px; font-family: 'SF Mono', Monaco, monospace; color: #374151; line-height: 1.8;">
+          <strong style="font-family: -apple-system, sans-serif;">1. 환자 검색:</strong><br>
+          <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
+GET /enterprise/patients/search?q=당뇨&filters=t2dm<br>
+→ { "patients": [{ "id": "uuid", "name": "박○○", "age": 56, "conditions": ["T2DM"] }] }
+          </code>
+
+          <strong style="font-family: -apple-system, sans-serif;">2. 모집 설정 저장:</strong><br>
+          <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
+POST /enterprise/projects/:id/recruitment/config<br>
+{<br>
+&nbsp;&nbsp;"pre_invite_ids": ["uuid1", "uuid2", ...],<br>
+&nbsp;&nbsp;"pre_invite_ratio": 0.4,<br>
+&nbsp;&nbsp;"open_ratio": 0.6,<br>
+&nbsp;&nbsp;"recruitment_days": 14,<br>
+&nbsp;&nbsp;"min_participants": 50,<br>
+&nbsp;&nbsp;"waitlist_enabled": true,<br>
+&nbsp;&nbsp;"notification_channels": ["push", "sms"]<br>
+}
+          </code>
+
+          <strong style="font-family: -apple-system, sans-serif;">3. 모집 시작:</strong><br>
+          <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
+POST /enterprise/projects/:id/recruitment/start<br>
+→ {<br>
+&nbsp;&nbsp;"status": "recruiting",<br>
+&nbsp;&nbsp;"pre_invites_sent": 4,<br>
+&nbsp;&nbsp;"open_recruitment_active": true<br>
+}
+          </code>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="page-spec.js"></script>
+  <link rel="stylesheet" href="../tooltip-spec.css">
+  <script src="../tooltip-spec.js"></script>
+</body>
+</html>
