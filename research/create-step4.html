@@ -3,11 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>연구 생성 Step 6 - 참가자 모집 설정 - Wireframe</title>
+  <title>연구 생성 Step 4 - 모집 설정 워크스페이스 - Wireframe</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: -apple-system, sans-serif; background: #f5f5f5; }
-    .layout { display: flex; min-height: 100vh; }
+
+    /* ===== 레이아웃 ===== */
+    .layout { display: flex; min-height: 100vh; width: 100%; }
+
+    /* ① Nav (좌측 사이드바) */
     .sidebar {
       width: 240px;
       background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
@@ -42,6 +46,19 @@
     .nav-item:hover { background: rgba(255,255,255,0.05); color: #e2e8f0; }
     .nav-item.active { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
     .nav-item .icon { width: 20px; text-align: center; }
+
+    /* Workspace wrapper */
+    .workspace-wrap {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+    .workspace {
+      flex: 1;
+      display: flex;
+      min-height: 0;
+    }
 
     /* Step Bar */
     .step-bar {
@@ -105,10 +122,13 @@
     .user-name-sidebar { font-size: 14px; color: #e2e8f0; }
     .user-org-sidebar { font-size: 12px; color: #64748b; }
 
-    .main { flex: 1; padding: 32px; max-width: 900px; margin: 0 auto; }
-    .main h1 { font-size: 28px; margin-bottom: 8px; }
-    .main .subtitle { color: #6b7280; margin-bottom: 32px; }
-
+    /* ② 에디터 패널 (중앙) */
+    .editor-panel {
+      flex: 1;
+      overflow-y: auto;
+      padding: 28px 32px;
+      background: white;
+    }
 
     /* 카드 */
     .card { background: white; border: 1px solid #e5e7eb; border-radius: 12px; margin-bottom: 20px; overflow: hidden; }
@@ -118,16 +138,6 @@
 
     /* 상태 뱃지 */
     .status-badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 500; }
-    .status-badge.green { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
-
-    /* IRB 승인 카드 */
-    .irb-success-card { background: linear-gradient(135deg, #f0fdf4, #dcfce7); border: 2px solid #22c55e; border-radius: 12px; padding: 20px; margin-bottom: 20px; }
-    .irb-success-card h4 { font-size: 16px; color: #166534; margin-bottom: 12px; }
-    .irb-success-card .detail { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #bbf7d0; font-size: 14px; }
-    .irb-success-card .detail:last-child { border-bottom: none; }
-    .irb-success-card .detail .label { color: #166534; font-weight: 500; }
-    .irb-success-card .detail .value { color: #15803d; }
-    .irb-success-card .detail .value a { color: #8b5cf6; text-decoration: underline; }
 
     /* 검색바 */
     .search-bar { display: flex; gap: 8px; margin-bottom: 16px; }
@@ -229,24 +239,133 @@
 
     /* 버튼 */
     .btn-row { display: flex; justify-content: space-between; align-items: center; margin-top: 24px; padding-top: 24px; border-top: 1px solid #e5e7eb; }
-    .btn { padding: 14px 32px; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; text-decoration: none; display: inline-block; }
+    .btn { padding: 12px 28px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; text-decoration: none; display: inline-block; border: none; }
     .btn-secondary { background: white; border: 1px solid #e5e7eb; color: #374151; }
-    .btn-launch { background: linear-gradient(135deg, #22c55e, #16a34a); border: none; color: white; padding: 16px 48px; font-size: 17px; border-radius: 12px; box-shadow: 0 4px 14px rgba(34, 197, 94, 0.4); }
-    .btn-launch:hover { background: linear-gradient(135deg, #16a34a, #15803d); box-shadow: 0 6px 20px rgba(34, 197, 94, 0.5); }
-    .launch-note { text-align: center; font-size: 12px; color: #dc2626; margin-top: 12px; }
+    .btn-primary { background: #8b5cf6; color: white; }
+    .btn-primary:hover { background: #7c3aed; }
 
-    /* 스텝 네비게이션 */
-    .step-nav { display: flex; gap: 10px; margin-top: 24px; flex-wrap: wrap; }
-    .step-nav a { padding: 8px 16px; background: #eee; border-radius: 6px; text-decoration: none; color: #333; font-size: 14px; }
+    /* ③ AI 채팅 패널 (우측) */
+    .chat-panel {
+      width: 360px;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      border-left: 1px solid #e5e7eb;
+      background: #fafafa;
+    }
+    .chat-panel-inner {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+      color: #e5e7eb;
+    }
+    .chat-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid #334155;
+      background: rgba(139, 92, 246, 0.1);
+    }
+    .chat-header .title {
+      font-size: 15px; font-weight: 700;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .chat-header .title .icon {
+      width: 28px; height: 28px;
+      background: linear-gradient(135deg, #8b5cf6, #6366f1);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center; font-size: 14px;
+    }
+    .chat-header .sub { font-size: 12px; color: #94a3b8; margin-top: 4px; }
 
-    /* 디자이너 노트 */
-    .designer-note { background: linear-gradient(135deg, #fdf4ff, #fae8ff); border: 2px solid #d946ef; border-radius: 12px; padding: 20px; margin-top: 24px; }
-    .designer-note h3 { color: #a21caf; margin-bottom: 12px; font-size: 14px; }
-    .designer-note .content { font-size: 12px; color: #374151; line-height: 1.7; }
+    .chat-context {
+      margin: 12px; padding: 12px;
+      background: #1e293b; border: 1px solid #334155; border-radius: 10px;
+    }
+    .chat-context .label { font-size: 11px; color: #64748b; margin-bottom: 6px; }
+    .chat-context .value { font-size: 13px; color: #e2e8f0; line-height: 1.5; }
+    .chat-context-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+    .chat-context-chip {
+      padding: 4px 10px; background: #8b5cf6; border-radius: 12px;
+      font-size: 11px; color: white;
+    }
+
+    .chat-messages {
+      flex: 1; overflow-y: auto; padding: 16px;
+      display: flex; flex-direction: column; gap: 12px;
+    }
+    .msg {
+      max-width: 90%; padding: 12px 14px; border-radius: 12px;
+      font-size: 13px; line-height: 1.5;
+    }
+    .msg.ai {
+      background: #1e293b; border: 1px solid #334155;
+      align-self: flex-start; border-bottom-left-radius: 4px;
+    }
+    .msg.user {
+      background: #3b82f6; color: white;
+      align-self: flex-end; border-bottom-right-radius: 4px;
+    }
+    .msg .sender { font-size: 11px; color: #64748b; margin-bottom: 4px; }
+    .msg.user .sender { color: rgba(255,255,255,0.7); }
+
+    .chat-quick {
+      padding: 12px; border-top: 1px solid #334155; background: rgba(0,0,0,0.2);
+    }
+    .chat-quick .label { font-size: 11px; color: #64748b; margin-bottom: 8px; }
+    .chat-quick-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+    .chat-quick-chip {
+      padding: 6px 12px; background: #334155; border: 1px solid #475569;
+      border-radius: 16px; font-size: 12px; color: #cbd5e1; cursor: pointer;
+    }
+    .chat-quick-chip:hover { background: #475569; border-color: #8b5cf6; }
+
+    .chat-input {
+      padding: 16px; border-top: 1px solid #334155; background: #0f172a;
+    }
+    .chat-input-wrapper {
+      display: flex; gap: 8px;
+      background: #1e293b; border: 1px solid #334155;
+      border-radius: 12px; padding: 4px;
+    }
+    .chat-input-wrapper:focus-within { border-color: #8b5cf6; }
+    .chat-input input {
+      flex: 1; background: transparent; border: none;
+      padding: 10px 12px; font-size: 13px; color: #e2e8f0; outline: none;
+    }
+    .chat-input input::placeholder { color: #64748b; }
+    .chat-send-btn {
+      width: 40px; height: 40px;
+      background: linear-gradient(135deg, #8b5cf6, #6366f1);
+      border: none; border-radius: 8px; color: white; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; font-size: 16px;
+    }
+
+    /* 디자이너 노트 (하단 오버레이) */
+    .designer-notes {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: linear-gradient(135deg, #fdf4ff, #fae8ff);
+      border-top: 2px solid #d946ef;
+      padding: 20px 32px;
+      max-height: 400px; overflow-y: auto;
+      z-index: 100;
+      display: none;
+    }
+    .designer-notes.show { display: block; }
+    .designer-notes h3 { color: #a21caf; margin-bottom: 12px; font-size: 14px; }
+    .designer-notes .content { font-size: 12px; color: #374151; line-height: 1.7; columns: 2; column-gap: 32px; }
+
+    .toggle-notes {
+      position: fixed; bottom: 16px; right: 16px;
+      padding: 10px 16px; background: #d946ef; color: white;
+      border: none; border-radius: 8px; font-size: 13px; font-weight: 600;
+      cursor: pointer; z-index: 101; box-shadow: 0 4px 12px rgba(217,70,239,0.3);
+    }
+
   </style>
 </head>
 <body>
   <div class="layout">
+    <!-- ① Nav -->
     <div class="sidebar">
       <div class="logo">
         <div class="logo-icon">U</div>
@@ -322,14 +441,8 @@
       </div>
     </div>
 
-    <div class="main">
-      <!-- 페이지 헤더 -->
-      <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 8px;">
-        <h1>참가자 모집 설정</h1>
-        <span class="status-badge" style="background:#ede9fe; color:#7c3aed;">Step 4</span>
-      </div>
-      <p class="subtitle">사전 초대자를 지정하고 모집 전략을 설정합니다</p>
-
+    <!-- Workspace Wrap -->
+    <div class="workspace-wrap">
       <!-- Step Bar -->
       <div class="step-bar">
         <div class="step-bar-inner">
@@ -338,7 +451,7 @@
           <div class="sb-step done"><div class="sb-num">✓</div><div class="sb-label">연구 설계</div></div>
           <div class="sb-line done"></div>
           <div class="sb-step done"><div class="sb-num">✓</div><div class="sb-label">데이터 수집</div></div>
-          <div class="sb-line"></div>
+          <div class="sb-line done"></div>
           <div class="sb-step active"><div class="sb-num">4</div><div class="sb-label">모집 설정</div></div>
           <div class="sb-line"></div>
           <div class="sb-step pending"><div class="sb-num">5</div><div class="sb-label">IRB 판정</div></div>
@@ -347,323 +460,405 @@
         </div>
       </div>
 
-      <!-- Section 1: 사전 초대자 지정 -->
-      <div class="card">
-        <div class="card-header">
-          <h3>👥 사전 초대자 지정</h3>
-          <span style="font-size: 12px; color: #8b5cf6; font-weight: 500;">핵심 기능</span>
-        </div>
-        <div class="card-body">
-          <p style="font-size: 13px; color: #6b7280; margin-bottom: 16px;">UniQdata에 가입된 사용자 중 조건에 맞는 참여자를 사전 초대합니다</p>
+      <!-- Workspace (editor + chat) -->
+      <div class="workspace">
 
-          <!-- 검색바 -->
-          <div class="search-bar">
-            <input type="text" placeholder="사용자 검색 (닉네임, 건강 태그, 관심 분야)">
-            <button>검색</button>
+        <!-- ② 에디터 패널 -->
+        <div class="editor-panel">
+
+          <!-- 페이지 헤더 -->
+          <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 8px;">
+            <h1 style="font-size: 24px; font-weight: 700;">참가자 모집 설정</h1>
+            <span class="status-badge" style="background:#ede9fe; color:#7c3aed;">Step 4</span>
           </div>
+          <p style="color: #6b7280; margin-bottom: 28px; font-size: 14px;">사전 초대자를 지정하고 모집 전략을 설정합니다</p>
 
-          <!-- 필터 칩 -->
-          <div class="filter-chips">
-            <span class="filter-chip">전체</span>
-            <span class="filter-chip active">당뇨 (T2DM)</span>
-            <span class="filter-chip">고혈압</span>
-            <span class="filter-chip">심장질환</span>
-            <span class="filter-chip">비만</span>
-          </div>
+          <!-- Section 1: 사전 초대자 지정 -->
+          <div class="card">
+            <div class="card-header">
+              <h3>👥 사전 초대자 지정</h3>
+              <span style="font-size: 12px; color: #8b5cf6; font-weight: 500;">핵심 기능</span>
+            </div>
+            <div class="card-body">
+              <p style="font-size: 13px; color: #6b7280; margin-bottom: 16px;">UniQdata에 가입된 사용자 중 조건에 맞는 참여자를 사전 초대합니다</p>
 
-          <!-- 초대자 리스트 -->
-          <div class="invitee-list">
-            <div class="invitee-item">
-              <div class="invitee-info">
-                <div class="invitee-avatar">박</div>
-                <div class="invitee-details">
-                  <div class="name">박○○ (56세/F)</div>
-                  <div class="meta">T2DM, CGM 사용 중</div>
-                </div>
+              <!-- 검색바 -->
+              <div class="search-bar">
+                <input type="text" placeholder="사용자 검색 (닉네임, 건강 태그, 관심 분야)">
+                <button>검색</button>
               </div>
-              <button class="invitee-remove">제거</button>
-            </div>
-            <div class="invitee-item">
-              <div class="invitee-info">
-                <div class="invitee-avatar">이</div>
-                <div class="invitee-details">
-                  <div class="name">이○○ (62세/M)</div>
-                  <div class="meta">T2DM, 복약 관리 중</div>
-                </div>
+
+              <!-- 필터 칩 -->
+              <div class="filter-chips">
+                <span class="filter-chip">전체</span>
+                <span class="filter-chip active">당뇨 (T2DM)</span>
+                <span class="filter-chip">고혈압</span>
+                <span class="filter-chip">심장질환</span>
+                <span class="filter-chip">비만</span>
               </div>
-              <button class="invitee-remove">제거</button>
-            </div>
-            <div class="invitee-item">
-              <div class="invitee-info">
-                <div class="invitee-avatar">최</div>
-                <div class="invitee-details">
-                  <div class="name">최○○ (48세/F)</div>
-                  <div class="meta">T2DM, 인슐린 펌프</div>
-                </div>
-              </div>
-              <button class="invitee-remove">제거</button>
-            </div>
-            <div class="invitee-item">
-              <div class="invitee-info">
-                <div class="invitee-avatar">정</div>
-                <div class="invitee-details">
-                  <div class="name">정○○ (55세/M)</div>
-                  <div class="meta">T2DM + 고혈압</div>
-                </div>
-              </div>
-              <button class="invitee-remove">제거</button>
-            </div>
-          </div>
 
-          <!-- 추가 버튼 -->
-          <button class="add-btn">+ 초대자 추가</button>
-
-          <!-- 카운터 -->
-          <div class="invitee-counter">
-            <span class="text">사전 초대자: 4명 / 목표: 100명</span>
-            <span class="progress">4%</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Section 3: 모집 비율 설정 -->
-      <div class="card">
-        <div class="card-header">
-          <h3>📊 모집 비율 설정</h3>
-        </div>
-        <div class="card-body">
-          <!-- 비율 바 -->
-          <div class="ratio-section">
-            <div class="ratio-bar">
-              <div class="pre-invite" style="width: 40%;">사전 초대 40%</div>
-              <div class="open-recruit" style="width: 60%;">공개 모집 60%</div>
-            </div>
-
-            <!-- 슬라이더 -->
-            <input type="range" class="ratio-slider" min="0" max="100" value="40" id="ratioSlider">
-            <div class="ratio-labels">
-              <span>0% 사전 초대</span>
-              <span>50 / 50</span>
-              <span>100% 사전 초대</span>
-            </div>
-          </div>
-
-          <!-- 비율 정보 박스 -->
-          <div class="ratio-info-grid">
-            <div class="ratio-info-box pre-invite">
-              <h4>사전 초대</h4>
-              <div class="count">40명</div>
-              <p>조건에 맞는 UniQdata 사용자에게 직접 초대 알림 발송. 수락 시 자동 등록.</p>
-            </div>
-            <div class="ratio-info-box open-recruit">
-              <h4>공개 모집</h4>
-              <div class="count">60명</div>
-              <p>조건 맞는 UniQdata 전체 사용자에게 공개 모집. 신청 후 조건 매칭.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Section 4: 모집 설정 -->
-      <div class="card">
-        <div class="card-header">
-          <h3>⚙️ 모집 설정</h3>
-        </div>
-        <div class="card-body">
-          <!-- 모집 기간 -->
-          <div class="setting-row">
-            <div class="setting-left">
-              <div class="title">모집 기간</div>
-              <div class="desc">참가자 모집을 진행할 기간</div>
-            </div>
-            <div class="setting-right">
-              <input type="number" class="setting-input" value="14">
-              <span class="setting-unit">일</span>
-            </div>
-          </div>
-
-          <!-- 최소 참여자 -->
-          <div class="setting-row">
-            <div class="setting-left">
-              <div class="title">최소 참여자</div>
-              <div class="desc">이하이면 연구 자동 취소 + 에스크로 환불</div>
-            </div>
-            <div class="setting-right">
-              <input type="number" class="setting-input" value="50">
-              <span class="setting-unit">명</span>
-            </div>
-          </div>
-
-          <!-- 대기자 설정 -->
-          <div class="setting-row">
-            <div class="setting-left">
-              <div class="title">대기자 설정</div>
-              <div class="desc">초대 거절/미응답 시 대기자 자동 배정</div>
-            </div>
-            <div class="setting-right">
-              <div class="toggle" title="ON"></div>
-              <span class="setting-unit" style="min-width: 24px;">ON</span>
-            </div>
-          </div>
-
-          <!-- 알림 방식 -->
-          <div class="setting-row">
-            <div class="setting-left">
-              <div class="title">알림 방식</div>
-              <div class="desc">참가자에게 모집 알림을 보낼 채널</div>
-            </div>
-            <div class="setting-right">
-              <div class="checkbox-group">
-                <label class="checkbox-item checked">
-                  <input type="checkbox" checked> 앱 푸시
-                </label>
-                <label class="checkbox-item">
-                  <input type="checkbox"> SMS
-                </label>
-                <label class="checkbox-item">
-                  <input type="checkbox"> 이메일
-                </label>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Section 5: 모집 미리보기 -->
-      <div class="card">
-        <div class="card-header">
-          <h3>📱 모집 미리보기</h3>
-          <span style="font-size: 12px; color: #6b7280;">참가자에게 보이는 화면</span>
-        </div>
-        <div class="card-body" style="display: flex; justify-content: center; padding: 32px 20px;">
-          <!-- 폰 목업 -->
-          <div class="phone-mockup">
-            <div class="phone-screen">
-              <div class="phone-statusbar">
-                <span>9:41</span>
-                <span>UniQdata</span>
-              </div>
-              <div class="phone-notification">
-                <div class="notif-header">
-                  <div class="notif-icon">U</div>
-                  <div>
-                    <div class="notif-title">연구 참여 초대</div>
-                    <div class="notif-subtitle">김연구 · 서울대학교병원</div>
+              <!-- 초대자 리스트 -->
+              <div class="invitee-list">
+                <div class="invitee-item">
+                  <div class="invitee-info">
+                    <div class="invitee-avatar">박</div>
+                    <div class="invitee-details">
+                      <div class="name">박○○ (56세/F)</div>
+                      <div class="meta">T2DM, CGM 사용 중</div>
+                    </div>
                   </div>
+                  <button class="invitee-remove">제거</button>
                 </div>
-                <div class="research-title">저탄수화물 식단의 혈당 변동 개선 효과 연구</div>
-                <div class="research-meta">
-                  <div class="research-meta-item">
-                    <span class="label">연구 기간</span>
-                    <span class="value">56일 (8주)</span>
+                <div class="invitee-item">
+                  <div class="invitee-info">
+                    <div class="invitee-avatar">이</div>
+                    <div class="invitee-details">
+                      <div class="name">이○○ (62세/M)</div>
+                      <div class="meta">T2DM, 복약 관리 중</div>
+                    </div>
                   </div>
-                  <div class="research-meta-item">
-                    <span class="label">보상</span>
-                    <span class="value highlight">50 XRP + 보너스</span>
+                  <button class="invitee-remove">제거</button>
+                </div>
+                <div class="invitee-item">
+                  <div class="invitee-info">
+                    <div class="invitee-avatar">최</div>
+                    <div class="invitee-details">
+                      <div class="name">최○○ (48세/F)</div>
+                      <div class="meta">T2DM, 인슐린 펌프</div>
+                    </div>
                   </div>
-                  <div class="research-meta-item">
-                    <span class="label">수집 데이터</span>
-                    <span class="value">CGM, 활동량, 식단</span>
+                  <button class="invitee-remove">제거</button>
+                </div>
+                <div class="invitee-item">
+                  <div class="invitee-info">
+                    <div class="invitee-avatar">정</div>
+                    <div class="invitee-details">
+                      <div class="name">정○○ (55세/M)</div>
+                      <div class="meta">T2DM + 고혈압</div>
+                    </div>
                   </div>
-                  <div class="research-meta-item">
-                    <span class="label">에스크로</span>
-                    <span class="value" style="color: #22c55e;">보상 보장됨</span>
+                  <button class="invitee-remove">제거</button>
+                </div>
+              </div>
+
+              <!-- 추가 버튼 -->
+              <button class="add-btn">+ 초대자 추가</button>
+
+              <!-- 카운터 -->
+              <div class="invitee-counter">
+                <span class="text">사전 초대자: 4명 / 목표: 100명</span>
+                <span class="progress">4%</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section 2: 모집 비율 설정 -->
+          <div class="card">
+            <div class="card-header">
+              <h3>📊 모집 비율 설정</h3>
+            </div>
+            <div class="card-body">
+              <!-- 비율 바 -->
+              <div class="ratio-section">
+                <div class="ratio-bar">
+                  <div class="pre-invite" style="width: 40%;">사전 초대 40%</div>
+                  <div class="open-recruit" style="width: 60%;">공개 모집 60%</div>
+                </div>
+
+                <!-- 슬라이더 -->
+                <input type="range" class="ratio-slider" min="0" max="100" value="40" id="ratioSlider">
+                <div class="ratio-labels">
+                  <span>0% 사전 초대</span>
+                  <span>50 / 50</span>
+                  <span>100% 사전 초대</span>
+                </div>
+              </div>
+
+              <!-- 비율 정보 박스 -->
+              <div class="ratio-info-grid">
+                <div class="ratio-info-box pre-invite">
+                  <h4>사전 초대</h4>
+                  <div class="count">40명</div>
+                  <p>조건에 맞는 UniQdata 사용자에게 직접 초대 알림 발송. 수락 시 자동 등록.</p>
+                </div>
+                <div class="ratio-info-box open-recruit">
+                  <h4>공개 모집</h4>
+                  <div class="count">60명</div>
+                  <p>조건 맞는 UniQdata 전체 사용자에게 공개 모집. 신청 후 조건 매칭.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section 3: 모집 설정 -->
+          <div class="card">
+            <div class="card-header">
+              <h3>⚙️ 모집 설정</h3>
+            </div>
+            <div class="card-body">
+              <!-- 모집 기간 -->
+              <div class="setting-row">
+                <div class="setting-left">
+                  <div class="title">모집 기간</div>
+                  <div class="desc">참가자 모집을 진행할 기간</div>
+                </div>
+                <div class="setting-right">
+                  <input type="number" class="setting-input" value="14">
+                  <span class="setting-unit">일</span>
+                </div>
+              </div>
+
+              <!-- 최소 참여자 -->
+              <div class="setting-row">
+                <div class="setting-left">
+                  <div class="title">최소 참여자</div>
+                  <div class="desc">이하이면 연구 자동 취소 + 에스크로 환불</div>
+                </div>
+                <div class="setting-right">
+                  <input type="number" class="setting-input" value="50">
+                  <span class="setting-unit">명</span>
+                </div>
+              </div>
+
+              <!-- 대기자 설정 -->
+              <div class="setting-row">
+                <div class="setting-left">
+                  <div class="title">대기자 설정</div>
+                  <div class="desc">초대 거절/미응답 시 대기자 자동 배정</div>
+                </div>
+                <div class="setting-right">
+                  <div class="toggle" title="ON"></div>
+                  <span class="setting-unit" style="min-width: 24px;">ON</span>
+                </div>
+              </div>
+
+              <!-- 알림 방식 -->
+              <div class="setting-row">
+                <div class="setting-left">
+                  <div class="title">알림 방식</div>
+                  <div class="desc">참가자에게 모집 알림을 보낼 채널</div>
+                </div>
+                <div class="setting-right">
+                  <div class="checkbox-group">
+                    <label class="checkbox-item checked">
+                      <input type="checkbox" checked> 앱 푸시
+                    </label>
+                    <label class="checkbox-item">
+                      <input type="checkbox"> SMS
+                    </label>
+                    <label class="checkbox-item">
+                      <input type="checkbox"> 이메일
+                    </label>
                   </div>
                 </div>
               </div>
-              <div style="padding:10px 16px; background:#faf5ff; border-top:1px solid #ede9fe;">
-                <div style="font-size:11px; color:#6d28d9; font-weight:600; margin-bottom:6px;">📄 동의서 확인</div>
-                <div style="font-size:10px; color:#6b7280; line-height:1.5;">참여 전 연구 동의서를 확인하고 서명합니다. 수집 데이터, 보상, 위험 요소를 확인하세요.</div>
-              </div>
-              <div class="phone-buttons">
-                <button class="btn-accept">동의서 확인 및 서명</button>
-                <button class="btn-decline">거절</button>
+            </div>
+          </div>
+
+          <!-- Section 4: 모집 미리보기 -->
+          <div class="card">
+            <div class="card-header">
+              <h3>📱 모집 미리보기</h3>
+              <span style="font-size: 12px; color: #6b7280;">참가자에게 보이는 화면</span>
+            </div>
+            <div class="card-body" style="display: flex; justify-content: center; padding: 32px 20px;">
+              <!-- 폰 목업 -->
+              <div class="phone-mockup">
+                <div class="phone-screen">
+                  <div class="phone-statusbar">
+                    <span>9:41</span>
+                    <span>UniQdata</span>
+                  </div>
+                  <div class="phone-notification">
+                    <div class="notif-header">
+                      <div class="notif-icon">U</div>
+                      <div>
+                        <div class="notif-title">연구 참여 초대</div>
+                        <div class="notif-subtitle">김연구 · 서울대학교병원</div>
+                      </div>
+                    </div>
+                    <div class="research-title">저탄수화물 식단의 혈당 변동 개선 효과 연구</div>
+                    <div class="research-meta">
+                      <div class="research-meta-item">
+                        <span class="label">연구 기간</span>
+                        <span class="value">56일 (8주)</span>
+                      </div>
+                      <div class="research-meta-item">
+                        <span class="label">보상</span>
+                        <span class="value highlight">50 XRP + 보너스</span>
+                      </div>
+                      <div class="research-meta-item">
+                        <span class="label">수집 데이터</span>
+                        <span class="value">CGM, 활동량, 식단</span>
+                      </div>
+                      <div class="research-meta-item">
+                        <span class="label">에스크로</span>
+                        <span class="value" style="color: #22c55e;">보상 보장됨</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div style="padding:10px 16px; background:#faf5ff; border-top:1px solid #ede9fe;">
+                    <div style="font-size:11px; color:#6d28d9; font-weight:600; margin-bottom:6px;">📄 동의서 확인</div>
+                    <div style="font-size:10px; color:#6b7280; line-height:1.5;">참여 전 연구 동의서를 확인하고 서명합니다. 수집 데이터, 보상, 위험 요소를 확인하세요.</div>
+                  </div>
+                  <div class="phone-buttons">
+                    <button class="btn-accept">동의서 확인 및 서명</button>
+                    <button class="btn-decline">거절</button>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </div>
 
-      <!-- 경고 박스 -->
-      <div class="warning-box">
-        <h4>⚠️ 중요 안내</h4>
-        <p>모집 시작 후 연구 설정을 변경할 수 없습니다. 수집 데이터 항목, 참여자 조건, 동의서 내용, 보상 금액이 확정됩니다. 변경이 필요한 경우 새로운 연구를 생성해야 합니다.</p>
-      </div>
+          <!-- 경고 박스 -->
+          <div class="warning-box">
+            <h4>⚠️ 중요 안내</h4>
+            <p>모집 시작 후 연구 설정을 변경할 수 없습니다. 수집 데이터 항목, 참여자 조건, 동의서 내용, 보상 금액이 확정됩니다. 변경이 필요한 경우 새로운 연구를 생성해야 합니다.</p>
+          </div>
 
-      <!-- 네비게이션 버튼 -->
-      <div class="btn-row">
-        <a href="create-step3.html" class="btn btn-secondary">← 이전</a>
-        <a href="create-step5.html" class="btn btn-primary">다음: IRB 판정 →</a>
-      </div>
+          <!-- 네비게이션 버튼 -->
+          <div class="btn-row">
+            <a href="create-step3.html" class="btn btn-secondary">← 이전</a>
+            <a href="create-step5.html" class="btn btn-primary">다음: IRB 판정 →</a>
+          </div>
 
-      <!-- 스텝 네비게이션 -->
-      <div class="step-nav">
-        <a href="create-step3.html">← Step 3</a>
-        <a href="create-step5.html">Step 5 (IRB 판정) →</a>
-      </div>
+        </div><!-- /.editor-panel -->
 
-      <!-- 디자이너 노트 -->
-      <div class="designer-note">
-        <h3>📋 디자이너 노트: Step 4 - 참가자 모집 설정</h3>
-        <div class="content">
-          <strong>사전 초대자:</strong><br>
-          • UniQdata 가입 사용자 중 조건에 맞는 참여자를 PI가 직접 선택하여 초대<br>
-          • 사용자 검색: 닉네임, 건강 태그, 관심 분야로 검색<br>
-          • 필터링: 건강 태그별 빠른 필터 제공<br><br>
+        <!-- ③ AI 모집 어시스턴트 -->
+        <div class="chat-panel">
+          <div class="chat-panel-inner">
+            <div class="chat-header">
+              <div class="title">
+                <span class="icon">🤖</span>
+                AI 모집 어시스턴트
+              </div>
+              <div class="sub">모집 전략을 보고 조언합니다</div>
+            </div>
 
-          <strong>동의서 (UniQdata 앱):</strong><br>
-          • 초대 수락 시 UniQdata 앱에서 동의서 열람 + 전자 서명<br>
-          • 연구 목적, 수집 데이터, 보상, 위험 요소 등 상세 안내<br>
-          • 서명 완료 시 자동 참여 등록<br><br>
+            <div class="chat-context">
+              <div class="label">현재 연구</div>
+              <div class="value">당뇨 복약 순응도 연구 — 모집 설정 중</div>
+              <div class="chat-context-chips">
+                <span class="chat-context-chip">RCT</span>
+                <span class="chat-context-chip">목표 100명</span>
+                <span class="chat-context-chip">사전초대 40%</span>
+                <span class="chat-context-chip">공개 60%</span>
+              </div>
+            </div>
 
-          <strong>공개 모집:</strong><br>
-          • 조건 매칭으로 UniQdata 사용자 대상 자동 모집<br>
-          • 신청 후 조건 매칭 기반 참가자 선정<br><br>
+            <div class="chat-messages">
+              <div class="msg ai">
+                <div class="sender">AI 어시스턴트</div>
+                현재 사전 초대 4명이 등록되어 있고, 목표 인원 대비 <strong>4%</strong> 수준입니다. UniQdata 플랫폼 내 <strong>T2DM 태그 사용자</strong>가 약 <strong>1,200명</strong>이므로 공개 모집 시 충분한 도달이 가능합니다.<br><br>
+                초대자 검색 시 <strong>CGM 기기 보유자</strong>를 우선 필터링하면 연구 적합도가 높아집니다.
+              </div>
 
-          <strong>비율 조정:</strong><br>
-          • 100% 초대만 가능 (소규모 연구)<br>
-          • 100% 공개만 가능 (대규모 모집)<br>
-          • 혼합 비율 자유 조정 가능<br><br>
+              <div class="msg user">
+                <div class="sender">김연구</div>
+                모집 기간 14일이면 충분해?
+              </div>
 
-          <strong>Safety Net:</strong><br>
-          • 최소 참여자 미달 시: 에스크로 자동 환불<br>
-          • 대기자 자동 배정으로 탈락 보충<br>
-          • 모집 기간 종료 후 미달 시 연구 자동 취소
-        </div>
-      </div>
+              <div class="msg ai">
+                <div class="sender">AI 어시스턴트</div>
+                유사 연구(T2DM, 100명 규모)의 평균 모집 완료 기간은 <strong>21일</strong>입니다. 14일은 다소 빡빡한 편이지만, 사전 초대자 비율이 40%이므로 초기 등록 속도가 빠를 수 있습니다.<br><br>
+                <strong>권장: 21일</strong>로 설정하되, 조기 완료 시 자동 마감되도록 하면 안전합니다.
+              </div>
+            </div>
 
-      <!-- 기능 명세 -->
-      <div style="background: linear-gradient(135deg, #ecfdf5, #d1fae5); border: 2px solid #10b981; border-radius: 12px; padding: 16px; margin-top: 12px;">
-        <h3 style="color: #047857; margin-bottom: 12px; font-size: 14px;">⚙️ 기능 명세</h3>
-        <div style="font-size: 12px; color: #374151; line-height: 1.8;">
-          <strong>핵심 기능:</strong><br>
-          • UniQdata 가입 사용자 검색 및 초대<br>
-          • 모집 비율 (사전 초대 / 공개 모집) 조정<br>
-          • 모집 기간, 최소 참여자, 대기자 설정<br>
-          • 앱 내 동의서 열람 + 전자 서명<br>
-          • 알림 채널 선택 (앱 푸시, SMS, 이메일)<br>
-          • 모집 미리보기 (참가자 시점)<br><br>
+            <div class="chat-quick">
+              <div class="label">빠른 액션</div>
+              <div class="chat-quick-chips">
+                <span class="chat-quick-chip">기간 21일로 변경</span>
+                <span class="chat-quick-chip">초대자 추가</span>
+                <span class="chat-quick-chip">동의서 미리보기</span>
+                <span class="chat-quick-chip">비율 조정</span>
+              </div>
+            </div>
 
-          <strong>비즈니스 로직:</strong><br>
-          • 모집 설정 완료 후 IRB 판정(Step 5)으로 이동<br>
-          • IRB + 에스크로 완료 시 모집 시작 가능<br>
-          • 최소 참여자 미달 시 자동 취소 + 환불<br>
-          • 모집 시작 후 설정 변경 불가 (immutable)
-        </div>
-      </div>
+            <div class="chat-input">
+              <div class="chat-input-wrapper">
+                <input type="text" placeholder="예: 보상을 더 높이면 모집이 빨라질까?">
+                <button class="chat-send-btn">➤</button>
+              </div>
+            </div>
+          </div>
+        </div><!-- /.chat-panel -->
 
-      <!-- 백엔드 호출 -->
-      <div style="background: linear-gradient(135deg, #f5f3ff, #ede9fe); border: 2px solid #8b5cf6; border-radius: 12px; padding: 16px; margin-top: 12px;">
-        <h3 style="color: #6d28d9; margin-bottom: 12px; font-size: 14px;">🔗 백엔드 호출</h3>
-        <div style="font-size: 11px; font-family: 'SF Mono', Monaco, monospace; color: #374151; line-height: 1.8;">
-          <strong style="font-family: -apple-system, sans-serif;">1. 사용자 검색:</strong><br>
-          <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
+      </div><!-- /.workspace -->
+    </div><!-- /.workspace-wrap -->
+  </div><!-- /.layout -->
+
+  <!-- 디자이너 노트 토글 -->
+  <button class="toggle-notes" onclick="document.querySelector('.designer-notes').classList.toggle('show')">📋 디자이너 노트</button>
+
+  <div class="designer-notes">
+    <h3>📋 디자이너 노트: Step 4 - 참가자 모집 설정 (워크스페이스)</h3>
+    <div class="content">
+      <strong>레이아웃:</strong><br>
+      ① Nav (240px) | ② 모집 설정 에디터 (flex:1) | ③ AI 모집 어시스턴트 (360px)<br>
+      Step 3과 동일한 workspace-wrap 패턴 (step-bar → workspace → editor + chat)<br><br>
+
+      <strong>② 에디터:</strong><br>
+      - 사전 초대자 검색/지정 + 필터 칩<br>
+      - 모집 비율 슬라이더 (사전 초대 / 공개 모집)<br>
+      - 모집 설정: 기간, 최소 참여자, 대기자, 알림 방식<br>
+      - 모집 미리보기: 폰 목업 (참가자 시점)<br>
+      - 경고 박스: 모집 시작 후 설정 변경 불가<br><br>
+
+      <strong>③ AI 모집 어시스턴트:</strong><br>
+      - 모집 전략 맥락을 보고 답변하는 대화형 패널<br>
+      - 플랫폼 내 매칭 가능 사용자 수, 모집 기간 권장사항 등<br>
+      - 빠른 액션 칩: 기간 변경, 초대자 추가, 동의서 미리보기, 비율 조정<br><br>
+
+      <strong>사전 초대자:</strong><br>
+      • UniQdata 가입 사용자 중 조건에 맞는 참여자를 PI가 직접 선택하여 초대<br>
+      • 사용자 검색: 닉네임, 건강 태그, 관심 분야로 검색<br>
+      • 필터링: 건강 태그별 빠른 필터 제공<br><br>
+
+      <strong>동의서 (UniQdata 앱):</strong><br>
+      • 초대 수락 시 UniQdata 앱에서 동의서 열람 + 전자 서명<br>
+      • 연구 목적, 수집 데이터, 보상, 위험 요소 등 상세 안내<br>
+      • 서명 완료 시 자동 참여 등록<br><br>
+
+      <strong>Safety Net:</strong><br>
+      • 최소 참여자 미달 시: 에스크로 자동 환불<br>
+      • 대기자 자동 배정으로 탈락 보충<br>
+      • 모집 기간 종료 후 미달 시 연구 자동 취소
+    </div>
+  </div>
+
+  <!-- 기능 명세 -->
+  <div class="designer-notes" id="func-spec">
+    <h3 style="color: #047857;">⚙️ 기능 명세: Step 4 - 참가자 모집 설정</h3>
+    <div class="content" style="columns: 1;">
+      <strong>핵심 기능:</strong><br>
+      • UniQdata 가입 사용자 검색 및 초대<br>
+      • 모집 비율 (사전 초대 / 공개 모집) 조정<br>
+      • 모집 기간, 최소 참여자, 대기자 설정<br>
+      • 앱 내 동의서 열람 + 전자 서명<br>
+      • 알림 채널 선택 (앱 푸시, SMS, 이메일)<br>
+      • 모집 미리보기 (참가자 시점)<br><br>
+
+      <strong>비즈니스 로직:</strong><br>
+      • 모집 설정 완료 후 IRB 판정(Step 5)으로 이동<br>
+      • IRB + 에스크로 완료 시 모집 시작 가능<br>
+      • 최소 참여자 미달 시 자동 취소 + 환불<br>
+      • 모집 시작 후 설정 변경 불가 (immutable)
+    </div>
+  </div>
+
+  <!-- 백엔드 호출 -->
+  <div class="designer-notes" id="backend-spec">
+    <h3 style="color: #6d28d9;">🔗 백엔드 호출: Step 4</h3>
+    <div class="content" style="columns: 1;">
+      <strong>1. 사용자 검색:</strong><br>
+      <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0; font-size: 11px; font-family: 'SF Mono', Monaco, monospace;">
 GET /users/search?q=당뇨&tags=t2dm&platform=uniqdata<br>
 → { "users": [{ "id": "uuid", "nickname": "박○○", "age": 56, "health_tags": ["T2DM"] }] }
-          </code>
+      </code><br>
 
-          <strong style="font-family: -apple-system, sans-serif;">2. 모집 설정 저장:</strong><br>
-          <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
+      <strong>2. 모집 설정 저장:</strong><br>
+      <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0; font-size: 11px; font-family: 'SF Mono', Monaco, monospace;">
 POST /enterprise/projects/:id/recruitment/config<br>
 {<br>
 &nbsp;&nbsp;"pre_invite_ids": ["uuid1", "uuid2", ...],<br>
@@ -674,21 +869,20 @@ POST /enterprise/projects/:id/recruitment/config<br>
 &nbsp;&nbsp;"waitlist_enabled": true,<br>
 &nbsp;&nbsp;"notification_channels": ["push", "sms"]<br>
 }
-          </code>
+      </code><br>
 
-          <strong style="font-family: -apple-system, sans-serif;">3. 모집 시작:</strong><br>
-          <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
+      <strong>3. 모집 시작:</strong><br>
+      <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0; font-size: 11px; font-family: 'SF Mono', Monaco, monospace;">
 POST /enterprise/projects/:id/recruitment/start<br>
 → {<br>
 &nbsp;&nbsp;"status": "recruiting",<br>
 &nbsp;&nbsp;"pre_invites_sent": 4,<br>
 &nbsp;&nbsp;"open_recruitment_active": true<br>
 }
-          </code>
-        </div>
-      </div>
+      </code>
     </div>
   </div>
+
   <script src="page-spec.js"></script>
   <link rel="stylesheet" href="../tooltip-spec.css">
   <script src="../tooltip-spec.js"></script>
