@@ -47,27 +47,67 @@
     .nav-item.active { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
     .nav-item .icon { width: 20px; text-align: center; }
 
-    /* 스텝 표시 */
-    .step-indicator {
-      padding: 16px 12px;
-      border-bottom: 1px solid rgba(255,255,255,0.05);
+    /* Workspace wrapper */
+    .workspace-wrap {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
     }
-    .step-indicator .label { font-size: 11px; color: #64748b; margin-bottom: 10px; padding: 0 12px; }
-    .step-item {
-      display: flex; align-items: center; gap: 10px;
-      padding: 8px 12px; border-radius: 6px; font-size: 13px;
-      margin-bottom: 4px;
+    .workspace {
+      flex: 1;
+      display: flex;
+      min-height: 0;
     }
-    .step-item .num {
-      width: 24px; height: 24px; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 11px; font-weight: 600;
+
+    /* Step Bar */
+    .step-bar {
+      background: #1e293b;
+      border-bottom: 1px solid #334155;
+      padding: 10px 0;
+      flex-shrink: 0;
     }
-    .step-item.done .num { background: #22c55e; color: white; }
-    .step-item.active .num { background: #8b5cf6; color: white; }
-    .step-item.active { color: #e2e8f0; }
-    .step-item.pending .num { background: #334155; color: #64748b; }
-    .step-item.pending { color: #64748b; }
+    .step-bar-inner {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    .sb-step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+    .sb-num {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .sb-step.done .sb-num { background: #22c55e; color: white; }
+    .sb-step.active .sb-num { background: #8b5cf6; color: white; }
+    .sb-step.pending .sb-num { background: #334155; color: #64748b; }
+    .sb-label {
+      font-size: 10px;
+      color: #64748b;
+      white-space: nowrap;
+    }
+    .sb-step.active .sb-label { color: #e2e8f0; }
+    .sb-line {
+      width: 40px;
+      height: 2px;
+      background: #334155;
+      margin: 0 4px;
+      margin-bottom: 18px;
+    }
+    .sb-line.done { background: #22c55e; }
 
     .sidebar-footer {
       margin-top: auto; padding: 16px; border-top: 1px solid rgba(255,255,255,0.05);
@@ -87,7 +127,6 @@
       flex: 1;
       min-width: 0;
       overflow-y: auto;
-      height: 100vh;
       background: white;
       border-right: 1px solid #e5e7eb;
     }
@@ -170,7 +209,6 @@
       background: #f8fafc;
       border-right: 1px solid #e5e7eb;
       overflow-y: auto;
-      height: 100vh;
       flex-shrink: 0;
     }
     .report-header {
@@ -237,7 +275,6 @@
       color: #e5e7eb;
       display: flex;
       flex-direction: column;
-      height: 100vh;
       flex-shrink: 0;
     }
     .chat-header {
@@ -534,18 +571,6 @@
       cursor: pointer; z-index: 101; box-shadow: 0 4px 12px rgba(217,70,239,0.3);
     }
 
-    /* 스텝 네비게이션 */
-    .step-nav-float {
-      position: fixed; bottom: 16px; left: 50%;
-      transform: translateX(-50%);
-      display: flex; gap: 8px; z-index: 99;
-    }
-    .step-nav-float a {
-      padding: 8px 16px; background: white; border: 1px solid #e5e7eb;
-      border-radius: 8px; text-decoration: none; color: #374151;
-      font-size: 13px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-    .step-nav-float a:hover { border-color: #8b5cf6; }
   </style>
 </head>
 <body>
@@ -568,17 +593,6 @@
         <a href="create.html" class="nav-item active">
           <span class="icon">➕</span> 새 연구
         </a>
-      </div>
-
-      <!-- 스텝 표시 -->
-      <div class="step-indicator">
-        <div class="label">진행 단계</div>
-        <div class="step-item done"><div class="num">✓</div> AI 설계</div>
-        <div class="step-item done"><div class="num">✓</div> 연구 설계</div>
-        <div class="step-item done"><div class="num">✓</div> 데이터 수집</div>
-        <div class="step-item active"><div class="num">4</div> IRB</div>
-        <div class="step-item pending"><div class="num">5</div> 에스크로</div>
-        <div class="step-item pending"><div class="num">6</div> 모집 설정</div>
       </div>
 
       <!-- 임시저장 목록 -->
@@ -614,6 +628,26 @@
       </div>
     </div>
 
+    <!-- Workspace Wrap -->
+    <div class="workspace-wrap">
+      <!-- Step Bar -->
+      <div class="step-bar">
+        <div class="step-bar-inner">
+          <div class="sb-step done"><div class="sb-num">✓</div><div class="sb-label">AI 설계</div></div>
+          <div class="sb-line done"></div>
+          <div class="sb-step done"><div class="sb-num">✓</div><div class="sb-label">연구 설계</div></div>
+          <div class="sb-line done"></div>
+          <div class="sb-step done"><div class="sb-num">✓</div><div class="sb-label">데이터 수집</div></div>
+          <div class="sb-line done"></div>
+          <div class="sb-step active"><div class="sb-num">4</div><div class="sb-label">IRB</div></div>
+          <div class="sb-line"></div>
+          <div class="sb-step pending"><div class="sb-num">5</div><div class="sb-label">에스크로</div></div>
+          <div class="sb-line"></div>
+          <div class="sb-step pending"><div class="sb-num">6</div><div class="sb-label">모집 설정</div></div>
+        </div>
+      </div>
+      <!-- Workspace (3 panels) -->
+      <div class="workspace">
     <!-- ② IRB 에디터 -->
     <div class="editor-panel">
       <!-- 케이스 토글 탭 -->
@@ -1238,12 +1272,8 @@
         </div>
       </div>
     </div>
-  </div>
-
-  <!-- 스텝 네비게이션 -->
-  <div class="step-nav-float">
-    <a href="create-step3.html">← Step 3 (데이터수집)</a>
-    <a href="create-step5.html">Step 5 (에스크로) →</a>
+      </div><!-- /.workspace -->
+    </div><!-- /.workspace-wrap -->
   </div>
 
   <!-- 디자이너 노트 토글 -->
