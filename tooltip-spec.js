@@ -125,13 +125,16 @@
     const panel = document.createElement('div');
     panel.className = 'meeting-changes-panel';
     panel.innerHTML = `
-      <h4>2026-02-07 회의 변경</h4>
+      <h4>2026-02-11 회의 변경</h4>
       <ul>
-        <li>메뉴: 홈, 개요, 테이블, AI 허브</li>
-        <li>AI 도구 5개 → AI 허브 통합</li>
-        <li>지갑: 개인 + 프로젝트 이원화</li>
-        <li>출금: 즉시 출금만</li>
-        <li>Step 4 AI 도구 선택 제거</li>
+        <li>홈: "전체 총 참여자/수집 데이터" 제거 → 프로젝트 카드 중심</li>
+        <li>GNB에 개인 지갑 잔액만 간단 표시</li>
+        <li>예산 관리 별도 탭 분리 (복잡성 증가)</li>
+        <li>"결제 에스크로" → "연구비 정산" 명칭 변경</li>
+        <li>"테이블" → 직관적 명칭 변경 검토 중</li>
+        <li>조치 센터 삭제 → 즉시 수정 방식</li>
+        <li>연구 설계 투 스텝: 설계→IRB 제출/현황</li>
+        <li>블록체인 용어 순화 + 정보 아이콘</li>
       </ul>
     `;
     document.body.appendChild(panel);
