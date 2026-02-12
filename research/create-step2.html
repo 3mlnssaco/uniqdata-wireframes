@@ -164,9 +164,33 @@
     .btn-primary { background: #8b5cf6; color: white; }
     .btn-primary:hover { background: #7c3aed; }
 
+    /* 카드형 선택 */
+    .select-cards { display: grid; gap: 10px; }
+    .select-cards.cols-2 { grid-template-columns: 1fr 1fr; }
+    .select-cards.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+    .select-card {
+      padding: 14px 16px; border: 2px solid #e5e7eb; border-radius: 10px;
+      cursor: pointer; transition: all 0.15s; position: relative;
+    }
+    .select-card:hover { border-color: #c4b5fd; background: #faf5ff; }
+    .select-card.selected { border-color: #8b5cf6; background: #faf5ff; }
+    .select-card.selected::after {
+      content: '✓'; position: absolute; top: 8px; right: 10px;
+      width: 22px; height: 22px; background: #8b5cf6; color: white;
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700;
+    }
+    .select-card .card-label { font-size: 14px; font-weight: 600; color: #1f2937; margin-bottom: 4px; }
+    .select-card .card-desc { font-size: 11px; color: #6b7280; line-height: 1.5; }
+    .select-card.ai-pick { border-color: #c4b5fd; }
+    .select-card.ai-pick .card-label::after {
+      content: 'AI 추천'; font-size: 9px; background: #f3e8ff; color: #7c3aed;
+      padding: 2px 6px; border-radius: 8px; margin-left: 6px; font-weight: 600; vertical-align: middle;
+    }
+
     /* ③ 연구 레포트 패널 (중앙 우측) */
     .report-panel {
-      width: 360px;
+      width: 420px;
       background: #f8fafc;
       border-right: 1px solid #e5e7eb;
       overflow-y: auto;
@@ -413,34 +437,120 @@
         <span class="badge">AI 생성 초안</span>
       </div>
       <div class="editor-body">
-        <!-- 기본 정보 -->
+        <!-- ===== 1. 기본 정보 ===== -->
         <div class="section-title">📝 기본 정보</div>
 
         <div class="field-group">
           <label>연구 제목</label>
-          <input type="text" class="input ai-filled" value="저탄수화물 식단의 제2형 당뇨 환자 혈당 변동 개선 효과">
+          <input type="text" class="input ai-filled" value="저탄수화물 식단의 제2형 당뇨 환자 혈당 변동 개선 효과: 무작위 대조 시험">
+        </div>
+
+        <div class="field-group">
+          <label>연구 약칭</label>
+          <input type="text" class="input ai-filled" value="LoCHO-GV Trial">
+        </div>
+
+        <div class="field-group">
+          <label>연구 배경</label>
+          <textarea class="textarea ai-filled" style="min-height:100px">제2형 당뇨병 환자에서 혈당 변동성(Glycemic Variability, GV)은 평균 혈당(HbA1c)과 독립적으로 심혈관 합병증 위험을 예측하는 중요 지표로 부상하고 있다. 최근 연속혈당측정(CGM) 기술의 보급으로 실시간 GV 측정이 가능해졌으나, 저탄수화물 식단 개입이 GV에 미치는 효과를 CGM 기반으로 검증한 RCT는 국내에 3건에 불과하다. 특히 한국인의 고탄수화물 식습관(밥 중심)을 고려한 실현 가능한 저탄수화물 프로토콜에 대한 연구가 부족하다.</textarea>
         </div>
 
         <div class="field-group">
           <label>연구 목적</label>
-          <textarea class="textarea ai-filled">제2형 당뇨 환자에서 저탄수화물 식단 개입이 혈당 변동성(glycemic variability)에 미치는 효과를 무작위 대조 시험(RCT)으로 검증한다.</textarea>
+          <textarea class="textarea ai-filled">제2형 당뇨 환자에서 8주간 저탄수화물 식단 개입(일 탄수화물 50g 이하)이 CGM 기반 혈당 변동성(MAGE, CV%)에 미치는 효과를 일반 식단 대조군과 비교하여 무작위 대조 시험으로 검증한다.</textarea>
         </div>
 
         <div class="section-divider"></div>
 
-        <!-- 방법론 -->
-        <div class="section-title">📋 연구 방법론 <span class="ai-tag">AI 추천</span></div>
+        <!-- ===== 2. 연구 가설 ===== -->
+        <div class="section-title">🎯 연구 가설 <span class="ai-tag">AI 생성</span></div>
+
+        <div class="field-group">
+          <label>주 가설 (Primary)</label>
+          <textarea class="textarea ai-filled">8주간 저탄수화물 식단 개입군은 일반 식단 대조군 대비 CGM 기반 MAGE(Mean Amplitude of Glycemic Excursions)가 유의하게 감소할 것이다 (효과크기 d≥0.6, α=0.05).</textarea>
+        </div>
+
+        <div class="field-group">
+          <label>보조 가설 (Secondary)</label>
+          <textarea class="textarea ai-filled" style="min-height:80px">H2a: 개입군의 혈당 변동계수(CV%)가 대조군 대비 유의하게 감소할 것이다.
+H2b: 개입군의 시간 범위 내 혈당(Time in Range, TIR 70-180mg/dL) 비율이 유의하게 증가할 것이다.
+H2c: 개입군의 HbA1c가 대조군 대비 유의하게 감소할 것이다.
+H2d: 식단 순응도가 높을수록(탄수화물 섭취량 감소) GV 개선 폭이 클 것이다.</textarea>
+        </div>
+
+        <div class="section-divider"></div>
+
+        <!-- ===== 3. 연구 방법론 ===== -->
+        <div class="section-title">📋 연구 설계 <span class="ai-tag">AI 추천</span></div>
 
         <div class="field-group">
           <label>연구 유형</label>
-          <select class="select ai-filled">
-            <option selected>RCT (무작위 대조 시험)</option>
-            <option>전향적 코호트</option>
-            <option>SMART (적응형 다단계)</option>
-            <option>MRT (마이크로 무작위)</option>
-            <option>N-of-1</option>
-            <option>횡단 조사</option>
-          </select>
+          <div class="select-cards cols-3">
+            <div class="select-card selected ai-pick" onclick="selectCard(this)">
+              <div class="card-label">RCT</div>
+              <div class="card-desc">무작위 대조 시험. 인과관계 검증에 최적</div>
+            </div>
+            <div class="select-card" onclick="selectCard(this)">
+              <div class="card-label">전향적 코호트</div>
+              <div class="card-desc">관찰 연구. 자연 경과 추적</div>
+            </div>
+            <div class="select-card" onclick="selectCard(this)">
+              <div class="card-label">SMART</div>
+              <div class="card-desc">적응형 다단계. 반응에 따라 전략 변경</div>
+            </div>
+            <div class="select-card" onclick="selectCard(this)">
+              <div class="card-label">MRT</div>
+              <div class="card-desc">마이크로 무작위. 실시간 개입 최적화</div>
+            </div>
+            <div class="select-card" onclick="selectCard(this)">
+              <div class="card-label">N-of-1</div>
+              <div class="card-desc">개인 내 반복 시험. 개인 맞춤 근거</div>
+            </div>
+            <div class="select-card" onclick="selectCard(this)">
+              <div class="card-label">횡단 조사</div>
+              <div class="card-desc">한 시점 조사. 유병률/상관관계</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label>배정 방법</label>
+          <div class="select-cards cols-2">
+            <div class="select-card selected ai-pick" onclick="selectCard(this)">
+              <div class="card-label">블록 무작위배정</div>
+              <div class="card-desc">군 간 균형 보장. 소규모 RCT에 적합</div>
+            </div>
+            <div class="select-card" onclick="selectCard(this)">
+              <div class="card-label">단순 무작위배정</div>
+              <div class="card-desc">완전 무작위. 대규모에서 유효</div>
+            </div>
+            <div class="select-card" onclick="selectCard(this)">
+              <div class="card-label">층화 무작위배정</div>
+              <div class="card-desc">주요 변수(성별, 연령 등) 기준 층화 후 배정</div>
+            </div>
+            <div class="select-card" onclick="selectCard(this)">
+              <div class="card-label">적응적 무작위배정</div>
+              <div class="card-desc">불균형 실시간 보정. 복잡한 설계</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label>맹검</label>
+          <div class="select-cards cols-3">
+            <div class="select-card" onclick="selectCard(this)">
+              <div class="card-label">이중 맹검</div>
+              <div class="card-desc">참여자 + 평가자 모두 모름. 가장 엄격</div>
+            </div>
+            <div class="select-card selected ai-pick" onclick="selectCard(this)">
+              <div class="card-label">단일 맹검</div>
+              <div class="card-desc">평가자만 모름. 식단 연구에 현실적</div>
+            </div>
+            <div class="select-card" onclick="selectCard(this)">
+              <div class="card-label">비맹검</div>
+              <div class="card-desc">모두 알고 있음. 맹검 불가 시</div>
+            </div>
+          </div>
         </div>
 
         <div class="input-row">
@@ -449,24 +559,81 @@
             <input type="text" class="input ai-filled" value="56일 (8주)">
           </div>
           <div class="field-group">
-            <label>목표 참여자 수</label>
-            <input type="number" class="input ai-filled" value="100">
+            <label>추적 관찰</label>
+            <input type="text" class="input ai-filled" value="종료 후 4주 (총 12주)">
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label>군 배정 (Arms)</label>
+          <div style="display:flex; gap:12px; margin-top:4px;">
+            <div style="flex:1; padding:14px; border:2px solid #c4b5fd; border-radius:10px; background:#faf5ff;">
+              <div style="font-size:12px; font-weight:700; color:#7c3aed; margin-bottom:6px;">실험군 (n=50)</div>
+              <div style="font-size:13px; color:#374151; line-height:1.6;">
+                저탄수화물 식단<br>
+                일 탄수화물 ≤50g<br>
+                영양사 주 1회 상담<br>
+                식단 가이드북 제공
+              </div>
+            </div>
+            <div style="flex:1; padding:14px; border:2px solid #e5e7eb; border-radius:10px; background:#f9fafb;">
+              <div style="font-size:12px; font-weight:700; color:#6b7280; margin-bottom:6px;">대조군 (n=50)</div>
+              <div style="font-size:13px; color:#374151; line-height:1.6;">
+                일반 식단 유지<br>
+                특별한 식단 제한 없음<br>
+                영양사 주 1회 상담 (일반)<br>
+                일반 건강 가이드북 제공
+              </div>
+            </div>
           </div>
         </div>
 
         <div class="section-divider"></div>
 
-        <!-- 대상자 -->
-        <div class="section-title">👥 참여자 조건 <span class="ai-tag">AI 추천</span></div>
+        <!-- ===== 4. 참여자 ===== -->
+        <div class="section-title">👥 참여자 <span class="ai-tag">AI 추천</span></div>
 
         <div class="input-row">
           <div class="field-group">
-            <label>최소 연령</label>
-            <input type="number" class="input ai-filled" value="30">
+            <label>목표 참여자 수</label>
+            <input type="number" class="input ai-filled" value="100">
+            <div class="hint">최소 84명 필요 (power=0.80, d=0.6) + 탈락 20% = 100명</div>
           </div>
           <div class="field-group">
-            <label>최대 연령</label>
-            <input type="number" class="input ai-filled" value="60">
+            <label>배정 비율</label>
+            <input type="text" class="input ai-filled" value="1:1 (실험 50 : 대조 50)">
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label>포함 기준 (Inclusion Criteria)</label>
+          <div style="background:#faf5ff; border:1px solid #c4b5fd; border-radius:8px; padding:14px; font-size:13px; line-height:1.8; color:#374151;">
+            <div>1. 만 30~60세 성인</div>
+            <div>2. 제2형 당뇨병 진단 (ICD-10: E11) 1년 이상</div>
+            <div>3. HbA1c 6.5~10.0%</div>
+            <div>4. CGM 기기 착용 가능 (또는 신규 착용 동의)</div>
+            <div>5. 스마트폰 보유 및 앱 사용 가능</div>
+            <div>6. 서면 동의 가능</div>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label>제외 기준 (Exclusion Criteria)</label>
+          <div style="background:#fff1f2; border:1px solid #fecaca; border-radius:8px; padding:14px; font-size:13px; line-height:1.8; color:#374151;">
+            <div>1. 제1형 당뇨 또는 임신성 당뇨</div>
+            <div>2. 신장 질환 (eGFR &lt; 30) — 저탄수화물 식단 위험</div>
+            <div>3. 섭식 장애 기왕력</div>
+            <div>4. 최근 3개월 내 인슐린 용량 변경</div>
+            <div>5. 다른 식이 임상시험 참여 중</div>
+            <div>6. 연구 기간 내 입원 예정</div>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label>연령 범위</label>
+          <div class="input-row">
+            <input type="number" class="input ai-filled" value="30" placeholder="최소">
+            <input type="number" class="input ai-filled" value="60" placeholder="최대">
           </div>
         </div>
 
@@ -483,38 +650,167 @@
 
         <div class="section-divider"></div>
 
-        <!-- 변수 -->
-        <div class="section-title">📊 주요 변수</div>
+        <!-- ===== 5. 결과 변수 ===== -->
+        <div class="section-title">📊 결과 변수 (Outcomes)</div>
 
         <div class="field-group">
-          <label>독립변수 (개입)</label>
-          <input type="text" class="input ai-filled" value="저탄수화물 식단 (일 탄수화물 50g 이하)">
+          <label>1차 결과변수 (Primary Outcome)</label>
+          <div style="background:#faf5ff; border:2px solid #c4b5fd; border-radius:10px; padding:16px;">
+            <div style="font-size:14px; font-weight:600; color:#7c3aed; margin-bottom:8px;">MAGE (Mean Amplitude of Glycemic Excursions)</div>
+            <div style="font-size:13px; color:#374151; line-height:1.6;">
+              <strong>측정:</strong> CGM 데이터에서 산출 (연속 혈당 변동 진폭 평균)<br>
+              <strong>시점:</strong> Baseline (0주), 4주, 8주, 추적(12주)<br>
+              <strong>단위:</strong> mg/dL<br>
+              <strong>임상적 의의:</strong> MAGE ≥10mg/dL 감소 시 임상적으로 유의미
+            </div>
+          </div>
         </div>
 
         <div class="field-group">
-          <label>종속변수 (결과)</label>
-          <input type="text" class="input ai-filled" value="혈당 변동성 (MAGE, CV%), HbA1c">
+          <label>2차 결과변수 (Secondary Outcomes)</label>
+          <div style="display:flex; flex-direction:column; gap:8px;">
+            <div style="padding:12px; border:1px solid #e5e7eb; border-radius:8px; font-size:13px;">
+              <strong>혈당 변동계수 (CV%)</strong> — CGM 기반, 목표: CV &lt; 36%
+            </div>
+            <div style="padding:12px; border:1px solid #e5e7eb; border-radius:8px; font-size:13px;">
+              <strong>Time in Range (TIR)</strong> — 70-180mg/dL 범위 내 시간 비율, CGM 기반
+            </div>
+            <div style="padding:12px; border:1px solid #e5e7eb; border-radius:8px; font-size:13px;">
+              <strong>HbA1c</strong> — 혈액검사, Baseline/8주/12주
+            </div>
+            <div style="padding:12px; border:1px solid #e5e7eb; border-radius:8px; font-size:13px;">
+              <strong>저혈당 빈도</strong> — CGM &lt; 70mg/dL 에피소드 횟수/주
+            </div>
+            <div style="padding:12px; border:1px solid #e5e7eb; border-radius:8px; font-size:13px;">
+              <strong>식단 순응도</strong> — 식사 기록 기반 일 탄수화물 섭취량 (g)
+            </div>
+          </div>
         </div>
 
         <div class="field-group">
-          <label>통제변수</label>
-          <input type="text" class="input ai-filled" value="연령, BMI, 복약 순응도, 운동량">
+          <label>통제변수 / 공변량</label>
+          <textarea class="textarea ai-filled">연령, 성별, BMI, 당뇨 유병기간, 기저 HbA1c, 경구혈당강하제 종류/용량, 인슐린 사용 여부, 기저 운동량 (IPAQ), 기저 식사 패턴</textarea>
         </div>
 
         <div class="section-divider"></div>
 
-        <!-- 수집 항목 -->
-        <div class="section-title">📱 데이터 수집 항목</div>
+        <!-- ===== 6. 개입 프로토콜 ===== -->
+        <div class="section-title">💊 개입 프로토콜 <span class="ai-tag">AI 생성</span></div>
 
-        <div class="chip-group">
-          <div class="chip selected">🩸 CGM 혈당</div>
-          <div class="chip selected">🍽️ 식사 기록</div>
-          <div class="chip selected">💊 복약</div>
-          <div class="chip selected">😴 수면</div>
-          <div class="chip selected">🏃 활동량</div>
-          <div class="chip">😊 기분</div>
-          <div class="chip">❤️ 심박수</div>
-          <div class="chip">⚖️ 체중</div>
+        <div class="field-group">
+          <label>실험군 프로토콜</label>
+          <div style="background:#faf5ff; border:1px solid #c4b5fd; border-radius:8px; padding:14px; font-size:13px; line-height:1.8; color:#374151;">
+            <div><strong>1주차:</strong> 오리엔테이션 + CGM 착용 + 기저 데이터 수집 (일반 식단 유지)</div>
+            <div><strong>2~9주차:</strong> 저탄수화물 식단 실행 (일 탄수화물 ≤50g)</div>
+            <div style="padding-left:16px;">• 주 1회 영양사 비대면 상담 (식단 모니터링 + 피드백)</div>
+            <div style="padding-left:16px;">• 매 식사 앱 식단 기록 (사진 + 텍스트)</div>
+            <div style="padding-left:16px;">• 대체 식품 리스트 제공 (한식 기반 저탄수화물 메뉴)</div>
+            <div><strong>10~13주차:</strong> 추적 관찰 (식단 자유, CGM 유지)</div>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label>측정 일정 (Visit Schedule)</label>
+          <div style="overflow-x:auto;">
+            <table style="width:100%; font-size:12px; border-collapse:collapse; margin-top:4px;">
+              <thead>
+                <tr style="background:#f9fafb;">
+                  <th style="padding:10px 12px; border:1px solid #e5e7eb; text-align:left;">항목</th>
+                  <th style="padding:10px 8px; border:1px solid #e5e7eb; text-align:center;">V1<br><span style="color:#9ca3af">0주</span></th>
+                  <th style="padding:10px 8px; border:1px solid #e5e7eb; text-align:center;">V2<br><span style="color:#9ca3af">4주</span></th>
+                  <th style="padding:10px 8px; border:1px solid #e5e7eb; text-align:center;">V3<br><span style="color:#9ca3af">8주</span></th>
+                  <th style="padding:10px 8px; border:1px solid #e5e7eb; text-align:center;">V4<br><span style="color:#9ca3af">12주</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td style="padding:8px 12px; border:1px solid #e5e7eb;">동의서/스크리닝</td><td style="padding:8px; border:1px solid #e5e7eb; text-align:center; color:#8b5cf6; font-weight:700;">●</td><td style="padding:8px; border:1px solid #e5e7eb;"></td><td style="padding:8px; border:1px solid #e5e7eb;"></td><td style="padding:8px; border:1px solid #e5e7eb;"></td></tr>
+                <tr><td style="padding:8px 12px; border:1px solid #e5e7eb;">CGM (연속)</td><td style="padding:8px; border:1px solid #e5e7eb; text-align:center; color:#8b5cf6; font-weight:700;">●</td><td style="padding:8px; border:1px solid #e5e7eb; text-align:center; color:#8b5cf6; font-weight:700;">●</td><td style="padding:8px; border:1px solid #e5e7eb; text-align:center; color:#8b5cf6; font-weight:700;">●</td><td style="padding:8px; border:1px solid #e5e7eb; text-align:center; color:#8b5cf6; font-weight:700;">●</td></tr>
+                <tr><td style="padding:8px 12px; border:1px solid #e5e7eb;">HbA1c</td><td style="padding:8px; border:1px solid #e5e7eb; text-align:center; color:#8b5cf6; font-weight:700;">●</td><td style="padding:8px; border:1px solid #e5e7eb;"></td><td style="padding:8px; border:1px solid #e5e7eb; text-align:center; color:#8b5cf6; font-weight:700;">●</td><td style="padding:8px; border:1px solid #e5e7eb; text-align:center; color:#8b5cf6; font-weight:700;">●</td></tr>
+                <tr><td style="padding:8px 12px; border:1px solid #e5e7eb;">식단 기록 (매일)</td><td style="padding:8px; border:1px solid #e5e7eb; text-align:center; color:#22c55e;">↔</td><td style="padding:8px; border:1px solid #e5e7eb; text-align:center; color:#22c55e;">↔</td><td style="padding:8px; border:1px solid #e5e7eb; text-align:center; color:#22c55e;">↔</td><td style="padding:8px; border:1px solid #e5e7eb; text-align:center; color:#22c55e;">↔</td></tr>
+                <tr><td style="padding:8px 12px; border:1px solid #e5e7eb;">복약 기록 (매일)</td><td style="padding:8px; border:1px solid #e5e7eb; text-align:center; color:#22c55e;">↔</td><td style="padding:8px; border:1px solid #e5e7eb; text-align:center; color:#22c55e;">↔</td><td style="padding:8px; border:1px solid #e5e7eb; text-align:center; color:#22c55e;">↔</td><td style="padding:8px; border:1px solid #e5e7eb; text-align:center; color:#22c55e;">↔</td></tr>
+                <tr><td style="padding:8px 12px; border:1px solid #e5e7eb;">신체 계측 (BMI)</td><td style="padding:8px; border:1px solid #e5e7eb; text-align:center; color:#8b5cf6; font-weight:700;">●</td><td style="padding:8px; border:1px solid #e5e7eb; text-align:center; color:#8b5cf6; font-weight:700;">●</td><td style="padding:8px; border:1px solid #e5e7eb; text-align:center; color:#8b5cf6; font-weight:700;">●</td><td style="padding:8px; border:1px solid #e5e7eb;"></td></tr>
+                <tr><td style="padding:8px 12px; border:1px solid #e5e7eb;">영양사 상담</td><td style="padding:8px; border:1px solid #e5e7eb; text-align:center; color:#22c55e;">↔</td><td style="padding:8px; border:1px solid #e5e7eb; text-align:center; color:#22c55e;">↔</td><td style="padding:8px; border:1px solid #e5e7eb; text-align:center; color:#22c55e;">↔</td><td style="padding:8px; border:1px solid #e5e7eb;"></td></tr>
+              </tbody>
+            </table>
+            <div style="font-size:11px; color:#9ca3af; margin-top:6px;">● = 시점 측정 &nbsp; ↔ = 연속/반복 측정</div>
+          </div>
+        </div>
+
+        <div class="section-divider"></div>
+
+        <!-- ===== 7. 분석 계획 ===== -->
+        <div class="section-title">🧮 통계 분석 계획 <span class="ai-tag">AI 생성</span></div>
+
+        <div class="field-group">
+          <label>주 분석 (Primary Analysis)</label>
+          <textarea class="textarea ai-filled">ITT(Intention-to-Treat) 원칙 적용. 반복측정 혼합효과모형(Linear Mixed-Effects Model)으로 MAGE의 군간 차이를 시점별로 비교. 고정효과: 군(실험/대조), 시점(0/4/8/12주), 군×시점 교호작용. 랜덤효과: 대상자(절편). 유의수준 α=0.05.</textarea>
+        </div>
+
+        <div class="field-group">
+          <label>보조 분석</label>
+          <div style="background:#f9fafb; border:1px solid #e5e7eb; border-radius:8px; padding:14px; font-size:13px; line-height:1.8; color:#374151;">
+            <div>• Per-Protocol 분석 (순응도 80% 이상 대상)</div>
+            <div>• 하위그룹 분석: 기저 HbA1c 수준별, BMI별, 인슐린 사용 여부별</div>
+            <div>• 매개 분석(Mediation): 탄수화물 섭취량 → MAGE 변화 경로</div>
+            <div>• 생존 분석: TIR 목표(≥70%) 달성까지 소요 시간</div>
+            <div>• 안전성 분석: 저혈당 에피소드 빈도 비교 (Poisson regression)</div>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label>결측치 처리</label>
+          <div class="select-cards cols-3">
+            <div class="select-card selected ai-pick" onclick="selectCard(this)">
+              <div class="card-label">다중 대체법</div>
+              <div class="card-desc">Multiple Imputation (m=20). ITT 원칙 준수에 최적</div>
+            </div>
+            <div class="select-card" onclick="selectCard(this)">
+              <div class="card-label">LOCF</div>
+              <div class="card-desc">최종 관측값 이월. 민감도 분석 비교용</div>
+            </div>
+            <div class="select-card" onclick="selectCard(this)">
+              <div class="card-label">완전사례 분석</div>
+              <div class="card-desc">결측 제외. 탈락 적을 때만</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-divider"></div>
+
+        <!-- ===== 8. 윤리적 고려 ===== -->
+        <div class="section-title">⚖️ 윤리적 고려 <span class="ai-tag">AI 생성</span></div>
+
+        <div class="field-group">
+          <label>예상 위험</label>
+          <div style="background:#fff7ed; border:1px solid #fed7aa; border-radius:8px; padding:14px; font-size:13px; line-height:1.8; color:#374151;">
+            <div><strong>저혈당 위험 (중간):</strong> 저탄수화물 식단 + 혈당강하제 병용 시 저혈당 발생 가능. → CGM 실시간 모니터링 + 저혈당 알림 설정</div>
+            <div><strong>영양 불균형 (낮음):</strong> 극단적 탄수화물 제한 시 → 영양사 주 1회 상담으로 관리</div>
+            <div><strong>개인정보 (낮음):</strong> CGM/건강 데이터 수집 → L4 암호화 + 접근 로그</div>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label>참여자 보호 방안</label>
+          <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:8px; padding:14px; font-size:13px; line-height:1.8; color:#374151;">
+            <div>• 저혈당 발생 시 즉시 주치의 연락 프로토콜 (CGM &lt; 54mg/dL → 자동 알림)</div>
+            <div>• 중도 탈락 기준: 심각한 저혈당 2회 이상, HbA1c &gt; 12% 도달</div>
+            <div>• 주 1회 영양사 모니터링으로 식단 안전성 확인</div>
+            <div>• DSMB(Data Safety Monitoring Board) 중간 분석: 4주 시점 안전성 검토</div>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label>참여자 보상</label>
+          <div class="input-row">
+            <div>
+              <input type="text" class="input ai-filled" value="일 500원 (데이터 제출 기준)">
+              <div class="hint">8주 × 500원 = 최대 28,000원</div>
+            </div>
+            <div>
+              <input type="text" class="input ai-filled" value="완료 보너스 10,000원">
+              <div class="hint">8주 전체 완료 시 추가 지급</div>
+            </div>
+          </div>
         </div>
 
         <!-- 버튼 -->
@@ -760,6 +1056,12 @@
     </div>
   </div>
 
+  <script>
+    function selectCard(el) {
+      el.parentElement.querySelectorAll('.select-card').forEach(c => c.classList.remove('selected'));
+      el.classList.add('selected');
+    }
+  </script>
   <script src="page-spec.js"></script>
   <link rel="stylesheet" href="../tooltip-spec.css">
   <script src="../tooltip-spec.js"></script>
