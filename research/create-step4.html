@@ -82,7 +82,7 @@
     .user-name { font-size: 14px; color: #e2e8f0; }
     .user-org { font-size: 12px; color: #64748b; }
 
-    /* ② IRB 심의 에디터 (중앙 좌측) */
+    /* ② IRB 에디터 (중앙 좌측) */
     .editor-panel {
       flex: 1;
       min-width: 0;
@@ -322,6 +322,31 @@
 
     /* ===== IRB 전용 스타일 ===== */
 
+    /* 케이스 토글 탭 */
+    .case-tabs {
+      display: flex; gap: 0; padding: 0;
+      border-bottom: 1px solid #e5e7eb;
+      background: #f9fafb;
+    }
+    .case-tab {
+      flex: 1; padding: 12px 16px;
+      font-size: 13px; font-weight: 600;
+      text-align: center; cursor: pointer;
+      border: none; background: #e5e7eb; color: #6b7280;
+      transition: all 0.2s;
+      border-right: 1px solid #d1d5db;
+    }
+    .case-tab:last-child { border-right: none; }
+    .case-tab:hover { background: #d1d5db; color: #374151; }
+    .case-tab.active { background: #8b5cf6; color: white; }
+    .case-tab .tab-sub {
+      font-size: 11px; font-weight: 400; opacity: 0.8; display: block; margin-top: 2px;
+    }
+
+    /* 케이스 콘텐츠 토글 */
+    .case-content { display: none; }
+    .case-content.active { display: block; }
+
     /* 연구 프로필 요약 */
     .profile-summary {
       background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 10px;
@@ -345,49 +370,85 @@
     .irb-status-badge {
       display: flex; align-items: center; gap: 12px;
       padding: 16px 20px; margin: 16px 0;
-      background: linear-gradient(135deg, #fef3c7, #fffbeb);
-      border: 2px solid #f59e0b;
       border-radius: 12px;
     }
     .irb-status-badge .badge-icon {
       font-size: 32px; flex-shrink: 0;
     }
     .irb-status-badge .badge-text {
-      font-size: 18px; font-weight: 800; color: #92400e;
+      font-size: 18px; font-weight: 800;
     }
     .irb-status-badge .badge-sub {
-      font-size: 12px; color: #b45309; margin-top: 2px; font-weight: 500;
+      font-size: 12px; margin-top: 2px; font-weight: 500;
     }
+
+    /* 배지 색상 변형 */
+    .irb-status-badge.green {
+      background: linear-gradient(135deg, #dcfce7, #f0fdf4);
+      border: 2px solid #22c55e;
+    }
+    .irb-status-badge.green .badge-text { color: #166534; }
+    .irb-status-badge.green .badge-sub { color: #15803d; }
+
+    .irb-status-badge.amber {
+      background: linear-gradient(135deg, #fef3c7, #fffbeb);
+      border: 2px solid #f59e0b;
+    }
+    .irb-status-badge.amber .badge-text { color: #92400e; }
+    .irb-status-badge.amber .badge-sub { color: #b45309; }
+
+    .irb-status-badge.red {
+      background: linear-gradient(135deg, #fee2e2, #fef2f2);
+      border: 2px solid #ef4444;
+    }
+    .irb-status-badge.red .badge-text { color: #991b1b; }
+    .irb-status-badge.red .badge-sub { color: #b91c1c; }
 
     .irb-reason {
       padding: 12px 16px; margin: 12px 0;
-      background: #fffbeb; border-left: 3px solid #f59e0b;
+      border-left: 3px solid;
       border-radius: 0 8px 8px 0;
-      font-size: 13px; color: #78350f; line-height: 1.6;
+      font-size: 13px; line-height: 1.6;
     }
+    .irb-reason.green { background: #f0fdf4; border-color: #22c55e; color: #166534; }
+    .irb-reason.amber { background: #fffbeb; border-color: #f59e0b; color: #78350f; }
+    .irb-reason.red { background: #fef2f2; border-color: #ef4444; color: #7f1d1d; }
 
     /* 면제 사유 체크리스트 */
-    .exemption-toggle {
-      display: flex; align-items: center; gap: 8px;
-      padding: 10px 0; cursor: pointer; font-size: 13px;
-      color: #6b7280; user-select: none; border: none; background: none;
-      font-family: inherit;
+    .checklist { margin: 12px 0; }
+    .checklist-item {
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 10px 14px; margin-bottom: 6px;
+      background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px;
+      font-size: 13px; color: #374151; line-height: 1.5;
     }
-    .exemption-toggle .arrow { transition: transform 0.2s; display: inline-block; font-size: 12px; }
-    .exemption-toggle .arrow.open { transform: rotate(90deg); }
-    .exemption-list {
-      padding: 0 0 0 8px; margin: 0;
-      list-style: none;
+    .checklist-item .ck-icon { flex-shrink: 0; font-size: 16px; margin-top: 1px; }
+    .checklist-item.checked { background: #f0fdf4; border-color: #bbf7d0; }
+    .checklist-item.unchecked { color: #9ca3af; }
+    .checklist-item.fail { background: #fef2f2; border-color: #fecaca; color: #991b1b; }
+
+    /* 면제 신고서 폼 */
+    .notice-form {
+      background: #fffbeb; border: 1px solid #fde68a; border-radius: 10px;
+      padding: 16px; margin: 16px 0;
     }
-    .exemption-list.collapsed { display: none; }
-    .exemption-item {
-      display: flex; align-items: flex-start; gap: 8px;
-      padding: 8px 12px; margin-bottom: 4px;
-      background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 6px;
-      font-size: 13px; color: #9ca3af;
+    .notice-form .form-title {
+      font-size: 14px; font-weight: 700; color: #92400e; margin-bottom: 12px;
+      display: flex; align-items: center; gap: 6px;
     }
-    .exemption-item input[type="checkbox"] {
-      margin-top: 2px; accent-color: #9ca3af;
+    .notice-form .form-hint {
+      font-size: 12px; color: #b45309; margin-bottom: 12px; line-height: 1.5;
+    }
+    .notice-form .form-field {
+      margin-bottom: 10px;
+    }
+    .notice-form .form-field label {
+      display: block; font-size: 12px; color: #78350f; font-weight: 600; margin-bottom: 4px;
+    }
+    .notice-form .form-field input,
+    .notice-form .form-field select {
+      width: 100%; height: 36px; border: 1px solid #fde68a; border-radius: 6px;
+      padding: 0 10px; font-size: 13px; background: white;
     }
 
     /* 서류 리스트 */
@@ -436,6 +497,21 @@
     .budget-table td:last-child { text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; }
     .budget-table tr.total td { font-weight: 700; color: #111827; font-size: 14px; }
     .budget-table .sub { font-size: 11px; color: #9ca3af; font-weight: 400; }
+
+    /* 설명 박스 */
+    .explanation-box {
+      padding: 14px 16px; margin: 12px 0;
+      background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 8px;
+      font-size: 13px; color: #374151; line-height: 1.7;
+    }
+
+    /* 하이라이트 불릿 리스트 */
+    .highlight-list { margin: 8px 0; padding: 0; list-style: none; }
+    .highlight-list li {
+      padding: 6px 0; font-size: 13px; color: #374151; line-height: 1.5;
+      display: flex; align-items: flex-start; gap: 8px;
+    }
+    .highlight-list li .hl-bullet { flex-shrink: 0; }
 
     /* 디자이너 노트 (하단 오버레이) */
     .designer-notes {
@@ -498,11 +574,11 @@
       <div class="step-indicator">
         <div class="label">진행 단계</div>
         <div class="step-item done"><div class="num">✓</div> AI 설계</div>
-        <div class="step-item done"><div class="num">✓</div> 설계 확인</div>
-        <div class="step-item done"><div class="num">✓</div> 데이터 수집</div>
-        <div class="step-item active"><div class="num">4</div> IRB + 예산</div>
+        <div class="step-item done"><div class="num">✓</div> 연구설계</div>
+        <div class="step-item done"><div class="num">✓</div> 데이터수집</div>
+        <div class="step-item active"><div class="num">4</div> IRB</div>
         <div class="step-item pending"><div class="num">5</div> 에스크로</div>
-        <div class="step-item pending"><div class="num">6</div> 모집 설정</div>
+        <div class="step-item pending"><div class="num">6</div> 모집</div>
       </div>
 
       <div class="nav-section">
@@ -523,146 +599,305 @@
       </div>
     </div>
 
-    <!-- ② IRB 심의 에디터 -->
+    <!-- ② IRB 에디터 -->
     <div class="editor-panel">
-      <div class="editor-header">
-        <h2>IRB 심의 에디터</h2>
-        <span class="badge">자동 판정 완료</span>
+      <!-- 케이스 토글 탭 -->
+      <div class="case-tabs">
+        <button class="case-tab" data-case="1" onclick="switchCase(1)">
+          IRB 불필요
+          <span class="tab-sub">No IRB needed</span>
+        </button>
+        <button class="case-tab" data-case="2" onclick="switchCase(2)">
+          면제 해당
+          <span class="tab-sub">Exempt</span>
+        </button>
+        <button class="case-tab active" data-case="3" onclick="switchCase(3)">
+          심의 필요
+          <span class="tab-sub">Full review</span>
+        </button>
       </div>
+
+      <div class="editor-header">
+        <h2>IRB 에디터</h2>
+        <span class="badge">AI 자동 판정</span>
+      </div>
+
       <div class="editor-body">
 
-        <!-- 연구 프로필 요약 -->
-        <div class="section-title">📋 연구 프로필 요약</div>
-        <div class="profile-summary">
-          <div class="profile-grid">
-            <div class="profile-item full-width">
-              <div class="pk">연구 제목</div>
-              <div class="pv">저탄수화물 식단의 제2형 당뇨 환자 혈당 변동 개선 효과</div>
+        <!-- ========== CASE 1: IRB 불필요 ========== -->
+        <div class="case-content" data-case="1">
+
+          <div class="irb-status-badge green">
+            <div class="badge-icon">✅</div>
+            <div>
+              <div class="badge-text">IRB 심의 불필요</div>
+              <div class="badge-sub">No IRB Review Required</div>
             </div>
-            <div class="profile-item">
-              <div class="pk">연구 방법론</div>
-              <div class="pv">RCT (무작위 대조 시험)</div>
+          </div>
+
+          <div class="section-title">📋 연구 프로필 요약</div>
+          <div class="profile-summary">
+            <div class="profile-grid">
+              <div class="profile-item full-width">
+                <div class="pk">연구 제목</div>
+                <div class="pv">공개 스포츠 데이터셋 기반 선수 퍼포먼스 예측 모델 비교 분석</div>
+              </div>
+              <div class="profile-item">
+                <div class="pk">연구 방법론</div>
+                <div class="pv">2차 데이터 분석</div>
+              </div>
+              <div class="profile-item">
+                <div class="pk">참여자 수</div>
+                <div class="pv">해당 없음 (기존 데이터)</div>
+              </div>
             </div>
-            <div class="profile-item">
-              <div class="pk">목표 참여자</div>
-              <div class="pv">100명</div>
-            </div>
-            <div class="profile-item">
-              <div class="pk">연구 기간</div>
-              <div class="pv">56일 (8주)</div>
-            </div>
-            <div class="profile-item">
-              <div class="pk">대상 연령</div>
-              <div class="pv">30-60세</div>
-            </div>
-            <div class="profile-item">
-              <div class="pk">건강 조건</div>
-              <div class="pv">제2형 당뇨</div>
-            </div>
+          </div>
+
+          <div class="irb-reason green">
+            <strong>판정 사유:</strong> 본 연구는 인간대상연구에 해당하지 않습니다
+          </div>
+
+          <div class="explanation-box">
+            기존 공개 데이터셋의 2차 분석으로, 개인식별정보가 포함되지 않은 데이터만 사용합니다. 사람을 대상으로 물리적으로 개입하거나 의사소통, 대인접촉 등을 통하여 수행하는 연구가 아니므로 생명윤리법상 인간대상연구에 해당하지 않습니다.
+          </div>
+
+          <div class="section-divider"></div>
+
+          <div class="section-title">💰 예산 요약</div>
+          <table class="budget-table">
+            <tr>
+              <td>참여자 보상</td>
+              <td>없음</td>
+            </tr>
+            <tr>
+              <td>IRB 신청비</td>
+              <td>없음</td>
+            </tr>
+            <tr>
+              <td>플랫폼 이용료</td>
+              <td>50 XRP</td>
+            </tr>
+            <tr class="total">
+              <td>총 예산</td>
+              <td>50 XRP</td>
+            </tr>
+          </table>
+
+          <div class="btn-row">
+            <a href="create-step3.html" class="btn btn-secondary">← 이전</a>
+            <a href="create-step5.html" class="btn btn-primary">다음 단계로 →</a>
           </div>
         </div>
 
-        <div class="section-divider"></div>
+        <!-- ========== CASE 2: 면제 해당 ========== -->
+        <div class="case-content" data-case="2">
 
-        <!-- IRB 심의 판정 -->
-        <div class="section-title">⚖️ IRB 심의 판정 <span class="ai-tag">AI 자동 판정</span></div>
+          <div class="irb-status-badge amber">
+            <div class="badge-icon">📋</div>
+            <div>
+              <div class="badge-text">심의면제 해당</div>
+              <div class="badge-sub">Exempt — Notification Required</div>
+            </div>
+          </div>
 
-        <div class="irb-status-badge">
-          <div class="badge-icon">⚠️</div>
-          <div>
-            <div class="badge-text">정규심의 필요</div>
-            <div class="badge-sub">Full Board Review Required</div>
+          <div class="section-title">📋 연구 프로필 요약</div>
+          <div class="profile-summary">
+            <div class="profile-grid">
+              <div class="profile-item full-width">
+                <div class="pk">연구 제목</div>
+                <div class="pv">대학생 운동 습관과 학업 성취도 간 상관관계 — 익명 설문 연구</div>
+              </div>
+              <div class="profile-item">
+                <div class="pk">연구 방법론</div>
+                <div class="pv">익명 온라인 설문</div>
+              </div>
+              <div class="profile-item">
+                <div class="pk">목표 참여자</div>
+                <div class="pv">300명</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="section-divider"></div>
+
+          <div class="section-title">✅ 면제 사유 체크리스트 <span class="ai-tag">AI 판정</span></div>
+          <div class="checklist">
+            <div class="checklist-item checked">
+              <span class="ck-icon">✅</span>
+              <span>일반 대중에게 공개된 정보를 이용하는 연구</span>
+            </div>
+            <div class="checklist-item checked">
+              <span class="ck-icon">✅</span>
+              <span>연구대상자를 직접 조작하거나 대상자의 환경을 조작하지 않는 연구</span>
+            </div>
+            <div class="checklist-item unchecked">
+              <span class="ck-icon">☐</span>
+              <span>의약품, 의료기기 등의 연구 (해당 없음)</span>
+            </div>
+          </div>
+
+          <div class="section-divider"></div>
+
+          <div class="section-title">📝 면제 신고서</div>
+          <div class="notice-form">
+            <div class="form-title">⚠️ 면제도 신고는 필요합니다</div>
+            <div class="form-hint">기관생명윤리위원회에 면제 확인 신고서를 제출해야 합니다. 심사가 아닌 확인 절차이므로 보통 1-2일 내 처리됩니다.</div>
+            <div class="form-field">
+              <label>연구책임자</label>
+              <input type="text" value="김연구" readonly style="background:#faf5ff; border-color:#c4b5fd;">
+            </div>
+            <div class="form-field">
+              <label>연구제목</label>
+              <input type="text" value="대학생 운동 습관과 학업 성취도 간 상관관계" readonly style="background:#faf5ff; border-color:#c4b5fd;">
+            </div>
+            <div class="form-field">
+              <label>면제사유 선택</label>
+              <select>
+                <option selected>공개 정보 활용 + 대상자 비조작 연구</option>
+                <option>비식별 데이터 2차 분석</option>
+                <option>미미한 위험의 설문/인터뷰</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label>연구기간</label>
+              <input type="text" value="2026.03.01 - 2026.05.31">
+            </div>
+          </div>
+
+          <div class="section-divider"></div>
+
+          <div class="section-title">💰 예산 요약</div>
+          <table class="budget-table">
+            <tr>
+              <td>IRB 신청비</td>
+              <td>면제 <span class="sub">(0 XRP)</span></td>
+            </tr>
+            <tr>
+              <td>참여자 보상</td>
+              <td>10 XRP × 300명 = <strong>3,000 XRP</strong></td>
+            </tr>
+            <tr>
+              <td>플랫폼 수수료 5%</td>
+              <td>150 XRP</td>
+            </tr>
+            <tr class="total">
+              <td>총 예산</td>
+              <td>3,150 XRP</td>
+            </tr>
+          </table>
+
+          <div class="btn-row">
+            <a href="create-step3.html" class="btn btn-secondary">← 이전</a>
+            <a href="create-step5.html" class="btn btn-primary">면제 신고 + 다음 단계 →</a>
           </div>
         </div>
 
-        <div class="irb-reason">
-          <strong>판정 근거:</strong> 무작위 배정(RCT) + 인간 대상 연구 → 생명윤리법 제15조에 따라 기관생명윤리위원회 심의 필수
+        <!-- ========== CASE 3: 심의 필요 (DEFAULT) ========== -->
+        <div class="case-content active" data-case="3">
+
+          <div class="irb-status-badge red">
+            <div class="badge-icon">⚠️</div>
+            <div>
+              <div class="badge-text">정규심의 필요</div>
+              <div class="badge-sub">Full Board Review Required</div>
+            </div>
+          </div>
+
+          <div class="section-title">📋 연구 프로필 요약</div>
+          <div class="profile-summary">
+            <div class="profile-grid">
+              <div class="profile-item full-width">
+                <div class="pk">연구 제목</div>
+                <div class="pv">저탄수화물 식단의 혈당 변동 개선 효과</div>
+              </div>
+              <div class="profile-item">
+                <div class="pk">연구 방법론</div>
+                <div class="pv">RCT (무작위 대조 시험)</div>
+              </div>
+              <div class="profile-item">
+                <div class="pk">목표 참여자</div>
+                <div class="pv">100명</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="section-divider"></div>
+
+          <div class="section-title">⚖️ 심의 유형 판정 <span class="ai-tag">AI 자동 판정</span></div>
+          <div class="irb-reason red">
+            <strong>정규심의</strong> (Not 신속심의) — RCT + 민감 건강데이터 수집으로 인해 최소 위험 연구에 해당하지 않음
+          </div>
+
+          <div class="section-title" style="margin-top:20px">🚫 면제 불가 사유</div>
+          <div class="checklist">
+            <div class="checklist-item fail">
+              <span class="ck-icon">✗</span>
+              <span><strong>RCT 방법론</strong> — 대상자 환경 조작 해당</span>
+            </div>
+            <div class="checklist-item fail">
+              <span class="ck-icon">✗</span>
+              <span><strong>L4 건강 데이터 (CGM) 수집</strong> — 민감정보</span>
+            </div>
+          </div>
+
+          <div class="section-divider"></div>
+
+          <div class="section-title">📄 제출 서류 체크리스트</div>
+          <div class="doc-list">
+            <div class="doc-item">
+              <div class="doc-icon done">📝</div>
+              <div class="doc-name">연구계획서</div>
+              <span class="doc-status done">AI 초안 완료 ✓</span>
+              <a href="#" class="doc-preview">미리보기</a>
+            </div>
+            <div class="doc-item">
+              <div class="doc-icon done">📜</div>
+              <div class="doc-name">생명윤리준수서약서</div>
+              <span class="doc-status done">AI 초안 완료 ✓</span>
+              <a href="#" class="doc-preview">미리보기</a>
+            </div>
+            <div class="doc-item">
+              <div class="doc-icon done">✍️</div>
+              <div class="doc-name">참여자 동의서</div>
+              <span class="doc-status done">AI 초안 완료 ✓</span>
+              <a href="#" class="doc-preview">미리보기</a>
+            </div>
+            <div class="doc-item">
+              <div class="doc-icon warn">👤</div>
+              <div class="doc-name">연구자 이력서</div>
+              <span class="doc-status warn">업로드 필요 !</span>
+              <a href="#" class="doc-preview">업로드</a>
+            </div>
+          </div>
+
+          <div class="section-divider"></div>
+
+          <div class="section-title">💰 예산 요약</div>
+          <table class="budget-table">
+            <tr>
+              <td>IRB 신청비</td>
+              <td>400 XRP</td>
+            </tr>
+            <tr>
+              <td>참여자 보상 (기본+보너스)</td>
+              <td>6,400 XRP</td>
+            </tr>
+            <tr>
+              <td>플랫폼 수수료 5%</td>
+              <td>340 XRP</td>
+            </tr>
+            <tr class="total">
+              <td>총 예산</td>
+              <td>7,140 XRP</td>
+            </tr>
+          </table>
+
+          <div class="btn-row">
+            <a href="create-step3.html" class="btn btn-secondary">← 이전</a>
+            <a href="create-step5.html" class="btn btn-primary">서류 준비 + 다음 단계 →</a>
+          </div>
         </div>
 
-        <!-- 면제 사유 확인 -->
-        <button class="exemption-toggle" onclick="toggleExemption()">
-          <span class="arrow" id="exemptionArrow">▶</span> 면제 사유 확인 (해당 없음)
-        </button>
-        <ul class="exemption-list collapsed" id="exemptionList">
-          <li class="exemption-item">
-            <input type="checkbox" disabled>
-            <span>공개된 정보만 활용하는 연구 (해당 없음 - CGM 개인 데이터 수집)</span>
-          </li>
-          <li class="exemption-item">
-            <input type="checkbox" disabled>
-            <span>비식별 데이터만 분석하는 연구 (해당 없음 - 직접 데이터 수집)</span>
-          </li>
-          <li class="exemption-item">
-            <input type="checkbox" disabled>
-            <span>미미한 위험의 설문/인터뷰 (해당 없음 - 식단 개입 + RCT 설계)</span>
-          </li>
-        </ul>
-
-        <div class="section-divider"></div>
-
-        <!-- IRB 제출 서류 -->
-        <div class="section-title">📄 IRB 제출 서류</div>
-
-        <div class="doc-list">
-          <div class="doc-item">
-            <div class="doc-icon done">📝</div>
-            <div class="doc-name">연구계획서</div>
-            <span class="doc-status done">AI 초안 완료 ✓</span>
-            <a href="#" class="doc-preview">미리보기</a>
-          </div>
-          <div class="doc-item">
-            <div class="doc-icon done">📋</div>
-            <div class="doc-name">동의서</div>
-            <span class="doc-status done">AI 초안 완료 ✓</span>
-            <a href="#" class="doc-preview">미리보기</a>
-          </div>
-          <div class="doc-item">
-            <div class="doc-icon done">📢</div>
-            <div class="doc-name">모집공고</div>
-            <span class="doc-status done">AI 초안 완료 ✓</span>
-            <a href="#" class="doc-preview">미리보기</a>
-          </div>
-          <div class="doc-item">
-            <div class="doc-icon warn">👤</div>
-            <div class="doc-name">연구자 이력서</div>
-            <span class="doc-status warn">업로드 필요 !</span>
-            <a href="#" class="doc-preview">업로드</a>
-          </div>
-        </div>
-
-        <div class="section-divider"></div>
-
-        <!-- 예산 요약 -->
-        <div class="section-title">💰 예산 요약</div>
-
-        <table class="budget-table">
-          <tr>
-            <td>IRB 신청비</td>
-            <td>200,000 KRW <span class="sub">(≈ 400 XRP)</span></td>
-          </tr>
-          <tr>
-            <td>기본 보상</td>
-            <td>50 XRP × 100명 = <strong>5,000 XRP</strong></td>
-          </tr>
-          <tr>
-            <td>보너스</td>
-            <td>1,400 XRP</td>
-          </tr>
-          <tr>
-            <td>수수료 5%</td>
-            <td>340 XRP</td>
-          </tr>
-          <tr class="total">
-            <td>총 예산</td>
-            <td>7,140 XRP</td>
-          </tr>
-        </table>
-
-        <!-- 버튼 -->
-        <div class="btn-row">
-          <a href="create-step3.html" class="btn btn-secondary">← 이전</a>
-          <a href="create-step5.html" class="btn btn-primary">다음: 에스크로 →</a>
-        </div>
       </div>
     </div>
 
@@ -674,111 +909,186 @@
       </div>
       <div class="report-body">
 
-        <!-- 심의 유형 근거 -->
-        <div class="report-section">
-          <div class="report-section-title">⚖️ 심의 유형 근거</div>
-          <div class="report-content">
-            <p>본 연구는 인간 대상 RCT로, <strong>생명윤리법 제15조</strong>에 따라 정규심의 대상입니다. 무작위 배정, 식단 개입(생활습관 변경), CGM 데이터 수집(민감건강정보)이 포함되어 면제 요건에 해당하지 않습니다.</p>
-            <p>동법 시행규칙 제13조의 심의면제 요건(공개정보, 비식별 데이터, 미미한 위험 설문)에 <strong>모두 해당 없음</strong>을 확인했습니다.</p>
+        <!-- ========== REPORT CASE 1 ========== -->
+        <div class="case-content" data-case="1">
+
+          <div class="report-section">
+            <div class="report-section-title">⚖️ IRB 심의 대상 판정</div>
+            <div class="report-content">
+              <p><strong>인간대상연구 정의 (생명윤리법 제2조 제1호)</strong></p>
+              <p>"사람을 대상으로 물리적으로 개입하거나 의사소통, 대인접촉 등을 통하여 수행하는 연구"</p>
+              <p><strong>본 연구:</strong> 기존 공개 데이터 2차 분석 → <strong>인간대상연구 비해당</strong></p>
+            </div>
+            <a href="https://www.law.go.kr/법령/생명윤리및안전에관한법률/제2조" class="citation-link" target="_blank">
+              <div class="citation-icon">📜</div>
+              <div>
+                <div class="citation-title">생명윤리 및 안전에 관한 법률 제2조 (정의)</div>
+                <div class="citation-meta"><span class="journal">law.go.kr</span> | <span class="doi">인간대상연구 정의</span></div>
+              </div>
+            </a>
           </div>
 
-          <a href="https://www.law.go.kr/법령/생명윤리및안전에관한법률/제15조" class="citation-link" target="_blank">
-            <div class="citation-icon">📜</div>
-            <div>
-              <div class="citation-title">생명윤리 및 안전에 관한 법률 제15조 (기관생명윤리위원회의 심의)</div>
-              <div class="citation-meta"><span class="journal">law.go.kr</span> | <span class="doi">법률 제19234호</span></div>
+          <div class="report-section">
+            <div class="report-section-title">🔒 개인정보 해당 여부</div>
+            <div class="report-content">
+              <p>사용 데이터에 <strong>개인식별정보 미포함</strong> 확인. 공개 데이터셋의 통계적 분석만 수행하며, 특정 개인을 식별할 수 있는 정보는 포함되지 않습니다.</p>
             </div>
-          </a>
+            <a href="https://www.law.go.kr/법령/개인정보보호법/제2조" class="citation-link" target="_blank">
+              <div class="citation-icon">📜</div>
+              <div>
+                <div class="citation-title">개인정보보호법 제2조 (정의)</div>
+                <div class="citation-meta"><span class="journal">law.go.kr</span> | <span class="doi">개인정보의 정의 및 범위</span></div>
+              </div>
+            </a>
+          </div>
 
-          <a href="https://www.law.go.kr/법령/생명윤리및안전에관한법률시행규칙/제13조" class="citation-link" target="_blank">
-            <div class="citation-icon">📜</div>
-            <div>
-              <div class="citation-title">동법 시행규칙 제13조 (심의면제 대상 인간대상연구의 범위)</div>
-              <div class="citation-meta"><span class="journal">law.go.kr</span> | <span class="doi">보건복지부령 제967호</span></div>
+          <div class="report-section">
+            <div class="report-section-title">📊 참고 사례</div>
+            <div class="report-content">
+              <p>유사 연구 <strong>3건 중 3건</strong> IRB 불필요 판정</p>
             </div>
-          </a>
+            <div class="stat-row">
+              <div class="stat-card">
+                <div class="value">3/3</div>
+                <div class="label">IRB 불필요 판정</div>
+              </div>
+              <div class="stat-card">
+                <div class="value">0건</div>
+                <div class="label">문제 발생 사례</div>
+              </div>
+            </div>
+          </div>
+
         </div>
 
-        <!-- 동의서 요건 -->
-        <div class="report-section">
-          <div class="report-section-title">✍️ 동의서 요건</div>
-          <div class="report-content">
-            <p>정규심의 시 <strong>서면동의 필수</strong>. 동의서에 포함해야 할 항목(제16조): 연구 목적, 참여 기간, 절차, 예상 위험 및 이익, 개인정보 처리, 자발적 참여 및 철회 권리, 보상 내용 등.</p>
-            <p>경희대 SOP V7.2에 따른 동의서 양식을 AI가 자동 생성했습니다.</p>
+        <!-- ========== REPORT CASE 2 ========== -->
+        <div class="case-content" data-case="2">
+
+          <div class="report-section">
+            <div class="report-section-title">⚖️ 심의면제 사유 근거</div>
+            <div class="report-content">
+              <p><strong>생명윤리법 시행규칙 제13조 (심의면제 대상)</strong></p>
+              <p>다음에 해당하는 인간대상연구는 심의를 면제할 수 있음:</p>
+            </div>
+            <ul class="highlight-list">
+              <li><span class="hl-bullet" style="color:#22c55e; font-weight:700;">→</span> <strong>일반 대중에게 공개된 정보를 이용하는 연구</strong> (해당)</li>
+              <li><span class="hl-bullet" style="color:#22c55e; font-weight:700;">→</span> <strong>연구대상자를 직접 조작하지 않는 연구</strong> (해당)</li>
+              <li><span class="hl-bullet" style="color:#9ca3af;">○</span> 학교 교육 현장에서의 교육방법 비교 연구</li>
+              <li><span class="hl-bullet" style="color:#9ca3af;">○</span> 식품의약품안전처장이 정하는 연구</li>
+            </ul>
+            <a href="https://www.law.go.kr/법령/생명윤리및안전에관한법률시행규칙/제13조" class="citation-link" target="_blank">
+              <div class="citation-icon">📜</div>
+              <div>
+                <div class="citation-title">생명윤리법 시행규칙 제13조 (심의면제 대상 인간대상연구의 범위)</div>
+                <div class="citation-meta"><span class="journal">law.go.kr</span> | <span class="doi">보건복지부령 제967호</span></div>
+              </div>
+            </a>
           </div>
 
-          <a href="https://www.law.go.kr/법령/생명윤리및안전에관한법률/제16조" class="citation-link" target="_blank">
-            <div class="citation-icon">📜</div>
-            <div>
-              <div class="citation-title">생명윤리법 제16조 (서면동의)</div>
-              <div class="citation-meta"><span class="journal">law.go.kr</span> | <span class="doi">동의 요건 및 절차</span></div>
+          <div class="report-section">
+            <div class="report-section-title">⚠️ 면제 시 주의사항</div>
+            <div class="report-content">
+              <p><strong>면제라도 기관생명윤리위원회에 면제 확인 신고 필요</strong></p>
+              <p>연구 진행 중 설계 변경 시 재판단 필요. 면제 확인을 받지 않고 연구를 진행하면 법적 문제가 발생할 수 있습니다.</p>
             </div>
-          </a>
+            <a href="#" class="citation-link">
+              <div class="citation-icon">🏛️</div>
+              <div>
+                <div class="citation-title">국가생명윤리정책원(NIBP) — 면제 연구 가이드라인</div>
+                <div class="citation-meta"><span class="journal">nibp.kr</span> | <span class="doi">IRB 면제 확인 절차 안내</span></div>
+              </div>
+            </a>
+          </div>
 
-          <a href="#" class="citation-link">
-            <div class="citation-icon">🏛️</div>
-            <div>
-              <div class="citation-title">경희대학교 IRB SOP V7.2 - 동의서 양식 및 작성 가이드</div>
-              <div class="citation-meta"><span class="journal">경희대 IRB</span> | <span class="doi">내부 문서 | 2025.03 개정</span></div>
+          <div class="report-section">
+            <div class="report-section-title">📊 유사 연구 면제 사례</div>
+            <div class="report-content">
+              <p><strong>익명 설문 기반 운동 습관 연구</strong> — 심의면제 확인 (2025)</p>
+              <p><strong>공개 건강 데이터 분석 연구</strong> — 심의면제 확인 (2024)</p>
             </div>
-          </a>
+            <div class="stat-row">
+              <div class="stat-card">
+                <div class="value">87%</div>
+                <div class="label">익명설문 면제율</div>
+              </div>
+              <div class="stat-card">
+                <div class="value">1-2일</div>
+                <div class="label">면제 확인 소요</div>
+              </div>
+            </div>
+          </div>
+
         </div>
 
-        <!-- 유사 연구 심의 사례 -->
-        <div class="report-section">
-          <div class="report-section-title">📊 유사 연구 심의 사례</div>
+        <!-- ========== REPORT CASE 3 (DEFAULT) ========== -->
+        <div class="case-content active" data-case="3">
 
-          <div class="stat-row">
-            <div class="stat-card">
-              <div class="value">75%</div>
-              <div class="label">정규심의</div>
+          <div class="report-section">
+            <div class="report-section-title">⚖️ 심의 유형 근거</div>
+            <div class="report-content">
+              <p><strong>생명윤리법 제10조 (기관생명윤리위원회의 기능)</strong></p>
+              <p><strong>RCT(무작위대조시험):</strong> 연구대상자 환경 조작에 해당 → 정규심의</p>
+              <p><strong>L4 민감 건강데이터(CGM) 수집</strong> → 정규심의</p>
             </div>
-            <div class="stat-card">
-              <div class="value">20%</div>
-              <div class="label">신속심의</div>
+            <a href="https://www.law.go.kr/법령/생명윤리및안전에관한법률/제10조" class="citation-link" target="_blank">
+              <div class="citation-icon">📜</div>
+              <div>
+                <div class="citation-title">생명윤리 및 안전에 관한 법률 제10조 (기관생명윤리위원회의 기능)</div>
+                <div class="citation-meta"><span class="journal">law.go.kr</span> | <span class="doi">법률 제19234호</span></div>
+              </div>
+            </a>
+          </div>
+
+          <div class="report-section">
+            <div class="report-section-title">✍️ 동의서 요건</div>
+            <div class="report-content">
+              <p><strong>서면 동의 필수</strong> (전자서명 가능)</p>
+              <p>동의서 필수 포함 항목 8가지: 연구 목적, 참여 기간, 절차, 예상 위험 및 이익, 개인정보 처리, 자발적 참여 및 철회 권리, 보상 내용, 연구자 연락처</p>
             </div>
-            <div class="stat-card">
-              <div class="value">5%</div>
-              <div class="label">면제</div>
+            <a href="https://www.law.go.kr/법령/생명윤리및안전에관한법률/제16조" class="citation-link" target="_blank">
+              <div class="citation-icon">📜</div>
+              <div>
+                <div class="citation-title">생명윤리법 제16조 (서면동의)</div>
+                <div class="citation-meta"><span class="journal">law.go.kr</span> | <span class="doi">동의 요건 및 절차</span></div>
+              </div>
+            </a>
+          </div>
+
+          <div class="report-section">
+            <div class="report-section-title">📊 유사 연구 심의 사례</div>
+            <div class="stat-row">
+              <div class="stat-card">
+                <div class="value">4-6주</div>
+                <div class="label">RCT 당뇨 연구 평균 심의기간</div>
+              </div>
+            </div>
+            <div class="stat-row">
+              <div class="stat-card">
+                <div class="value">68%</div>
+                <div class="label">1차 수정요청률</div>
+              </div>
+              <div class="stat-card">
+                <div class="value">94%</div>
+                <div class="label">최종 승인률</div>
+              </div>
             </div>
           </div>
 
-          <div class="report-content">
-            <p>당뇨 관련 RCT 연구 심의 사례 분석 결과, <strong>75%가 정규심의</strong>를 거쳤습니다. 신속심의(20%)는 주로 기존 승인 연구의 경미한 변경 사항에 해당하며, 면제(5%)는 후향적 차트 리뷰에 한정되었습니다.</p>
+          <div class="report-section">
+            <div class="report-section-title">🔒 데이터 보호 요건</div>
+            <div class="report-content">
+              <p><strong>L4 데이터 처리:</strong> 암호화 + 접근로그 필수</p>
+              <p>CGM 데이터는 민감건강정보로, 수집 시 별도의 명시적 동의가 필요하며 암호화 저장 및 접근 제한이 요구됩니다.</p>
+            </div>
+            <a href="https://www.law.go.kr/법령/개인정보보호법/제23조" class="citation-link" target="_blank">
+              <div class="citation-icon">📜</div>
+              <div>
+                <div class="citation-title">개인정보보호법 제23조 (민감정보의 처리 제한)</div>
+                <div class="citation-meta"><span class="journal">law.go.kr</span> | <span class="doi">법률 제19234호</span></div>
+              </div>
+            </a>
           </div>
 
-          <a href="https://www.hhs.gov/ohrp/compliance-and-reporting/determination-letters/index.html" class="citation-link" target="_blank">
-            <div class="citation-icon">📄</div>
-            <div>
-              <div class="citation-title">OHRP Determination Letter 2024-0123: RCT Dietary Intervention Review Standards</div>
-              <div class="citation-meta"><span class="journal">hhs.gov/ohrp</span> | <span class="doi">Compliance Oversight</span></div>
-            </div>
-          </a>
-        </div>
-
-        <!-- 데이터 보호 요건 -->
-        <div class="report-section">
-          <div class="report-section-title">🔒 데이터 보호 요건</div>
-          <div class="report-content">
-            <p>CGM 데이터는 <strong>민감건강정보</strong>로, 개인정보보호법 제23조가 적용됩니다. 수집 시 별도의 명시적 동의가 필요하며, 암호화 저장 및 접근 제한이 요구됩니다.</p>
-            <p>생명윤리법 제18조에 따라 연구 종료 후 개인식별정보는 즉시 파기하거나 분리 보관해야 합니다.</p>
-          </div>
-
-          <a href="https://www.law.go.kr/법령/개인정보보호법/제23조" class="citation-link" target="_blank">
-            <div class="citation-icon">📜</div>
-            <div>
-              <div class="citation-title">개인정보보호법 제23조 (민감정보의 처리 제한)</div>
-              <div class="citation-meta"><span class="journal">law.go.kr</span> | <span class="doi">법률 제19234호</span></div>
-            </div>
-          </a>
-
-          <a href="https://www.law.go.kr/법령/생명윤리및안전에관한법률/제18조" class="citation-link" target="_blank">
-            <div class="citation-icon">📜</div>
-            <div>
-              <div class="citation-title">생명윤리법 제18조 (개인정보의 보호)</div>
-              <div class="citation-meta"><span class="journal">law.go.kr</span> | <span class="doi">연구 종료 후 개인정보 처리</span></div>
-            </div>
-          </a>
         </div>
 
       </div>
@@ -789,71 +1099,120 @@
       <div class="chat-header">
         <div class="title">
           <span class="icon">🤖</span>
-          IRB 심의 어시스턴트
+          IRB AI 상담
         </div>
         <div class="sub">규정 기반으로 안내합니다</div>
       </div>
 
-      <div class="chat-context">
-        <div class="label">현재 연구</div>
-        <div class="value">저탄수화물 식단 혈당 RCT</div>
-        <div class="chat-context-chips">
-          <span class="chat-context-chip">정규심의</span>
-          <span class="chat-context-chip">RCT</span>
-          <span class="chat-context-chip">인간대상</span>
-          <span class="chat-context-chip">n=100</span>
+      <!-- ========== CHAT CASE 1 ========== -->
+      <div class="case-content" data-case="1" style="display:flex; flex-direction:column; flex:1; min-height:0;">
+        <div class="chat-context">
+          <div class="label">현재 연구</div>
+          <div class="value">공개 데이터셋 2차 분석 연구</div>
+          <div class="chat-context-chips">
+            <span class="chat-context-chip">2차 분석</span>
+            <span class="chat-context-chip">공개 데이터</span>
+            <span class="chat-context-chip">비식별</span>
+          </div>
+        </div>
+
+        <div class="chat-messages">
+          <div class="msg ai">
+            <div class="sender">IRB 어시스턴트</div>
+            본 연구는 기존 공개 데이터셋의 2차 분석으로, 인간대상연구에 해당하지 않아 IRB 심의가 필요하지 않습니다.<br><br>
+            다만 데이터 사용 시 <strong>출처 명시</strong>와 <strong>라이선스 조건 준수</strong>가 필요합니다.
+          </div>
+        </div>
+
+        <div class="chat-quick">
+          <div class="label">빠른 질문</div>
+          <div class="chat-quick-chips">
+            <span class="chat-quick-chip">정말 IRB 안 해도 되나요?</span>
+            <span class="chat-quick-chip">데이터 라이선스 확인</span>
+          </div>
         </div>
       </div>
 
-      <div class="chat-messages">
-        <div class="msg ai">
-          <div class="sender">IRB 어시스턴트</div>
-          연구계획서를 분석했습니다. <strong>정규심의 대상</strong>입니다.<br><br>
-          주요 근거:<br>
-          ① RCT 설계 (무작위 배정)<br>
-          ② 식단 개입 (생활습관 변경)<br>
-          ③ CGM 데이터 수집 (민감정보)<br><br>
-          서류 3건 AI 초안 완료, <strong>연구자 이력서만 업로드</strong>하시면 됩니다.
+      <!-- ========== CHAT CASE 2 ========== -->
+      <div class="case-content" data-case="2" style="display:flex; flex-direction:column; flex:1; min-height:0;">
+        <div class="chat-context">
+          <div class="label">현재 연구</div>
+          <div class="value">운동 습관 익명 설문 연구</div>
+          <div class="chat-context-chips">
+            <span class="chat-context-chip">심의면제</span>
+            <span class="chat-context-chip">익명설문</span>
+            <span class="chat-context-chip">n=300</span>
+          </div>
         </div>
 
-        <div class="msg user">
-          <div class="sender">김연구</div>
-          심의면제 가능한 방법은 없을까?
+        <div class="chat-messages">
+          <div class="msg ai">
+            <div class="sender">IRB 어시스턴트</div>
+            본 연구는 <strong>심의면제 대상</strong>에 해당합니다. 다만, 면제라 하더라도 기관생명윤리위원회에 면제 확인 신고서를 제출해야 합니다.<br><br>
+            신고서는 간단한 양식으로, 보통 <strong>1-2일 내</strong> 확인됩니다.
+          </div>
+
+          <div class="msg user">
+            <div class="sender">김연구</div>
+            면제인데 왜 신고를 해야 해?
+          </div>
+
+          <div class="msg ai">
+            <div class="sender">IRB 어시스턴트</div>
+            생명윤리법상 모든 인간대상연구는 심의 또는 면제 확인을 받아야 합니다.<br><br>
+            면제 신고는 <strong>"이 연구가 면제 요건을 충족함"</strong>을 기관에 공식적으로 확인받는 절차입니다. 심사가 아니라 확인이므로, 서류 준비 부담이 거의 없습니다.
+          </div>
         </div>
 
-        <div class="msg ai">
-          <div class="sender">IRB 어시스턴트</div>
-          현재 설계에서는 어렵습니다.<br><br>
-          면제 요건(시행규칙 제13조):<br>
-          ① 공개 정보 활용 → ✗<br>
-          ② 비식별 데이터 → ✗<br>
-          ③ 미미한 위험 설문 → ✗<br><br>
-          RCT + 식단 개입은 해당 없음.<br><br>
-          단, 향후 <strong>후향적 분석</strong>으로 전환하면 신속심의 가능합니다.
-        </div>
-
-        <div class="msg user">
-          <div class="sender">김연구</div>
-          IRB 승인 얼마나 걸려?
-        </div>
-
-        <div class="msg ai">
-          <div class="sender">IRB 어시스턴트</div>
-          일반적으로:<br>
-          - <strong>정규심의</strong>: 2-4주<br>
-          - <strong>신속심의</strong>: 1-2주<br>
-          - <strong>면제</strong>: 즉시<br><br>
-          서울대병원 IRB는 매월 2회 심의(1일, 15일). 서류 제출 → 다음 심의일에 검토 → 결과 통보(1-3일).
+        <div class="chat-quick">
+          <div class="label">빠른 질문</div>
+          <div class="chat-quick-chips">
+            <span class="chat-quick-chip">면제 신고서 미리보기</span>
+            <span class="chat-quick-chip">면제 조건 상세</span>
+            <span class="chat-quick-chip">면제 vs 신속심의</span>
+          </div>
         </div>
       </div>
 
-      <div class="chat-quick">
-        <div class="label">빠른 질문</div>
-        <div class="chat-quick-chips">
-          <span class="chat-quick-chip">면제 가능성</span>
-          <span class="chat-quick-chip">서류 검토</span>
-          <span class="chat-quick-chip">승인 기간</span>
-          <span class="chat-quick-chip">동의서 필수항목</span>
+      <!-- ========== CHAT CASE 3 (DEFAULT) ========== -->
+      <div class="case-content active" data-case="3" style="display:flex; flex-direction:column; flex:1; min-height:0;">
+        <div class="chat-context">
+          <div class="label">현재 연구</div>
+          <div class="value">당뇨 혈당 연구 — IRB 심의 준비</div>
+          <div class="chat-context-chips">
+            <span class="chat-context-chip">정규심의</span>
+            <span class="chat-context-chip">RCT</span>
+            <span class="chat-context-chip">CGM</span>
+            <span class="chat-context-chip">n=100</span>
+          </div>
+        </div>
+
+        <div class="chat-messages">
+          <div class="msg ai">
+            <div class="sender">IRB 어시스턴트</div>
+            본 연구는 RCT 방법론과 민감 건강데이터(CGM) 수집으로 인해 <strong>정규심의 대상</strong>입니다.<br><br>
+            AI가 연구계획서, 동의서, 서약서 초안을 생성했습니다. <strong>연구자 이력서만 업로드</strong>하시면 제출 준비가 완료됩니다.
+          </div>
+
+          <div class="msg user">
+            <div class="sender">김연구</div>
+            신속심의로 바꿀 수는 없어?
+          </div>
+
+          <div class="msg ai">
+            <div class="sender">IRB 어시스턴트</div>
+            RCT는 연구대상자에 대한 <strong>직접적 개입</strong>이 포함되어 신속심의 대상이 아닙니다.<br><br>
+            생명윤리법 시행규칙 제14조에 따르면 신속심의는 <strong>"최소 위험 연구"</strong>에 한하며, RCT는 이에 해당하지 않습니다.
+          </div>
+        </div>
+
+        <div class="chat-quick">
+          <div class="label">빠른 질문</div>
+          <div class="chat-quick-chips">
+            <span class="chat-quick-chip">서류 미리보기</span>
+            <span class="chat-quick-chip">심의 기간 예측</span>
+            <span class="chat-quick-chip">수정 요청 대비</span>
+          </div>
         </div>
       </div>
 
@@ -868,7 +1227,7 @@
 
   <!-- 스텝 네비게이션 -->
   <div class="step-nav-float">
-    <a href="create-step3.html">← Step 3 (데이터 수집)</a>
+    <a href="create-step3.html">← Step 3 (데이터수집)</a>
     <a href="create-step5.html">Step 5 (에스크로) →</a>
   </div>
 
@@ -876,44 +1235,70 @@
   <button class="toggle-notes" onclick="document.querySelector('.designer-notes').classList.toggle('show')">📋 디자이너 노트</button>
 
   <div class="designer-notes">
-    <h3>📋 디자이너 노트: Step 4 - IRB 워크스페이스 (4분할)</h3>
+    <h3>📋 디자이너 노트: Step 4 - IRB 워크스페이스 (4분할 × 3케이스)</h3>
     <div class="content">
       <strong>레이아웃:</strong><br>
-      기존 단일컬럼 → <strong>4분할 워크스페이스</strong><br>
       ① Nav (240px) | ② IRB 에디터 (flex:1) | ③ 규정 레포트 (360px) | ④ IRB AI 상담 (360px)<br><br>
 
-      <strong>② IRB 에디터:</strong><br>
-      - 심의 판정 (정규/신속/면제) + 제출 서류 관리 + 예산 요약<br>
-      - 연구 프로필은 이전 단계(1-3)에서 자동 전달<br>
-      - 서류 3건은 AI가 초안 생성, 이력서만 수동 업로드<br><br>
+      <strong>3-Case 토글 (와이어프레임 데모용):</strong><br>
+      - Case ① IRB 불필요: 공개 데이터 2차 분석 → 인간대상연구 비해당<br>
+      - Case ② 면제 해당: 익명 설문 연구 → 면제 신고 필요<br>
+      - Case ③ 정규심의: RCT + CGM → Full Board Review<br>
+      탭 클릭 시 에디터, 레포트, 채팅 3개 패널 동시 변경<br><br>
 
-      <strong>③ 규정 레포트 (NEW):</strong><br>
+      <strong>② IRB 에디터:</strong><br>
+      - 케이스별 판정 배지(녹/황/적) + 연구 프로필 + 사유/체크리스트 + 예산<br>
+      - Case ②: 면제 신고서 폼 내장<br>
+      - Case ③: 제출 서류 체크리스트 (AI 초안 3건 + 이력서 업로드)<br><br>
+
+      <strong>③ 규정 레포트:</strong><br>
       - RAG 기반 자동 생성, 법령/규정 링크 포함<br>
-      - 에디터 변경 시 자동 업데이트 (디바운스 호출)<br>
-      - 섹션: 심의 유형 근거 / 동의서 요건 / 유사 심의 사례 / 데이터 보호<br>
-      - 각 근거에 <strong>법령 링크 (law.go.kr)</strong> + 내부 SOP 참조 포함<br>
+      - 케이스별 다른 규정 근거 표시<br>
+      - 각 근거에 법령 링크 (law.go.kr) + 가이드라인 참조<br>
       - API: POST /api/ai/irb/report<br><br>
 
       <strong>④ IRB AI 상담:</strong><br>
-      - IRB 전문 상담, 규정 근거 기반 답변<br>
-      - 면제 가능성 판단, 서류 안내, 승인 기간 예측<br>
-      - 빠른 질문 칩으로 자주 묻는 IRB 질문 원터치<br>
+      - 케이스별 맥락에 맞는 대화 예시<br>
+      - 빠른 질문 칩도 케이스별 변경<br>
       - API: POST /api/ai/irb/chat (SSE 스트리밍)<br><br>
 
       <strong>데이터 흐름:</strong><br>
-      연구 설계 데이터(step 1-3) → IRB 자동 판정 → 규정 레포트 생성<br>
+      연구 설계 데이터(step 1-3) → IRB 자동 판정(3가지 중 1) → 규정 레포트 생성<br>
       에디터 변경 → 디바운스(500ms) → POST /api/ai/irb/report → 레포트 패널 업데이트<br>
       AI 채팅 → 연구 상태 + 규정 DB + 대화 → POST /api/ai/irb/chat → 스트리밍 응답
     </div>
   </div>
 
   <script>
-    function toggleExemption() {
-      var list = document.getElementById('exemptionList');
-      var arrow = document.getElementById('exemptionArrow');
-      list.classList.toggle('collapsed');
-      arrow.classList.toggle('open');
+    function switchCase(caseNum) {
+      // Update tabs
+      document.querySelectorAll('.case-tab').forEach(function(tab) {
+        tab.classList.remove('active');
+        if (parseInt(tab.getAttribute('data-case')) === caseNum) {
+          tab.classList.add('active');
+        }
+      });
+
+      // Update all case-content blocks across all panels
+      document.querySelectorAll('.case-content').forEach(function(block) {
+        var blockCase = parseInt(block.getAttribute('data-case'));
+        if (blockCase === caseNum) {
+          block.classList.add('active');
+          // For chat panels with flex layout
+          if (block.style.display === 'flex' || block.parentElement.classList.contains('chat-panel')) {
+            block.style.display = 'flex';
+          } else {
+            block.style.display = 'block';
+          }
+        } else {
+          block.classList.remove('active');
+          block.style.display = 'none';
+        }
+      });
     }
+
+    // Initialize: show case 3 by default
+    switchCase(3);
   </script>
 
   <script src="page-spec.js"></script>
