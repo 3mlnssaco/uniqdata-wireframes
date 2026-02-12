@@ -266,7 +266,10 @@
         <ul>
           <li><div class="label">&#x1F52C; 연구 프로젝트 + 마일스톤</div></li>
           <li style="border-left-color: #fbbf24; background: linear-gradient(90deg, #1a1500, #0d1117);">
-            <div class="label" style="color: #fbbf24;">&#x2B50; IRB 워크플로우 <span class="tag tag-irb" style="margin-left: 4px;">NEW</span></div>
+            <div class="label" style="color: #fbbf24;">&#x2B50; IRB 워크플로우 (3-Case: 불필요/면제/심의) <span class="tag tag-irb" style="margin-left: 4px;">NEW</span></div>
+          </li>
+          <li style="border-left-color: #fbbf24; background: linear-gradient(90deg, #1a1500, #0d1117);">
+            <div class="label" style="color: #fbbf24;">&#x1F504; 변경심의 (Amendment) <span class="tag tag-irb" style="margin-left: 4px;">NEW</span></div>
           </li>
           <li><div class="label">&#x1F465; 참여자 매칭/관리</div></li>
           <li><div class="label">&#x1F4B0; 정산 계산</div></li>
@@ -289,7 +292,7 @@
     <div style="background: #1e293b; border: 2px solid #34d399; padding: 14px 18px; border-radius: 10px; font-size: 11px; color: #cbd5e1; text-align: center; min-width: 160px;">
       <div style="font-weight: 700; color: #a7f3d0; margin-bottom: 4px;">&#x1F4E6; uniqdata_db</div>
       <div style="font-size: 10px; color: #94a3b8;">Business 전용</div>
-      <div style="font-size: 9px; color: #64748b; margin-top: 4px;">projects &middot; irb_submissions<br>irb_documents &middot; irb_review_comments<br>settlements</div>
+      <div style="font-size: 9px; color: #64748b; margin-top: 4px;">projects &middot; irb_determinations<br>irb_submissions &middot; irb_documents<br>irb_amendments &middot; settlements</div>
     </div>
     <div style="background: #1e1b4b; border: 2px solid #818cf8; padding: 14px 18px; border-radius: 10px; font-size: 11px; color: #c7d2fe; text-align: center; min-width: 140px;">
       <div style="font-weight: 700; margin-bottom: 4px;">&#x26D3;&#xFE0F; XRPL Ledger</div>
@@ -722,8 +725,67 @@
   </div>
 </div>
 
-<!-- ===== SECTION 10: 핵심 규칙 ===== -->
-<div class="section-divider"><span>&#x1F6A7; Section 10: 핵심 규칙 (Key Rules)</span></div>
+<!-- ===== SECTION 10: 연구 생성 6단계 플로우 ===== -->
+<div class="section-divider"><span>&#x1F3AF; Section 10: 연구 생성 플로우 (6 Steps)</span></div>
+
+<div class="card" style="overflow-x: auto;">
+  <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px; flex-wrap: wrap;">
+    <div style="background: #1e293b; border: 2px solid #3b82f6; border-radius: 10px; padding: 12px 16px; text-align: center; min-width: 120px;">
+      <div style="font-size: 11px; color: #60a5fa; font-weight: 700;">Step 1</div>
+      <div style="font-size: 13px; color: #e2e8f0; font-weight: 600;">AI &#xC778;&#xD130;&#xBDF0;</div>
+      <div style="font-size: 9px; color: #94a3b8; margin-top: 4px;">uniqdata-ai</div>
+    </div>
+    <div style="color: #6b7280; font-size: 16px;">&#x2192;</div>
+    <div style="background: #1e293b; border: 2px solid #3b82f6; border-radius: 10px; padding: 12px 16px; text-align: center; min-width: 120px;">
+      <div style="font-size: 11px; color: #60a5fa; font-weight: 700;">Step 2</div>
+      <div style="font-size: 13px; color: #e2e8f0; font-weight: 600;">&#xC5F0;&#xAD6C; &#xC124;&#xACC4;</div>
+      <div style="font-size: 9px; color: #94a3b8; margin-top: 4px;">AI + Business</div>
+    </div>
+    <div style="color: #6b7280; font-size: 16px;">&#x2192;</div>
+    <div style="background: #1e293b; border: 2px solid #3b82f6; border-radius: 10px; padding: 12px 16px; text-align: center; min-width: 120px;">
+      <div style="font-size: 11px; color: #60a5fa; font-weight: 700;">Step 3</div>
+      <div style="font-size: 13px; color: #e2e8f0; font-weight: 600;">&#xB370;&#xC774;&#xD130; &#xC218;&#xC9D1;</div>
+      <div style="font-size: 9px; color: #94a3b8; margin-top: 4px;">Business</div>
+    </div>
+    <div style="color: #6b7280; font-size: 16px;">&#x2192;</div>
+    <div style="background: #1e293b; border: 2px solid #8b5cf6; border-radius: 10px; padding: 12px 16px; text-align: center; min-width: 120px;">
+      <div style="font-size: 11px; color: #a78bfa; font-weight: 700;">Step 4</div>
+      <div style="font-size: 13px; color: #e2e8f0; font-weight: 600;">&#xBAA8;&#xC9D1; &#xC124;&#xC815;</div>
+      <div style="font-size: 9px; color: #94a3b8; margin-top: 4px;">Business</div>
+    </div>
+    <div style="color: #6b7280; font-size: 16px;">&#x2192;</div>
+    <div style="background: #1e293b; border: 2px solid #fbbf24; border-radius: 10px; padding: 12px 16px; text-align: center; min-width: 120px;">
+      <div style="font-size: 11px; color: #fbbf24; font-weight: 700;">Step 5</div>
+      <div style="font-size: 13px; color: #e2e8f0; font-weight: 600;">IRB &#xD310;&#xC815;</div>
+      <div style="font-size: 9px; color: #94a3b8; margin-top: 4px;">AI + Business</div>
+    </div>
+    <div style="color: #6b7280; font-size: 16px;">&#x2192;</div>
+    <div style="background: #1e293b; border: 2px solid #34d399; border-radius: 10px; padding: 12px 16px; text-align: center; min-width: 120px;">
+      <div style="font-size: 11px; color: #34d399; font-weight: 700;">Step 6</div>
+      <div style="font-size: 13px; color: #e2e8f0; font-weight: 600;">&#xC5D0;&#xC2A4;&#xD06C;&#xB85C;</div>
+      <div style="font-size: 9px; color: #94a3b8; margin-top: 4px;">Core (XRPL)</div>
+    </div>
+  </div>
+
+  <div style="font-size: 12px; font-weight: 700; color: #fbbf24; margin: 16px 0 8px;">Step 5 IRB &#xD310;&#xC815; &#x2014; 3-Case &#xBD84;&#xAE30;</div>
+  <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+    <div style="flex: 1; min-width: 180px; background: #052e16; border: 1px solid #22c55e; border-radius: 8px; padding: 12px;">
+      <div style="font-size: 12px; font-weight: 700; color: #22c55e;">Case &#x2460; IRB &#xBD88;&#xD544;&#xC694;</div>
+      <div style="font-size: 10px; color: #86efac; margin-top: 4px;">&#xACF5;&#xAC1C; &#xB370;&#xC774;&#xD130; 2&#xCC28; &#xBD84;&#xC11D;<br>&#x2192; &#xBC14;&#xB85C; &#xC5D0;&#xC2A4;&#xD06C;&#xB85C;</div>
+    </div>
+    <div style="flex: 1; min-width: 180px; background: #451a03; border: 1px solid #f59e0b; border-radius: 8px; padding: 12px;">
+      <div style="font-size: 12px; font-weight: 700; color: #f59e0b;">Case &#x2461; &#xC2EC;&#xC758;&#xBA74;&#xC81C;</div>
+      <div style="font-size: 10px; color: #fcd34d; margin-top: 4px;">&#xC775;&#xBA85; &#xC124;&#xBB38; &#xB4F1;<br>&#x2192; &#xBA74;&#xC81C; &#xC2E0;&#xACE0;&#xC11C; &#xC81C;&#xCD9C; (1-2&#xC77C;)</div>
+    </div>
+    <div style="flex: 1; min-width: 180px; background: #450a0a; border: 1px solid #ef4444; border-radius: 8px; padding: 12px;">
+      <div style="font-size: 12px; font-weight: 700; color: #ef4444;">Case &#x2462; &#xC815;&#xADDC;&#xC2EC;&#xC758;</div>
+      <div style="font-size: 10px; color: #fca5a5; margin-top: 4px;">RCT, &#xBBFC;&#xAC10; &#xB370;&#xC774;&#xD130; &#xB4F1;<br>&#x2192; Full Board Review (4-6&#xC8FC;)</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SECTION 11: 핵심 규칙 ===== -->
+<div class="section-divider"><span>&#x1F6A7; Section 11: 핵심 규칙 (Key Rules)</span></div>
 
 <div class="three-col" style="display: flex; gap: 16px; margin-bottom: 24px;">
   <div style="flex: 1; background: #2e1065; border: 2px solid #a78bfa; border-radius: 10px; padding: 18px;">
@@ -741,7 +803,8 @@
     <div style="font-size: 13px; font-weight: 700; color: #a7f3d0; margin-bottom: 12px;">&#x1F4CA; Business 영역</div>
     <div style="font-size: 11px; color: #6ee7b7; line-height: 1.8;">
       &#x2713; 연구 프로젝트<br>
-      &#x2713; IRB 워크플로우<br>
+      &#x2713; IRB 워크플로우 (3-Case)<br>
+      &#x2713; 변경심의 (Amendment)<br>
       &#x2713; 정산 계산<br>
       &#x2713; 기관/팀 관리<br>
       &#x2713; 참여자 매칭
@@ -771,7 +834,7 @@
   </div>
 
   <p style="text-align: center; color: #6b7280; font-size: 11px; margin-top: 24px;">
-    v6.1 | 2026-02-11 | Enterprise+IRB 포털 통합 (역할 기반) + IRB 승인 XRPL 앵커링
+    v6.2 | 2026-02-12 | 연구 생성 6단계 플로우 + 3-Case IRB 판정 + 변경심의(Amendment) 추가
   </p>
 </div>
 
