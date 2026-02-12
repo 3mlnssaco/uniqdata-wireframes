@@ -398,22 +398,64 @@
         </a>
       </div>
 
+      <!-- 내 연구 목록 -->
+      <div class="nav-section" style="flex:1; overflow-y:auto;">
+        <div class="nav-section-title" style="display:flex; align-items:center; justify-content:space-between;">
+          내 연구
+          <span style="background:#3b82f6; color:white; font-size:11px; padding:2px 8px; border-radius:10px; font-weight:600;">3</span>
+        </div>
+
+        <!-- Active project (expanded) -->
+        <div style="margin-bottom:4px;">
+          <div style="display:flex; align-items:center; gap:10px; padding:10px 12px; background:rgba(59,130,246,0.15); border-radius:8px; cursor:pointer;">
+            <span style="font-size:16px;">📁</span>
+            <span style="flex:1; font-size:13px; color:#60a5fa; font-weight:500;">당뇨병 복약 순응도</span>
+            <span style="width:8px; height:8px; background:#22c55e; border-radius:50%;"></span>
+            <span style="font-size:10px; color:#64748b;">▼</span>
+          </div>
+          <!-- Sub items -->
+          <div style="margin-left:20px; border-left:1px solid #334155; padding-left:12px; margin-top:4px;">
+            <a href="#" style="display:flex; align-items:center; gap:8px; padding:6px 8px; border-radius:6px; font-size:12px; color:#94a3b8; text-decoration:none;">
+              <span style="width:5px; height:5px; background:#64748b; border-radius:50%; display:inline-block;"></span> 개요
+            </a>
+            <a href="#" style="display:flex; align-items:center; gap:8px; padding:6px 8px; border-radius:6px; font-size:12px; color:#94a3b8; text-decoration:none;">
+              <span style="width:5px; height:5px; background:#64748b; border-radius:50%; display:inline-block;"></span> 연구 자료
+            </a>
+            <a href="#" style="display:flex; align-items:center; gap:8px; padding:6px 8px; border-radius:6px; font-size:12px; color:#94a3b8; text-decoration:none;">
+              <span style="width:5px; height:5px; background:#64748b; border-radius:50%; display:inline-block;"></span> AI 허브
+              <span style="background:#22c55e; color:white; font-size:9px; padding:1px 6px; border-radius:8px; font-weight:700;">NEW</span>
+            </a>
+            <a href="#" style="display:flex; align-items:center; gap:8px; padding:6px 8px; border-radius:6px; font-size:12px; color:#94a3b8; text-decoration:none;">
+              <span style="width:5px; height:5px; background:#64748b; border-radius:50%; display:inline-block;"></span> 예산 관리
+            </a>
+          </div>
+        </div>
+
+        <!-- Other projects (collapsed) -->
+        <div style="display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:8px; cursor:pointer; margin-bottom:4px;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
+          <span style="font-size:16px;">📁</span>
+          <span style="flex:1; font-size:13px; color:#94a3b8;">노인 수면 패턴</span>
+          <span style="width:8px; height:8px; background:#3b82f6; border-radius:50%;"></span>
+          <span style="font-size:10px; color:#64748b;">▲</span>
+        </div>
+
+        <div style="display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:8px; cursor:pointer;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
+          <span style="font-size:16px;">📄</span>
+          <span style="flex:1; font-size:13px; color:#94a3b8;">ADHD 생활습관</span>
+          <span style="width:8px; height:8px; background:#64748b; border-radius:50%;"></span>
+          <span style="font-size:10px; color:#64748b;">▲</span>
+        </div>
+      </div>
+
       <!-- 스텝 표시 -->
       <div class="step-indicator">
         <div class="label">진행 단계</div>
         <div class="step-item done"><div class="num">✓</div> AI 설계</div>
-        <div class="step-item done"><div class="num">✓</div> 설계 확인</div>
+        <div class="step-item done"><div class="num">✓</div> 연구 설계</div>
         <div class="step-item active"><div class="num">3</div> 데이터 수집</div>
-        <div class="step-item pending"><div class="num">4</div> IRB 판정</div>
+        <div class="step-item pending"><div class="num">4</div> IRB</div>
         <div class="step-item pending"><div class="num">5</div> 에스크로</div>
         <div class="step-item pending"><div class="num">6</div> 모집 설정</div>
-      </div>
-
-      <div class="nav-section">
-        <div class="nav-section-title">관리</div>
-        <a href="../team.html" class="nav-item"><span class="icon">👥</span> 팀</a>
-        <a href="../billing.html" class="nav-item"><span class="icon">💳</span> 결제</a>
-        <a href="#" class="nav-item"><span class="icon">⚙️</span> 설정</a>
       </div>
 
       <div class="sidebar-footer">

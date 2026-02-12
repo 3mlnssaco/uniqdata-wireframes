@@ -8,10 +8,75 @@
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: -apple-system, sans-serif; background: #f5f5f5; }
     .layout { display: flex; min-height: 100vh; }
-    .sidebar { width: 240px; background: #1a1a1a; color: white; padding: 20px; flex-shrink: 0; }
-    .logo { font-size: 18px; font-weight: bold; margin-bottom: 30px; padding: 10px; }
-    .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 8px; margin-bottom: 4px; color: #9ca3af; }
-    .nav-item.active { background: #3b82f6; color: white; }
+    .sidebar {
+      width: 240px;
+      background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+    }
+    .logo {
+      padding: 20px 24px;
+      font-size: 20px;
+      font-weight: 700;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .logo-icon {
+      width: 32px; height: 32px;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; font-weight: bold;
+    }
+    .nav-section { padding: 16px 12px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    .nav-section-title { font-size: 11px; text-transform: uppercase; color: #64748b; padding: 8px 12px; letter-spacing: 0.5px; }
+    .nav-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 12px; border-radius: 8px; color: #94a3b8;
+      cursor: pointer; font-size: 14px; text-decoration: none; transition: all 0.15s;
+    }
+    .nav-item:hover { background: rgba(255,255,255,0.05); color: #e2e8f0; }
+    .nav-item.active { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
+    .nav-item .icon { width: 20px; text-align: center; }
+
+    /* 스텝 표시 (사이드바) */
+    .step-indicator {
+      padding: 16px 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .step-indicator .label { font-size: 11px; color: #64748b; margin-bottom: 10px; padding: 0 12px; }
+    .step-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 12px; border-radius: 6px; font-size: 13px;
+      margin-bottom: 4px;
+    }
+    .step-item .num {
+      width: 24px; height: 24px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 600;
+    }
+    .step-item.done .num { background: #22c55e; color: white; }
+    .step-item.active .num { background: #8b5cf6; color: white; }
+    .step-item.active { color: #e2e8f0; }
+    .step-item.pending .num { background: #334155; color: #64748b; }
+    .step-item.pending { color: #64748b; }
+
+    .sidebar-footer {
+      margin-top: auto; padding: 16px; border-top: 1px solid rgba(255,255,255,0.05);
+    }
+    .user-info { display: flex; align-items: center; gap: 12px; padding: 8px; }
+    .user-avatar {
+      width: 36px; height: 36px;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-size: 14px; color: white;
+    }
+    .user-name { font-size: 14px; color: #e2e8f0; }
+    .user-org { font-size: 12px; color: #64748b; }
 
     .main { flex: 1; padding: 32px; max-width: 900px; margin: 0 auto; }
     .main h1 { font-size: 28px; margin-bottom: 8px; }
@@ -68,43 +133,90 @@
 <body>
   <div class="layout">
     <div class="sidebar">
-      <div class="logo" style="display: flex; align-items: center; gap: 8px;">
-        <div style="width: 32px; height: 32px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: bold;">U</div>
+      <div class="logo">
+        <div class="logo-icon">U</div>
         UniQdata
       </div>
 
-      <div style="margin-top: 24px;">
+      <div class="nav-section">
         <a href="list.html" class="nav-item">
-          <span>🏠</span> 연구 허브
+          <span class="icon">🏠</span> 연구 허브
         </a>
       </div>
 
-      <div style="margin-top: 16px;">
-        <div style="font-size: 11px; color: #6b7280; padding: 8px 12px; text-transform: uppercase;">연구</div>
+      <div class="nav-section">
+        <div class="nav-section-title">연구</div>
         <a href="create.html" class="nav-item active">
-          <span>➕</span> 새 연구
+          <span class="icon">➕</span> 새 연구
         </a>
       </div>
 
-      <div style="margin-top: 16px;">
-        <div style="font-size: 11px; color: #6b7280; padding: 8px 12px; text-transform: uppercase;">관리</div>
-        <a href="../team.html" class="nav-item">
-          <span>👥</span> 팀
-        </a>
-        <a href="../billing.html" class="nav-item">
-          <span>💳</span> 결제
-        </a>
-        <a href="#" class="nav-item">
-          <span>⚙️</span> 설정
-        </a>
+      <!-- 내 연구 목록 -->
+      <div class="nav-section" style="flex:1; overflow-y:auto;">
+        <div class="nav-section-title" style="display:flex; align-items:center; justify-content:space-between;">
+          내 연구
+          <span style="background:#3b82f6; color:white; font-size:11px; padding:2px 8px; border-radius:10px; font-weight:600;">3</span>
+        </div>
+
+        <!-- Active project (expanded) -->
+        <div style="margin-bottom:4px;">
+          <div style="display:flex; align-items:center; gap:10px; padding:10px 12px; background:rgba(59,130,246,0.15); border-radius:8px; cursor:pointer;">
+            <span style="font-size:16px;">📁</span>
+            <span style="flex:1; font-size:13px; color:#60a5fa; font-weight:500;">당뇨병 복약 순응도</span>
+            <span style="width:8px; height:8px; background:#22c55e; border-radius:50%;"></span>
+            <span style="font-size:10px; color:#64748b;">▼</span>
+          </div>
+          <!-- Sub items -->
+          <div style="margin-left:20px; border-left:1px solid #334155; padding-left:12px; margin-top:4px;">
+            <a href="#" style="display:flex; align-items:center; gap:8px; padding:6px 8px; border-radius:6px; font-size:12px; color:#94a3b8; text-decoration:none;">
+              <span style="width:5px; height:5px; background:#64748b; border-radius:50%; display:inline-block;"></span> 개요
+            </a>
+            <a href="#" style="display:flex; align-items:center; gap:8px; padding:6px 8px; border-radius:6px; font-size:12px; color:#94a3b8; text-decoration:none;">
+              <span style="width:5px; height:5px; background:#64748b; border-radius:50%; display:inline-block;"></span> 연구 자료
+            </a>
+            <a href="#" style="display:flex; align-items:center; gap:8px; padding:6px 8px; border-radius:6px; font-size:12px; color:#94a3b8; text-decoration:none;">
+              <span style="width:5px; height:5px; background:#64748b; border-radius:50%; display:inline-block;"></span> AI 허브
+              <span style="background:#22c55e; color:white; font-size:9px; padding:1px 6px; border-radius:8px; font-weight:700;">NEW</span>
+            </a>
+            <a href="#" style="display:flex; align-items:center; gap:8px; padding:6px 8px; border-radius:6px; font-size:12px; color:#94a3b8; text-decoration:none;">
+              <span style="width:5px; height:5px; background:#64748b; border-radius:50%; display:inline-block;"></span> 예산 관리
+            </a>
+          </div>
+        </div>
+
+        <!-- Other projects (collapsed) -->
+        <div style="display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:8px; cursor:pointer; margin-bottom:4px;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
+          <span style="font-size:16px;">📁</span>
+          <span style="flex:1; font-size:13px; color:#94a3b8;">노인 수면 패턴</span>
+          <span style="width:8px; height:8px; background:#3b82f6; border-radius:50%;"></span>
+          <span style="font-size:10px; color:#64748b;">▲</span>
+        </div>
+
+        <div style="display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:8px; cursor:pointer;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
+          <span style="font-size:16px;">📄</span>
+          <span style="flex:1; font-size:13px; color:#94a3b8;">ADHD 생활습관</span>
+          <span style="width:8px; height:8px; background:#64748b; border-radius:50%;"></span>
+          <span style="font-size:10px; color:#64748b;">▲</span>
+        </div>
       </div>
 
-      <div style="margin-top: auto; padding-top: 20px; border-top: 1px solid #374151;">
-        <div style="display: flex; align-items: center; gap: 10px; padding: 12px;">
-          <div style="width: 36px; height: 36px; background: #3b82f6; border-radius: 50%; display: flex; align-items: center; justify-content: center;">김</div>
+      <!-- 스텝 표시 -->
+      <div class="step-indicator">
+        <div class="label">진행 단계</div>
+        <div class="step-item active"><div class="num">1</div> AI 설계</div>
+        <div class="step-item pending"><div class="num">2</div> 연구 설계</div>
+        <div class="step-item pending"><div class="num">3</div> 데이터 수집</div>
+        <div class="step-item pending"><div class="num">4</div> IRB</div>
+        <div class="step-item pending"><div class="num">5</div> 에스크로</div>
+        <div class="step-item pending"><div class="num">6</div> 모집 설정</div>
+      </div>
+
+      <div class="sidebar-footer">
+        <div class="user-info">
+          <div class="user-avatar">김</div>
           <div>
-            <div style="font-size: 13px; font-weight: 500;">김연구</div>
-            <div style="font-size: 11px; color: #9ca3af;">서울대학교병원</div>
+            <div class="user-name">김연구</div>
+            <div class="user-org">서울대학교병원</div>
           </div>
         </div>
       </div>
