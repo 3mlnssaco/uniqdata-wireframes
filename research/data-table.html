@@ -7,42 +7,53 @@
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: -apple-system, sans-serif; background: #f5f5f5; }
-    .layout { display: flex; min-height: 100vh; }
-    .sidebar { width: 260px; background: #1a1a1a; color: white; padding: 16px 12px; display: flex; flex-direction: column; }
-    .logo { font-size: 18px; font-weight: bold; margin-bottom: 20px; padding: 10px; }
-    .nav-section { margin-bottom: 8px; }
-    .nav-item { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 8px; margin-bottom: 4px; color: #9ca3af; text-decoration: none; font-size: 13px; transition: all 0.15s; }
-    .nav-item:hover { background: #252525; color: #ccc; }
-    .nav-item.active { background: #3b82f6; color: white; }
-    .nav-item .icon { width: 18px; text-align: center; font-size: 14px; }
-    .nav-project { margin-top: 8px; padding-top: 12px; border-top: 1px solid #2a2a2a; }
-    .nav-project-header { display: flex; align-items: center; gap: 8px; padding: 8px 12px; color: #666; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
-    .nav-project-name { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 8px; background: #252525; margin-bottom: 8px; color: #fff; font-size: 12px; font-weight: 500; cursor: pointer; border: 1px solid #333; }
-    .nav-project-name:hover { border-color: #3b82f6; }
-    .nav-project-name .folder { color: #3b82f6; }
-    .nav-sub { padding-left: 12px; border-left: 2px solid #2a2a2a; margin-left: 20px; }
-    .nav-sub-item { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 6px; color: #777; font-size: 12px; cursor: pointer; transition: all 0.15s; text-decoration: none; margin-bottom: 2px; }
-    .nav-sub-item:hover { background: #252525; color: #ccc; }
-    .nav-sub-item.active { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border-left: 2px solid #3b82f6; margin-left: -2px; padding-left: 14px; }
-    .nav-sub-item .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; opacity: 0.5; }
-    .nav-sub-item.active .dot { background: #3b82f6; opacity: 1; }
-    .nav-divider { height: 1px; background: #2a2a2a; margin: 12px 12px; }
-    .nav-sub-label { font-size: 10px; color: #555; font-weight: 600; padding: 6px 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+    /* ===== 레이아웃 ===== */
+    .layout { display: flex; min-height: 100vh; width: 100%; }
+
+    /* ① 사이드바 (좌측 네비게이션) */
+    .sidebar {
+      width: 240px;
+      background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+    }
+    .logo {
+      padding: 20px 24px;
+      font-size: 20px;
+      font-weight: 700;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .logo-icon {
+      width: 32px; height: 32px;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; font-weight: bold;
+    }
+    .nav-section { padding: 16px 12px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    .nav-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 12px; border-radius: 8px; color: #94a3b8;
+      cursor: pointer; font-size: 14px; text-decoration: none; transition: all 0.15s;
+    }
+    .nav-item:hover { background: rgba(255,255,255,0.05); color: #e2e8f0; }
+    .nav-item.active { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
+    .nav-item .icon { width: 20px; text-align: center; }
 
     /* 연구 네비게이션 */
     .research-nav-item { margin-bottom: 2px; }
     .research-nav-header {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 12px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 12px;
-      color: #888;
-      transition: all 0.15s;
+      display: flex; align-items: center; gap: 8px;
+      padding: 8px 12px; border-radius: 8px; cursor: pointer;
+      font-size: 13px; color: #94a3b8; transition: all 0.15s;
     }
-    .research-nav-header:hover { background: #252525; color: #ccc; }
+    .research-nav-header:hover { background: rgba(255,255,255,0.05); color: #e2e8f0; }
     .research-nav-item.expanded .research-nav-header { background: rgba(59, 130, 246, 0.1); color: #60a5fa; }
     .folder-icon { font-size: 13px; }
     .research-title { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -51,267 +62,324 @@
     .status-dot.recruiting { background: #3b82f6; }
     .status-dot.draft { background: #6b7280; }
     .research-nav-sub {
-      display: none;
-      padding-left: 20px;
-      margin-top: 4px;
-      border-left: 2px solid #333;
-      margin-left: 18px;
+      display: none; padding-left: 20px; margin-top: 4px;
+      border-left: 2px solid rgba(255,255,255,0.1); margin-left: 18px;
     }
     .research-nav-item.expanded .research-nav-sub { display: block; }
-    .research-nav-item.collapsed .research-nav-sub { display: none; }
-    .nav-sub-divider { height: 1px; background: #333; margin: 8px 0; }
-    .main { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
-    .header { background: white; padding: 16px 24px; border-bottom: 1px solid #e5e7eb; }
-    .content { padding: 24px; flex: 1; overflow: auto; }
+    .nav-sub-item {
+      display: flex; align-items: center; gap: 8px;
+      padding: 8px 12px; border-radius: 6px; color: #94a3b8;
+      font-size: 12px; cursor: pointer; transition: all 0.15s; text-decoration: none; margin-bottom: 2px;
+    }
+    .nav-sub-item:hover { background: rgba(255,255,255,0.05); color: #e2e8f0; }
+    .nav-sub-item.active { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border-left: 2px solid #3b82f6; margin-left: -2px; padding-left: 14px; }
+    .nav-sub-item .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; opacity: 0.5; }
+    .nav-sub-item.active .dot { background: #3b82f6; opacity: 1; }
 
-    .breadcrumb { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; font-size: 14px; color: #6b7280; }
+    .sidebar-footer {
+      margin-top: auto; padding: 16px; border-top: 1px solid rgba(255,255,255,0.05);
+    }
+    .user-info-sidebar { display: flex; align-items: center; gap: 12px; padding: 8px; }
+    .user-avatar-sidebar {
+      width: 36px; height: 36px;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-size: 14px; color: white;
+    }
+    .user-name-sidebar { font-size: 14px; color: #e2e8f0; }
+    .user-org-sidebar { font-size: 12px; color: #64748b; }
+
+    /* ② Workspace wrapper */
+    .workspace-wrap {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    /* 상단 바 (Top Bar) */
+    .top-bar {
+      background: white;
+      border-bottom: 1px solid #e5e7eb;
+      padding: 16px 28px 0;
+      flex-shrink: 0;
+    }
+    .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #6b7280; margin-bottom: 12px; }
     .breadcrumb a { color: #3b82f6; text-decoration: none; }
+    .breadcrumb a:hover { text-decoration: underline; }
+    .top-bar-title { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; }
+    .top-bar-title h1 { font-size: 22px; font-weight: 700; color: #0f172a; }
+    .top-bar-tabs { display: flex; gap: 0; }
+    .top-bar-tab {
+      padding: 10px 20px; font-size: 14px; color: #6b7280; cursor: pointer;
+      border-bottom: 2px solid transparent; margin-bottom: -1px; text-decoration: none;
+    }
+    .top-bar-tab.active { color: #3b82f6; border-bottom-color: #3b82f6; font-weight: 600; }
+    .top-bar-tab:hover { color: #374151; }
 
-    h1 { font-size: 24px; margin-bottom: 8px; }
-    .subtitle { color: #6b7280; margin-bottom: 24px; }
+    /* Workspace (테이블 + 디테일) */
+    .workspace {
+      flex: 1;
+      display: flex;
+      min-height: 0;
+      overflow: hidden;
+    }
 
-    .tabs { display: flex; gap: 4px; border-bottom: 1px solid #e5e7eb; margin-bottom: 24px; }
-    .tab { padding: 12px 20px; font-size: 14px; color: #6b7280; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; text-decoration: none; }
-    .tab.active { color: #3b82f6; border-bottom-color: #3b82f6; font-weight: 500; }
+    /* ③ 테이블 패널 (왼쪽) */
+    .table-panel {
+      flex: 1;
+      overflow-y: auto;
+      background: white;
+      display: flex;
+      flex-direction: column;
+    }
+    .table-panel-inner { padding: 20px 24px; flex: 1; display: flex; flex-direction: column; }
 
     /* 툴바 */
-    .toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 12px; }
-    .toolbar-left { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
-    .toolbar-right { display: flex; gap: 8px; }
+    .toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 10px; }
+    .toolbar-left { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+    .toolbar-right { display: flex; gap: 6px; align-items: center; }
 
-    /* 뷰 토글 */
-    .view-toggle { display: flex; border: 2px solid #3b82f6; border-radius: 8px; overflow: hidden; }
-    .view-btn { padding: 10px 20px; font-size: 13px; background: white; border: none; cursor: pointer; font-weight: 500; }
-    .view-btn.active { background: #3b82f6; color: white; }
+    /* 기간 토글 */
+    .period-toggle { display: flex; gap: 2px; background: #f3f4f6; padding: 3px; border-radius: 8px; }
+    .period-btn {
+      padding: 6px 14px; border: none; border-radius: 6px; font-size: 12px;
+      cursor: pointer; background: transparent; color: #6b7280; font-weight: 500;
+    }
+    .period-btn.active { background: white; color: #1f2937; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
 
     /* 날짜 네비게이터 */
     .date-navigator {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      background: white;
-      border: 1px solid #e5e7eb;
-      border-radius: 12px;
-      padding: 12px 20px;
-      margin-bottom: 16px;
+      display: flex; align-items: center; gap: 8px;
+      background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 6px 12px;
     }
     .date-nav-btn {
-      width: 36px;
-      height: 36px;
-      border: 1px solid #e5e7eb;
-      border-radius: 8px;
-      background: white;
-      font-size: 16px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      width: 28px; height: 28px; border: 1px solid #e5e7eb; border-radius: 6px;
+      background: white; font-size: 12px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
     }
     .date-nav-btn:hover { background: #f3f4f6; }
-    .date-nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
-    .current-date {
-      font-size: 20px;
-      font-weight: 600;
-      color: #1f2937;
-      min-width: 160px;
-      text-align: center;
-    }
+    .current-date { font-size: 13px; font-weight: 600; color: #1f2937; white-space: nowrap; }
     .date-picker-btn {
-      padding: 8px 12px;
-      border: 1px solid #e5e7eb;
-      border-radius: 8px;
-      background: white;
-      font-size: 13px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
+      padding: 4px 8px; border: 1px solid #e5e7eb; border-radius: 6px;
+      background: white; font-size: 12px; cursor: pointer;
     }
-    .date-range-info {
-      font-size: 12px;
-      color: #6b7280;
-      margin-left: auto;
-    }
+    .date-range-info { font-size: 11px; color: #6b7280; white-space: nowrap; }
 
-    /* 날짜 통계 (압축) */
+    .search-box { padding: 6px 12px; border: 1px solid #e5e7eb; border-radius: 8px; width: 160px; font-size: 12px; }
+    .search-box:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 2px rgba(59,130,246,0.1); }
+    .col-picker-btn {
+      padding: 6px 12px; border: 1px solid #e5e7eb; border-radius: 8px;
+      background: white; font-size: 12px; cursor: pointer; display: flex; align-items: center; gap: 4px; color: #374151;
+      position: relative;
+    }
+    .col-picker-btn:hover { border-color: #3b82f6; color: #3b82f6; }
+    .export-btn {
+      padding: 6px 14px; border: 1px solid #e5e7eb; border-radius: 8px;
+      background: white; font-size: 12px; cursor: pointer; color: #374151;
+    }
+    .export-btn:hover { background: #f9fafb; border-color: #3b82f6; }
 
-    /* 기간 토글 */
-    .period-toggle {
-      display: flex;
-      gap: 4px;
-      background: #f3f4f6;
-      padding: 4px;
-      border-radius: 8px;
+    /* 요약 칩 */
+    .stats-strip { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+    .stat-chip {
+      padding: 5px 10px; border-radius: 999px; background: #f1f5f9;
+      color: #475569; font-size: 11px; border: 1px solid #e2e8f0;
     }
-    .period-btn {
-      padding: 8px 16px;
-      border: none;
-      border-radius: 6px;
-      font-size: 13px;
-      cursor: pointer;
-      background: transparent;
-      color: #6b7280;
-      font-weight: 500;
-    }
-    .period-btn.active {
-      background: white;
-      color: #1f2937;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    }
+    .stat-chip strong { color: #0f172a; }
+    .stat-chip.danger { background: #fef2f2; border-color: #fecaca; color: #991b1b; }
 
-    /* 스파크라인 (미니 차트) */
-    .sparkline {
-      display: flex;
-      align-items: flex-end;
-      gap: 2px;
-      height: 24px;
+    /* 테이블 컨테이너 */
+    .table-container { background: white; border: 1px solid #e5e7eb; border-radius: 10px; overflow: hidden; flex: 1; display: flex; flex-direction: column; }
+    .data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .data-table th {
+      background: #f9fafb; padding: 10px 14px; text-align: left;
+      font-weight: 600; border-bottom: 2px solid #e5e7eb;
+      position: sticky; top: 0; white-space: nowrap; font-size: 12px; color: #374151;
     }
-    .spark-bar {
-      width: 4px;
-      border-radius: 2px;
-      background: #3b82f6;
-    }
-    .spark-bar.low { height: 20%; background: #22c55e; }
-    .spark-bar.med { height: 50%; background: #3b82f6; }
-    .spark-bar.high { height: 80%; background: #f59e0b; }
-    .spark-bar.danger { height: 100%; background: #ef4444; }
+    .data-table th.sortable { cursor: pointer; }
+    .data-table th.sortable:hover { background: #f3f4f6; }
+    .data-table th .sort-icon { margin-left: 4px; color: #9ca3af; font-size: 10px; }
+    .data-table td { padding: 10px 14px; border-bottom: 1px solid #f3f4f6; font-size: 13px; }
+    .data-table tr { cursor: pointer; transition: background 0.1s; }
+    .data-table tr:hover { background: #fafafa; }
+    .data-table tr.selected { background: #eff6ff; border-left: 3px solid #3b82f6; }
+    .data-table tr.selected td:first-child { padding-left: 11px; }
+
+    .col-id { font-family: 'SF Mono', Monaco, monospace; color: #374151; font-weight: 600; font-size: 13px; }
+    .col-number { text-align: right; font-family: 'SF Mono', Monaco, monospace; }
+
+    /* 상태 뱃지 */
+    .status-badge { display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; }
+    .status-badge.good { background: #dcfce7; color: #166534; }
+    .status-badge.warn { background: #fef3c7; color: #92400e; }
+    .status-badge.danger { background: #fee2e2; color: #991b1b; }
+
+    /* 트렌드 표시 */
+    .trend { display: flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 500; }
+    .trend.stable { color: #6b7280; }
+    .trend.up { color: #ef4444; }
+    .trend.down { color: #22c55e; }
+    .trend.critical { color: #ef4444; font-weight: 700; }
 
     /* 복약 도트 */
-    .med-dots {
-      display: flex;
-      gap: 3px;
-    }
-    .med-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-    }
+    .med-dots { display: flex; gap: 3px; align-items: center; }
+    .med-dot { width: 7px; height: 7px; border-radius: 50%; }
     .med-dot.yes { background: #22c55e; }
     .med-dot.no { background: #ef4444; }
 
-    /* 트렌드 표시 */
-    .trend {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      font-size: 12px;
-    }
-    .trend.up { color: #ef4444; }
-    .trend.down { color: #22c55e; }
-    .trend.stable { color: #6b7280; }
-
-    /* 히트맵 셀 */
-    .heatmap-cell {
-      padding: 8px 12px;
-      border-radius: 4px;
-      text-align: center;
-      font-weight: 500;
-    }
-    .heatmap-cell.good { background: #dcfce7; color: #166534; }
-    .heatmap-cell.warn { background: #fef3c7; color: #92400e; }
-    .heatmap-cell.bad { background: #fee2e2; color: #991b1b; }
-
-    .search-box { padding: 8px 12px; border: 1px solid #e5e7eb; border-radius: 8px; width: 200px; font-size: 13px; }
-    .filter-btn { padding: 8px 16px; border: 1px solid #e5e7eb; border-radius: 8px; background: white; font-size: 13px; cursor: pointer; }
-    .export-btn { padding: 8px 16px; border: 1px solid #e5e7eb; border-radius: 8px; background: white; font-size: 13px; cursor: pointer; }
-    .export-btn:hover { background: #f9fafb; }
-
-    /* 알림 박스 (정리됨) */
-
-    /* 요약 칩 */
-    .stats-strip { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0 16px; }
-    .stat-chip { padding: 6px 10px; border-radius: 999px; background: #f1f5f9; color: #475569; font-size: 12px; border: 1px solid #e2e8f0; }
-    .stat-chip strong { color: #0f172a; }
-
-    /* 테이블 컨테이너 */
-    .table-container { background: white; border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden; }
-
-    .data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    .data-table th { background: #f9fafb; padding: 12px 16px; text-align: left; font-weight: 600; border-bottom: 2px solid #e5e7eb; position: sticky; top: 0; white-space: nowrap; }
-    .data-table th.sortable { cursor: pointer; }
-    .data-table th.sortable:hover { background: #f3f4f6; }
-    .data-table th .sort-icon { margin-left: 4px; color: #9ca3af; }
-    .data-table td { padding: 12px 16px; border-bottom: 1px solid #f3f4f6; }
-    .data-table tr:hover { background: #fafafa; }
-    .data-table tr:last-child td { border-bottom: none; }
-
-    .col-id { font-family: monospace; color: #6b7280; }
-    .col-date { color: #6b7280; font-family: monospace; }
-    .col-number { text-align: right; font-family: monospace; }
-    .col-check { text-align: center; }
-    .col-check .yes { color: #22c55e; }
-    .col-check .no { color: #ef4444; }
-
-    /* 로컬 이름 입력 */
-    .local-name { display: flex; align-items: center; gap: 6px; }
-    .local-name input { width: 80px; padding: 4px 8px; border: 1px dashed #d1d5db; border-radius: 4px; font-size: 12px; background: #fafafa; }
-    .local-name input:focus { border-style: solid; border-color: #8b5cf6; background: white; outline: none; }
-    .local-name .placeholder { color: #9ca3af; font-size: 12px; cursor: pointer; }
-    .local-name .placeholder:hover { color: #6b7280; }
-    .local-badge { font-size: 10px; background: #f3e8ff; color: #7c3aed; padding: 2px 6px; border-radius: 4px; }
-
-    /* 참여자 행 그룹 */
-    .data-table tr.participant-first td { border-top: 2px solid #e5e7eb; }
-    .data-table tr.participant-first td:first-child { font-weight: 600; }
-
     /* 페이지네이션 */
-    .pagination { display: flex; justify-content: space-between; align-items: center; padding: 16px; border-top: 1px solid #e5e7eb; }
-    .pagination-info { font-size: 13px; color: #6b7280; }
+    .pagination { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border-top: 1px solid #e5e7eb; margin-top: auto; }
+    .pagination-info { font-size: 12px; color: #6b7280; }
     .pagination-controls { display: flex; gap: 4px; }
-    .page-btn { padding: 6px 12px; border: 1px solid #e5e7eb; border-radius: 6px; background: white; font-size: 13px; cursor: pointer; }
+    .page-btn { padding: 4px 10px; border: 1px solid #e5e7eb; border-radius: 6px; background: white; font-size: 12px; cursor: pointer; }
     .page-btn.active { background: #3b82f6; color: white; border-color: #3b82f6; }
 
-    .note { background: #fef3c7; border: 1px solid #fcd34d; padding: 12px; border-radius: 8px; font-size: 13px; margin-top: 16px; }
-    .inline-note { font-size: 12px; color: #64748b; margin-top: 6px; }
-    .step-nav { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
-    .step-nav a { padding: 8px 16px; background: #eee; border-radius: 6px; text-decoration: none; color: #333; font-size: 14px; }
+    /* 컬럼 선택기 (드롭다운, 기본 숨김) */
+    .col-picker-dropdown {
+      display: none;
+      position: absolute; top: 36px; right: 0; z-index: 50;
+      width: 240px; background: white; border: 1px solid #e5e7eb;
+      border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,0.12); padding: 16px;
+    }
+    .col-picker-dropdown h4 { font-size: 13px; font-weight: 600; color: #1f2937; margin-bottom: 12px; }
+    .col-picker-item { display: flex; align-items: center; gap: 8px; padding: 6px 0; font-size: 12px; color: #374151; }
+    .col-picker-item input { accent-color: #3b82f6; width: 14px; height: 14px; }
+    .col-picker-note { font-size: 10px; color: #94a3b8; margin-top: 10px; padding-top: 10px; border-top: 1px solid #f3f4f6; }
 
-    /* 메인 그리드 (콘텐츠 + AI 패널) */
-    .main-grid { display: grid; grid-template-columns: 1fr 360px; gap: 0; height: 100%; }
-    @media (max-width: 1200px) { .main-grid { grid-template-columns: 1fr; } }
-    .main-content { padding: 24px; overflow: auto; }
-
-    /* AI 패널 */
-    .ai-panel {
-      width: 360px;
-      background: linear-gradient(180deg, #0f172a 0%, #1e1e2e 100%);
-      border-left: 1px solid #1e293b;
+    /* ④ 디테일 패널 (오른쪽) */
+    .detail-panel {
+      width: 420px;
+      flex-shrink: 0;
+      border-left: 1px solid #e5e7eb;
+      background: #f8fafc;
+      overflow-y: auto;
       display: flex;
       flex-direction: column;
-      color: white;
     }
-    .ai-header { padding: 16px 20px; border-bottom: 1px solid #334155; }
-    .ai-header h2 { font-size: 15px; font-weight: 600; display: flex; align-items: center; gap: 10px; }
-    .ai-header h2 .dot { width: 8px; height: 8px; background: #10b981; border-radius: 50%; animation: pulse 2s infinite; }
-    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-    .ai-header .sub { font-size: 11px; color: #64748b; margin-top: 4px; }
-    .ai-body { flex: 1; overflow-y: auto; padding: 16px; }
-    .ai-message { margin-bottom: 16px; }
-    .ai-bubble { background: #1e293b; border-radius: 10px; padding: 14px; font-size: 13px; line-height: 1.6; }
-    .ai-bubble .highlight { color: #60a5fa; font-weight: 600; }
-    .ai-insight { background: linear-gradient(135deg, #065f46, #047857); border-radius: 10px; padding: 16px; margin-bottom: 16px; }
-    .ai-insight .icon { font-size: 18px; margin-bottom: 8px; }
-    .ai-insight .text { font-size: 13px; line-height: 1.5; }
-    .ai-insight .metric { margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.2); }
-    .ai-insight .metric .value { font-size: 24px; font-weight: 700; }
-    .ai-insight .metric .label { font-size: 11px; opacity: 0.8; }
-    .ai-suggestions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
-    .ai-suggestion-btn { padding: 8px 14px; background: #334155; border: 1px solid #475569; border-radius: 8px; color: #94a3b8; font-size: 12px; cursor: pointer; transition: all 0.2s; }
-    .ai-suggestion-btn:hover { background: #3b82f6; border-color: #3b82f6; color: white; }
-    .ai-footer { padding: 16px; border-top: 1px solid #334155; }
-    .ai-input-row { display: flex; gap: 8px; }
-    .ai-input { flex: 1; padding: 12px 16px; background: #1e293b; border: 1px solid #334155; border-radius: 8px; color: white; font-size: 13px; }
-    .ai-input::placeholder { color: #64748b; }
-    .ai-input:focus { outline: none; border-color: #3b82f6; }
-    .ai-send-btn { padding: 12px 16px; background: #3b82f6; border: none; border-radius: 8px; color: white; cursor: pointer; }
-    .ai-send-btn:hover { background: #2563eb; }
+
+    /* 디테일 헤더 */
+    .detail-header {
+      padding: 20px; border-bottom: 1px solid #e5e7eb; background: white;
+      display: flex; justify-content: space-between; align-items: flex-start;
+    }
+    .detail-header-left { display: flex; flex-direction: column; gap: 4px; }
+    .detail-id-row { display: flex; align-items: center; gap: 10px; }
+    .detail-id { font-size: 20px; font-weight: 700; color: #0f172a; font-family: 'SF Mono', Monaco, monospace; }
+    .detail-name { font-size: 14px; color: #6b7280; }
+    .detail-period { font-size: 12px; color: #94a3b8; margin-top: 2px; }
+    .detail-close {
+      width: 32px; height: 32px; border: 1px solid #e5e7eb; border-radius: 8px;
+      background: white; font-size: 14px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; color: #6b7280;
+    }
+    .detail-close:hover { background: #f3f4f6; }
+
+    /* 디테일 바디 */
+    .detail-body { padding: 16px 20px; display: flex; flex-direction: column; gap: 16px; }
+
+    /* 일별 데이터 테이블 */
+    .daily-section-title { font-size: 14px; font-weight: 600; color: #1f2937; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; }
+    .daily-section-title .period { font-size: 11px; font-weight: 400; color: #94a3b8; }
+
+    .daily-table { width: 100%; border-collapse: collapse; font-size: 12px; background: white; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden; }
+    .daily-table th {
+      background: #f9fafb; padding: 8px 10px; text-align: center; font-weight: 600;
+      border-bottom: 1px solid #e5e7eb; font-size: 11px; color: #6b7280;
+    }
+    .daily-table td {
+      padding: 8px 10px; text-align: center; border-bottom: 1px solid #f3f4f6;
+      font-family: 'SF Mono', Monaco, monospace; font-size: 12px;
+    }
+    .daily-table td.date-col { color: #6b7280; font-size: 11px; }
+    .daily-table td.good { color: #16a34a; }
+    .daily-table td.warn { color: #d97706; }
+    .daily-table td.bad { color: #dc2626; }
+    .daily-table td .med-yes { color: #16a34a; font-weight: 700; }
+    .daily-table td .med-no { color: #dc2626; font-weight: 700; }
+
+    /* 변수 카드 */
+    .var-card {
+      background: white; border: 1px solid #e5e7eb; border-radius: 10px;
+      padding: 14px 16px; display: flex; flex-direction: column; gap: 8px;
+    }
+    .var-card-header { display: flex; justify-content: space-between; align-items: center; }
+    .var-card-title { font-size: 13px; font-weight: 600; color: #1f2937; }
+    .var-card-badge { font-size: 10px; padding: 2px 8px; border-radius: 10px; font-weight: 600; }
+    .var-card-badge.bad { background: #fee2e2; color: #dc2626; }
+    .var-card-badge.warn { background: #fef3c7; color: #d97706; }
+    .var-card-badge.good { background: #dcfce7; color: #16a34a; }
+    .var-card-row { display: flex; justify-content: space-between; font-size: 12px; color: #6b7280; }
+    .var-card-row .val { font-weight: 600; color: #1f2937; }
+    .var-card-row .val.bad { color: #dc2626; }
+    .var-card-row .val.warn { color: #d97706; }
+    .var-card-row .val.good { color: #16a34a; }
+    .var-card-trend { display: flex; align-items: center; gap: 6px; font-size: 12px; }
+    .var-card-trend.up { color: #ef4444; }
+    .var-card-trend.down { color: #22c55e; }
+    .var-card-trend.flat { color: #6b7280; }
+
+    /* 미니 스파크라인 (7 bars) */
+    .sparkline { display: flex; align-items: flex-end; gap: 3px; height: 28px; }
+    .spark-bar { width: 6px; border-radius: 2px; }
+    .spark-bar.low { background: #86efac; }
+    .spark-bar.med { background: #fbbf24; }
+    .spark-bar.high { background: #f87171; }
+
+    /* 복약 패턴 도트 (디테일 패널용) */
+    .med-pattern { display: flex; gap: 6px; align-items: center; }
+    .med-pattern-dot { width: 12px; height: 12px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 8px; font-weight: 700; color: white; }
+    .med-pattern-dot.yes { background: #22c55e; }
+    .med-pattern-dot.no { background: #ef4444; }
+
+    /* 접힌 카드 (secondary) */
+    .var-card.collapsed { padding: 10px 16px; }
+    .var-card.collapsed .var-card-body { display: none; }
+    .var-card-collapse-row { display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: #6b7280; }
+
+    /* AI 인사이트 카드 */
+    .ai-insight-card {
+      background: #1e293b; border-radius: 10px; padding: 16px;
+      color: #e2e8f0; display: flex; flex-direction: column; gap: 10px;
+    }
+    .ai-insight-card .title { font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+    .ai-insight-card .text { font-size: 12px; line-height: 1.6; color: #cbd5e1; }
+    .ai-insight-card .text strong { color: #60a5fa; }
+    .ai-insight-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+    .ai-insight-chip {
+      padding: 5px 12px; background: #334155; border: 1px solid #475569;
+      border-radius: 14px; font-size: 11px; color: #94a3b8; cursor: pointer;
+    }
+    .ai-insight-chip:hover { background: #3b82f6; border-color: #3b82f6; color: white; }
+
+    /* 디자이너 노트 (하단 오버레이) */
+    .designer-notes {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: linear-gradient(135deg, #fdf4ff, #fae8ff);
+      border-top: 2px solid #d946ef;
+      padding: 24px 32px;
+      max-height: 440px; overflow-y: auto;
+      z-index: 100;
+      display: none;
+    }
+    .designer-notes.show { display: block; }
+    .designer-notes h3 { margin-bottom: 14px; font-size: 15px; }
+    .designer-notes .dn-content { font-size: 12px; color: #374151; line-height: 1.8; columns: 2; column-gap: 32px; }
+
+    .toggle-notes {
+      position: fixed; bottom: 16px; right: 16px;
+      padding: 10px 16px; background: #d946ef; color: white;
+      border: none; border-radius: 8px; font-size: 13px; font-weight: 600;
+      cursor: pointer; z-index: 101; box-shadow: 0 4px 12px rgba(217,70,239,0.3);
+    }
   </style>
 </head>
 <body>
   <div class="layout">
+    <!-- ① 사이드바 -->
     <div class="sidebar">
-      <div class="logo" style="display: flex; align-items: center; gap: 10px;">
-        <div style="width: 32px; height: 32px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px;">U</div>
+      <div class="logo">
+        <div class="logo-icon">U</div>
         UniQdata
       </div>
 
@@ -321,20 +389,23 @@
       </div>
 
       <!-- 내 연구들 -->
-      <div class="nav-section" style="flex: 1; overflow-y: auto; padding-top: 8px; border-top: 1px solid #2a2a2a;">
-        <div style="font-size: 10px; color: #64748b; padding: 6px 12px; text-transform: uppercase; letter-spacing: 0.5px;">내 연구 <span style="background: #3b82f6; color: white; padding: 1px 6px; border-radius: 8px; font-size: 9px; margin-left: 4px;">3</span></div>
+      <div class="nav-section" style="flex: 1; overflow-y: auto;">
+        <div style="font-size: 11px; color: #64748b; padding: 8px 12px; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; justify-content: space-between;">
+          내 연구
+          <span style="background: #3b82f6; color: white; font-size: 10px; padding: 2px 8px; border-radius: 10px; font-weight: 600;">3</span>
+        </div>
 
-        <!-- 연구 1: 당뇨병 - 현재 선택됨, 펼쳐진 상태 -->
+        <!-- 연구 1: 당뇨병 — 펼쳐진 상태 -->
         <div class="research-nav-item expanded">
           <div class="research-nav-header">
             <span class="folder-icon">📁</span>
             <span class="research-title">당뇨병 복약 순응도</span>
             <span class="status-dot active"></span>
           </div>
-          <div class="research-nav-sub" data-spec="메뉴 구조: 개요, 테이블, AI 허브만 표시. 인과발견/SHAP 등은 AI 허브로 통합됨." data-spec-type="nav" data-changed="메뉴 통합">
+          <div class="research-nav-sub">
             <a href="data-overview.html" class="nav-sub-item"><span class="dot"></span> 개요</a>
             <a href="data-table.html" class="nav-sub-item active"><span class="dot"></span> 테이블</a>
-            <a href="analysis-discovery.html" class="nav-sub-item" style="color: #a78bfa;" data-spec="AI 허브: 연구 방법론별 최적화된 AI 알고리즘 선택." data-spec-type="ai" data-added="통합 메뉴"><span class="dot"></span> AI 허브</a>
+            <a href="analysis-discovery.html" class="nav-sub-item" style="color: #a78bfa;"><span class="dot"></span> AI 허브</a>
           </div>
         </div>
 
@@ -357,593 +428,571 @@
         </div>
       </div>
 
-      <div class="nav-section">
+      <!-- 하단 네비 -->
+      <div class="nav-section" style="border-bottom: none;">
         <a href="../team.html" class="nav-item"><span class="icon">👥</span> 팀</a>
         <a href="../billing.html" class="nav-item"><span class="icon">💳</span> 결제</a>
         <a href="#" class="nav-item"><span class="icon">⚙️</span> 설정</a>
       </div>
 
       <!-- 유저 프로필 -->
-      <div style="padding: 12px; border-top: 1px solid #2a2a2a;">
-        <div style="display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: 8px; cursor: pointer;" onmouseover="this.style.background='#252525'" onmouseout="this.style.background='transparent'">
-          <div style="width: 32px; height: 32px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; color: white;">김</div>
+      <div class="sidebar-footer">
+        <div class="user-info-sidebar">
+          <div class="user-avatar-sidebar">김</div>
           <div>
-            <div style="font-size: 13px; color: #e2e8f0;">김연구</div>
-            <div style="font-size: 11px; color: #64748b;">서울대학교병원</div>
+            <div class="user-name-sidebar">김연구</div>
+            <div class="user-org-sidebar">서울대학교병원</div>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="main">
-      <div class="header">Enterprise Portal</div>
+    <!-- ② Workspace Wrap -->
+    <div class="workspace-wrap">
 
-      <div class="main-grid">
-        <div class="main-content">
+      <!-- 상단 바 (Top Bar) -->
+      <div class="top-bar">
         <div class="breadcrumb">
-          <a href="list.html">연구 관리</a> / <a href="data-overview.html">당뇨병 환자 복약 순응도 연구</a> / <span>데이터</span>
+          <a href="list.html">연구 관리</a>
+          <span>/</span>
+          <a href="data-overview.html">당뇨병 환자 복약 순응도 연구</a>
+          <span>/</span>
+          <span style="color: #1f2937; font-weight: 500;">데이터</span>
         </div>
-
-        <h1>연구 데이터 · 테이블</h1>
-        <p class="subtitle">필터/정렬 중심으로 참여자 상태를 빠르게 확인합니다</p>
-
-        <!-- 툴바 -->
-        <div class="toolbar">
-          <div class="toolbar-left">
-            <div class="view-toggle" data-spec="뷰 토글: 날짜별(일별 전체 데이터), 참여자별(개인별 시계열), 전체(모든 데이터 종합)" data-spec-type="nav" data-spec-title="뷰 토글" data-changed="참여자별 와이어프레임 추가 예정">
-              <button class="view-btn active">날짜별</button>
-              <button class="view-btn">참여자별</button>
-              <button class="view-btn">전체</button>
-            </div>
-            <input type="text" class="search-box" placeholder="참여자 검색...">
-            <button class="filter-btn">📊 필터</button>
-          </div>
-          <div class="toolbar-right">
-            <button class="export-btn">CSV</button>
-            <button class="export-btn">Excel</button>
-          </div>
+        <div class="top-bar-title">
+          <h1>연구 데이터</h1>
         </div>
-        <div class="inline-note">로컬 이름은 브라우저에만 저장됩니다 (서버 전송 없음)</div>
-
-        <!-- 기간 선택 + 날짜 네비게이터 -->
-        <div style="display: flex; gap: 16px; align-items: center; margin-bottom: 16px; flex-wrap: wrap;">
-          <div class="period-toggle">
-            <button class="period-btn">일</button>
-            <button class="period-btn active">주</button>
-            <button class="period-btn">월</button>
-            <button class="period-btn">전체</button>
-          </div>
-          <div class="date-navigator" style="margin-bottom: 0; flex: 1;">
-            <button class="date-nav-btn">◀</button>
-            <div class="current-date">1월 1주차</div>
-            <button class="date-nav-btn">▶</button>
-            <button class="date-picker-btn">📅</button>
-            <div class="date-range-info">01/01 ~ 01/07 (Week 1/13)</div>
-          </div>
-        </div>
-
-        <!-- 날짜 요약 (압축) -->
-        <div class="stats-strip">
-          <div class="stat-chip">참여자 <strong>84/87</strong></div>
-          <div class="stat-chip">복약 <strong>71 (85%)</strong></div>
-          <div class="stat-chip">미완료 <strong>13</strong></div>
-          <div class="stat-chip">평균 수면 <strong>6.2h</strong></div>
-          <div class="stat-chip">평균 기분 <strong>3.4</strong></div>
-        </div>
-
-        <!-- 테이블: 주간 뷰 (시각적) -->
-        <div class="table-container" data-spec="데이터 테이블: 텍스트 기반 엑셀 형식. 심박수/혈당/복약/수면/기분 컬럼. 스파크라인은 트렌드 시각화용으로 유지." data-spec-type="data" data-spec-title="데이터 컬럼" data-changed="시각화→텍스트 기반 (그래프 최소화)">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th class="sortable" data-spec="익명 참여자 ID (P001 형식). 실제 user_id는 미노출." data-spec-type="data">참여자 <span class="sort-icon">↓</span></th>
-                <th data-spec="로컬 닉네임: 브라우저 localStorage에만 저장. 서버 전송 없음." data-spec-type="data">로컬이름 <span class="local-badge">로컬</span></th>
-                <th class="sortable" data-spec="심박수 평균 및 트렌드. 정상 60-100bpm." data-spec-type="data">심박수 (7일)</th>
-                <th class="sortable" data-spec="혈당 평균 및 트렌드. 정상 공복 70-100mg/dL." data-spec-type="data">혈당 (7일)</th>
-                <th class="sortable" data-spec="복약 순응도: 7일간 복약 여부. ●=복용, ○=미복용." data-spec-type="data">복약 (7일)</th>
-                <th class="sortable" data-spec="평균 수면 시간. 권장 7-8시간." data-spec-type="data">수면 (7일)</th>
-                <th class="sortable" data-spec="주관적 기분 점수 (1-5). AI 인과분석 핵심 변수." data-spec-type="data">기분 (7일)</th>
-                <th data-spec="종합 트렌드: 안정/개선/악화/위험. AI가 복합 지표 기반 계산." data-spec-type="ai">트렌드</th>
-              </tr>
-            </thead>
-            <tbody>
-              <!-- 김OO: 양호 -->
-              <tr>
-                <td class="col-id">P001</td>
-                <td>
-                  <div class="local-name">
-                    <input type="text" value="김OO" placeholder="이름">
-                  </div>
-                </td>
-                <td>
-                  <div style="display: flex; align-items: center; gap: 8px;">
-                    <div class="sparkline">
-                      <div class="spark-bar low" style="height: 60%;"></div>
-                      <div class="spark-bar low" style="height: 65%;"></div>
-                      <div class="spark-bar low" style="height: 58%;"></div>
-                      <div class="spark-bar low" style="height: 62%;"></div>
-                      <div class="spark-bar low" style="height: 60%;"></div>
-                      <div class="spark-bar low" style="height: 64%;"></div>
-                      <div class="spark-bar low" style="height: 61%;"></div>
-                    </div>
-                    <span style="font-size: 12px; color: #6b7280;">avg 72</span>
-                  </div>
-                </td>
-                <td>
-                  <div style="display: flex; align-items: center; gap: 8px;">
-                    <div class="sparkline">
-                      <div class="spark-bar med" style="height: 50%;"></div>
-                      <div class="spark-bar med" style="height: 55%;"></div>
-                      <div class="spark-bar med" style="height: 48%;"></div>
-                      <div class="spark-bar med" style="height: 52%;"></div>
-                      <div class="spark-bar med" style="height: 50%;"></div>
-                      <div class="spark-bar med" style="height: 47%;"></div>
-                      <div class="spark-bar med" style="height: 49%;"></div>
-                    </div>
-                    <span style="font-size: 12px; color: #6b7280;">avg 118</span>
-                  </div>
-                </td>
-                <td>
-                  <div class="med-dots">
-                    <div class="med-dot yes"></div>
-                    <div class="med-dot yes"></div>
-                    <div class="med-dot yes"></div>
-                    <div class="med-dot yes"></div>
-                    <div class="med-dot yes"></div>
-                    <div class="med-dot yes"></div>
-                    <div class="med-dot yes"></div>
-                  </div>
-                  <span style="font-size: 11px; color: #22c55e; margin-left: 8px;">7/7</span>
-                </td>
-                <td>
-                  <div class="heatmap-cell good">6.8h</div>
-                </td>
-                <td>
-                  <div class="heatmap-cell good">4.0</div>
-                </td>
-                <td>
-                  <div class="trend stable">→ 안정</div>
-                </td>
-              </tr>
-
-              <!-- 박OO: 주의 -->
-              <tr style="background: #fffbeb;">
-                <td class="col-id">P002</td>
-                <td>
-                  <div class="local-name">
-                    <input type="text" value="박OO" placeholder="이름">
-                  </div>
-                </td>
-                <td>
-                  <div style="display: flex; align-items: center; gap: 8px;">
-                    <div class="sparkline">
-                      <div class="spark-bar med" style="height: 55%;"></div>
-                      <div class="spark-bar med" style="height: 58%;"></div>
-                      <div class="spark-bar high" style="height: 70%;"></div>
-                      <div class="spark-bar high" style="height: 75%;"></div>
-                      <div class="spark-bar high" style="height: 72%;"></div>
-                      <div class="spark-bar high" style="height: 78%;"></div>
-                      <div class="spark-bar danger" style="height: 85%;"></div>
-                    </div>
-                    <span style="font-size: 12px; color: #f59e0b;">avg 76 ↑</span>
-                  </div>
-                </td>
-                <td>
-                  <div style="display: flex; align-items: center; gap: 8px;">
-                    <div class="sparkline">
-                      <div class="spark-bar high" style="height: 70%;"></div>
-                      <div class="spark-bar high" style="height: 68%;"></div>
-                      <div class="spark-bar high" style="height: 72%;"></div>
-                      <div class="spark-bar danger" style="height: 80%;"></div>
-                      <div class="spark-bar danger" style="height: 85%;"></div>
-                      <div class="spark-bar danger" style="height: 82%;"></div>
-                      <div class="spark-bar danger" style="height: 88%;"></div>
-                    </div>
-                    <span style="font-size: 12px; color: #ef4444;">avg 142 ↑</span>
-                  </div>
-                </td>
-                <td>
-                  <div class="med-dots">
-                    <div class="med-dot no"></div>
-                    <div class="med-dot yes"></div>
-                    <div class="med-dot no"></div>
-                    <div class="med-dot yes"></div>
-                    <div class="med-dot no"></div>
-                    <div class="med-dot no"></div>
-                    <div class="med-dot yes"></div>
-                  </div>
-                  <span style="font-size: 11px; color: #ef4444; margin-left: 8px;">3/7</span>
-                </td>
-                <td>
-                  <div class="heatmap-cell bad">5.2h</div>
-                </td>
-                <td>
-                  <div class="heatmap-cell bad">2.1</div>
-                </td>
-                <td>
-                  <div class="trend up">↑ 악화</div>
-                </td>
-              </tr>
-
-              <!-- P003: 양호 -->
-              <tr>
-                <td class="col-id">P003</td>
-                <td>
-                  <div class="local-name">
-                    <span class="placeholder">+ 이름</span>
-                  </div>
-                </td>
-                <td>
-                  <div style="display: flex; align-items: center; gap: 8px;">
-                    <div class="sparkline">
-                      <div class="spark-bar low" style="height: 65%;"></div>
-                      <div class="spark-bar low" style="height: 62%;"></div>
-                      <div class="spark-bar low" style="height: 60%;"></div>
-                      <div class="spark-bar low" style="height: 58%;"></div>
-                      <div class="spark-bar low" style="height: 60%;"></div>
-                      <div class="spark-bar low" style="height: 62%;"></div>
-                      <div class="spark-bar low" style="height: 59%;"></div>
-                    </div>
-                    <span style="font-size: 12px; color: #22c55e;">avg 74 ↓</span>
-                  </div>
-                </td>
-                <td>
-                  <div style="display: flex; align-items: center; gap: 8px;">
-                    <div class="sparkline">
-                      <div class="spark-bar med" style="height: 55%;"></div>
-                      <div class="spark-bar med" style="height: 52%;"></div>
-                      <div class="spark-bar med" style="height: 50%;"></div>
-                      <div class="spark-bar med" style="height: 48%;"></div>
-                      <div class="spark-bar low" style="height: 45%;"></div>
-                      <div class="spark-bar low" style="height: 46%;"></div>
-                      <div class="spark-bar low" style="height: 44%;"></div>
-                    </div>
-                    <span style="font-size: 12px; color: #22c55e;">avg 126 ↓</span>
-                  </div>
-                </td>
-                <td>
-                  <div class="med-dots">
-                    <div class="med-dot yes"></div>
-                    <div class="med-dot yes"></div>
-                    <div class="med-dot yes"></div>
-                    <div class="med-dot yes"></div>
-                    <div class="med-dot yes"></div>
-                    <div class="med-dot yes"></div>
-                    <div class="med-dot yes"></div>
-                  </div>
-                  <span style="font-size: 11px; color: #22c55e; margin-left: 8px;">7/7</span>
-                </td>
-                <td>
-                  <div class="heatmap-cell good">7.5h</div>
-                </td>
-                <td>
-                  <div class="heatmap-cell good">4.2</div>
-                </td>
-                <td>
-                  <div class="trend down">↓ 개선</div>
-                </td>
-              </tr>
-
-              <!-- P008: 위험 -->
-              <tr style="background: #fef2f2;">
-                <td class="col-id">P008</td>
-                <td>
-                  <div class="local-name">
-                    <span class="placeholder">+ 이름</span>
-                  </div>
-                </td>
-                <td>
-                  <div style="display: flex; align-items: center; gap: 8px;">
-                    <div class="sparkline">
-                      <div class="spark-bar high" style="height: 75%;"></div>
-                      <div class="spark-bar danger" style="height: 82%;"></div>
-                      <div class="spark-bar danger" style="height: 88%;"></div>
-                      <div class="spark-bar danger" style="height: 90%;"></div>
-                      <div class="spark-bar danger" style="height: 95%;"></div>
-                      <div class="spark-bar danger" style="height: 92%;"></div>
-                      <div class="spark-bar danger" style="height: 98%;"></div>
-                    </div>
-                    <span style="font-size: 12px; color: #ef4444; font-weight: 600;">avg 88 🔴</span>
-                  </div>
-                </td>
-                <td>
-                  <div style="display: flex; align-items: center; gap: 8px;">
-                    <div class="sparkline">
-                      <div class="spark-bar danger" style="height: 85%;"></div>
-                      <div class="spark-bar danger" style="height: 90%;"></div>
-                      <div class="spark-bar danger" style="height: 88%;"></div>
-                      <div class="spark-bar danger" style="height: 95%;"></div>
-                      <div class="spark-bar danger" style="height: 100%;"></div>
-                      <div class="spark-bar danger" style="height: 98%;"></div>
-                      <div class="spark-bar danger" style="height: 100%;"></div>
-                    </div>
-                    <span style="font-size: 12px; color: #ef4444; font-weight: 600;">avg 178 🔴</span>
-                  </div>
-                </td>
-                <td>
-                  <div class="med-dots">
-                    <div class="med-dot no"></div>
-                    <div class="med-dot no"></div>
-                    <div class="med-dot no"></div>
-                    <div class="med-dot no"></div>
-                    <div class="med-dot no"></div>
-                    <div class="med-dot yes"></div>
-                    <div class="med-dot no"></div>
-                  </div>
-                  <span style="font-size: 11px; color: #ef4444; font-weight: 600; margin-left: 8px;">1/7</span>
-                </td>
-                <td>
-                  <div class="heatmap-cell bad">3.5h</div>
-                </td>
-                <td>
-                  <div class="heatmap-cell bad">1.4</div>
-                </td>
-                <td>
-                  <div class="trend up" style="font-weight: 600;">🚨 위험</div>
-                </td>
-              </tr>
-
-              <!-- P005: 양호 -->
-              <tr>
-                <td class="col-id">P005</td>
-                <td>
-                  <div class="local-name">
-                    <input type="text" value="이OO" placeholder="이름">
-                  </div>
-                </td>
-                <td>
-                  <div style="display: flex; align-items: center; gap: 8px;">
-                    <div class="sparkline">
-                      <div class="spark-bar low" style="height: 58%;"></div>
-                      <div class="spark-bar low" style="height: 60%;"></div>
-                      <div class="spark-bar low" style="height: 57%;"></div>
-                      <div class="spark-bar low" style="height: 59%;"></div>
-                      <div class="spark-bar low" style="height: 58%;"></div>
-                      <div class="spark-bar low" style="height: 60%;"></div>
-                      <div class="spark-bar low" style="height: 58%;"></div>
-                    </div>
-                    <span style="font-size: 12px; color: #6b7280;">avg 70</span>
-                  </div>
-                </td>
-                <td>
-                  <div style="display: flex; align-items: center; gap: 8px;">
-                    <div class="sparkline">
-                      <div class="spark-bar med" style="height: 52%;"></div>
-                      <div class="spark-bar med" style="height: 50%;"></div>
-                      <div class="spark-bar med" style="height: 48%;"></div>
-                      <div class="spark-bar med" style="height: 51%;"></div>
-                      <div class="spark-bar med" style="height: 49%;"></div>
-                      <div class="spark-bar med" style="height: 50%;"></div>
-                      <div class="spark-bar med" style="height: 48%;"></div>
-                    </div>
-                    <span style="font-size: 12px; color: #6b7280;">avg 121</span>
-                  </div>
-                </td>
-                <td>
-                  <div class="med-dots">
-                    <div class="med-dot yes"></div>
-                    <div class="med-dot yes"></div>
-                    <div class="med-dot yes"></div>
-                    <div class="med-dot yes"></div>
-                    <div class="med-dot yes"></div>
-                    <div class="med-dot no"></div>
-                    <div class="med-dot yes"></div>
-                  </div>
-                  <span style="font-size: 11px; color: #22c55e; margin-left: 8px;">6/7</span>
-                </td>
-                <td>
-                  <div class="heatmap-cell good">7.0h</div>
-                </td>
-                <td>
-                  <div class="heatmap-cell good">3.8</div>
-                </td>
-                <td>
-                  <div class="trend stable">→ 안정</div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-
-          <div class="pagination" data-spec="페이징: 데이터 원본 반출 방지용. 한 번에 제한된 행만 표시 (기본 20행). ABAC 권한에 따라 Export 제한." data-spec-type="action" data-spec-title="페이지네이션">
-            <div class="pagination-info">
-              1월 1주차 데이터: 84명
-            </div>
-            <div class="pagination-controls">
-              <button class="page-btn">◀</button>
-              <button class="page-btn active">1</button>
-              <button class="page-btn">2</button>
-              <button class="page-btn">3</button>
-              <button class="page-btn">...</button>
-              <button class="page-btn">9</button>
-              <button class="page-btn">▶</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- 기능 명세 -->
-        <div style="background: linear-gradient(135deg, #ecfdf5, #d1fae5); border: 2px solid #10b981; border-radius: 12px; padding: 20px; margin-top: 24px;">
-          <h3 style="color: #047857; margin-bottom: 12px; font-size: 14px;">⚙️ 기능 명세</h3>
-          <div style="font-size: 12px; color: #374151; line-height: 1.8;">
-            <strong>핵심 기능:</strong><br>
-            • 참여자별 데이터 테이블 뷰 (날짜별/참여자별/전체)<br>
-            • 필터 (데이터 유형, 날짜 범위, 상태, 위험도)<br>
-            • 정렬 (각 컬럼 클릭, ASC/DESC)<br>
-            • 로컬 닉네임 설정 (브라우저 localStorage, 서버 전송 X)<br>
-            • 스파크라인 트렌드 표시 (7일/30일)<br>
-            • CSV/Excel Export (ABAC 권한 체크)<br><br>
-
-            <strong>프라이버시 보호 (SPEC_TECH Part 8.4):</strong><br>
-            • <strong>k-익명성</strong>: 그룹 크기 n<5일 경우 자동 마스킹/병합<br>
-            • <strong>person_id</strong>: P001 형식 익명 ID만 표시 (실제 user_id 미노출)<br>
-            • <strong>Blind Index 검색</strong>: 암호화된 상태로 검색 가능<br>
-            • <strong>차등 프라이버시(DP)</strong>: 집계 시 노이즈 추가 옵션<br>
-            • <strong>동의 상태 필터링</strong>: consent_status=active인 참여자만 표시<br><br>
-
-            <strong>ABAC 권한 제어:</strong><br>
-            • Owner: 전체 데이터 조회, Export, 분석 실행 가능<br>
-            • Member: 전체 데이터 조회 가능, Export 제한적<br>
-            • Viewer: 집계 데이터만 조회, Export/분석 불가<br><br>
-
-            <strong>데이터 민감도 레벨:</strong><br>
-            • L1 (Low): 타임스탬프, 집계 통계 → 모든 역할 접근<br>
-            • L2 (Medium): 이름, 생년 → At Rest 암호화<br>
-            • L3 (High): 연락처, 상세 건강정보 → 필드 암호화 + 접근 로그<br>
-            • L4 (Critical): 진단, 처방 → Vault 저장 + 별도 동의 필요
-          </div>
-        </div>
-
-        <!-- 백엔드 호출 -->
-        <div style="background: linear-gradient(135deg, #f5f3ff, #ede9fe); border: 2px solid #8b5cf6; border-radius: 12px; padding: 20px; margin-top: 12px;">
-          <h3 style="color: #6d28d9; margin-bottom: 12px; font-size: 14px;">🔗 백엔드 호출</h3>
-          <div style="font-size: 11px; font-family: 'SF Mono', Monaco, monospace; color: #374151; line-height: 1.8;">
-
-            <strong style="font-family: -apple-system, sans-serif;">1. 참여자 목록 조회 (k-anonymity 적용):</strong><br>
-            <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
-GET /api/v2/projects/:id/participants<br>
-  ?page=1&limit=20<br>
-  &data_types=heart_rate,glucose,medication,sleep,mood<br>
-  &date_from=2026-01-01&date_to=2026-01-07<br>
-  &sort=glucose_avg&order=desc<br>
-  &risk_level=high,medium  // 위험도 필터<br>
-<br>
-Headers: { Authorization: "Bearer {jwt}", X-Project-Role: "owner" }<br>
-<br>
-→ {<br>
-&nbsp;&nbsp;"participants": [<br>
-&nbsp;&nbsp;&nbsp;&nbsp;{<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"person_id": "P001",  // 익명 ID (실제 user_id 아님)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"consent_status": "active",<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"data": {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"heart_rate": { "avg": 72, "trend": "stable", "sparkline": [...] },<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"glucose": { "avg": 118, "trend": "up", "sparkline": [...] },<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"medication": { "adherence": 7, "total": 7 },<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"sleep": { "avg_hours": 6.8, "quality": "good" },<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"mood": { "avg": 4.0, "quality": "good" }<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;},<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"risk_level": "low",<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"last_activity": "2026-01-07T14:30:00Z"<br>
-&nbsp;&nbsp;&nbsp;&nbsp;}<br>
-&nbsp;&nbsp;],<br>
-&nbsp;&nbsp;"total": 87,<br>
-&nbsp;&nbsp;"page": 1,<br>
-&nbsp;&nbsp;"k_anonymity": { "min_group_size": 5, "suppressed_count": 2 },<br>
-&nbsp;&nbsp;"access_log_id": "log_xxx"  // 감사 로그 ID<br>
-}
-            </code>
-
-            <strong style="font-family: -apple-system, sans-serif;">2. 개별 참여자 시계열 데이터 (동의 범위 내):</strong><br>
-            <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
-GET /api/v2/projects/:id/participants/:personId/timeseries<br>
-  ?data_type=glucose<br>
-  &date_from=2026-01-01&date_to=2026-01-07<br>
-  &granularity=daily  // hourly, daily, weekly<br>
-<br>
-→ {<br>
-&nbsp;&nbsp;"person_id": "P001",<br>
-&nbsp;&nbsp;"data_type": "glucose",<br>
-&nbsp;&nbsp;"consent_scope": { "allowed": true, "expires_at": "2026-03-31" },<br>
-&nbsp;&nbsp;"values": [<br>
-&nbsp;&nbsp;&nbsp;&nbsp;{ "date": "2026-01-01", "avg": 115, "min": 95, "max": 142 },<br>
-&nbsp;&nbsp;&nbsp;&nbsp;{ "date": "2026-01-02", "avg": 118, "min": 98, "max": 138 },<br>
-&nbsp;&nbsp;&nbsp;&nbsp;...<br>
-&nbsp;&nbsp;]<br>
-}
-            </code>
-
-            <strong style="font-family: -apple-system, sans-serif;">3. 데이터 Export (ABAC + DP 적용):</strong><br>
-            <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
-POST /api/v2/projects/:id/data/export<br>
-{<br>
-&nbsp;&nbsp;"format": "csv",  // csv, excel, json<br>
-&nbsp;&nbsp;"columns": ["person_id", "date", "glucose_avg", "medication_adherence"],<br>
-&nbsp;&nbsp;"filters": {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;"date_from": "2026-01-01",<br>
-&nbsp;&nbsp;&nbsp;&nbsp;"date_to": "2026-01-31",<br>
-&nbsp;&nbsp;&nbsp;&nbsp;"consent_status": "active"<br>
-&nbsp;&nbsp;},<br>
-&nbsp;&nbsp;"privacy": {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;"k_anonymity": 5,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;"differential_privacy": { "enabled": true, "epsilon": 1.0 },<br>
-&nbsp;&nbsp;&nbsp;&nbsp;"suppress_outliers": true<br>
-&nbsp;&nbsp;}<br>
-}<br>
-<br>
-→ {<br>
-&nbsp;&nbsp;"export_id": "exp_xxx",<br>
-&nbsp;&nbsp;"status": "processing",<br>
-&nbsp;&nbsp;"estimated_rows": 2340,<br>
-&nbsp;&nbsp;"privacy_report": {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;"k_achieved": 8,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;"suppressed_rows": 12,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;"dp_noise_added": true<br>
-&nbsp;&nbsp;}<br>
-}
-            </code>
-
-            <strong style="font-family: -apple-system, sans-serif;">4. Export 상태 확인 및 다운로드:</strong><br>
-            <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
-GET /api/v2/projects/:id/data/export/:exportId<br>
-<br>
-→ {<br>
-&nbsp;&nbsp;"export_id": "exp_xxx",<br>
-&nbsp;&nbsp;"status": "completed",  // processing, completed, failed<br>
-&nbsp;&nbsp;"download_url": "https://storage.../export_xxx.csv",<br>
-&nbsp;&nbsp;"expires_at": "2026-01-08T00:00:00Z",  // 24시간 후 만료<br>
-&nbsp;&nbsp;"audit_log": {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;"requester": "user_xxx",<br>
-&nbsp;&nbsp;&nbsp;&nbsp;"role": "owner",<br>
-&nbsp;&nbsp;&nbsp;&nbsp;"timestamp": "2026-01-07T15:00:00Z",<br>
-&nbsp;&nbsp;&nbsp;&nbsp;"xrpl_anchor": "tx_xxx"  // XRPL 앵커링 해시<br>
-&nbsp;&nbsp;}<br>
-}
-            </code>
-
-            <strong style="font-family: -apple-system, sans-serif;">5. 접근 권한 검증 (OPA 정책):</strong><br>
-            <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
-// 내부 정책 엔진 (PDP: OPA)<br>
-POST /internal/opa/data/access<br>
-{<br>
-&nbsp;&nbsp;"input": {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;"subject": { "user_id": "xxx", "project_role": "member" },<br>
-&nbsp;&nbsp;&nbsp;&nbsp;"action": "export_data",<br>
-&nbsp;&nbsp;&nbsp;&nbsp;"resource": {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"project_id": "prj_xxx",<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"participant_ids": ["P001", "P002"],<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"participant_consent_status": "active",<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"sensitivity_level": 2<br>
-&nbsp;&nbsp;&nbsp;&nbsp;},<br>
-&nbsp;&nbsp;&nbsp;&nbsp;"environment": { "project_end_date": "2026-03-31" }<br>
-&nbsp;&nbsp;}<br>
-}<br>
-<br>
-→ { "allow": true, "allowed_participant_ids": ["P001", "P002"] }
-            </code>
-
-            <strong style="font-family: -apple-system, sans-serif;">6. 감사 로그 기록:</strong><br>
-            <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
-// 모든 데이터 접근 시 자동 기록<br>
-{<br>
-&nbsp;&nbsp;"log_id": "log_xxx",<br>
-&nbsp;&nbsp;"action": "view_participants",<br>
-&nbsp;&nbsp;"user_id": "user_xxx",<br>
-&nbsp;&nbsp;"project_id": "prj_xxx",<br>
-&nbsp;&nbsp;"accessed_person_ids": ["P001", "P002", ...],<br>
-&nbsp;&nbsp;"filters_applied": { "date_from": "...", "data_types": [...] },<br>
-&nbsp;&nbsp;"timestamp": "2026-01-07T15:00:00Z",<br>
-&nbsp;&nbsp;"ip_address": "xxx.xxx.xxx.xxx",<br>
-&nbsp;&nbsp;"xrpl_anchor": "tx_xxx"  // 24시간 배치로 XRPL 앵커링<br>
-}
-            </code>
-          </div>
-        </div>
-
-        <div class="step-nav">
-          <a href="data-overview.html">← 개요</a>
-          <a href="analysis-discovery.html">AI 허브 →</a>
+        <div class="top-bar-tabs">
+          <a href="data-overview.html" class="top-bar-tab">개요</a>
+          <a href="data-table.html" class="top-bar-tab active">테이블</a>
+          <a href="analysis-discovery.html" class="top-bar-tab">AI 허브</a>
         </div>
       </div>
+
+      <!-- Workspace (테이블 + 디테일) -->
+      <div class="workspace">
+
+        <!-- ③ 테이블 패널 (좌측, 마스터) -->
+        <div class="table-panel">
+          <div class="table-panel-inner">
+
+            <!-- 툴바 -->
+            <div class="toolbar">
+              <div class="toolbar-left">
+                <div class="period-toggle">
+                  <button class="period-btn active">주간</button>
+                  <button class="period-btn">월간</button>
+                  <button class="period-btn">전체</button>
+                </div>
+                <div class="date-navigator">
+                  <button class="date-nav-btn">◀</button>
+                  <div class="current-date">1월 1주차</div>
+                  <button class="date-nav-btn">▶</button>
+                  <button class="date-picker-btn">📅</button>
+                  <div class="date-range-info">01/01 ~ 01/07 (Week 1/8)</div>
+                </div>
+              </div>
+              <div class="toolbar-right">
+                <div style="position: relative;">
+                  <button class="col-picker-btn" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'block' ? 'none' : 'block'">📊 컬럼 설정</button>
+                  <!-- 컬럼 선택기 드롭다운 -->
+                  <div class="col-picker-dropdown">
+                    <h4>표시할 컬럼 선택</h4>
+                    <label class="col-picker-item"><input type="checkbox" checked> 혈당 (평균)</label>
+                    <label class="col-picker-item"><input type="checkbox" checked> 복약 순응도</label>
+                    <label class="col-picker-item"><input type="checkbox" checked> 수면 (평균)</label>
+                    <label class="col-picker-item"><input type="checkbox"> 심박수 (평균)</label>
+                    <label class="col-picker-item"><input type="checkbox"> 활동량</label>
+                    <label class="col-picker-item"><input type="checkbox"> 기분 점수</label>
+                    <label class="col-picker-item"><input type="checkbox"> 식단 기록</label>
+                    <label class="col-picker-item"><input type="checkbox"> CGM 변동계수</label>
+                    <div class="col-picker-note">Step 3에서 설정한 변수 기준</div>
+                  </div>
+                </div>
+                <input type="text" class="search-box" placeholder="참여자 검색...">
+                <button class="export-btn">CSV</button>
+                <button class="export-btn">Excel</button>
+              </div>
+            </div>
+
+            <!-- 요약 칩 -->
+            <div class="stats-strip">
+              <div class="stat-chip">참여자 <strong>84/87</strong></div>
+              <div class="stat-chip">복약 <strong>85%</strong></div>
+              <div class="stat-chip">평균혈당 <strong>128</strong></div>
+              <div class="stat-chip">평균수면 <strong>6.2h</strong></div>
+              <div class="stat-chip danger">위험 <strong>2명</strong></div>
+            </div>
+
+            <!-- 데이터 테이블 -->
+            <div class="table-container">
+              <div style="overflow-x: auto; flex: 1;">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th class="sortable">참여자ID <span class="sort-icon">↓</span></th>
+                      <th class="sortable">상태</th>
+                      <th class="sortable">혈당 (avg) <span class="sort-icon">↕</span></th>
+                      <th class="sortable">복약 순응도 <span class="sort-icon">↕</span></th>
+                      <th class="sortable">수면 (avg) <span class="sort-icon">↕</span></th>
+                      <th>종합 트렌드</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <!-- P001: 양호 -->
+                    <tr>
+                      <td class="col-id">P001</td>
+                      <td><span class="status-badge good">양호</span></td>
+                      <td>
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                          <span style="font-family: monospace;">118</span>
+                          <span style="font-size: 11px; color: #6b7280;">mg/dL</span>
+                        </div>
+                      </td>
+                      <td>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                          <div class="med-dots">
+                            <div class="med-dot yes"></div><div class="med-dot yes"></div><div class="med-dot yes"></div>
+                            <div class="med-dot yes"></div><div class="med-dot yes"></div><div class="med-dot yes"></div><div class="med-dot yes"></div>
+                          </div>
+                          <span style="font-size: 11px; color: #16a34a; font-weight: 600;">7/7 (100%)</span>
+                        </div>
+                      </td>
+                      <td><span style="font-family: monospace;">6.8h</span></td>
+                      <td><div class="trend stable">→ 안정</div></td>
+                    </tr>
+
+                    <!-- P002: 주의 (SELECTED) -->
+                    <tr class="selected">
+                      <td class="col-id">P002</td>
+                      <td><span class="status-badge warn">주의</span></td>
+                      <td>
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                          <span style="font-family: monospace; color: #dc2626; font-weight: 600;">142</span>
+                          <span style="font-size: 11px; color: #dc2626;">↑</span>
+                        </div>
+                      </td>
+                      <td>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                          <div class="med-dots">
+                            <div class="med-dot no"></div><div class="med-dot yes"></div><div class="med-dot no"></div>
+                            <div class="med-dot yes"></div><div class="med-dot no"></div><div class="med-dot no"></div><div class="med-dot yes"></div>
+                          </div>
+                          <span style="font-size: 11px; color: #dc2626; font-weight: 600;">3/7 (43%)</span>
+                        </div>
+                      </td>
+                      <td><span style="font-family: monospace; color: #d97706;">5.2h</span></td>
+                      <td><div class="trend up">↑ 악화</div></td>
+                    </tr>
+
+                    <!-- P003: 양호 -->
+                    <tr>
+                      <td class="col-id">P003</td>
+                      <td><span class="status-badge good">양호</span></td>
+                      <td>
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                          <span style="font-family: monospace;">126</span>
+                          <span style="font-size: 11px; color: #16a34a;">↓</span>
+                        </div>
+                      </td>
+                      <td>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                          <div class="med-dots">
+                            <div class="med-dot yes"></div><div class="med-dot yes"></div><div class="med-dot yes"></div>
+                            <div class="med-dot yes"></div><div class="med-dot yes"></div><div class="med-dot yes"></div><div class="med-dot yes"></div>
+                          </div>
+                          <span style="font-size: 11px; color: #16a34a; font-weight: 600;">7/7 (100%)</span>
+                        </div>
+                      </td>
+                      <td><span style="font-family: monospace;">7.5h</span></td>
+                      <td><div class="trend down">↓ 개선</div></td>
+                    </tr>
+
+                    <!-- P008: 위험 -->
+                    <tr>
+                      <td class="col-id">P008</td>
+                      <td><span class="status-badge danger">위험</span></td>
+                      <td>
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                          <span style="font-family: monospace; color: #dc2626; font-weight: 700;">178</span>
+                          <span style="font-size: 11px; color: #dc2626;">🔴</span>
+                        </div>
+                      </td>
+                      <td>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                          <div class="med-dots">
+                            <div class="med-dot no"></div><div class="med-dot no"></div><div class="med-dot no"></div>
+                            <div class="med-dot no"></div><div class="med-dot no"></div><div class="med-dot yes"></div><div class="med-dot no"></div>
+                          </div>
+                          <span style="font-size: 11px; color: #dc2626; font-weight: 600;">1/7 (14%)</span>
+                        </div>
+                      </td>
+                      <td><span style="font-family: monospace; color: #dc2626;">3.5h</span></td>
+                      <td><div class="trend critical">🚨 위험</div></td>
+                    </tr>
+
+                    <!-- P005: 양호 -->
+                    <tr>
+                      <td class="col-id">P005</td>
+                      <td><span class="status-badge good">양호</span></td>
+                      <td>
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                          <span style="font-family: monospace;">121</span>
+                          <span style="font-size: 11px; color: #6b7280;">mg/dL</span>
+                        </div>
+                      </td>
+                      <td>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                          <div class="med-dots">
+                            <div class="med-dot yes"></div><div class="med-dot yes"></div><div class="med-dot yes"></div>
+                            <div class="med-dot yes"></div><div class="med-dot yes"></div><div class="med-dot no"></div><div class="med-dot yes"></div>
+                          </div>
+                          <span style="font-size: 11px; color: #16a34a; font-weight: 600;">6/7 (86%)</span>
+                        </div>
+                      </td>
+                      <td><span style="font-family: monospace;">7.0h</span></td>
+                      <td><div class="trend stable">→ 안정</div></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- 페이지네이션 -->
+              <div class="pagination">
+                <div class="pagination-info">84명 중 1-20</div>
+                <div class="pagination-controls">
+                  <button class="page-btn">◀</button>
+                  <button class="page-btn active">1</button>
+                  <button class="page-btn">2</button>
+                  <button class="page-btn">3</button>
+                  <button class="page-btn">...</button>
+                  <button class="page-btn">9</button>
+                  <button class="page-btn">▶</button>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div><!-- /.table-panel -->
+
+        <!-- ④ 디테일 패널 (우측, 선택된 참여자) -->
+        <div class="detail-panel">
+
+          <!-- 디테일 헤더 -->
+          <div class="detail-header">
+            <div class="detail-header-left">
+              <div class="detail-id-row">
+                <span class="detail-id">P002</span>
+                <span class="status-badge warn">주의</span>
+              </div>
+              <div class="detail-name">박OO</div>
+              <div class="detail-period">1월 1주차 데이터</div>
+            </div>
+            <button class="detail-close">✕</button>
+          </div>
+
+          <!-- 디테일 바디 -->
+          <div class="detail-body">
+
+            <!-- 일별 데이터 -->
+            <div>
+              <div class="daily-section-title">
+                일별 데이터
+                <span class="period">01/01 ~ 01/07</span>
+              </div>
+              <table class="daily-table">
+                <thead>
+                  <tr>
+                    <th>날짜</th>
+                    <th>혈당</th>
+                    <th>복약</th>
+                    <th>수면</th>
+                    <th>기분</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="date-col">01/01</td>
+                    <td class="warn">135</td>
+                    <td><span class="med-no">✕</span></td>
+                    <td class="bad">4.8h</td>
+                    <td class="bad">2</td>
+                  </tr>
+                  <tr>
+                    <td class="date-col">01/02</td>
+                    <td class="warn">138</td>
+                    <td><span class="med-yes">✓</span></td>
+                    <td class="warn">5.5h</td>
+                    <td class="warn">3</td>
+                  </tr>
+                  <tr>
+                    <td class="date-col">01/03</td>
+                    <td class="warn">140</td>
+                    <td><span class="med-no">✕</span></td>
+                    <td class="bad">4.2h</td>
+                    <td class="bad">2</td>
+                  </tr>
+                  <tr>
+                    <td class="date-col">01/04</td>
+                    <td class="bad">145</td>
+                    <td><span class="med-yes">✓</span></td>
+                    <td class="warn">5.0h</td>
+                    <td class="bad">2</td>
+                  </tr>
+                  <tr>
+                    <td class="date-col">01/05</td>
+                    <td class="bad">148</td>
+                    <td><span class="med-no">✕</span></td>
+                    <td class="good">6.1h</td>
+                    <td class="warn">3</td>
+                  </tr>
+                  <tr>
+                    <td class="date-col">01/06</td>
+                    <td class="bad">150</td>
+                    <td><span class="med-no">✕</span></td>
+                    <td class="warn">5.8h</td>
+                    <td class="bad">2</td>
+                  </tr>
+                  <tr>
+                    <td class="date-col">01/07</td>
+                    <td class="warn">142</td>
+                    <td><span class="med-yes">✓</span></td>
+                    <td class="warn">5.2h</td>
+                    <td class="bad">2</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- 변수 카드: 혈당 -->
+            <div class="var-card">
+              <div class="var-card-header">
+                <span class="var-card-title">혈당 (Blood Glucose)</span>
+                <span class="var-card-badge bad">높음</span>
+              </div>
+              <div class="var-card-row">
+                <span>주간 평균</span>
+                <span class="val bad">142 mg/dL</span>
+              </div>
+              <div class="var-card-row">
+                <span>범위</span>
+                <span class="val">135 ~ 150</span>
+              </div>
+              <div class="var-card-row">
+                <span>트렌드</span>
+                <span class="var-card-trend up">↑ 상승 중</span>
+              </div>
+              <div class="sparkline" style="margin-top: 4px;">
+                <div class="spark-bar med" style="height: 50%;"></div>
+                <div class="spark-bar med" style="height: 55%;"></div>
+                <div class="spark-bar med" style="height: 58%;"></div>
+                <div class="spark-bar high" style="height: 65%;"></div>
+                <div class="spark-bar high" style="height: 72%;"></div>
+                <div class="spark-bar high" style="height: 78%;"></div>
+                <div class="spark-bar high" style="height: 68%;"></div>
+              </div>
+            </div>
+
+            <!-- 변수 카드: 복약 순응도 -->
+            <div class="var-card">
+              <div class="var-card-header">
+                <span class="var-card-title">복약 순응도</span>
+                <span class="var-card-badge bad">낮음</span>
+              </div>
+              <div class="var-card-row">
+                <span>주간</span>
+                <span class="val bad">3/7 (43%)</span>
+              </div>
+              <div class="var-card-row">
+                <span>패턴</span>
+                <span class="val" style="font-size: 11px; color: #6b7280;">월/수/금 복용, 나머지 미복용</span>
+              </div>
+              <div class="med-pattern" style="margin-top: 4px;">
+                <div class="med-pattern-dot no">✕</div>
+                <div class="med-pattern-dot yes">✓</div>
+                <div class="med-pattern-dot no">✕</div>
+                <div class="med-pattern-dot yes">✓</div>
+                <div class="med-pattern-dot no">✕</div>
+                <div class="med-pattern-dot no">✕</div>
+                <div class="med-pattern-dot yes">✓</div>
+              </div>
+            </div>
+
+            <!-- 변수 카드: 수면 -->
+            <div class="var-card">
+              <div class="var-card-header">
+                <span class="var-card-title">수면</span>
+                <span class="var-card-badge warn">부족</span>
+              </div>
+              <div class="var-card-row">
+                <span>주간 평균</span>
+                <span class="val warn">5.2h</span>
+              </div>
+              <div class="var-card-row">
+                <span>범위</span>
+                <span class="val">4.2 ~ 6.1h</span>
+              </div>
+              <div class="var-card-row">
+                <span>트렌드</span>
+                <span class="var-card-trend flat">→ 불규칙</span>
+              </div>
+            </div>
+
+            <!-- 변수 카드: 심박수 (접힌 상태) -->
+            <div class="var-card collapsed">
+              <div class="var-card-collapse-row">
+                <span style="font-size: 13px; font-weight: 600; color: #1f2937;">심박수</span>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                  <span style="font-size: 12px; color: #6b7280;">주간 평균 <strong style="color: #1f2937;">76 bpm</strong></span>
+                  <span class="var-card-trend up" style="font-size: 11px;">↑ 상승</span>
+                  <span style="font-size: 11px; color: #94a3b8; cursor: pointer;">펼치기 ▾</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- AI 인사이트 -->
+            <div class="ai-insight-card">
+              <div class="title">🤖 AI 인사이트</div>
+              <div class="text">
+                <strong>복약 미순응 → 혈당 상승</strong> 패턴이 관찰됩니다. 복약 누락일(화/목/토/일)과 혈당 피크가 상관관계를 보입니다.
+              </div>
+              <div class="ai-insight-chips">
+                <span class="ai-insight-chip">인과분석 실행</span>
+                <span class="ai-insight-chip">참여자에게 알림</span>
+                <span class="ai-insight-chip">상세 리포트</span>
+              </div>
+            </div>
+
+          </div><!-- /.detail-body -->
+        </div><!-- /.detail-panel -->
+
+      </div><!-- /.workspace -->
+    </div><!-- /.workspace-wrap -->
+  </div><!-- /.layout -->
+
+  <!-- 디자이너 노트 토글 -->
+  <button class="toggle-notes" onclick="document.querySelector('.designer-notes').classList.toggle('show')">📋 디자이너 노트</button>
+
+  <!-- 디자이너 노트 -->
+  <div class="designer-notes">
+    <h3 style="color: #a21caf;">📋 디자이너 노트: 데이터 테이블 (마스터-디테일)</h3>
+    <div class="dn-content">
+      <strong>1. 레이아웃 구조:</strong><br>
+      ① 사이드바 (240px) | ② 상단 바 (breadcrumb + 탭) | ③ 테이블 패널 (flex:1, 마스터) | ④ 디테일 패널 (420px, 디테일)<br>
+      workspace-wrap 패턴 사용: top-bar → workspace → table-panel + detail-panel<br><br>
+
+      <strong>2. 마스터-디테일 패턴:</strong><br>
+      - 왼쪽 패널(마스터): 전체 참여자의 집계 데이터 테이블 (주간/월간 단위)<br>
+      - 오른쪽 패널(디테일): 선택된 1명의 일별 상세 데이터<br>
+      - 행 클릭 시 우측 패널에 해당 참여자 상세 표시<br>
+      - 선택된 행: 좌측 파란 보더(3px) + 연한 파란 배경(#eff6ff)<br><br>
+
+      <strong>3. 동적 컬럼:</strong><br>
+      - 테이블 컬럼은 Step 3에서 설정한 데이터 변수에 따라 자동 생성<br>
+      - 컬럼 선택기로 사용자가 보고 싶은 변수만 선택하여 표시<br>
+      - 기본 표시: 참여자ID, 상태, 혈당, 복약순응도, 수면, 종합트렌드<br>
+      - 숨겨진 옵션: 심박수, 활동량, 기분점수, 식단기록, CGM변동계수<br><br>
+
+      <strong>4. 기간별 집계:</strong><br>
+      - 일별 원시 데이터를 주간/월간으로 자동 집계<br>
+      - 마스터 테이블: 선택 기간의 집계값 (평균, 합계)<br>
+      - 디테일 패널: 해당 기간 내 일별 드릴다운<br>
+      - 날짜 네비게이터로 기간 이동 (◀/▶)<br><br>
+
+      <strong>5. 디테일 패널 구성:</strong><br>
+      - 헤더: 참여자 ID + 상태 뱃지 + 로컬이름 + 기간<br>
+      - 일별 데이터 테이블: 날짜/혈당/복약/수면/기분 (색상 코딩)<br>
+      - 변수 카드: 각 변수별 주간 평균, 범위, 트렌드, 미니 차트<br>
+      - AI 인사이트: 해당 참여자의 패턴 분석 + 액션 버튼<br><br>
+
+      <strong>6. 프라이버시 보호:</strong><br>
+      - k-익명성: 그룹 크기 n<5일 경우 자동 마스킹/병합<br>
+      - 익명 ID: P001 형식 (실제 user_id 미노출)<br>
+      - ABAC 권한 제어: Owner/Member/Viewer 역할별 접근 제한<br>
+      - 감사 로그: 모든 데이터 접근 기록<br>
+      - Export: ABAC 권한 + 차등 프라이버시(DP) 적용<br><br>
+
+      <strong>7. 상태 체계:</strong><br>
+      - 양호(green): 정상 범위 내<br>
+      - 주의(amber): 일부 수치 이탈 또는 데이터 누락<br>
+      - 위험(red): 장기 미응답 또는 이상치<br>
+      - 종합 트렌드: →안정 / ↓개선 / ↑악화 / 🚨위험
     </div>
   </div>
+
+  <!-- 기능 명세 -->
+  <div class="designer-notes" id="func-spec">
+    <h3 style="color: #047857;">⚙️ 기능 명세: 데이터 테이블 (마스터-디테일)</h3>
+    <div class="dn-content" style="columns: 1;">
+      <strong>핵심 기능:</strong><br>
+      - 참여자 집계 테이블 (마스터): 전체 참여자의 주간/월간 집계 데이터<br>
+      - 참여자 상세 패널 (디테일): 선택된 참여자의 일별 시계열 데이터<br>
+      - 동적 컬럼 선택기: Step 3 변수 기반 자동 생성, 사용자 선택 가능<br>
+      - 기간별 집계: 주간/월간/전체 토글, 날짜 네비게이터<br>
+      - 정렬: 각 컬럼 헤더 클릭 (ASC/DESC)<br>
+      - 검색: 참여자 ID 또는 로컬이름으로 필터링<br>
+      - Export: CSV/Excel 다운로드 (ABAC 권한 체크)<br><br>
+
+      <strong>프라이버시 보호 (SPEC_TECH Part 8.4):</strong><br>
+      - k-익명성: 그룹 크기 n<5일 경우 자동 마스킹/병합<br>
+      - person_id: P001 형식 익명 ID만 표시 (실제 user_id 미노출)<br>
+      - ABAC 권한 제어: Owner(전체 접근), Member(조회 가능, Export 제한), Viewer(집계만)<br>
+      - 차등 프라이버시(DP): Export 시 노이즈 추가 옵션<br>
+      - 감사 로그: 모든 접근 기록 + XRPL 앵커링<br><br>
+
+      <strong>컬럼 커스터마이징:</strong><br>
+      - Step 3에서 설정한 데이터 변수 목록이 컬럼 옵션으로 자동 반영<br>
+      - 연구자가 보고 싶은 변수만 체크하여 테이블에 표시<br>
+      - 선택 상태는 로컬 저장 (연구별로 독립)<br>
+      - 새 변수 추가 시 컬럼 목록에 자동 반영
+    </div>
+  </div>
+
+  <!-- 백엔드 호출 -->
+  <div class="designer-notes" id="backend-spec">
+    <h3 style="color: #6d28d9;">🔗 백엔드 호출: 데이터 테이블</h3>
+    <div class="dn-content" style="columns: 1;">
+      <strong>1. 참여자 목록 조회 (집계, k-anonymity 적용):</strong><br>
+      <code style="background: #1f2937; color: #a5b4fc; padding: 8px 12px; border-radius: 6px; display: block; margin: 6px 0; font-size: 11px; font-family: 'SF Mono', Monaco, monospace; line-height: 1.8;">
+GET /api/v2/projects/:id/participants<br>
+&nbsp;&nbsp;?page=1&limit=20<br>
+&nbsp;&nbsp;&data_types=glucose,medication,sleep<br>
+&nbsp;&nbsp;&date_from=2026-01-01&date_to=2026-01-07<br>
+&nbsp;&nbsp;&aggregation=weekly<br>
+&nbsp;&nbsp;&sort=glucose_avg&order=desc<br>
+<br>
+→ { "participants": [{ "person_id": "P001", "status": "good",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"data": { "glucose": { "avg": 118 }, "medication": { "adherence": 7, "total": 7 },<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"sleep": { "avg_hours": 6.8 } }, "trend": "stable" }],<br>
+&nbsp;&nbsp;"total": 87, "page": 1 }
+      </code><br>
+
+      <strong>2. 개별 참여자 시계열 데이터 (일별 드릴다운):</strong><br>
+      <code style="background: #1f2937; color: #a5b4fc; padding: 8px 12px; border-radius: 6px; display: block; margin: 6px 0; font-size: 11px; font-family: 'SF Mono', Monaco, monospace; line-height: 1.8;">
+GET /api/v2/projects/:id/participants/:personId/timeseries<br>
+&nbsp;&nbsp;?data_types=glucose,medication,sleep,mood<br>
+&nbsp;&nbsp;&date_from=2026-01-01&date_to=2026-01-07<br>
+&nbsp;&nbsp;&granularity=daily<br>
+<br>
+→ { "person_id": "P002", "days": [<br>
+&nbsp;&nbsp;&nbsp;&nbsp;{ "date": "2026-01-01", "glucose": 135, "medication": false, "sleep": 4.8, "mood": 2 },<br>
+&nbsp;&nbsp;&nbsp;&nbsp;{ "date": "2026-01-02", "glucose": 138, "medication": true, "sleep": 5.5, "mood": 3 }, ...<br>
+&nbsp;&nbsp;], "summary": { "glucose_avg": 142, "medication_rate": 0.43, "sleep_avg": 5.2 } }
+      </code><br>
+
+      <strong>3. 데이터 Export (ABAC + DP 적용):</strong><br>
+      <code style="background: #1f2937; color: #a5b4fc; padding: 8px 12px; border-radius: 6px; display: block; margin: 6px 0; font-size: 11px; font-family: 'SF Mono', Monaco, monospace; line-height: 1.8;">
+POST /api/v2/projects/:id/data/export<br>
+{ "format": "csv",<br>
+&nbsp;&nbsp;"columns": ["person_id", "date", "glucose_avg", "medication_adherence", "sleep_avg"],<br>
+&nbsp;&nbsp;"filters": { "date_from": "2026-01-01", "date_to": "2026-01-07" },<br>
+&nbsp;&nbsp;"privacy": { "k_anonymity": 5, "differential_privacy": { "enabled": true, "epsilon": 1.0 } } }<br>
+<br>
+→ { "export_id": "exp_xxx", "status": "processing", "estimated_rows": 588 }
+      </code>
+    </div>
+  </div>
+
   <script src="page-spec.js"></script>
   <link rel="stylesheet" href="../tooltip-spec.css">
   <script src="../tooltip-spec.js"></script>
