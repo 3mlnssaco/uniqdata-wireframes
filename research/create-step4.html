@@ -3,15 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>연구 생성 Step 4 - IRB 워크스페이스 - Wireframe</title>
+  <title>연구 생성 Step 6 - 참가자 모집 설정 - Wireframe</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: -apple-system, sans-serif; background: #f5f5f5; }
-
-    /* ===== 4분할 레이아웃 ===== */
-    .layout { display: flex; min-height: 100vh; width: 100%; }
-
-    /* ① Nav (좌측 사이드바) */
+    .layout { display: flex; min-height: 100vh; }
     .sidebar {
       width: 240px;
       background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
@@ -46,19 +42,6 @@
     .nav-item:hover { background: rgba(255,255,255,0.05); color: #e2e8f0; }
     .nav-item.active { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
     .nav-item .icon { width: 20px; text-align: center; }
-
-    /* Workspace wrapper */
-    .workspace-wrap {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      min-width: 0;
-    }
-    .workspace {
-      flex: 1;
-      display: flex;
-      min-height: 0;
-    }
 
     /* Step Bar */
     .step-bar {
@@ -112,470 +95,158 @@
     .sidebar-footer {
       margin-top: auto; padding: 16px; border-top: 1px solid rgba(255,255,255,0.05);
     }
-    .user-info { display: flex; align-items: center; gap: 12px; padding: 8px; }
-    .user-avatar {
+    .user-info-sidebar { display: flex; align-items: center; gap: 12px; padding: 8px; }
+    .user-avatar-sidebar {
       width: 36px; height: 36px;
       background: linear-gradient(135deg, #3b82f6, #8b5cf6);
       border-radius: 50%; display: flex; align-items: center; justify-content: center;
       font-size: 14px; color: white;
     }
-    .user-name { font-size: 14px; color: #e2e8f0; }
-    .user-org { font-size: 12px; color: #64748b; }
+    .user-name-sidebar { font-size: 14px; color: #e2e8f0; }
+    .user-org-sidebar { font-size: 12px; color: #64748b; }
 
-    /* ② IRB 에디터 (중앙 좌측) */
-    .editor-panel {
-      flex: 1;
-      min-width: 0;
-      overflow-y: auto;
-      background: white;
-      border-right: 1px solid #e5e7eb;
-    }
-    .editor-header {
-      padding: 20px 24px;
-      border-bottom: 1px solid #e5e7eb;
-      display: flex; justify-content: space-between; align-items: center;
-    }
-    .editor-header h2 { font-size: 18px; font-weight: 700; }
-    .editor-header .badge {
-      font-size: 11px; background: #fef3c7; color: #92400e;
-      padding: 4px 10px; border-radius: 12px;
-    }
-    .editor-body { padding: 24px; }
+    .main { flex: 1; padding: 32px; max-width: 900px; margin: 0 auto; }
+    .main h1 { font-size: 28px; margin-bottom: 8px; }
+    .main .subtitle { color: #6b7280; margin-bottom: 32px; }
 
-    .field-group { margin-bottom: 20px; }
-    .field-group label {
-      display: block; font-size: 13px; font-weight: 600; color: #374151; margin-bottom: 8px;
-    }
-    .field-group .hint { font-size: 11px; color: #9ca3af; margin-bottom: 6px; }
-    .input {
-      width: 100%; height: 44px;
-      border: 1px solid #e5e7eb; border-radius: 8px;
-      padding: 0 12px; font-size: 14px; background: white;
-    }
-    .input:focus { outline: none; border-color: #8b5cf6; box-shadow: 0 0 0 3px rgba(139,92,246,0.1); }
-    .input.ai-filled { border-color: #c4b5fd; background: #faf5ff; }
-    .textarea {
-      width: 100%; min-height: 80px;
-      border: 1px solid #e5e7eb; border-radius: 8px;
-      padding: 12px; font-size: 14px; font-family: inherit;
-      resize: vertical; line-height: 1.6;
-    }
-    .textarea.ai-filled { border-color: #c4b5fd; background: #faf5ff; }
-    .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-    .select {
-      width: 100%; height: 44px;
-      border: 1px solid #e5e7eb; border-radius: 8px;
-      padding: 0 12px; font-size: 14px; background: white;
-      appearance: auto;
-    }
-    .select.ai-filled { border-color: #c4b5fd; background: #faf5ff; }
 
-    .chip-group { display: flex; flex-wrap: wrap; gap: 8px; }
-    .chip {
-      padding: 6px 14px; border: 1px solid #e5e7eb; border-radius: 20px;
-      font-size: 13px; cursor: pointer; transition: all 0.2s;
-    }
-    .chip:hover { border-color: #c4b5fd; }
-    .chip.selected { background: #8b5cf6; color: white; border-color: #8b5cf6; }
+    /* 카드 */
+    .card { background: white; border: 1px solid #e5e7eb; border-radius: 12px; margin-bottom: 20px; overflow: hidden; }
+    .card-header { background: #f9fafb; padding: 16px 20px; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center; }
+    .card-header h3 { font-size: 16px; font-weight: 600; }
+    .card-body { padding: 20px; }
 
-    .section-divider {
-      height: 1px; background: #e5e7eb; margin: 28px 0;
-    }
+    /* 상태 뱃지 */
+    .status-badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 500; }
+    .status-badge.green { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
 
-    .section-title {
-      font-size: 15px; font-weight: 700; color: #111827;
-      margin-bottom: 16px; display: flex; align-items: center; gap: 8px;
-    }
-    .ai-tag {
-      font-size: 10px; background: #f3e8ff; color: #7c3aed;
-      padding: 2px 8px; border-radius: 10px; font-weight: 600;
-    }
+    /* IRB 승인 카드 */
+    .irb-success-card { background: linear-gradient(135deg, #f0fdf4, #dcfce7); border: 2px solid #22c55e; border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+    .irb-success-card h4 { font-size: 16px; color: #166534; margin-bottom: 12px; }
+    .irb-success-card .detail { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #bbf7d0; font-size: 14px; }
+    .irb-success-card .detail:last-child { border-bottom: none; }
+    .irb-success-card .detail .label { color: #166534; font-weight: 500; }
+    .irb-success-card .detail .value { color: #15803d; }
+    .irb-success-card .detail .value a { color: #8b5cf6; text-decoration: underline; }
 
-    .btn-row {
-      display: flex; justify-content: space-between;
-      padding-top: 24px; border-top: 1px solid #e5e7eb; margin-top: 24px;
-    }
-    .btn {
-      padding: 12px 28px; border-radius: 8px; font-size: 14px; font-weight: 500;
-      cursor: pointer; text-decoration: none; display: inline-block; border: none;
-    }
+    /* 검색바 */
+    .search-bar { display: flex; gap: 8px; margin-bottom: 16px; }
+    .search-bar input { flex: 1; height: 44px; border: 1px solid #e5e7eb; border-radius: 8px; padding: 0 16px; font-size: 14px; }
+    .search-bar input:focus { outline: none; border-color: #8b5cf6; box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1); }
+    .search-bar button { height: 44px; padding: 0 20px; background: #8b5cf6; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; }
+    .search-bar button:hover { background: #7c3aed; }
+
+    /* 필터 칩 */
+    .filter-chips { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+    .filter-chip { padding: 6px 14px; border-radius: 20px; font-size: 13px; border: 1px solid #e5e7eb; background: white; color: #374151; cursor: pointer; }
+    .filter-chip.active { background: #8b5cf6; color: white; border-color: #8b5cf6; }
+    .filter-chip:hover { border-color: #8b5cf6; }
+
+    /* 초대자 리스트 */
+    .invitee-list { margin: 16px 0; }
+    .invitee-item { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; margin-bottom: 8px; }
+    .invitee-info { display: flex; align-items: center; gap: 12px; }
+    .invitee-avatar { width: 36px; height: 36px; background: linear-gradient(135deg, #8b5cf6, #6366f1); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 13px; font-weight: 600; }
+    .invitee-details .name { font-size: 14px; font-weight: 500; color: #1f2937; }
+    .invitee-details .meta { font-size: 12px; color: #6b7280; margin-top: 2px; }
+    .invitee-remove { padding: 6px 12px; border: 1px solid #fca5a5; background: #fef2f2; color: #dc2626; border-radius: 6px; font-size: 12px; cursor: pointer; }
+    .invitee-remove:hover { background: #fee2e2; }
+
+    .add-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 12px; border: 2px dashed #d1d5db; border-radius: 8px; background: white; color: #6b7280; font-size: 14px; cursor: pointer; }
+    .add-btn:hover { border-color: #8b5cf6; color: #8b5cf6; }
+
+    .invitee-counter { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background: #f5f3ff; border: 1px solid #ddd6fe; border-radius: 8px; margin-top: 12px; }
+    .invitee-counter .text { font-size: 14px; font-weight: 500; color: #5b21b6; }
+    .invitee-counter .progress { font-size: 13px; color: #7c3aed; }
+
+    /* 모집 비율 슬라이더 */
+    .ratio-section { margin: 20px 0; }
+    .ratio-bar { display: flex; height: 40px; border-radius: 8px; overflow: hidden; margin-bottom: 12px; }
+    .ratio-bar .pre-invite { background: linear-gradient(135deg, #8b5cf6, #7c3aed); display: flex; align-items: center; justify-content: center; color: white; font-size: 13px; font-weight: 600; transition: width 0.3s; }
+    .ratio-bar .open-recruit { background: linear-gradient(135deg, #3b82f6, #2563eb); display: flex; align-items: center; justify-content: center; color: white; font-size: 13px; font-weight: 600; transition: width 0.3s; }
+    .ratio-slider { width: 100%; height: 8px; border-radius: 4px; background: #e5e7eb; appearance: none; cursor: pointer; margin: 12px 0; }
+    .ratio-slider::-webkit-slider-thumb { appearance: none; width: 24px; height: 24px; border-radius: 50%; background: #8b5cf6; cursor: pointer; border: 3px solid white; box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
+    .ratio-slider::-webkit-slider-track { height: 8px; border-radius: 4px; background: linear-gradient(to right, #8b5cf6 0%, #8b5cf6 40%, #3b82f6 40%, #3b82f6 100%); }
+    .ratio-labels { display: flex; justify-content: space-between; font-size: 12px; color: #6b7280; }
+
+    .ratio-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; }
+    .ratio-info-box { padding: 16px; border-radius: 10px; }
+    .ratio-info-box.pre-invite { background: #f5f3ff; border: 1px solid #ddd6fe; }
+    .ratio-info-box.open-recruit { background: #eff6ff; border: 1px solid #bfdbfe; }
+    .ratio-info-box h4 { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+    .ratio-info-box.pre-invite h4 { color: #5b21b6; }
+    .ratio-info-box.open-recruit h4 { color: #1e40af; }
+    .ratio-info-box .count { font-size: 24px; font-weight: 700; margin-bottom: 8px; }
+    .ratio-info-box.pre-invite .count { color: #8b5cf6; }
+    .ratio-info-box.open-recruit .count { color: #3b82f6; }
+    .ratio-info-box p { font-size: 12px; color: #6b7280; line-height: 1.6; }
+
+    /* 설정 옵션 */
+    .setting-row { display: flex; align-items: center; justify-content: space-between; padding: 16px 0; border-bottom: 1px solid #e5e7eb; }
+    .setting-row:last-child { border-bottom: none; }
+    .setting-left { flex: 1; }
+    .setting-left .title { font-size: 14px; font-weight: 500; color: #1f2937; margin-bottom: 2px; }
+    .setting-left .desc { font-size: 12px; color: #6b7280; }
+    .setting-right { display: flex; align-items: center; gap: 8px; }
+    .setting-input { width: 80px; height: 40px; border: 1px solid #e5e7eb; border-radius: 8px; padding: 0 12px; font-size: 15px; font-weight: 600; text-align: center; }
+    .setting-unit { font-size: 13px; color: #6b7280; }
+
+    /* 토글 */
+    .toggle { position: relative; width: 48px; height: 26px; border-radius: 13px; background: #22c55e; cursor: pointer; }
+    .toggle.off { background: #d1d5db; }
+    .toggle::after { content: ''; position: absolute; top: 3px; left: 25px; width: 20px; height: 20px; border-radius: 50%; background: white; transition: left 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+    .toggle.off::after { left: 3px; }
+
+    /* 체크박스 그룹 */
+    .checkbox-group { display: flex; gap: 16px; }
+    .checkbox-item { display: flex; align-items: center; gap: 8px; padding: 8px 16px; border: 1px solid #e5e7eb; border-radius: 8px; font-size: 13px; color: #374151; cursor: pointer; }
+    .checkbox-item.checked { border-color: #8b5cf6; background: #f5f3ff; color: #5b21b6; }
+    .checkbox-item input { accent-color: #8b5cf6; width: 16px; height: 16px; }
+
+    /* 폰 목업 */
+    .phone-mockup { width: 280px; margin: 0 auto; background: #1f2937; border-radius: 28px; padding: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.2); }
+    .phone-screen { background: white; border-radius: 20px; overflow: hidden; }
+    .phone-statusbar { background: #f9fafb; padding: 8px 16px; display: flex; justify-content: space-between; font-size: 11px; color: #6b7280; }
+    .phone-notification { padding: 16px; }
+    .phone-notification .notif-header { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+    .phone-notification .notif-icon { width: 32px; height: 32px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; color: white; }
+    .phone-notification .notif-title { font-size: 14px; font-weight: 600; color: #1f2937; }
+    .phone-notification .notif-subtitle { font-size: 11px; color: #6b7280; }
+    .phone-notification .research-title { font-size: 15px; font-weight: 600; color: #1f2937; margin-bottom: 12px; line-height: 1.4; }
+    .phone-notification .research-meta { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+    .phone-notification .research-meta-item { display: flex; justify-content: space-between; font-size: 13px; padding: 8px 0; border-bottom: 1px solid #f3f4f6; }
+    .phone-notification .research-meta-item .label { color: #6b7280; }
+    .phone-notification .research-meta-item .value { font-weight: 500; color: #1f2937; }
+    .phone-notification .research-meta-item .value.highlight { color: #8b5cf6; font-weight: 600; }
+    .phone-buttons { display: flex; gap: 8px; padding: 0 16px 16px; }
+    .phone-buttons .btn-accept { flex: 1; padding: 12px; background: linear-gradient(135deg, #22c55e, #16a34a); color: white; border: none; border-radius: 10px; font-size: 14px; font-weight: 600; text-align: center; cursor: pointer; }
+    .phone-buttons .btn-decline { flex: 1; padding: 12px; background: #f3f4f6; color: #6b7280; border: none; border-radius: 10px; font-size: 14px; font-weight: 500; text-align: center; cursor: pointer; }
+
+    /* 경고 박스 */
+    .warning-box { background: #fef3c7; border: 1px solid #fcd34d; border-radius: 12px; padding: 16px; margin: 20px 0; }
+    .warning-box h4 { font-size: 14px; color: #92400e; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+    .warning-box p { font-size: 13px; color: #a16207; line-height: 1.5; }
+
+    /* 버튼 */
+    .btn-row { display: flex; justify-content: space-between; align-items: center; margin-top: 24px; padding-top: 24px; border-top: 1px solid #e5e7eb; }
+    .btn { padding: 14px 32px; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; text-decoration: none; display: inline-block; }
     .btn-secondary { background: white; border: 1px solid #e5e7eb; color: #374151; }
-    .btn-primary { background: #8b5cf6; color: white; }
-    .btn-primary:hover { background: #7c3aed; }
+    .btn-launch { background: linear-gradient(135deg, #22c55e, #16a34a); border: none; color: white; padding: 16px 48px; font-size: 17px; border-radius: 12px; box-shadow: 0 4px 14px rgba(34, 197, 94, 0.4); }
+    .btn-launch:hover { background: linear-gradient(135deg, #16a34a, #15803d); box-shadow: 0 6px 20px rgba(34, 197, 94, 0.5); }
+    .launch-note { text-align: center; font-size: 12px; color: #dc2626; margin-top: 12px; }
 
-    /* ③ 규정 레포트 패널 (중앙 우측) */
-    .report-panel {
-      width: 360px;
-      background: #f8fafc;
-      border-right: 1px solid #e5e7eb;
-      overflow-y: auto;
-      flex-shrink: 0;
-    }
-    .report-header {
-      padding: 16px 20px;
-      border-bottom: 1px solid #e5e7eb;
-      background: white;
-      position: sticky; top: 0; z-index: 10;
-    }
-    .report-header h3 {
-      font-size: 15px; font-weight: 700; color: #111827;
-      display: flex; align-items: center; gap: 8px;
-    }
-    .report-header .sub { font-size: 12px; color: #6b7280; margin-top: 4px; }
-    .report-loading {
-      padding: 40px 20px; text-align: center; color: #9ca3af; font-size: 13px;
-    }
-    .report-body { padding: 20px; }
+    /* 스텝 네비게이션 */
+    .step-nav { display: flex; gap: 10px; margin-top: 24px; flex-wrap: wrap; }
+    .step-nav a { padding: 8px 16px; background: #eee; border-radius: 6px; text-decoration: none; color: #333; font-size: 14px; }
 
-    .report-section { margin-bottom: 24px; }
-    .report-section-title {
-      font-size: 14px; font-weight: 700; color: #1f2937;
-      margin-bottom: 12px; padding-bottom: 8px; border-bottom: 2px solid #8b5cf6;
-      display: flex; align-items: center; gap: 6px;
-    }
-    .report-content {
-      font-size: 13px; color: #374151; line-height: 1.7;
-    }
-    .report-content p { margin-bottom: 8px; }
-
-    /* 규정/논문 링크 */
-    .citation-link {
-      display: flex; align-items: flex-start; gap: 8px;
-      padding: 10px 12px; margin: 8px 0;
-      background: white; border: 1px solid #e5e7eb; border-radius: 8px;
-      text-decoration: none; color: inherit; transition: all 0.2s;
-    }
-    .citation-link:hover { border-color: #8b5cf6; box-shadow: 0 2px 8px rgba(139,92,246,0.1); }
-    .citation-icon {
-      width: 32px; height: 32px; flex-shrink: 0;
-      background: #eff6ff; border-radius: 6px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 14px;
-    }
-    .citation-title { font-size: 13px; font-weight: 600; color: #1e40af; line-height: 1.4; }
-    .citation-meta { font-size: 11px; color: #6b7280; margin-top: 2px; }
-    .citation-meta .journal { color: #059669; }
-    .citation-meta .doi { color: #9ca3af; }
-
-    /* 레포트 수치 하이라이트 */
-    .stat-row {
-      display: flex; gap: 12px; margin: 12px 0;
-    }
-    .stat-card {
-      flex: 1; padding: 12px; background: white; border: 1px solid #e5e7eb;
-      border-radius: 8px; text-align: center;
-    }
-    .stat-card .value { font-size: 20px; font-weight: 700; color: #111827; }
-    .stat-card .label { font-size: 11px; color: #6b7280; margin-top: 2px; }
-
-    /* ④ AI 상담 패널 (우측) */
-    .chat-panel {
-      width: 360px;
-      background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
-      color: #e5e7eb;
-      display: flex;
-      flex-direction: column;
-      flex-shrink: 0;
-    }
-    .chat-header {
-      padding: 16px 20px;
-      border-bottom: 1px solid #334155;
-      background: rgba(139, 92, 246, 0.1);
-    }
-    .chat-header .title {
-      font-size: 15px; font-weight: 700;
-      display: flex; align-items: center; gap: 8px;
-    }
-    .chat-header .title .icon {
-      width: 28px; height: 28px;
-      background: linear-gradient(135deg, #8b5cf6, #6366f1);
-      border-radius: 8px;
-      display: flex; align-items: center; justify-content: center; font-size: 14px;
-    }
-    .chat-header .sub { font-size: 12px; color: #94a3b8; margin-top: 4px; }
-
-    .chat-context {
-      margin: 12px; padding: 12px;
-      background: #1e293b; border: 1px solid #334155; border-radius: 10px;
-    }
-    .chat-context .label { font-size: 11px; color: #64748b; margin-bottom: 6px; }
-    .chat-context .value { font-size: 13px; color: #e2e8f0; line-height: 1.5; }
-    .chat-context-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
-    .chat-context-chip {
-      padding: 4px 10px; background: #8b5cf6; border-radius: 12px;
-      font-size: 11px; color: white;
-    }
-
-    .chat-messages {
-      flex: 1; overflow-y: auto; padding: 16px;
-      display: flex; flex-direction: column; gap: 12px;
-    }
-    .msg {
-      max-width: 90%; padding: 12px 14px; border-radius: 12px;
-      font-size: 13px; line-height: 1.5;
-    }
-    .msg.ai {
-      background: #1e293b; border: 1px solid #334155;
-      align-self: flex-start; border-bottom-left-radius: 4px;
-    }
-    .msg.user {
-      background: #3b82f6; color: white;
-      align-self: flex-end; border-bottom-right-radius: 4px;
-    }
-    .msg .sender { font-size: 11px; color: #64748b; margin-bottom: 4px; }
-    .msg.user .sender { color: rgba(255,255,255,0.7); }
-
-    .chat-quick {
-      padding: 12px; border-top: 1px solid #334155; background: rgba(0,0,0,0.2);
-    }
-    .chat-quick .label { font-size: 11px; color: #64748b; margin-bottom: 8px; }
-    .chat-quick-chips { display: flex; flex-wrap: wrap; gap: 6px; }
-    .chat-quick-chip {
-      padding: 6px 12px; background: #334155; border: 1px solid #475569;
-      border-radius: 16px; font-size: 12px; color: #cbd5e1; cursor: pointer;
-    }
-    .chat-quick-chip:hover { background: #475569; border-color: #8b5cf6; }
-
-    .chat-input {
-      padding: 16px; border-top: 1px solid #334155; background: #0f172a;
-    }
-    .chat-input-wrapper {
-      display: flex; gap: 8px;
-      background: #1e293b; border: 1px solid #334155;
-      border-radius: 12px; padding: 4px;
-    }
-    .chat-input-wrapper:focus-within { border-color: #8b5cf6; }
-    .chat-input input {
-      flex: 1; background: transparent; border: none;
-      padding: 10px 12px; font-size: 13px; color: #e2e8f0; outline: none;
-    }
-    .chat-input input::placeholder { color: #64748b; }
-    .chat-send-btn {
-      width: 40px; height: 40px;
-      background: linear-gradient(135deg, #8b5cf6, #6366f1);
-      border: none; border-radius: 8px; color: white; cursor: pointer;
-      display: flex; align-items: center; justify-content: center; font-size: 16px;
-    }
-
-    /* ===== IRB 전용 스타일 ===== */
-
-    /* 케이스 토글 탭 */
-    .case-tabs {
-      display: flex; gap: 0; padding: 0;
-      border-bottom: 1px solid #e5e7eb;
-      background: #f9fafb;
-    }
-    .case-tab {
-      flex: 1; padding: 12px 16px;
-      font-size: 13px; font-weight: 600;
-      text-align: center; cursor: pointer;
-      border: none; background: #e5e7eb; color: #6b7280;
-      transition: all 0.2s;
-      border-right: 1px solid #d1d5db;
-    }
-    .case-tab:last-child { border-right: none; }
-    .case-tab:hover { background: #d1d5db; color: #374151; }
-    .case-tab.active { background: #8b5cf6; color: white; }
-    .case-tab .tab-sub {
-      font-size: 11px; font-weight: 400; opacity: 0.8; display: block; margin-top: 2px;
-    }
-
-    /* 케이스 콘텐츠 토글 */
-    .case-content { display: none; }
-    .case-content.active { display: block; }
-
-    /* 연구 프로필 요약 */
-    .profile-summary {
-      background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 10px;
-      padding: 16px; margin-bottom: 20px;
-    }
-    .profile-summary-title {
-      font-size: 13px; font-weight: 600; color: #6b7280; margin-bottom: 10px;
-      text-transform: uppercase; letter-spacing: 0.3px;
-    }
-    .profile-grid {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 8px 16px;
-    }
-    .profile-item {
-      font-size: 13px; color: #374151; line-height: 1.5;
-    }
-    .profile-item .pk { color: #6b7280; font-size: 12px; }
-    .profile-item .pv { font-weight: 600; color: #111827; }
-    .profile-item.full-width { grid-column: span 2; }
-
-    /* IRB 판정 배지 */
-    .irb-status-badge {
-      display: flex; align-items: center; gap: 12px;
-      padding: 16px 20px; margin: 16px 0;
-      border-radius: 12px;
-    }
-    .irb-status-badge .badge-icon {
-      font-size: 32px; flex-shrink: 0;
-    }
-    .irb-status-badge .badge-text {
-      font-size: 18px; font-weight: 800;
-    }
-    .irb-status-badge .badge-sub {
-      font-size: 12px; margin-top: 2px; font-weight: 500;
-    }
-
-    /* 배지 색상 변형 */
-    .irb-status-badge.green {
-      background: linear-gradient(135deg, #dcfce7, #f0fdf4);
-      border: 2px solid #22c55e;
-    }
-    .irb-status-badge.green .badge-text { color: #166534; }
-    .irb-status-badge.green .badge-sub { color: #15803d; }
-
-    .irb-status-badge.amber {
-      background: linear-gradient(135deg, #fef3c7, #fffbeb);
-      border: 2px solid #f59e0b;
-    }
-    .irb-status-badge.amber .badge-text { color: #92400e; }
-    .irb-status-badge.amber .badge-sub { color: #b45309; }
-
-    .irb-status-badge.red {
-      background: linear-gradient(135deg, #fee2e2, #fef2f2);
-      border: 2px solid #ef4444;
-    }
-    .irb-status-badge.red .badge-text { color: #991b1b; }
-    .irb-status-badge.red .badge-sub { color: #b91c1c; }
-
-    .irb-reason {
-      padding: 12px 16px; margin: 12px 0;
-      border-left: 3px solid;
-      border-radius: 0 8px 8px 0;
-      font-size: 13px; line-height: 1.6;
-    }
-    .irb-reason.green { background: #f0fdf4; border-color: #22c55e; color: #166534; }
-    .irb-reason.amber { background: #fffbeb; border-color: #f59e0b; color: #78350f; }
-    .irb-reason.red { background: #fef2f2; border-color: #ef4444; color: #7f1d1d; }
-
-    /* 면제 사유 체크리스트 */
-    .checklist { margin: 12px 0; }
-    .checklist-item {
-      display: flex; align-items: flex-start; gap: 10px;
-      padding: 10px 14px; margin-bottom: 6px;
-      background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px;
-      font-size: 13px; color: #374151; line-height: 1.5;
-    }
-    .checklist-item .ck-icon { flex-shrink: 0; font-size: 16px; margin-top: 1px; }
-    .checklist-item.checked { background: #f0fdf4; border-color: #bbf7d0; }
-    .checklist-item.unchecked { color: #9ca3af; }
-    .checklist-item.fail { background: #fef2f2; border-color: #fecaca; color: #991b1b; }
-
-    /* 면제 신고서 폼 */
-    .notice-form {
-      background: #fffbeb; border: 1px solid #fde68a; border-radius: 10px;
-      padding: 16px; margin: 16px 0;
-    }
-    .notice-form .form-title {
-      font-size: 14px; font-weight: 700; color: #92400e; margin-bottom: 12px;
-      display: flex; align-items: center; gap: 6px;
-    }
-    .notice-form .form-hint {
-      font-size: 12px; color: #b45309; margin-bottom: 12px; line-height: 1.5;
-    }
-    .notice-form .form-field {
-      margin-bottom: 10px;
-    }
-    .notice-form .form-field label {
-      display: block; font-size: 12px; color: #78350f; font-weight: 600; margin-bottom: 4px;
-    }
-    .notice-form .form-field input,
-    .notice-form .form-field select {
-      width: 100%; height: 36px; border: 1px solid #fde68a; border-radius: 6px;
-      padding: 0 10px; font-size: 13px; background: white;
-    }
-
-    /* 서류 리스트 */
-    .doc-list { margin: 12px 0; }
-    .doc-item {
-      display: flex; align-items: center; gap: 12px;
-      padding: 12px 16px; margin-bottom: 8px;
-      background: white; border: 1px solid #e5e7eb; border-radius: 8px;
-      transition: all 0.15s;
-    }
-    .doc-item:hover { border-color: #c4b5fd; }
-    .doc-item .doc-icon {
-      width: 36px; height: 36px; flex-shrink: 0;
-      border-radius: 8px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 16px;
-    }
-    .doc-item .doc-icon.done { background: #dcfce7; }
-    .doc-item .doc-icon.warn { background: #fef3c7; }
-    .doc-item .doc-name {
-      flex: 1; font-size: 14px; font-weight: 500; color: #111827;
-    }
-    .doc-item .doc-status {
-      font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 12px;
-    }
-    .doc-item .doc-status.done { background: #dcfce7; color: #166534; }
-    .doc-item .doc-status.warn { background: #fef3c7; color: #92400e; }
-    .doc-item .doc-preview {
-      padding: 6px 12px; font-size: 12px; color: #6b7280;
-      border: 1px solid #e5e7eb; border-radius: 6px; background: white;
-      cursor: pointer; text-decoration: none; transition: all 0.15s;
-    }
-    .doc-item .doc-preview:hover { border-color: #8b5cf6; color: #7c3aed; }
-
-    /* 예산 테이블 */
-    .budget-table {
-      width: 100%; border-collapse: collapse; margin: 12px 0;
-    }
-    .budget-table tr { border-bottom: 1px solid #f3f4f6; }
-    .budget-table tr:last-child { border-bottom: 2px solid #e5e7eb; }
-    .budget-table tr.total { border-bottom: none; background: #f8fafc; }
-    .budget-table td {
-      padding: 10px 12px; font-size: 13px; color: #374151;
-    }
-    .budget-table td:first-child { font-weight: 500; }
-    .budget-table td:last-child { text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; }
-    .budget-table tr.total td { font-weight: 700; color: #111827; font-size: 14px; }
-    .budget-table .sub { font-size: 11px; color: #9ca3af; font-weight: 400; }
-
-    /* 설명 박스 */
-    .explanation-box {
-      padding: 14px 16px; margin: 12px 0;
-      background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 8px;
-      font-size: 13px; color: #374151; line-height: 1.7;
-    }
-
-    /* 하이라이트 불릿 리스트 */
-    .highlight-list { margin: 8px 0; padding: 0; list-style: none; }
-    .highlight-list li {
-      padding: 6px 0; font-size: 13px; color: #374151; line-height: 1.5;
-      display: flex; align-items: flex-start; gap: 8px;
-    }
-    .highlight-list li .hl-bullet { flex-shrink: 0; }
-
-    /* 디자이너 노트 (하단 오버레이) */
-    .designer-notes {
-      position: fixed; bottom: 0; left: 0; right: 0;
-      background: linear-gradient(135deg, #fdf4ff, #fae8ff);
-      border-top: 2px solid #d946ef;
-      padding: 20px 32px;
-      max-height: 300px; overflow-y: auto;
-      z-index: 100;
-      display: none;
-    }
-    .designer-notes.show { display: block; }
-    .designer-notes h3 { color: #a21caf; margin-bottom: 12px; font-size: 14px; }
-    .designer-notes .content { font-size: 12px; color: #374151; line-height: 1.7; columns: 2; column-gap: 32px; }
-
-    .toggle-notes {
-      position: fixed; bottom: 16px; right: 16px;
-      padding: 10px 16px; background: #d946ef; color: white;
-      border: none; border-radius: 8px; font-size: 13px; font-weight: 600;
-      cursor: pointer; z-index: 101; box-shadow: 0 4px 12px rgba(217,70,239,0.3);
-    }
-
+    /* 디자이너 노트 */
+    .designer-note { background: linear-gradient(135deg, #fdf4ff, #fae8ff); border: 2px solid #d946ef; border-radius: 12px; padding: 20px; margin-top: 24px; }
+    .designer-note h3 { color: #a21caf; margin-bottom: 12px; font-size: 14px; }
+    .designer-note .content { font-size: 12px; color: #374151; line-height: 1.7; }
   </style>
 </head>
 <body>
   <div class="layout">
-    <!-- ① Nav -->
     <div class="sidebar">
       <div class="logo">
         <div class="logo-icon">U</div>
@@ -618,18 +289,24 @@
       </div>
 
       <div class="sidebar-footer">
-        <div class="user-info">
-          <div class="user-avatar">김</div>
+        <div class="user-info-sidebar">
+          <div class="user-avatar-sidebar">김</div>
           <div>
-            <div class="user-name">김연구</div>
-            <div class="user-org">서울대학교병원</div>
+            <div class="user-name-sidebar">김연구</div>
+            <div class="user-org-sidebar">서울대학교병원</div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Workspace Wrap -->
-    <div class="workspace-wrap">
+    <div class="main">
+      <!-- 페이지 헤더 -->
+      <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 8px;">
+        <h1>참가자 모집 설정</h1>
+        <span class="status-badge green">IRB 승인 완료</span>
+      </div>
+      <p class="subtitle">사전 초대자를 지정하고 모집 전략을 설정합니다</p>
+
       <!-- Step Bar -->
       <div class="step-bar">
         <div class="step-bar-inner">
@@ -641,711 +318,369 @@
           <div class="sb-line done"></div>
           <div class="sb-step done"><div class="sb-num">✓</div><div class="sb-label">모집 설정</div></div>
           <div class="sb-line done"></div>
-          <div class="sb-step active"><div class="sb-num">5</div><div class="sb-label">IRB 판정</div></div>
-          <div class="sb-line"></div>
-          <div class="sb-step pending"><div class="sb-num">6</div><div class="sb-label">에스크로</div></div>
+          <div class="sb-step done"><div class="sb-num">✓</div><div class="sb-label">IRB 판정</div></div>
+          <div class="sb-line done"></div>
+          <div class="sb-step active"><div class="sb-num">6</div><div class="sb-label">에스크로</div></div>
         </div>
       </div>
-      <!-- Workspace (3 panels) -->
-      <div class="workspace">
-    <!-- ② IRB 에디터 -->
-    <div class="editor-panel">
-      <!-- 케이스 토글 탭 -->
-      <div class="case-tabs">
-        <button class="case-tab" data-case="1" onclick="switchCase(1)">
-          IRB 불필요
-          <span class="tab-sub">No IRB needed</span>
-        </button>
-        <button class="case-tab" data-case="2" onclick="switchCase(2)">
-          면제 해당
-          <span class="tab-sub">Exempt</span>
-        </button>
-        <button class="case-tab active" data-case="3" onclick="switchCase(3)">
-          심의 필요
-          <span class="tab-sub">Full review</span>
-        </button>
+
+      <!-- Section 1: IRB 승인 확인 -->
+      <div class="irb-success-card">
+        <h4>✅ IRB 승인 완료 (2026-03-15)</h4>
+        <div class="detail">
+          <span class="label">IRB 승인번호</span>
+          <span class="value">SNUH-IRB-2026-0142</span>
+        </div>
+        <div class="detail">
+          <span class="label">XRPL 앵커링</span>
+          <span class="value">tx hash: <a href="https://livenet.xrpl.org/transactions/A1B2C3D4E5F6" target="_blank">A1B2C3...D4E5F6</a></span>
+        </div>
+        <div class="detail">
+          <span class="label">에스크로 상태</span>
+          <span class="value" style="display: flex; align-items: center; gap: 6px;">
+            <span style="width: 8px; height: 8px; background: #22c55e; border-radius: 50; display: inline-block;"></span>
+            에스크로 예치 완료 - 모집 준비 완료
+          </span>
+        </div>
       </div>
 
-      <div class="editor-header">
-        <h2>IRB 에디터</h2>
-        <span class="badge">AI 자동 판정</span>
-      </div>
-
-      <div class="editor-body">
-
-        <!-- ========== CASE 1: IRB 불필요 ========== -->
-        <div class="case-content" data-case="1">
-
-          <div class="irb-status-badge green">
-            <div class="badge-icon">✅</div>
-            <div>
-              <div class="badge-text">IRB 심의 불필요</div>
-              <div class="badge-sub">No IRB Review Required</div>
-            </div>
-          </div>
-
-          <div class="section-title">📋 연구 프로필 요약</div>
-          <div class="profile-summary">
-            <div class="profile-grid">
-              <div class="profile-item full-width">
-                <div class="pk">연구 제목</div>
-                <div class="pv">공개 스포츠 데이터셋 기반 선수 퍼포먼스 예측 모델 비교 분석</div>
-              </div>
-              <div class="profile-item">
-                <div class="pk">연구 방법론</div>
-                <div class="pv">2차 데이터 분석</div>
-              </div>
-              <div class="profile-item">
-                <div class="pk">참여자 수</div>
-                <div class="pv">해당 없음 (기존 데이터)</div>
-              </div>
-            </div>
-          </div>
-
-          <div class="irb-reason green">
-            <strong>판정 사유:</strong> 본 연구는 인간대상연구에 해당하지 않습니다
-          </div>
-
-          <div class="explanation-box">
-            기존 공개 데이터셋의 2차 분석으로, 개인식별정보가 포함되지 않은 데이터만 사용합니다. 사람을 대상으로 물리적으로 개입하거나 의사소통, 대인접촉 등을 통하여 수행하는 연구가 아니므로 생명윤리법상 인간대상연구에 해당하지 않습니다.
-          </div>
-
-          <div class="section-divider"></div>
-
-          <div class="section-title">💰 예산 요약</div>
-          <table class="budget-table">
-            <tr>
-              <td>참여자 보상</td>
-              <td>없음</td>
-            </tr>
-            <tr>
-              <td>IRB 신청비</td>
-              <td>없음</td>
-            </tr>
-            <tr>
-              <td>플랫폼 이용료</td>
-              <td>50 XRP</td>
-            </tr>
-            <tr class="total">
-              <td>총 예산</td>
-              <td>50 XRP</td>
-            </tr>
-          </table>
-
-          <div class="btn-row">
-            <a href="create-step3.html" class="btn btn-secondary">← 이전</a>
-            <a href="create-step5.html" class="btn btn-primary">다음 단계로 →</a>
-          </div>
+      <!-- Section 2: 사전 초대자 지정 -->
+      <div class="card">
+        <div class="card-header">
+          <h3>👥 사전 초대자 지정</h3>
+          <span style="font-size: 12px; color: #8b5cf6; font-weight: 500;">핵심 기능</span>
         </div>
+        <div class="card-body">
+          <p style="font-size: 13px; color: #6b7280; margin-bottom: 16px;">병원 내 특정 환자를 연구에 미리 초대할 수 있습니다</p>
 
-        <!-- ========== CASE 2: 면제 해당 ========== -->
-        <div class="case-content" data-case="2">
-
-          <div class="irb-status-badge amber">
-            <div class="badge-icon">📋</div>
-            <div>
-              <div class="badge-text">심의면제 해당</div>
-              <div class="badge-sub">Exempt — Notification Required</div>
-            </div>
+          <!-- 검색바 -->
+          <div class="search-bar">
+            <input type="text" placeholder="환자 검색 (이름, 환자번호, 진단코드)">
+            <button>검색</button>
           </div>
 
-          <div class="section-title">📋 연구 프로필 요약</div>
-          <div class="profile-summary">
-            <div class="profile-grid">
-              <div class="profile-item full-width">
-                <div class="pk">연구 제목</div>
-                <div class="pv">대학생 운동 습관과 학업 성취도 간 상관관계 — 익명 설문 연구</div>
+          <!-- 필터 칩 -->
+          <div class="filter-chips">
+            <span class="filter-chip">전체</span>
+            <span class="filter-chip active">당뇨 (T2DM)</span>
+            <span class="filter-chip">고혈압</span>
+            <span class="filter-chip">심장질환</span>
+            <span class="filter-chip">비만</span>
+          </div>
+
+          <!-- 초대자 리스트 -->
+          <div class="invitee-list">
+            <div class="invitee-item">
+              <div class="invitee-info">
+                <div class="invitee-avatar">박</div>
+                <div class="invitee-details">
+                  <div class="name">박○○ (56세/F)</div>
+                  <div class="meta">T2DM, CGM 사용 중</div>
+                </div>
               </div>
-              <div class="profile-item">
-                <div class="pk">연구 방법론</div>
-                <div class="pv">익명 온라인 설문</div>
+              <button class="invitee-remove">제거</button>
+            </div>
+            <div class="invitee-item">
+              <div class="invitee-info">
+                <div class="invitee-avatar">이</div>
+                <div class="invitee-details">
+                  <div class="name">이○○ (62세/M)</div>
+                  <div class="meta">T2DM, 복약 관리 중</div>
+                </div>
               </div>
-              <div class="profile-item">
-                <div class="pk">목표 참여자</div>
-                <div class="pv">300명</div>
+              <button class="invitee-remove">제거</button>
+            </div>
+            <div class="invitee-item">
+              <div class="invitee-info">
+                <div class="invitee-avatar">최</div>
+                <div class="invitee-details">
+                  <div class="name">최○○ (48세/F)</div>
+                  <div class="meta">T2DM, 인슐린 펌프</div>
+                </div>
               </div>
+              <button class="invitee-remove">제거</button>
             </div>
-          </div>
-
-          <div class="section-divider"></div>
-
-          <div class="section-title">✅ 면제 사유 체크리스트 <span class="ai-tag">AI 판정</span></div>
-          <div class="checklist">
-            <div class="checklist-item checked">
-              <span class="ck-icon">✅</span>
-              <span>일반 대중에게 공개된 정보를 이용하는 연구</span>
-            </div>
-            <div class="checklist-item checked">
-              <span class="ck-icon">✅</span>
-              <span>연구대상자를 직접 조작하거나 대상자의 환경을 조작하지 않는 연구</span>
-            </div>
-            <div class="checklist-item unchecked">
-              <span class="ck-icon">☐</span>
-              <span>의약품, 의료기기 등의 연구 (해당 없음)</span>
-            </div>
-          </div>
-
-          <div class="section-divider"></div>
-
-          <div class="section-title">📝 면제 신고서</div>
-          <div class="notice-form">
-            <div class="form-title">⚠️ 면제도 신고는 필요합니다</div>
-            <div class="form-hint">기관생명윤리위원회에 면제 확인 신고서를 제출해야 합니다. 심사가 아닌 확인 절차이므로 보통 1-2일 내 처리됩니다.</div>
-            <div class="form-field">
-              <label>연구책임자</label>
-              <input type="text" value="김연구" readonly style="background:#faf5ff; border-color:#c4b5fd;">
-            </div>
-            <div class="form-field">
-              <label>연구제목</label>
-              <input type="text" value="대학생 운동 습관과 학업 성취도 간 상관관계" readonly style="background:#faf5ff; border-color:#c4b5fd;">
-            </div>
-            <div class="form-field">
-              <label>면제사유 선택</label>
-              <select>
-                <option selected>공개 정보 활용 + 대상자 비조작 연구</option>
-                <option>비식별 데이터 2차 분석</option>
-                <option>미미한 위험의 설문/인터뷰</option>
-              </select>
-            </div>
-            <div class="form-field">
-              <label>연구기간</label>
-              <input type="text" value="2026.03.01 - 2026.05.31">
-            </div>
-          </div>
-
-          <div class="section-divider"></div>
-
-          <div class="section-title">💰 예산 요약</div>
-          <table class="budget-table">
-            <tr>
-              <td>IRB 신청비</td>
-              <td>면제 <span class="sub">(0 XRP)</span></td>
-            </tr>
-            <tr>
-              <td>참여자 보상</td>
-              <td>10 XRP × 300명 = <strong>3,000 XRP</strong></td>
-            </tr>
-            <tr>
-              <td>플랫폼 수수료 5%</td>
-              <td>150 XRP</td>
-            </tr>
-            <tr class="total">
-              <td>총 예산</td>
-              <td>3,150 XRP</td>
-            </tr>
-          </table>
-
-          <div class="btn-row">
-            <a href="create-step3.html" class="btn btn-secondary">← 이전</a>
-            <a href="create-step5.html" class="btn btn-primary">면제 신고 + 다음 단계 →</a>
-          </div>
-        </div>
-
-        <!-- ========== CASE 3: 심의 필요 (DEFAULT) ========== -->
-        <div class="case-content active" data-case="3">
-
-          <div class="irb-status-badge red">
-            <div class="badge-icon">⚠️</div>
-            <div>
-              <div class="badge-text">정규심의 필요</div>
-              <div class="badge-sub">Full Board Review Required</div>
-            </div>
-          </div>
-
-          <div class="section-title">📋 연구 프로필 요약</div>
-          <div class="profile-summary">
-            <div class="profile-grid">
-              <div class="profile-item full-width">
-                <div class="pk">연구 제목</div>
-                <div class="pv">저탄수화물 식단의 혈당 변동 개선 효과</div>
+            <div class="invitee-item">
+              <div class="invitee-info">
+                <div class="invitee-avatar">정</div>
+                <div class="invitee-details">
+                  <div class="name">정○○ (55세/M)</div>
+                  <div class="meta">T2DM + 고혈압</div>
+                </div>
               </div>
-              <div class="profile-item">
-                <div class="pk">연구 방법론</div>
-                <div class="pv">RCT (무작위 대조 시험)</div>
-              </div>
-              <div class="profile-item">
-                <div class="pk">목표 참여자</div>
-                <div class="pv">100명</div>
-              </div>
+              <button class="invitee-remove">제거</button>
             </div>
           </div>
 
-          <div class="section-divider"></div>
+          <!-- 추가 버튼 -->
+          <button class="add-btn">+ 초대자 추가</button>
 
-          <div class="section-title">⚖️ 심의 유형 판정 <span class="ai-tag">AI 자동 판정</span></div>
-          <div class="irb-reason red">
-            <strong>정규심의</strong> (Not 신속심의) — RCT + 민감 건강데이터 수집으로 인해 최소 위험 연구에 해당하지 않음
-          </div>
-
-          <div class="section-title" style="margin-top:20px">🚫 면제 불가 사유</div>
-          <div class="checklist">
-            <div class="checklist-item fail">
-              <span class="ck-icon">✗</span>
-              <span><strong>RCT 방법론</strong> — 대상자 환경 조작 해당</span>
-            </div>
-            <div class="checklist-item fail">
-              <span class="ck-icon">✗</span>
-              <span><strong>L4 건강 데이터 (CGM) 수집</strong> — 민감정보</span>
-            </div>
-          </div>
-
-          <div class="section-divider"></div>
-
-          <div class="section-title">📄 제출 서류 체크리스트</div>
-          <div class="doc-list">
-            <div class="doc-item">
-              <div class="doc-icon done">📝</div>
-              <div class="doc-name">연구계획서</div>
-              <span class="doc-status done">AI 초안 완료 ✓</span>
-              <a href="#" class="doc-preview">미리보기</a>
-            </div>
-            <div class="doc-item">
-              <div class="doc-icon done">📜</div>
-              <div class="doc-name">생명윤리준수서약서</div>
-              <span class="doc-status done">AI 초안 완료 ✓</span>
-              <a href="#" class="doc-preview">미리보기</a>
-            </div>
-            <div class="doc-item">
-              <div class="doc-icon done">✍️</div>
-              <div class="doc-name">참여자 동의서</div>
-              <span class="doc-status done">AI 초안 완료 ✓</span>
-              <a href="#" class="doc-preview">미리보기</a>
-            </div>
-            <div class="doc-item">
-              <div class="doc-icon warn">👤</div>
-              <div class="doc-name">연구자 이력서</div>
-              <span class="doc-status warn">업로드 필요 !</span>
-              <a href="#" class="doc-preview">업로드</a>
-            </div>
-          </div>
-
-          <div class="section-divider"></div>
-
-          <div class="section-title">💰 예산 요약</div>
-          <table class="budget-table">
-            <tr>
-              <td>IRB 신청비</td>
-              <td>400 XRP</td>
-            </tr>
-            <tr>
-              <td>참여자 보상 (기본+보너스)</td>
-              <td>6,400 XRP</td>
-            </tr>
-            <tr>
-              <td>플랫폼 수수료 5%</td>
-              <td>340 XRP</td>
-            </tr>
-            <tr class="total">
-              <td>총 예산</td>
-              <td>7,140 XRP</td>
-            </tr>
-          </table>
-
-          <div class="btn-row">
-            <a href="create-step3.html" class="btn btn-secondary">← 이전</a>
-            <a href="create-step5.html" class="btn btn-primary">서류 준비 + 다음 단계 →</a>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
-    <!-- ③ 규정 레포트 -->
-    <div class="report-panel">
-      <div class="report-header">
-        <h3>📋 규정 레포트</h3>
-        <div class="sub">심의 기반 자동 생성 | RAG + 법령DB</div>
-      </div>
-      <div class="report-body">
-
-        <!-- ========== REPORT CASE 1 ========== -->
-        <div class="case-content" data-case="1">
-
-          <div class="report-section">
-            <div class="report-section-title">⚖️ IRB 심의 대상 판정</div>
-            <div class="report-content">
-              <p><strong>인간대상연구 정의 (생명윤리법 제2조 제1호)</strong></p>
-              <p>"사람을 대상으로 물리적으로 개입하거나 의사소통, 대인접촉 등을 통하여 수행하는 연구"</p>
-              <p><strong>본 연구:</strong> 기존 공개 데이터 2차 분석 → <strong>인간대상연구 비해당</strong></p>
-            </div>
-            <a href="https://www.law.go.kr/법령/생명윤리및안전에관한법률/제2조" class="citation-link" target="_blank">
-              <div class="citation-icon">📜</div>
-              <div>
-                <div class="citation-title">생명윤리 및 안전에 관한 법률 제2조 (정의)</div>
-                <div class="citation-meta"><span class="journal">law.go.kr</span> | <span class="doi">인간대상연구 정의</span></div>
-              </div>
-            </a>
-          </div>
-
-          <div class="report-section">
-            <div class="report-section-title">🔒 개인정보 해당 여부</div>
-            <div class="report-content">
-              <p>사용 데이터에 <strong>개인식별정보 미포함</strong> 확인. 공개 데이터셋의 통계적 분석만 수행하며, 특정 개인을 식별할 수 있는 정보는 포함되지 않습니다.</p>
-            </div>
-            <a href="https://www.law.go.kr/법령/개인정보보호법/제2조" class="citation-link" target="_blank">
-              <div class="citation-icon">📜</div>
-              <div>
-                <div class="citation-title">개인정보보호법 제2조 (정의)</div>
-                <div class="citation-meta"><span class="journal">law.go.kr</span> | <span class="doi">개인정보의 정의 및 범위</span></div>
-              </div>
-            </a>
-          </div>
-
-          <div class="report-section">
-            <div class="report-section-title">📊 참고 사례</div>
-            <div class="report-content">
-              <p>유사 연구 <strong>3건 중 3건</strong> IRB 불필요 판정</p>
-            </div>
-            <div class="stat-row">
-              <div class="stat-card">
-                <div class="value">3/3</div>
-                <div class="label">IRB 불필요 판정</div>
-              </div>
-              <div class="stat-card">
-                <div class="value">0건</div>
-                <div class="label">문제 발생 사례</div>
-              </div>
-            </div>
-          </div>
-
-        </div>
-
-        <!-- ========== REPORT CASE 2 ========== -->
-        <div class="case-content" data-case="2">
-
-          <div class="report-section">
-            <div class="report-section-title">⚖️ 심의면제 사유 근거</div>
-            <div class="report-content">
-              <p><strong>생명윤리법 시행규칙 제13조 (심의면제 대상)</strong></p>
-              <p>다음에 해당하는 인간대상연구는 심의를 면제할 수 있음:</p>
-            </div>
-            <ul class="highlight-list">
-              <li><span class="hl-bullet" style="color:#22c55e; font-weight:700;">→</span> <strong>일반 대중에게 공개된 정보를 이용하는 연구</strong> (해당)</li>
-              <li><span class="hl-bullet" style="color:#22c55e; font-weight:700;">→</span> <strong>연구대상자를 직접 조작하지 않는 연구</strong> (해당)</li>
-              <li><span class="hl-bullet" style="color:#9ca3af;">○</span> 학교 교육 현장에서의 교육방법 비교 연구</li>
-              <li><span class="hl-bullet" style="color:#9ca3af;">○</span> 식품의약품안전처장이 정하는 연구</li>
-            </ul>
-            <a href="https://www.law.go.kr/법령/생명윤리및안전에관한법률시행규칙/제13조" class="citation-link" target="_blank">
-              <div class="citation-icon">📜</div>
-              <div>
-                <div class="citation-title">생명윤리법 시행규칙 제13조 (심의면제 대상 인간대상연구의 범위)</div>
-                <div class="citation-meta"><span class="journal">law.go.kr</span> | <span class="doi">보건복지부령 제967호</span></div>
-              </div>
-            </a>
-          </div>
-
-          <div class="report-section">
-            <div class="report-section-title">⚠️ 면제 시 주의사항</div>
-            <div class="report-content">
-              <p><strong>면제라도 기관생명윤리위원회에 면제 확인 신고 필요</strong></p>
-              <p>연구 진행 중 설계 변경 시 재판단 필요. 면제 확인을 받지 않고 연구를 진행하면 법적 문제가 발생할 수 있습니다.</p>
-            </div>
-            <a href="#" class="citation-link">
-              <div class="citation-icon">🏛️</div>
-              <div>
-                <div class="citation-title">국가생명윤리정책원(NIBP) — 면제 연구 가이드라인</div>
-                <div class="citation-meta"><span class="journal">nibp.kr</span> | <span class="doi">IRB 면제 확인 절차 안내</span></div>
-              </div>
-            </a>
-          </div>
-
-          <div class="report-section">
-            <div class="report-section-title">📊 유사 연구 면제 사례</div>
-            <div class="report-content">
-              <p><strong>익명 설문 기반 운동 습관 연구</strong> — 심의면제 확인 (2025)</p>
-              <p><strong>공개 건강 데이터 분석 연구</strong> — 심의면제 확인 (2024)</p>
-            </div>
-            <div class="stat-row">
-              <div class="stat-card">
-                <div class="value">87%</div>
-                <div class="label">익명설문 면제율</div>
-              </div>
-              <div class="stat-card">
-                <div class="value">1-2일</div>
-                <div class="label">면제 확인 소요</div>
-              </div>
-            </div>
-          </div>
-
-        </div>
-
-        <!-- ========== REPORT CASE 3 (DEFAULT) ========== -->
-        <div class="case-content active" data-case="3">
-
-          <div class="report-section">
-            <div class="report-section-title">⚖️ 심의 유형 근거</div>
-            <div class="report-content">
-              <p><strong>생명윤리법 제10조 (기관생명윤리위원회의 기능)</strong></p>
-              <p><strong>RCT(무작위대조시험):</strong> 연구대상자 환경 조작에 해당 → 정규심의</p>
-              <p><strong>L4 민감 건강데이터(CGM) 수집</strong> → 정규심의</p>
-            </div>
-            <a href="https://www.law.go.kr/법령/생명윤리및안전에관한법률/제10조" class="citation-link" target="_blank">
-              <div class="citation-icon">📜</div>
-              <div>
-                <div class="citation-title">생명윤리 및 안전에 관한 법률 제10조 (기관생명윤리위원회의 기능)</div>
-                <div class="citation-meta"><span class="journal">law.go.kr</span> | <span class="doi">법률 제19234호</span></div>
-              </div>
-            </a>
-          </div>
-
-          <div class="report-section">
-            <div class="report-section-title">✍️ 동의서 요건</div>
-            <div class="report-content">
-              <p><strong>서면 동의 필수</strong> (전자서명 가능)</p>
-              <p>동의서 필수 포함 항목 8가지: 연구 목적, 참여 기간, 절차, 예상 위험 및 이익, 개인정보 처리, 자발적 참여 및 철회 권리, 보상 내용, 연구자 연락처</p>
-            </div>
-            <a href="https://www.law.go.kr/법령/생명윤리및안전에관한법률/제16조" class="citation-link" target="_blank">
-              <div class="citation-icon">📜</div>
-              <div>
-                <div class="citation-title">생명윤리법 제16조 (서면동의)</div>
-                <div class="citation-meta"><span class="journal">law.go.kr</span> | <span class="doi">동의 요건 및 절차</span></div>
-              </div>
-            </a>
-          </div>
-
-          <div class="report-section">
-            <div class="report-section-title">📊 유사 연구 심의 사례</div>
-            <div class="stat-row">
-              <div class="stat-card">
-                <div class="value">4-6주</div>
-                <div class="label">RCT 당뇨 연구 평균 심의기간</div>
-              </div>
-            </div>
-            <div class="stat-row">
-              <div class="stat-card">
-                <div class="value">68%</div>
-                <div class="label">1차 수정요청률</div>
-              </div>
-              <div class="stat-card">
-                <div class="value">94%</div>
-                <div class="label">최종 승인률</div>
-              </div>
-            </div>
-          </div>
-
-          <div class="report-section">
-            <div class="report-section-title">🔒 데이터 보호 요건</div>
-            <div class="report-content">
-              <p><strong>L4 데이터 처리:</strong> 암호화 + 접근로그 필수</p>
-              <p>CGM 데이터는 민감건강정보로, 수집 시 별도의 명시적 동의가 필요하며 암호화 저장 및 접근 제한이 요구됩니다.</p>
-            </div>
-            <a href="https://www.law.go.kr/법령/개인정보보호법/제23조" class="citation-link" target="_blank">
-              <div class="citation-icon">📜</div>
-              <div>
-                <div class="citation-title">개인정보보호법 제23조 (민감정보의 처리 제한)</div>
-                <div class="citation-meta"><span class="journal">law.go.kr</span> | <span class="doi">법률 제19234호</span></div>
-              </div>
-            </a>
-          </div>
-
-        </div>
-
-      </div>
-    </div>
-
-    <!-- ④ IRB AI 상담 -->
-    <div class="chat-panel">
-      <div class="chat-header">
-        <div class="title">
-          <span class="icon">🤖</span>
-          IRB AI 상담
-        </div>
-        <div class="sub">규정 기반으로 안내합니다</div>
-      </div>
-
-      <!-- ========== CHAT CASE 1 ========== -->
-      <div class="case-content" data-case="1" style="display:flex; flex-direction:column; flex:1; min-height:0;">
-        <div class="chat-context">
-          <div class="label">현재 연구</div>
-          <div class="value">공개 데이터셋 2차 분석 연구</div>
-          <div class="chat-context-chips">
-            <span class="chat-context-chip">2차 분석</span>
-            <span class="chat-context-chip">공개 데이터</span>
-            <span class="chat-context-chip">비식별</span>
-          </div>
-        </div>
-
-        <div class="chat-messages">
-          <div class="msg ai">
-            <div class="sender">IRB 어시스턴트</div>
-            본 연구는 기존 공개 데이터셋의 2차 분석으로, 인간대상연구에 해당하지 않아 IRB 심의가 필요하지 않습니다.<br><br>
-            다만 데이터 사용 시 <strong>출처 명시</strong>와 <strong>라이선스 조건 준수</strong>가 필요합니다.
-          </div>
-        </div>
-
-        <div class="chat-quick">
-          <div class="label">빠른 질문</div>
-          <div class="chat-quick-chips">
-            <span class="chat-quick-chip">정말 IRB 안 해도 되나요?</span>
-            <span class="chat-quick-chip">데이터 라이선스 확인</span>
+          <!-- 카운터 -->
+          <div class="invitee-counter">
+            <span class="text">사전 초대자: 4명 / 목표: 100명</span>
+            <span class="progress">4%</span>
           </div>
         </div>
       </div>
 
-      <!-- ========== CHAT CASE 2 ========== -->
-      <div class="case-content" data-case="2" style="display:flex; flex-direction:column; flex:1; min-height:0;">
-        <div class="chat-context">
-          <div class="label">현재 연구</div>
-          <div class="value">운동 습관 익명 설문 연구</div>
-          <div class="chat-context-chips">
-            <span class="chat-context-chip">심의면제</span>
-            <span class="chat-context-chip">익명설문</span>
-            <span class="chat-context-chip">n=300</span>
-          </div>
+      <!-- Section 3: 모집 비율 설정 -->
+      <div class="card">
+        <div class="card-header">
+          <h3>📊 모집 비율 설정</h3>
         </div>
+        <div class="card-body">
+          <!-- 비율 바 -->
+          <div class="ratio-section">
+            <div class="ratio-bar">
+              <div class="pre-invite" style="width: 40%;">사전 초대 40%</div>
+              <div class="open-recruit" style="width: 60%;">공개 모집 60%</div>
+            </div>
 
-        <div class="chat-messages">
-          <div class="msg ai">
-            <div class="sender">IRB 어시스턴트</div>
-            본 연구는 <strong>심의면제 대상</strong>에 해당합니다. 다만, 면제라 하더라도 기관생명윤리위원회에 면제 확인 신고서를 제출해야 합니다.<br><br>
-            신고서는 간단한 양식으로, 보통 <strong>1-2일 내</strong> 확인됩니다.
+            <!-- 슬라이더 -->
+            <input type="range" class="ratio-slider" min="0" max="100" value="40" id="ratioSlider">
+            <div class="ratio-labels">
+              <span>0% 사전 초대</span>
+              <span>50 / 50</span>
+              <span>100% 사전 초대</span>
+            </div>
           </div>
 
-          <div class="msg user">
-            <div class="sender">김연구</div>
-            면제인데 왜 신고를 해야 해?
-          </div>
-
-          <div class="msg ai">
-            <div class="sender">IRB 어시스턴트</div>
-            생명윤리법상 모든 인간대상연구는 심의 또는 면제 확인을 받아야 합니다.<br><br>
-            면제 신고는 <strong>"이 연구가 면제 요건을 충족함"</strong>을 기관에 공식적으로 확인받는 절차입니다. 심사가 아니라 확인이므로, 서류 준비 부담이 거의 없습니다.
-          </div>
-        </div>
-
-        <div class="chat-quick">
-          <div class="label">빠른 질문</div>
-          <div class="chat-quick-chips">
-            <span class="chat-quick-chip">면제 신고서 미리보기</span>
-            <span class="chat-quick-chip">면제 조건 상세</span>
-            <span class="chat-quick-chip">면제 vs 신속심의</span>
+          <!-- 비율 정보 박스 -->
+          <div class="ratio-info-grid">
+            <div class="ratio-info-box pre-invite">
+              <h4>사전 초대</h4>
+              <div class="count">40명</div>
+              <p>선택한 환자에게 직접 초대 알림 발송. 수락 시 자동 등록.</p>
+            </div>
+            <div class="ratio-info-box open-recruit">
+              <h4>공개 모집</h4>
+              <div class="count">60명</div>
+              <p>조건 맞는 전체 환자에게 모집 공고. 신청 후 선착순/조건 매칭.</p>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- ========== CHAT CASE 3 (DEFAULT) ========== -->
-      <div class="case-content active" data-case="3" style="display:flex; flex-direction:column; flex:1; min-height:0;">
-        <div class="chat-context">
-          <div class="label">현재 연구</div>
-          <div class="value">당뇨 혈당 연구 — IRB 심의 준비</div>
-          <div class="chat-context-chips">
-            <span class="chat-context-chip">정규심의</span>
-            <span class="chat-context-chip">RCT</span>
-            <span class="chat-context-chip">CGM</span>
-            <span class="chat-context-chip">n=100</span>
-          </div>
+      <!-- Section 4: 모집 설정 -->
+      <div class="card">
+        <div class="card-header">
+          <h3>⚙️ 모집 설정</h3>
         </div>
-
-        <div class="chat-messages">
-          <div class="msg ai">
-            <div class="sender">IRB 어시스턴트</div>
-            본 연구는 RCT 방법론과 민감 건강데이터(CGM) 수집으로 인해 <strong>정규심의 대상</strong>입니다.<br><br>
-            AI가 연구계획서, 동의서, 서약서 초안을 생성했습니다. <strong>연구자 이력서만 업로드</strong>하시면 제출 준비가 완료됩니다.
+        <div class="card-body">
+          <!-- 모집 기간 -->
+          <div class="setting-row">
+            <div class="setting-left">
+              <div class="title">모집 기간</div>
+              <div class="desc">참가자 모집을 진행할 기간</div>
+            </div>
+            <div class="setting-right">
+              <input type="number" class="setting-input" value="14">
+              <span class="setting-unit">일</span>
+            </div>
           </div>
 
-          <div class="msg user">
-            <div class="sender">김연구</div>
-            신속심의로 바꿀 수는 없어?
+          <!-- 최소 참여자 -->
+          <div class="setting-row">
+            <div class="setting-left">
+              <div class="title">최소 참여자</div>
+              <div class="desc">이하이면 연구 자동 취소 + 에스크로 환불</div>
+            </div>
+            <div class="setting-right">
+              <input type="number" class="setting-input" value="50">
+              <span class="setting-unit">명</span>
+            </div>
           </div>
 
-          <div class="msg ai">
-            <div class="sender">IRB 어시스턴트</div>
-            RCT는 연구대상자에 대한 <strong>직접적 개입</strong>이 포함되어 신속심의 대상이 아닙니다.<br><br>
-            생명윤리법 시행규칙 제14조에 따르면 신속심의는 <strong>"최소 위험 연구"</strong>에 한하며, RCT는 이에 해당하지 않습니다.
+          <!-- 대기자 설정 -->
+          <div class="setting-row">
+            <div class="setting-left">
+              <div class="title">대기자 설정</div>
+              <div class="desc">초대 거절/미응답 시 대기자 자동 배정</div>
+            </div>
+            <div class="setting-right">
+              <div class="toggle" title="ON"></div>
+              <span class="setting-unit" style="min-width: 24px;">ON</span>
+            </div>
           </div>
-        </div>
 
-        <div class="chat-quick">
-          <div class="label">빠른 질문</div>
-          <div class="chat-quick-chips">
-            <span class="chat-quick-chip">서류 미리보기</span>
-            <span class="chat-quick-chip">심의 기간 예측</span>
-            <span class="chat-quick-chip">수정 요청 대비</span>
+          <!-- 알림 방식 -->
+          <div class="setting-row">
+            <div class="setting-left">
+              <div class="title">알림 방식</div>
+              <div class="desc">참가자에게 모집 알림을 보낼 채널</div>
+            </div>
+            <div class="setting-right">
+              <div class="checkbox-group">
+                <label class="checkbox-item checked">
+                  <input type="checkbox" checked> 앱 푸시
+                </label>
+                <label class="checkbox-item">
+                  <input type="checkbox"> SMS
+                </label>
+                <label class="checkbox-item">
+                  <input type="checkbox"> 이메일
+                </label>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      <div class="chat-input">
-        <div class="chat-input-wrapper">
-          <input type="text" placeholder="IRB 관련 질문하세요...">
-          <button class="chat-send-btn">➤</button>
+      <!-- Section 5: 모집 미리보기 -->
+      <div class="card">
+        <div class="card-header">
+          <h3>📱 모집 미리보기</h3>
+          <span style="font-size: 12px; color: #6b7280;">참가자에게 보이는 화면</span>
+        </div>
+        <div class="card-body" style="display: flex; justify-content: center; padding: 32px 20px;">
+          <!-- 폰 목업 -->
+          <div class="phone-mockup">
+            <div class="phone-screen">
+              <div class="phone-statusbar">
+                <span>9:41</span>
+                <span>UniQdata</span>
+              </div>
+              <div class="phone-notification">
+                <div class="notif-header">
+                  <div class="notif-icon">U</div>
+                  <div>
+                    <div class="notif-title">연구 참여 요청</div>
+                    <div class="notif-subtitle">서울대학교병원 김연구 교수</div>
+                  </div>
+                </div>
+                <div class="research-title">저탄수화물 식단의 혈당 변동 개선 효과 연구</div>
+                <div class="research-meta">
+                  <div class="research-meta-item">
+                    <span class="label">연구 기간</span>
+                    <span class="value">56일 (8주)</span>
+                  </div>
+                  <div class="research-meta-item">
+                    <span class="label">보상</span>
+                    <span class="value highlight">50 XRP + 보너스</span>
+                  </div>
+                  <div class="research-meta-item">
+                    <span class="label">수집 데이터</span>
+                    <span class="value">CGM, 활동량, 식단</span>
+                  </div>
+                  <div class="research-meta-item">
+                    <span class="label">에스크로</span>
+                    <span class="value" style="color: #22c55e;">보상 보장됨</span>
+                  </div>
+                </div>
+              </div>
+              <div class="phone-buttons">
+                <button class="btn-accept">참여하기</button>
+                <button class="btn-decline">거절</button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-      </div><!-- /.workspace -->
-    </div><!-- /.workspace-wrap -->
-  </div>
 
-  <!-- 디자이너 노트 토글 -->
-  <button class="toggle-notes" onclick="document.querySelector('.designer-notes').classList.toggle('show')">📋 디자이너 노트</button>
+      <!-- 경고 박스 -->
+      <div class="warning-box">
+        <h4>⚠️ 중요 안내</h4>
+        <p>모집 시작 후 연구 설정을 변경할 수 없습니다. 수집 데이터 항목, 참여자 조건, 동의서 내용, 보상 금액이 확정됩니다. 변경이 필요한 경우 새로운 연구를 생성해야 합니다.</p>
+      </div>
 
-  <div class="designer-notes">
-    <h3>📋 디자이너 노트: Step 4 - IRB 워크스페이스 (4분할 × 3케이스)</h3>
-    <div class="content">
-      <strong>레이아웃:</strong><br>
-      ① Nav (240px) | ② IRB 에디터 (flex:1) | ③ 규정 레포트 (360px) | ④ IRB AI 상담 (360px)<br><br>
+      <!-- 네비게이션 버튼 -->
+      <div class="btn-row">
+        <a href="create-step3.html" class="btn btn-secondary">← 이전</a>
+        <a href="create-step5.html" class="btn btn-primary">다음: IRB 판정 →</a>
+      </div>
 
-      <strong>3-Case 토글 (와이어프레임 데모용):</strong><br>
-      - Case ① IRB 불필요: 공개 데이터 2차 분석 → 인간대상연구 비해당<br>
-      - Case ② 면제 해당: 익명 설문 연구 → 면제 신고 필요<br>
-      - Case ③ 정규심의: RCT + CGM → Full Board Review<br>
-      탭 클릭 시 에디터, 레포트, 채팅 3개 패널 동시 변경<br><br>
+      <!-- 스텝 네비게이션 -->
+      <div class="step-nav">
+        <a href="create-step3.html">← Step 3</a>
+        <a href="create-step5.html">Step 5 (IRB 판정) →</a>
+      </div>
 
-      <strong>② IRB 에디터:</strong><br>
-      - 케이스별 판정 배지(녹/황/적) + 연구 프로필 + 사유/체크리스트 + 예산<br>
-      - Case ②: 면제 신고서 폼 내장<br>
-      - Case ③: 제출 서류 체크리스트 (AI 초안 3건 + 이력서 업로드)<br><br>
+      <!-- 디자이너 노트 -->
+      <div class="designer-note">
+        <h3>📋 디자이너 노트: Step 6 - 참가자 모집 설정</h3>
+        <div class="content">
+          <strong>사전 초대자:</strong><br>
+          • 병원 내 특정 환자를 PI가 직접 선택하여 초대<br>
+          • 환자 검색: 이름, 환자번호, 진단코드로 검색 가능<br>
+          • 필터링: 진단별 빠른 필터 제공<br><br>
 
-      <strong>③ 규정 레포트:</strong><br>
-      - RAG 기반 자동 생성, 법령/규정 링크 포함<br>
-      - 케이스별 다른 규정 근거 표시<br>
-      - 각 근거에 법령 링크 (law.go.kr) + 가이드라인 참조<br>
-      - API: POST /api/ai/irb/report<br><br>
+          <strong>공개 모집:</strong><br>
+          • 조건 매칭으로 자동 모집 (IRB 승인된 모집 공고문 사용)<br>
+          • 선착순 또는 조건 매칭 기반 참가자 선정<br><br>
 
-      <strong>④ IRB AI 상담:</strong><br>
-      - 케이스별 맥락에 맞는 대화 예시<br>
-      - 빠른 질문 칩도 케이스별 변경<br>
-      - API: POST /api/ai/irb/chat (SSE 스트리밍)<br><br>
+          <strong>비율 조정:</strong><br>
+          • 100% 초대만 가능 (소규모 연구)<br>
+          • 100% 공개만 가능 (대규모 모집)<br>
+          • 혼합 비율 자유 조정 가능<br><br>
 
-      <strong>데이터 흐름:</strong><br>
-      연구 설계 데이터(step 1-3) → IRB 자동 판정(3가지 중 1) → 규정 레포트 생성<br>
-      에디터 변경 → 디바운스(500ms) → POST /api/ai/irb/report → 레포트 패널 업데이트<br>
-      AI 채팅 → 연구 상태 + 규정 DB + 대화 → POST /api/ai/irb/chat → 스트리밍 응답
+          <strong>IRB 연결:</strong><br>
+          • IRB 면제 시: Step 5에서 바로 여기로 연결<br>
+          • IRB 심의 시: 승인 알림 후 이 페이지 활성화<br>
+          • IRB 미승인 시: 이 페이지 접근 불가<br><br>
+
+          <strong>Safety Net:</strong><br>
+          • 최소 참여자 미달 시: 에스크로 자동 환불<br>
+          • 대기자 자동 배정으로 탈락 보충<br>
+          • 모집 기간 종료 후 미달 시 연구 자동 취소
+        </div>
+      </div>
+
+      <!-- 기능 명세 -->
+      <div style="background: linear-gradient(135deg, #ecfdf5, #d1fae5); border: 2px solid #10b981; border-radius: 12px; padding: 16px; margin-top: 12px;">
+        <h3 style="color: #047857; margin-bottom: 12px; font-size: 14px;">⚙️ 기능 명세</h3>
+        <div style="font-size: 12px; color: #374151; line-height: 1.8;">
+          <strong>핵심 기능:</strong><br>
+          • 사전 초대자 검색 및 선택<br>
+          • 모집 비율 (사전 초대 / 공개 모집) 조정<br>
+          • 모집 기간, 최소 참여자, 대기자 설정<br>
+          • 알림 채널 선택 (앱 푸시, SMS, 이메일)<br>
+          • 모집 미리보기 (참가자 시점)<br><br>
+
+          <strong>비즈니스 로직:</strong><br>
+          • IRB 승인 완료 후에만 접근 가능<br>
+          • 에스크로 예치 완료 확인 필수<br>
+          • 최소 참여자 미달 시 자동 취소 + 환불<br>
+          • 모집 시작 후 설정 변경 불가 (immutable)
+        </div>
+      </div>
+
+      <!-- 백엔드 호출 -->
+      <div style="background: linear-gradient(135deg, #f5f3ff, #ede9fe); border: 2px solid #8b5cf6; border-radius: 12px; padding: 16px; margin-top: 12px;">
+        <h3 style="color: #6d28d9; margin-bottom: 12px; font-size: 14px;">🔗 백엔드 호출</h3>
+        <div style="font-size: 11px; font-family: 'SF Mono', Monaco, monospace; color: #374151; line-height: 1.8;">
+          <strong style="font-family: -apple-system, sans-serif;">1. 환자 검색:</strong><br>
+          <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
+GET /enterprise/patients/search?q=당뇨&filters=t2dm<br>
+→ { "patients": [{ "id": "uuid", "name": "박○○", "age": 56, "conditions": ["T2DM"] }] }
+          </code>
+
+          <strong style="font-family: -apple-system, sans-serif;">2. 모집 설정 저장:</strong><br>
+          <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
+POST /enterprise/projects/:id/recruitment/config<br>
+{<br>
+&nbsp;&nbsp;"pre_invite_ids": ["uuid1", "uuid2", ...],<br>
+&nbsp;&nbsp;"pre_invite_ratio": 0.4,<br>
+&nbsp;&nbsp;"open_ratio": 0.6,<br>
+&nbsp;&nbsp;"recruitment_days": 14,<br>
+&nbsp;&nbsp;"min_participants": 50,<br>
+&nbsp;&nbsp;"waitlist_enabled": true,<br>
+&nbsp;&nbsp;"notification_channels": ["push", "sms"]<br>
+}
+          </code>
+
+          <strong style="font-family: -apple-system, sans-serif;">3. 모집 시작:</strong><br>
+          <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
+POST /enterprise/projects/:id/recruitment/start<br>
+→ {<br>
+&nbsp;&nbsp;"status": "recruiting",<br>
+&nbsp;&nbsp;"pre_invites_sent": 4,<br>
+&nbsp;&nbsp;"open_recruitment_active": true<br>
+}
+          </code>
+        </div>
+      </div>
     </div>
   </div>
-
-  <script>
-    function switchCase(caseNum) {
-      // Update tabs
-      document.querySelectorAll('.case-tab').forEach(function(tab) {
-        tab.classList.remove('active');
-        if (parseInt(tab.getAttribute('data-case')) === caseNum) {
-          tab.classList.add('active');
-        }
-      });
-
-      // Update all case-content blocks across all panels
-      document.querySelectorAll('.case-content').forEach(function(block) {
-        var blockCase = parseInt(block.getAttribute('data-case'));
-        if (blockCase === caseNum) {
-          block.classList.add('active');
-          // For chat panels with flex layout
-          if (block.style.display === 'flex' || block.parentElement.classList.contains('chat-panel')) {
-            block.style.display = 'flex';
-          } else {
-            block.style.display = 'block';
-          }
-        } else {
-          block.classList.remove('active');
-          block.style.display = 'none';
-        }
-      });
-    }
-
-    // Initialize: show case 3 by default
-    switchCase(3);
-  </script>
-
   <script src="page-spec.js"></script>
   <link rel="stylesheet" href="../tooltip-spec.css">
   <script src="../tooltip-spec.js"></script>
