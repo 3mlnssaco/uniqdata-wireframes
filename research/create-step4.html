@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>연구 생성 Step 4 - 모집 설정 워크스페이스 - Wireframe</title>
+  <title>연구 생성 Step 4 - 참가자 타겟 설정 - Wireframe</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: -apple-system, sans-serif; background: #f5f5f5; }
@@ -452,7 +452,7 @@
           <div class="sb-line done"></div>
           <div class="sb-step done"><div class="sb-num">✓</div><div class="sb-label">데이터 수집</div></div>
           <div class="sb-line done"></div>
-          <div class="sb-step active"><div class="sb-num">4</div><div class="sb-label">모집 설정</div></div>
+          <div class="sb-step active"><div class="sb-num">4</div><div class="sb-label">타겟 설정</div></div>
           <div class="sb-line"></div>
           <div class="sb-step pending"><div class="sb-num">5</div><div class="sb-label">IRB 판정</div></div>
           <div class="sb-line"></div>
@@ -468,15 +468,15 @@
 
           <!-- 페이지 헤더 -->
           <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 8px;">
-            <h1 style="font-size: 24px; font-weight: 700;">참가자 모집 설정</h1>
+            <h1 style="font-size: 24px; font-weight: 700;">참가자 타겟 설정</h1>
             <span class="status-badge" style="background:#ede9fe; color:#7c3aed;">Step 4</span>
           </div>
-          <p style="color: #6b7280; margin-bottom: 28px; font-size: 14px;">사전 초대자를 지정하고 모집 전략을 설정합니다</p>
+          <p style="color: #6b7280; margin-bottom: 28px; font-size: 14px;">모집 대상자 조건과 타겟 풀을 설정합니다. 실제 모집은 IRB + 에스크로 완료 후 Step 6에서 시작됩니다.</p>
 
           <!-- Section 1: 사전 초대자 지정 -->
           <div class="card">
             <div class="card-header">
-              <h3>👥 사전 초대자 지정</h3>
+              <h3>👥 타겟 대상자 지정</h3>
               <span style="font-size: 12px; color: #8b5cf6; font-weight: 500;">핵심 기능</span>
             </div>
             <div class="card-body" style="padding: 0;">
@@ -485,7 +485,7 @@
                 <!-- 왼쪽: 초대 리스트 -->
                 <div style="flex: 1; border-right: 1px solid #e5e7eb; padding: 20px; display: flex; flex-direction: column;">
                   <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
-                    <div style="font-size: 14px; font-weight: 600; color: #1f2937;">초대 리스트</div>
+                    <div style="font-size: 14px; font-weight: 600; color: #1f2937;">타겟 리스트</div>
                     <span style="font-size: 12px; color: #8b5cf6; font-weight: 600;">4명 선택됨</span>
                   </div>
 
@@ -534,7 +534,7 @@
 
                   <!-- 카운터 -->
                   <div class="invitee-counter" style="margin-top: 12px;">
-                    <span class="text">사전 초대자: 4명 / 목표: 100명</span>
+                    <span class="text">타겟 대상자: 4명 / 목표: 100명</span>
                     <span class="progress">4%</span>
                   </div>
                 </div>
@@ -569,7 +569,7 @@
                           <div class="meta">T2DM, 메트포르민 복용 중, CGM 미사용</div>
                         </div>
                       </div>
-                      <button style="padding: 4px 12px; border-radius: 6px; border: 1px solid #8b5cf6; background: white; color: #7c3aed; font-size: 12px; cursor: pointer; font-weight: 500;">+ 초대</button>
+                      <button style="padding: 4px 12px; border-radius: 6px; border: 1px solid #8b5cf6; background: white; color: #7c3aed; font-size: 12px; cursor: pointer; font-weight: 500;">+ 선택</button>
                     </div>
                     <div class="invitee-item" style="background: white; border: 1px solid #e5e7eb;">
                       <div class="invitee-info">
@@ -579,7 +579,7 @@
                           <div class="meta">T2DM + 고혈압, 인슐린 주사</div>
                         </div>
                       </div>
-                      <button style="padding: 4px 12px; border-radius: 6px; border: 1px solid #8b5cf6; background: white; color: #7c3aed; font-size: 12px; cursor: pointer; font-weight: 500;">+ 초대</button>
+                      <button style="padding: 4px 12px; border-radius: 6px; border: 1px solid #8b5cf6; background: white; color: #7c3aed; font-size: 12px; cursor: pointer; font-weight: 500;">+ 선택</button>
                     </div>
                     <div class="invitee-item" style="background: white; border: 1px solid #e5e7eb;">
                       <div class="invitee-info">
@@ -589,7 +589,7 @@
                           <div class="meta">T2DM, 식이요법, 활동량 높음</div>
                         </div>
                       </div>
-                      <button style="padding: 4px 12px; border-radius: 6px; border: 1px solid #8b5cf6; background: white; color: #7c3aed; font-size: 12px; cursor: pointer; font-weight: 500;">+ 초대</button>
+                      <button style="padding: 4px 12px; border-radius: 6px; border: 1px solid #8b5cf6; background: white; color: #7c3aed; font-size: 12px; cursor: pointer; font-weight: 500;">+ 선택</button>
                     </div>
                     <div class="invitee-item" style="background: white; border: 1px solid #e5e7eb;">
                       <div class="invitee-info">
@@ -599,17 +599,17 @@
                           <div class="meta">T2DM, CGM 사용, 운동 습관</div>
                         </div>
                       </div>
-                      <button style="padding: 4px 12px; border-radius: 6px; border: 1px solid #8b5cf6; background: white; color: #7c3aed; font-size: 12px; cursor: pointer; font-weight: 500;">+ 초대</button>
+                      <button style="padding: 4px 12px; border-radius: 6px; border: 1px solid #8b5cf6; background: white; color: #7c3aed; font-size: 12px; cursor: pointer; font-weight: 500;">+ 선택</button>
                     </div>
                     <div class="invitee-item" style="background: #f3f0ff; border: 1px solid #c4b5fd; opacity: 0.6;">
                       <div class="invitee-info">
                         <div class="invitee-avatar" style="background: linear-gradient(135deg, #e0e7ff, #c7d2fe); color: #4338ca;">정</div>
                         <div class="invitee-details">
                           <div class="name">정○○ (55세/M)</div>
-                          <div class="meta">T2DM + 고혈압 — 이미 초대됨</div>
+                          <div class="meta">T2DM + 고혈압 — 이미 선택됨</div>
                         </div>
                       </div>
-                      <span style="font-size: 11px; color: #7c3aed; font-weight: 500;">초대됨 ✓</span>
+                      <span style="font-size: 11px; color: #7c3aed; font-weight: 500;">선택됨 ✓</span>
                     </div>
                   </div>
                 </div>
@@ -621,7 +621,7 @@
           <!-- Section 2: 모집 비율 설정 -->
           <div class="card">
             <div class="card-header">
-              <h3>📊 모집 비율 설정</h3>
+              <h3>📊 모집 비율 계획</h3>
             </div>
             <div class="card-body">
               <!-- 비율 바 -->
@@ -645,12 +645,12 @@
                 <div class="ratio-info-box pre-invite">
                   <h4>사전 초대</h4>
                   <div class="count">40명</div>
-                  <p>조건에 맞는 UniQdata 사용자에게 직접 초대 알림 발송. 수락 시 자동 등록.</p>
+                  <p>조건에 맞는 UniQdata 사용자에게 직접 초대. 모집 시작 시 알림 발송.</p>
                 </div>
                 <div class="ratio-info-box open-recruit">
                   <h4>공개 모집</h4>
                   <div class="count">60명</div>
-                  <p>조건 맞는 UniQdata 전체 사용자에게 공개 모집. 신청 후 조건 매칭.</p>
+                  <p>조건 맞는 UniQdata 전체 사용자에게 공개. 모집 시작 시 앱에 노출.</p>
                 </div>
               </div>
             </div>
@@ -659,7 +659,7 @@
           <!-- Section 3: 모집 설정 -->
           <div class="card">
             <div class="card-header">
-              <h3>⚙️ 모집 설정</h3>
+              <h3>⚙️ 모집 조건 설정</h3>
             </div>
             <div class="card-body">
               <!-- 목표 인원 -->
@@ -788,10 +788,10 @@
             </div>
           </div>
 
-          <!-- 경고 박스 -->
-          <div class="warning-box">
-            <h4>⚠️ 중요 안내</h4>
-            <p>모집 시작 후 연구 설정을 변경할 수 없습니다. 수집 데이터 항목, 참여자 조건, 동의서 내용, 보상 금액이 확정됩니다. 변경이 필요한 경우 새로운 연구를 생성해야 합니다.</p>
+          <!-- 안내 박스 -->
+          <div class="warning-box" style="background: #eff6ff; border-color: #93c5fd;">
+            <h4 style="color: #1e40af;">ℹ️ 다음 단계 안내</h4>
+            <p style="color: #1d4ed8;">타겟 설정 완료 후 <strong>IRB 심의(Step 5)</strong> → <strong>에스크로 예치 + 모집 실행(Step 6)</strong>으로 진행됩니다. 실제 초대 발송과 공개 모집은 Step 6에서 시작됩니다.</p>
           </div>
 
           <!-- 네비게이션 버튼 -->
@@ -808,14 +808,14 @@
             <div class="chat-header">
               <div class="title">
                 <span class="icon">🤖</span>
-                AI 모집 어시스턴트
+                AI 타겟 어시스턴트
               </div>
-              <div class="sub">모집 전략을 보고 조언합니다</div>
+              <div class="sub">대상자 선정 전략을 조언합니다</div>
             </div>
 
             <div class="chat-context">
               <div class="label">현재 연구</div>
-              <div class="value">당뇨 복약 순응도 연구 — 모집 설정 중</div>
+              <div class="value">당뇨 복약 순응도 연구 — 타겟 설정 중</div>
               <div class="chat-context-chips">
                 <span class="chat-context-chip">RCT</span>
                 <span class="chat-context-chip">목표 100명 (선착순)</span>
@@ -827,19 +827,19 @@
             <div class="chat-messages">
               <div class="msg ai">
                 <div class="sender">AI 어시스턴트</div>
-                현재 사전 초대 4명이 등록되어 있고, 목표 인원 대비 <strong>4%</strong> 수준입니다. UniQdata 플랫폼 내 <strong>T2DM 태그 사용자</strong>가 약 <strong>1,200명</strong>이므로 공개 모집 시 충분한 도달이 가능합니다.<br><br>
-                초대자 검색 시 <strong>CGM 기기 보유자</strong>를 우선 필터링하면 연구 적합도가 높아집니다.
+                현재 타겟 대상자 4명이 선택되어 있고, 목표 인원 대비 <strong>4%</strong> 수준입니다. UniQdata 플랫폼 내 <strong>T2DM 태그 사용자</strong>가 약 <strong>1,200명</strong>이므로 충분한 풀이 있습니다.<br><br>
+                대상자 선택 시 <strong>CGM 기기 보유자</strong>를 우선 필터링하면 연구 적합도가 높아집니다.
               </div>
 
               <div class="msg user">
                 <div class="sender">김연구</div>
-                100명 모으는데 얼마나 걸릴까?
+                T2DM 사용자 중 CGM 보유자만 필터링하면 몇 명이야?
               </div>
 
               <div class="msg ai">
                 <div class="sender">AI 어시스턴트</div>
-                유사 연구(T2DM, 100명 규모) 기준 평균 <strong>2~3주</strong>면 선착순 마감됩니다. 사전 초대 40명이 먼저 등록되면 나머지 60명은 공개 모집으로 빠르게 채워질 겁니다.<br><br>
-                목표 인원 도달 즉시 <strong>자동 마감 → 일괄 시작</strong>되니, 별도 기간 설정 없이 진행하시면 됩니다.
+                T2DM 태그 사용자 1,200명 중 <strong>CGM 기기 보유자는 약 340명</strong>입니다. 목표 100명 대비 충분한 풀이에요.<br><br>
+                타겟 설정 완료 후 IRB 심의(Step 5) → 에스크로 예치(Step 6)를 거치면 <strong>실제 모집이 시작</strong>됩니다. 지금은 대상자 조건만 잘 잡아두세요.
               </div>
             </div>
 
@@ -847,15 +847,15 @@
               <div class="label">빠른 액션</div>
               <div class="chat-quick-chips">
                 <span class="chat-quick-chip">목표 인원 조정</span>
-                <span class="chat-quick-chip">초대자 추가</span>
-                <span class="chat-quick-chip">동의서 미리보기</span>
+                <span class="chat-quick-chip">대상자 추가</span>
+                <span class="chat-quick-chip">적합도 분석</span>
                 <span class="chat-quick-chip">비율 조정</span>
               </div>
             </div>
 
             <div class="chat-input">
               <div class="chat-input-wrapper">
-                <input type="text" placeholder="예: 보상을 더 높이면 모집이 빨라질까?">
+                <input type="text" placeholder="예: 연령대를 40~65세로 좁히면 몇 명이야?">
                 <button class="chat-send-btn">➤</button>
               </div>
             </div>
@@ -870,58 +870,52 @@
   <button class="toggle-notes" onclick="document.querySelector('.designer-notes').classList.toggle('show')">📋 디자이너 노트</button>
 
   <div class="designer-notes">
-    <h3>📋 디자이너 노트: Step 4 - 참가자 모집 설정 (워크스페이스)</h3>
+    <h3>📋 디자이너 노트: Step 4 - 참가자 타겟 설정 (워크스페이스)</h3>
     <div class="content">
       <strong>레이아웃:</strong><br>
-      ① Nav (240px) | ② 모집 설정 에디터 (flex:1) | ③ AI 모집 어시스턴트 (360px)<br>
+      ① Nav (240px) | ② 타겟 설정 에디터 (flex:1) | ③ AI 타겟 어시스턴트 (360px)<br>
       Step 3과 동일한 workspace-wrap 패턴 (step-bar → workspace → editor + chat)<br><br>
 
       <strong>② 에디터:</strong><br>
-      - 사전 초대자 검색/지정 + 필터 칩<br>
-      - 모집 비율 슬라이더 (사전 초대 / 공개 모집)<br>
-      - 모집 설정: 목표 인원(선착순), 최소 시작 인원, 대기자, 알림 방식<br>
+      - 타겟 대상자 지정 (2패널: 왼쪽 선택 리스트 / 오른쪽 사용자 검색)<br>
+      - 모집 비율 계획 (사전 초대 / 공개 모집)<br>
+      - 모집 조건 설정: 목표 인원, 최소 시작 인원, 수락 대기 기한, 대기자, 알림 방식<br>
       - 모집 미리보기: 폰 목업 (참가자 시점)<br>
-      - 경고 박스: 모집 시작 후 설정 변경 불가<br><br>
+      - 안내 박스: 실제 모집은 Step 6에서 시작<br><br>
 
-      <strong>③ AI 모집 어시스턴트:</strong><br>
-      - 모집 전략 맥락을 보고 답변하는 대화형 패널<br>
-      - 플랫폼 내 매칭 가능 사용자 수, 예상 모집 소요 기간 등<br>
-      - 빠른 액션 칩: 목표 인원 조정, 초대자 추가, 동의서 미리보기, 비율 조정<br><br>
+      <strong>③ AI 타겟 어시스턴트:</strong><br>
+      - 대상자 선정 전략 맥락을 보고 답변하는 대화형 패널<br>
+      - 플랫폼 내 매칭 가능 사용자 수, 적합도 분석 등<br>
+      - 빠른 액션 칩: 목표 인원 조정, 대상자 추가, 적합도 분석, 비율 조정<br><br>
 
-      <strong>사전 초대자:</strong><br>
-      • UniQdata 가입 사용자 중 조건에 맞는 참여자를 PI가 직접 선택하여 초대<br>
+      <strong>타겟 대상자:</strong><br>
+      • UniQdata 가입 사용자 중 조건에 맞는 참여자를 PI가 미리 선택<br>
       • 사용자 검색: 닉네임, 건강 태그, 관심 분야로 검색<br>
-      • 필터링: 건강 태그별 빠른 필터 제공<br><br>
+      • 필터링: 건강 태그별 빠른 필터 제공<br>
+      • 실제 초대 발송은 Step 6 (에스크로 완료 후)에서 실행<br><br>
 
-      <strong>동의서 (UniQdata 앱):</strong><br>
-      • 초대 수락 시 UniQdata 앱에서 동의서 열람 + 전자 서명<br>
-      • 연구 목적, 수집 데이터, 보상, 위험 요소 등 상세 안내<br>
-      • 서명 완료 시 자동 참여 등록<br><br>
-
-      <strong>Safety Net:</strong><br>
-      • 선착순 모집: 목표 인원 도달 시 자동 마감 → 연구 일괄 시작<br>
-      • 최소 시작 인원 이상이면 연구자가 수동 시작 가능<br>
-      • 대기자 자동 배정으로 탈락 보충
+      <strong>핵심 포인트:</strong><br>
+      • 이 단계는 "누구를 모집할 것인가" 를 설정하는 단계<br>
+      • 실제 모집 실행(초대 발송, 공개 모집 시작)은 Step 6에서 진행<br>
+      • IRB 심의(Step 5) + 에스크로 예치(Step 6) 완료 후 모집 시작
     </div>
   </div>
 
   <!-- 기능 명세 -->
   <div class="designer-notes" id="func-spec">
-    <h3 style="color: #047857;">⚙️ 기능 명세: Step 4 - 참가자 모집 설정</h3>
+    <h3 style="color: #047857;">⚙️ 기능 명세: Step 4 - 참가자 타겟 설정</h3>
     <div class="content" style="columns: 1;">
       <strong>핵심 기능:</strong><br>
-      • UniQdata 가입 사용자 검색 및 초대<br>
-      • 모집 비율 (사전 초대 / 공개 모집) 조정<br>
-      • 목표 인원(선착순), 최소 시작 인원, 대기자 설정<br>
-      • 앱 내 동의서 열람 + 전자 서명<br>
+      • UniQdata 가입 사용자 검색 및 타겟 선택<br>
+      • 모집 비율 계획 (사전 초대 / 공개 모집)<br>
+      • 목표 인원, 최소 시작 인원, 수락 대기 기한 설정<br>
       • 알림 채널 선택 (앱 푸시, SMS, 이메일)<br>
       • 모집 미리보기 (참가자 시점)<br><br>
 
       <strong>비즈니스 로직:</strong><br>
-      • 모집 설정 완료 후 IRB 판정(Step 5)으로 이동<br>
-      • IRB + 에스크로 완료 시 모집 시작 가능<br>
-      • 목표 인원 도달 시 자동 마감 → 일괄 시작<br>
-      • 모집 시작 후 설정 변경 불가 (immutable)
+      • 타겟 설정 완료 후 IRB 판정(Step 5)으로 이동<br>
+      • 이 단계에서는 대상자 조건/풀만 정의 (모집 실행 X)<br>
+      • 실제 모집은 Step 6에서 에스크로 예치 완료 후 실행
     </div>
   </div>
 
@@ -935,11 +929,11 @@ GET /users/search?q=당뇨&tags=t2dm&platform=uniqdata<br>
 → { "users": [{ "id": "uuid", "nickname": "박○○", "age": 56, "health_tags": ["T2DM"] }] }
       </code><br>
 
-      <strong>2. 모집 설정 저장:</strong><br>
+      <strong>2. 타겟 설정 저장:</strong><br>
       <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0; font-size: 11px; font-family: 'SF Mono', Monaco, monospace;">
-POST /enterprise/projects/:id/recruitment/config<br>
+POST /enterprise/projects/:id/target/config<br>
 {<br>
-&nbsp;&nbsp;"pre_invite_ids": ["uuid1", "uuid2", ...],<br>
+&nbsp;&nbsp;"target_user_ids": ["uuid1", "uuid2", ...],<br>
 &nbsp;&nbsp;"pre_invite_ratio": 0.4,<br>
 &nbsp;&nbsp;"open_ratio": 0.6,<br>
 &nbsp;&nbsp;"target_participants": 100,<br>
@@ -948,18 +942,11 @@ POST /enterprise/projects/:id/recruitment/config<br>
 &nbsp;&nbsp;"invite_accept_deadline_days": 3,<br>
 &nbsp;&nbsp;"waitlist_enabled": true,<br>
 &nbsp;&nbsp;"notification_channels": ["push", "sms"]<br>
-}
-      </code><br>
-
-      <strong>3. 모집 시작:</strong><br>
-      <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0; font-size: 11px; font-family: 'SF Mono', Monaco, monospace;">
-POST /enterprise/projects/:id/recruitment/start<br>
-→ {<br>
-&nbsp;&nbsp;"status": "recruiting",<br>
-&nbsp;&nbsp;"pre_invites_sent": 4,<br>
-&nbsp;&nbsp;"open_recruitment_active": true<br>
-}
+}<br>
+→ { "status": "target_configured" }
       </code>
+      <br>
+      <em style="font-size: 11px; color: #6b7280; font-family: -apple-system, sans-serif;">※ 실제 모집 시작(recruitment/start)은 Step 6에서 호출</em>
     </div>
   </div>
 

@@ -3,11 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>연구 생성 Step 5 - IRB 제출 + 에스크로 예치 - Wireframe</title>
+  <title>연구 생성 Step 6 - 에스크로 예치 + 모집 실행 - Wireframe</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: -apple-system, sans-serif; background: #f5f5f5; }
-    .layout { display: flex; min-height: 100vh; }
+
+    /* ===== 레이아웃 ===== */
+    .layout { display: flex; min-height: 100vh; width: 100%; }
+
+    /* Nav (좌측 사이드바) */
     .sidebar {
       width: 240px;
       background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
@@ -42,6 +46,19 @@
     .nav-item:hover { background: rgba(255,255,255,0.05); color: #e2e8f0; }
     .nav-item.active { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
     .nav-item .icon { width: 20px; text-align: center; }
+
+    /* Workspace wrapper */
+    .workspace-wrap {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+    .workspace {
+      flex: 1;
+      display: flex;
+      min-height: 0;
+    }
 
     /* Step Bar */
     .step-bar {
@@ -105,10 +122,13 @@
     .user-name-sidebar { font-size: 14px; color: #e2e8f0; }
     .user-org-sidebar { font-size: 12px; color: #64748b; }
 
-    .main { flex: 1; padding: 32px; max-width: 900px; margin: 0 auto; }
-    .main h1 { font-size: 28px; margin-bottom: 8px; }
-    .main .subtitle { color: #6b7280; margin-bottom: 32px; }
-
+    /* 에디터 패널 (중앙) */
+    .editor-panel {
+      flex: 1;
+      overflow-y: auto;
+      padding: 28px 32px;
+      background: white;
+    }
 
     /* 카드 */
     .card { background: white; border: 1px solid #e5e7eb; border-radius: 12px; margin-bottom: 20px; overflow: hidden; }
@@ -116,97 +136,398 @@
     .card-header h3 { font-size: 16px; font-weight: 600; }
     .card-body { padding: 20px; }
 
-    /* 지갑 섹션 */
-    .wallet-card { background: linear-gradient(135deg, #1f2937, #111827); border-radius: 16px; padding: 24px; color: white; margin-bottom: 20px; }
-    .wallet-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-    .wallet-header .label { font-size: 12px; color: #9ca3af; }
-    .wallet-header .action { padding: 8px 16px; background: rgba(255,255,255,0.1); border-radius: 8px; font-size: 13px; cursor: pointer; color: white; text-decoration: none; }
-    .wallet-header .action:hover { background: rgba(255,255,255,0.2); }
-    .wallet-balance { font-size: 36px; font-weight: 700; margin-bottom: 8px; }
-    .wallet-usd { font-size: 14px; color: #9ca3af; }
+    /* 상태 뱃지 */
+    .status-badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 500; }
 
-    /* 연구 요약 */
-    .summary-section { margin-bottom: 20px; }
-    .summary-title { font-size: 14px; font-weight: 600; color: #374151; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
-    .summary-title .edit { font-size: 12px; color: #8b5cf6; font-weight: normal; margin-left: auto; cursor: pointer; }
-    .summary-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
-    .summary-item { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 14px; }
-    .summary-item .label { font-size: 11px; color: #6b7280; margin-bottom: 4px; }
-    .summary-item .value { font-size: 15px; font-weight: 600; color: #1f2937; }
+    /* 지갑 카드 (다크) */
+    .wallet-card {
+      background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+      border-radius: 16px;
+      padding: 24px;
+      color: white;
+      margin-bottom: 20px;
+    }
+    .wallet-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .wallet-card-header h3 {
+      font-size: 18px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .badge-green-sm {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+      background: rgba(34, 197, 94, 0.2);
+      color: #4ade80;
+      border: 1px solid rgba(34, 197, 94, 0.3);
+    }
+    .wallet-address-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 20px;
+      font-size: 13px;
+      color: #94a3b8;
+    }
+    .wallet-address-row .addr {
+      font-family: 'SF Mono', Monaco, monospace;
+      background: rgba(255,255,255,0.08);
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 13px;
+      color: #e2e8f0;
+    }
+    .wallet-address-row .copy-btn {
+      padding: 4px 10px;
+      background: rgba(255,255,255,0.1);
+      border: none;
+      border-radius: 6px;
+      color: #94a3b8;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    .wallet-address-row .copy-btn:hover { background: rgba(255,255,255,0.2); color: #e2e8f0; }
+    .wallet-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    .wallet-stat-item .label { font-size: 12px; color: #9ca3af; margin-bottom: 4px; }
+    .wallet-stat-item .value { font-size: 24px; font-weight: 700; }
+    .wallet-stat-item .value.zero { color: #6b7280; }
+    .wallet-stat-item .value.required { color: #fbbf24; }
+    .progress-bar-wrapper { margin-top: 4px; }
+    .progress-bar-bg {
+      width: 100%;
+      height: 8px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #8b5cf6, #6366f1);
+      border-radius: 4px;
+      transition: width 0.3s;
+    }
+    .progress-bar-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: #6b7280;
+      margin-top: 4px;
+    }
 
-    /* 배지 */
-    .badge { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 500; }
-    .badge-amber { background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; }
-    .badge-green { background: #dcfce7; color: #166534; border: 1px solid #86efac; }
+    /* 입금 카드 */
+    .deposit-card { background: white; border: 1px solid #e5e7eb; border-radius: 12px; margin-bottom: 20px; padding: 24px; }
+    .deposit-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+    .deposit-header h3 { font-size: 16px; font-weight: 600; }
+    .my-wallet-balance { display: flex; align-items: baseline; gap: 8px; margin-bottom: 20px; }
+    .my-wallet-balance .label { font-size: 13px; color: #6b7280; }
+    .my-wallet-balance .amount { font-size: 22px; font-weight: 700; color: #1f2937; }
+    .my-wallet-balance .usd { font-size: 13px; color: #9ca3af; }
+    .deposit-input-group { margin-bottom: 16px; }
+    .deposit-input-group label { display: block; font-size: 13px; color: #374151; font-weight: 500; margin-bottom: 6px; }
+    .deposit-input-wrapper {
+      display: flex;
+      align-items: center;
+      border: 2px solid #e5e7eb;
+      border-radius: 10px;
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+    .deposit-input-wrapper:focus-within { border-color: #8b5cf6; }
+    .deposit-input-wrapper input {
+      flex: 1;
+      border: none;
+      padding: 14px 16px;
+      font-size: 18px;
+      font-weight: 600;
+      outline: none;
+      background: transparent;
+    }
+    .deposit-input-wrapper .unit {
+      padding: 14px 16px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #6b7280;
+      background: #f9fafb;
+      border-left: 1px solid #e5e7eb;
+    }
+    .quick-amount-btns {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+    .quick-amount-btn {
+      padding: 8px 16px;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      background: white;
+      font-size: 13px;
+      color: #374151;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .quick-amount-btn:hover { border-color: #8b5cf6; color: #7c3aed; }
+    .quick-amount-btn.active { border-color: #8b5cf6; background: #f5f3ff; color: #7c3aed; font-weight: 500; }
+    .deposit-info-text { font-size: 12px; color: #9ca3af; margin-top: 12px; text-align: center; }
 
-    /* 에스크로 금액 카드 */
-    .escrow-card { background: linear-gradient(135deg, #8b5cf6, #6366f1); border-radius: 16px; padding: 28px; color: white; margin-bottom: 20px; }
+    /* 에스크로 금액 카드 (보라 그라디언트) */
+    .escrow-card {
+      background: linear-gradient(135deg, #8b5cf6, #6366f1);
+      border-radius: 16px;
+      padding: 28px;
+      color: white;
+      margin-bottom: 20px;
+    }
     .escrow-card h3 { font-size: 18px; font-weight: 600; margin-bottom: 20px; text-align: center; }
     .escrow-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.15); font-size: 15px; }
     .escrow-row:last-of-type { border-bottom: none; }
     .escrow-row .label { opacity: 0.9; }
     .escrow-row .value { font-weight: 600; }
-    .escrow-divider { height: 1px; background: rgba(255,255,255,0.3); margin: 4px 0; }
+    .escrow-row .paid-badge {
+      font-size: 10px;
+      background: rgba(255,255,255,0.2);
+      padding: 2px 8px;
+      border-radius: 8px;
+      margin-left: 6px;
+      font-weight: 400;
+    }
     .escrow-total { display: flex; justify-content: space-between; padding: 16px 0 0; margin-top: 8px; border-top: 2px solid rgba(255,255,255,0.4); }
     .escrow-total .label { font-size: 18px; font-weight: 700; }
     .escrow-total .value { font-size: 28px; font-weight: 700; }
     .escrow-usd { text-align: right; font-size: 14px; opacity: 0.8; margin-top: 4px; }
 
-    /* 두 경로 카드 */
-    .paths-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
-    .path-card { border-radius: 12px; padding: 20px; position: relative; }
-    .path-card.disabled { border: 2px solid #d1d5db; background: #f9fafb; opacity: 0.6; }
-    .path-card.active-path { border: 2px solid #fbbf24; background: #fffbeb; }
-    .path-card h4 { font-size: 15px; font-weight: 600; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
-    .path-card .path-desc { font-size: 13px; color: #6b7280; margin-bottom: 12px; line-height: 1.5; }
-    .path-card .path-note { font-size: 12px; color: #9ca3af; font-style: italic; margin-top: 12px; }
-    .path-card .path-note.warning { color: #dc2626; font-style: normal; }
-    .path-disabled-overlay { position: absolute; top: 8px; right: 8px; font-size: 11px; background: #e5e7eb; color: #6b7280; padding: 3px 8px; border-radius: 6px; }
-
-    /* 플로우 다이어그램 */
-    .flow-diagram { background: #fefce8; border: 1px solid #fde68a; border-radius: 8px; padding: 16px; margin: 12px 0; }
-    .flow-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
-    .flow-row:last-child { margin-bottom: 0; }
-    .flow-step { background: white; border: 1px solid #fbbf24; border-radius: 6px; padding: 6px 12px; font-size: 12px; font-weight: 500; color: #92400e; white-space: nowrap; }
-    .flow-step.highlight { background: #fbbf24; color: #78350f; }
-    .flow-arrow { color: #d97706; font-size: 14px; font-weight: bold; }
-    .flow-branch { display: flex; align-items: center; gap: 8px; margin-left: 80px; margin-top: 4px; }
-    .flow-branch-arrow { color: #d97706; font-size: 12px; }
-
-    /* 버튼 */
-    .btn { padding: 14px 32px; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; text-decoration: none; display: inline-block; border: none; text-align: center; }
-    .btn-secondary { background: white; border: 1px solid #e5e7eb; color: #374151; }
-    .btn-amber { background: linear-gradient(135deg, #f59e0b, #d97706); color: white; }
-    .btn-amber:hover { background: linear-gradient(135deg, #d97706, #b45309); }
-    .btn-disabled { background: #e5e7eb; color: #9ca3af; cursor: not-allowed; }
-    .btn-row { display: flex; justify-content: space-between; margin-top: 24px; padding-top: 24px; border-top: 1px solid #e5e7eb; }
-
-    /* XRPL 정보 */
-    .xrpl-info { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 12px; padding: 16px; margin-bottom: 20px; }
-    .xrpl-info h4 { font-size: 14px; color: #1e40af; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
-    .xrpl-info p { font-size: 13px; color: #3b82f6; line-height: 1.6; }
-    .xrpl-info ul { font-size: 13px; color: #3b82f6; line-height: 1.8; padding-left: 16px; }
-    .xrpl-info li { margin-bottom: 4px; }
-
     /* 동의 체크박스 */
-    .consent-box { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 12px; padding: 16px; margin-bottom: 20px; }
+    .consent-box { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+    .consent-box h3 { font-size: 16px; font-weight: 600; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
     .consent-item { display: flex; align-items: start; gap: 12px; margin-bottom: 12px; }
     .consent-item:last-child { margin-bottom: 0; }
-    .consent-item input { width: 20px; height: 20px; margin-top: 2px; accent-color: #8b5cf6; }
+    .consent-item input { width: 20px; height: 20px; margin-top: 2px; accent-color: #8b5cf6; cursor: pointer; }
     .consent-item label { font-size: 13px; color: #374151; line-height: 1.5; cursor: pointer; }
 
-    /* 스텝 네비게이션 */
-    .step-nav { display: flex; gap: 10px; margin-top: 24px; flex-wrap: wrap; }
-    .step-nav a { padding: 8px 16px; background: #eee; border-radius: 6px; text-decoration: none; color: #333; font-size: 14px; }
+    /* 잠금 섹션 */
+    .locked-section {
+      background: #f9fafb;
+      border: 2px dashed #d1d5db;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      overflow: hidden;
+      position: relative;
+    }
+    .locked-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 16px 20px;
+      background: #f3f4f6;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    .locked-header .lock-icon {
+      width: 28px;
+      height: 28px;
+      background: #d1d5db;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+    }
+    .locked-header h3 { font-size: 16px; font-weight: 600; color: #6b7280; }
+    .locked-header .lock-msg { font-size: 12px; color: #9ca3af; margin-left: auto; }
+    .locked-body {
+      padding: 20px;
+      opacity: 0.45;
+      pointer-events: none;
+      user-select: none;
+    }
+    .recruit-summary {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .recruit-summary-item {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 14px;
+    }
+    .recruit-summary-item .label { font-size: 11px; color: #6b7280; margin-bottom: 4px; }
+    .recruit-summary-item .value { font-size: 15px; font-weight: 600; color: #1f2937; }
+    .recruit-btn-group {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .recruit-info-note {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 12px;
+      color: #1e40af;
+      line-height: 1.6;
+    }
 
-    /* 디자이너 노트 */
-    .designer-note { background: linear-gradient(135deg, #fdf4ff, #fae8ff); border: 2px solid #d946ef; border-radius: 12px; padding: 20px; margin-top: 24px; }
-    .designer-note h3 { color: #a21caf; margin-bottom: 12px; font-size: 14px; }
-    .designer-note .content { font-size: 12px; color: #374151; line-height: 1.7; }
+    /* 버튼 */
+    .btn { padding: 14px 28px; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; border: none; text-align: center; transition: all 0.15s; }
+    .btn-secondary { background: white; border: 1px solid #e5e7eb; color: #374151; }
+    .btn-secondary:hover { background: #f9fafb; }
+    .btn-primary { background: #8b5cf6; color: white; }
+    .btn-primary:hover { background: #7c3aed; }
+    .btn-amber { background: linear-gradient(135deg, #f59e0b, #d97706); color: white; }
+    .btn-amber:hover { background: linear-gradient(135deg, #d97706, #b45309); }
+    .btn-amber-lg { background: linear-gradient(135deg, #f59e0b, #d97706); color: white; width: 100%; padding: 16px; font-size: 16px; }
+    .btn-amber-lg:hover { background: linear-gradient(135deg, #d97706, #b45309); }
+    .btn-purple { background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: white; flex: 1; }
+    .btn-blue { background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; flex: 1; }
+    .btn-disabled { background: #e5e7eb; color: #9ca3af; cursor: not-allowed; }
+    .btn-deposit {
+      background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+      color: white;
+      width: 100%;
+      padding: 16px;
+      font-size: 16px;
+    }
+    .btn-deposit:hover { background: linear-gradient(135deg, #7c3aed, #6d28d9); }
+    .btn-row { display: flex; justify-content: space-between; align-items: center; margin-top: 24px; padding-top: 24px; border-top: 1px solid #e5e7eb; }
+
+    /* AI 채팅 패널 (우측) */
+    .chat-panel {
+      width: 360px;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      border-left: 1px solid #e5e7eb;
+      background: #fafafa;
+    }
+    .chat-panel-inner {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+      color: #e5e7eb;
+    }
+    .chat-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid #334155;
+      background: rgba(139, 92, 246, 0.1);
+    }
+    .chat-header .title {
+      font-size: 15px; font-weight: 700;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .chat-header .title .icon {
+      width: 28px; height: 28px;
+      background: linear-gradient(135deg, #8b5cf6, #6366f1);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center; font-size: 14px;
+    }
+    .chat-header .sub { font-size: 12px; color: #94a3b8; margin-top: 4px; }
+
+    .chat-context {
+      margin: 12px; padding: 12px;
+      background: #1e293b; border: 1px solid #334155; border-radius: 10px;
+    }
+    .chat-context .label { font-size: 11px; color: #64748b; margin-bottom: 6px; }
+    .chat-context .value { font-size: 13px; color: #e2e8f0; line-height: 1.5; }
+    .chat-context-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+    .chat-context-chip {
+      padding: 4px 10px; background: #8b5cf6; border-radius: 12px;
+      font-size: 11px; color: white;
+    }
+
+    .chat-messages {
+      flex: 1; overflow-y: auto; padding: 16px;
+      display: flex; flex-direction: column; gap: 12px;
+    }
+    .msg {
+      max-width: 90%; padding: 12px 14px; border-radius: 12px;
+      font-size: 13px; line-height: 1.5;
+    }
+    .msg.ai {
+      background: #1e293b; border: 1px solid #334155;
+      align-self: flex-start; border-bottom-left-radius: 4px;
+    }
+    .msg.user {
+      background: #3b82f6; color: white;
+      align-self: flex-end; border-bottom-right-radius: 4px;
+    }
+    .msg .sender { font-size: 11px; color: #64748b; margin-bottom: 4px; }
+    .msg.user .sender { color: rgba(255,255,255,0.7); }
+
+    .chat-quick {
+      padding: 12px; border-top: 1px solid #334155; background: rgba(0,0,0,0.2);
+    }
+    .chat-quick .label { font-size: 11px; color: #64748b; margin-bottom: 8px; }
+    .chat-quick-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+    .chat-quick-chip {
+      padding: 6px 12px; background: #334155; border: 1px solid #475569;
+      border-radius: 16px; font-size: 12px; color: #cbd5e1; cursor: pointer;
+    }
+    .chat-quick-chip:hover { background: #475569; border-color: #8b5cf6; }
+
+    .chat-input {
+      padding: 16px; border-top: 1px solid #334155; background: #0f172a;
+    }
+    .chat-input-wrapper {
+      display: flex; gap: 8px;
+      background: #1e293b; border: 1px solid #334155;
+      border-radius: 12px; padding: 4px;
+    }
+    .chat-input-wrapper:focus-within { border-color: #8b5cf6; }
+    .chat-input input {
+      flex: 1; background: transparent; border: none;
+      padding: 10px 12px; font-size: 13px; color: #e2e8f0; outline: none;
+    }
+    .chat-input input::placeholder { color: #64748b; }
+    .chat-send-btn {
+      width: 40px; height: 40px;
+      background: linear-gradient(135deg, #8b5cf6, #6366f1);
+      border: none; border-radius: 8px; color: white; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; font-size: 16px;
+    }
+
+    /* 디자이너 노트 (하단 오버레이) */
+    .designer-notes {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: linear-gradient(135deg, #fdf4ff, #fae8ff);
+      border-top: 2px solid #d946ef;
+      padding: 20px 32px;
+      max-height: 400px; overflow-y: auto;
+      z-index: 100;
+      display: none;
+    }
+    .designer-notes.show { display: block; }
+    .designer-notes h3 { color: #a21caf; margin-bottom: 12px; font-size: 14px; }
+    .designer-notes .content { font-size: 12px; color: #374151; line-height: 1.7; columns: 2; column-gap: 32px; }
+
+    .toggle-notes {
+      position: fixed; bottom: 16px; right: 16px;
+      padding: 10px 16px; background: #d946ef; color: white;
+      border: none; border-radius: 8px; font-size: 13px; font-weight: 600;
+      cursor: pointer; z-index: 101; box-shadow: 0 4px 12px rgba(217,70,239,0.3);
+    }
+
   </style>
 </head>
 <body>
   <div class="layout">
+    <!-- Nav -->
     <div class="sidebar">
       <div class="logo">
         <div class="logo-icon">U</div>
@@ -215,14 +536,14 @@
 
       <div class="nav-section">
         <a href="list.html" class="nav-item">
-          <span class="icon">🏠</span> 연구 허브
+          <span class="icon">&#x1F3E0;</span> 연구 허브
         </a>
       </div>
 
       <div class="nav-section">
         <div class="nav-section-title">연구</div>
         <a href="create.html" class="nav-item active">
-          <span class="icon">➕</span> 새 연구
+          <span class="icon">&#x2795;</span> 새 연구
         </a>
       </div>
 
@@ -233,17 +554,17 @@
           <span style="background:#3b82f6; color:white; font-size:11px; padding:2px 8px; border-radius:10px; font-weight:600;">3</span>
         </div>
         <div style="display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:8px; cursor:pointer; margin-bottom:4px;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
-          <span style="font-size:14px;">📁</span>
+          <span style="font-size:14px;">&#x1F4C1;</span>
           <span style="flex:1; font-size:13px; color:#94a3b8;">당뇨병 복약 순응도</span>
           <span style="width:8px; height:8px; background:#22c55e; border-radius:50%;"></span>
         </div>
         <div style="display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:8px; cursor:pointer; margin-bottom:4px;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
-          <span style="font-size:14px;">📁</span>
+          <span style="font-size:14px;">&#x1F4C1;</span>
           <span style="flex:1; font-size:13px; color:#94a3b8;">노인 수면 패턴</span>
           <span style="width:8px; height:8px; background:#3b82f6; border-radius:50%;"></span>
         </div>
         <div style="display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:8px; cursor:pointer;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
-          <span style="font-size:14px;">📄</span>
+          <span style="font-size:14px;">&#x1F4C4;</span>
           <span style="flex:1; font-size:13px; color:#94a3b8;">ADHD 생활습관</span>
           <span style="width:8px; height:8px; background:#64748b; border-radius:50%;"></span>
         </div>
@@ -258,14 +579,14 @@
             <span style="width:6px; height:6px; background:#fbbf24; border-radius:50%; flex-shrink:0;"></span>
             <div style="flex:1; min-width:0;">
               <div style="font-size:12px; color:#e2e8f0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">소아 비만 개입 연구</div>
-              <div style="font-size:10px; color:#64748b; margin-top:2px;">Step 3 · 2일 전</div>
+              <div style="font-size:10px; color:#64748b; margin-top:2px;">Step 3 &middot; 2일 전</div>
             </div>
           </a>
           <a href="#" style="display:flex; align-items:center; gap:10px; padding:8px 12px; border-radius:8px; text-decoration:none;">
             <span style="width:6px; height:6px; background:#64748b; border-radius:50%; flex-shrink:0;"></span>
             <div style="flex:1; min-width:0;">
               <div style="font-size:12px; color:#94a3b8; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">직장인 스트레스 코르티솔</div>
-              <div style="font-size:10px; color:#64748b; margin-top:2px;">Step 1 · 5일 전</div>
+              <div style="font-size:10px; color:#64748b; margin-top:2px;">Step 1 &middot; 5일 전</div>
             </div>
           </a>
         </div>
@@ -282,358 +603,420 @@
       </div>
     </div>
 
-    <div class="main">
-      <h1>IRB 제출 + 에스크로 예치</h1>
-      <p class="subtitle">IRB 심의를 제출하고 연구 예산을 XRPL 에스크로에 예치합니다</p>
-
+    <!-- Workspace Wrap -->
+    <div class="workspace-wrap">
       <!-- Step Bar -->
       <div class="step-bar">
         <div class="step-bar-inner">
-          <div class="sb-step done"><div class="sb-num">✓</div><div class="sb-label">AI 인터뷰</div></div>
+          <div class="sb-step done"><div class="sb-num">&#x2713;</div><div class="sb-label">AI 인터뷰</div></div>
           <div class="sb-line done"></div>
-          <div class="sb-step done"><div class="sb-num">✓</div><div class="sb-label">연구 설계</div></div>
+          <div class="sb-step done"><div class="sb-num">&#x2713;</div><div class="sb-label">연구 설계</div></div>
           <div class="sb-line done"></div>
-          <div class="sb-step done"><div class="sb-num">✓</div><div class="sb-label">데이터 수집</div></div>
+          <div class="sb-step done"><div class="sb-num">&#x2713;</div><div class="sb-label">데이터 수집</div></div>
           <div class="sb-line done"></div>
-          <div class="sb-step done"><div class="sb-num">✓</div><div class="sb-label">모집 설정</div></div>
+          <div class="sb-step done"><div class="sb-num">&#x2713;</div><div class="sb-label">타겟 설정</div></div>
           <div class="sb-line done"></div>
-          <div class="sb-step done"><div class="sb-num">✓</div><div class="sb-label">IRB 판정</div></div>
+          <div class="sb-step done"><div class="sb-num">&#x2713;</div><div class="sb-label">IRB 판정</div></div>
           <div class="sb-line done"></div>
           <div class="sb-step active"><div class="sb-num">6</div><div class="sb-label">에스크로</div></div>
         </div>
       </div>
 
-      <!-- Section 1: 지갑 잔액 -->
-      <div class="wallet-card">
-        <div class="wallet-header">
-          <span class="label">내 지갑 잔액</span>
-          <span class="action">+ 충전</span>
-        </div>
-        <div class="wallet-balance">45,000 XRP</div>
-        <div class="wallet-usd">&#x2248; $22,500 USD</div>
-      </div>
+      <!-- Workspace (editor + chat) -->
+      <div class="workspace">
 
-      <!-- Section 2: 연구 설정 요약 -->
-      <div class="card">
-        <div class="card-header">
-          <h3>&#x1F4CB; 연구 설정 요약</h3>
-        </div>
-        <div class="card-body">
-          <div class="summary-section">
-            <div class="summary-title">
-              기본 정보
-              <span class="edit">수정</span>
+        <!-- 에디터 패널 -->
+        <div class="editor-panel">
+
+          <!-- 페이지 헤더 -->
+          <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 8px;">
+            <h1 style="font-size: 24px; font-weight: 700;">에스크로 예치 + 모집 실행</h1>
+            <span class="status-badge" style="background:#ede9fe; color:#7c3aed;">Step 6</span>
+          </div>
+          <p style="color: #6b7280; margin-bottom: 28px; font-size: 14px;">연구 예산을 예치하고, 참가자 모집을 시작합니다</p>
+
+          <!-- Section 1: 프로젝트 지갑 -->
+          <div class="wallet-card">
+            <div class="wallet-card-header">
+              <h3>
+                &#x1F4B3; 프로젝트 지갑
+              </h3>
+              <span class="badge-green-sm">&#x2705; IRB 승인 완료</span>
             </div>
-            <div class="summary-grid">
-              <div class="summary-item">
-                <div class="label">연구 제목</div>
-                <div class="value">저탄수화물 식단의 혈당 변동 개선 효과 연구</div>
+            <div class="wallet-address-row">
+              <span class="label">지갑 주소:</span>
+              <span class="addr">rProjWallet3x7K...9mQ</span>
+              <button class="copy-btn" onclick="navigator.clipboard.writeText('rProjWallet3x7K9mQ'); this.textContent='복사됨!'; setTimeout(()=>this.textContent='복사', 1500);">복사</button>
+            </div>
+            <div class="wallet-stats">
+              <div class="wallet-stat-item">
+                <div class="label">현재 잔액</div>
+                <div class="value zero">0 XRP</div>
               </div>
-              <div class="summary-item">
-                <div class="label">연구 방법론</div>
-                <div class="value">RCT (무작위 대조 시험)</div>
+              <div class="wallet-stat-item">
+                <div class="label">필요 금액</div>
+                <div class="value required">7,140 XRP</div>
               </div>
-              <div class="summary-item">
-                <div class="label">목표 참여자</div>
-                <div class="value">100명</div>
+            </div>
+            <div class="progress-bar-wrapper">
+              <div class="progress-bar-bg">
+                <div class="progress-bar-fill" style="width: 0%;"></div>
               </div>
-              <div class="summary-item">
-                <div class="label">연구 기간</div>
-                <div class="value">56일 (8주)</div>
+              <div class="progress-bar-label">
+                <span>0%</span>
+                <span>7,140 XRP 필요</span>
               </div>
             </div>
           </div>
 
-          <div class="summary-section">
-            <div class="summary-title">
-              수집 데이터
-              <span class="edit">수정</span>
+          <!-- Section 2: 내 지갑 입금 -->
+          <div class="deposit-card">
+            <div class="deposit-header">
+              <h3>&#x1F4E5; 내 지갑 &#x2192; 프로젝트 지갑 입금</h3>
             </div>
-            <div class="summary-grid">
-              <div class="summary-item">
-                <div class="label">패시브 데이터</div>
-                <div class="value">CGM, 심박수, 활동량, 수면</div>
-              </div>
-              <div class="summary-item">
-                <div class="label">능동 데이터</div>
-                <div class="value">식단, 복약, 기분</div>
-              </div>
+            <div class="my-wallet-balance">
+              <span class="label">내 지갑 잔액:</span>
+              <span class="amount">45,000 XRP</span>
+              <span class="usd">(&#x2248; $22,500 USD)</span>
             </div>
-          </div>
-
-          <div class="summary-section">
-            <div class="summary-title">
-              IRB 상태
-            </div>
-            <div style="display: flex; align-items: center; gap: 12px;">
-              <span class="badge badge-amber">&#x26A0;&#xFE0F; 정규심의 필요</span>
-              <span style="font-size: 13px; color: #6b7280;">RCT 방법론 + 건강 데이터 수집 - IRB 정규심의 대상</span>
-            </div>
-          </div>
-
-          <div class="summary-section" style="margin-bottom: 0;">
-            <div class="summary-title">
-              IRB 제출 서류 양식
-              <span class="edit">Step 4에서 수정</span>
-            </div>
-            <div class="summary-grid">
-              <div class="summary-item">
-                <div class="label">연구계획서 양식</div>
-                <div class="value" style="color: #16a34a; font-size: 13px;">&#x2705; AI 초안 완료</div>
-              </div>
-              <div class="summary-item">
-                <div class="label">참여자 동의서 양식</div>
-                <div class="value" style="color: #16a34a; font-size: 13px;">&#x2705; AI 초안 완료</div>
-              </div>
-              <div class="summary-item">
-                <div class="label">모집공고 양식</div>
-                <div class="value" style="color: #16a34a; font-size: 13px;">&#x2705; AI 초안 완료</div>
-              </div>
-              <div class="summary-item">
-                <div class="label">연구자 이력서</div>
-                <div class="value" style="color: #d97706; font-size: 13px;">&#x26A0;&#xFE0F; 업로드 필요</div>
+            <div class="deposit-input-group">
+              <label>입금할 금액</label>
+              <div class="deposit-input-wrapper">
+                <input type="number" value="7140" id="depositAmount">
+                <span class="unit">XRP</span>
               </div>
             </div>
-            <div style="margin-top: 8px; font-size: 11px; color: #6b7280; padding: 8px; background: #f9fafb; border-radius: 6px;">
-              &#x2139;&#xFE0F; 양식 = IRB 심의용 서류. 실제 참여자 동의 서명은 IRB 승인 후 모집 단계에서 진행.
+            <div class="quick-amount-btns">
+              <button class="quick-amount-btn active" onclick="document.getElementById('depositAmount').value=7140">필요 금액 전액</button>
+              <button class="quick-amount-btn" onclick="document.getElementById('depositAmount').value=3570">절반만</button>
+              <button class="quick-amount-btn" onclick="document.getElementById('depositAmount').value=''">직접 입력</button>
             </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Section 3: 에스크로 예치 금액 -->
-      <div class="escrow-card">
-        <h3>&#x1F4B0; 에스크로 예치 금액</h3>
-        <div class="escrow-row">
-          <span class="label">IRB 신청비</span>
-          <span class="value">400 XRP</span>
-        </div>
-        <div class="escrow-row">
-          <span class="label">참여자 보상 에스크로</span>
-          <span class="value">6,400 XRP</span>
-        </div>
-        <div class="escrow-row">
-          <span class="label">플랫폼 수수료</span>
-          <span class="value">340 XRP</span>
-        </div>
-        <div class="escrow-divider"></div>
-        <div class="escrow-total">
-          <span class="label">합계</span>
-          <span class="value">7,140 XRP</span>
-        </div>
-        <div class="escrow-usd">&#x2248; $3,570 USD</div>
-      </div>
-
-      <!-- Section 4: 두 가지 경로 -->
-      <div style="margin-bottom: 8px;">
-        <h3 style="font-size: 16px; font-weight: 600; color: #374151; margin-bottom: 4px;">&#x1F6A6; IRB 처리 경로 선택</h3>
-        <p style="font-size: 13px; color: #6b7280;">연구 특성에 따라 적절한 경로가 자동 선택됩니다</p>
-      </div>
-      <div class="paths-grid">
-        <!-- Path A: IRB 면제 -->
-        <div class="path-card disabled">
-          <div class="path-disabled-overlay">비활성</div>
-          <h4 style="color: #6b7280;">
-            <span style="width: 24px; height: 24px; background: #d1d5db; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; color: white;">A</span>
-            IRB 면제 경로
-          </h4>
-          <div class="path-desc">면제 사유 해당 시</div>
-          <div style="font-size: 12px; color: #9ca3af; line-height: 1.6; margin-bottom: 12px;">
-            에스크로 예치 &#x2192; 바로 모집 설정 (Step 6)
-          </div>
-          <div class="btn btn-disabled" style="width: 100%; display: block;">에스크로 예치 + 모집 설정</div>
-          <div class="path-note warning">&#x26D4; 이 연구는 정규심의가 필요합니다</div>
-        </div>
-
-        <!-- Path B: IRB 심의 -->
-        <div class="path-card active-path">
-          <h4 style="color: #92400e;">
-            <span style="width: 24px; height: 24px; background: #fbbf24; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; color: #78350f; font-weight: 700;">B</span>
-            IRB 심의 경로
-          </h4>
-          <div class="path-desc">
-            <span class="badge badge-amber" style="margin-bottom: 6px;">정규심의 필요</span>
-          </div>
-          <div style="font-size: 12px; color: #78350f; line-height: 1.6; margin-bottom: 8px;">
-            IRB 제출 + 에스크로 예치 &#x2192; 심의 대기 (1-2개월) &#x2192; 승인 시 모집 설정 자동 활성화
+            <button class="btn btn-deposit" onclick="alert('프로젝트 지갑에 7,140 XRP 입금 처리 중...')">&#x1F4B0; 프로젝트 지갑에 입금하기</button>
+            <div class="deposit-info-text">XRPL 네트워크 수수료 ~0.00001 XRP 별도</div>
           </div>
 
-          <!-- 플로우 다이어그램 -->
-          <div class="flow-diagram">
-            <div class="flow-row">
-              <div class="flow-step highlight">제출 + 예치</div>
-              <span class="flow-arrow">&#x2192;</span>
-              <div class="flow-step">심의 대기</div>
-              <span class="flow-arrow">&#x2192;</span>
-              <div class="flow-step" style="background: #dcfce7; border-color: #22c55e; color: #166534;">승인</div>
-              <span class="flow-arrow">&#x2192;</span>
-              <div class="flow-step" style="background: #dbeafe; border-color: #3b82f6; color: #1e40af;">모집 설정 활성화</div>
+          <!-- Section 3: 에스크로 금액 내역 -->
+          <div class="escrow-card">
+            <h3>&#x1F4B0; 에스크로 금액 내역</h3>
+            <div class="escrow-row">
+              <span class="label">IRB 신청비 <span class="paid-badge">기납부</span></span>
+              <span class="value">400 XRP</span>
             </div>
-            <div class="flow-branch">
-              <span class="flow-branch-arrow">&#x2193;</span>
+            <div class="escrow-row">
+              <span class="label">참여자 보상 에스크로</span>
+              <span class="value">6,400 XRP</span>
             </div>
-            <div class="flow-row" style="margin-left: 80px;">
-              <div class="flow-step" style="background: #fee2e2; border-color: #fca5a5; color: #991b1b;">수정 요청</div>
-              <span class="flow-arrow">&#x2192;</span>
-              <div class="flow-step">수정 후 재제출</div>
+            <div class="escrow-row">
+              <span class="label">플랫폼 수수료</span>
+              <span class="value">340 XRP</span>
+            </div>
+            <div class="escrow-total">
+              <span class="label">합계</span>
+              <span class="value">7,140 XRP</span>
+            </div>
+            <div class="escrow-usd">&#x2248; $3,570 USD</div>
+          </div>
+
+          <!-- Section 4: 에스크로 예치 동의 -->
+          <div class="consent-box">
+            <h3>&#x2705; 에스크로 예치 동의</h3>
+            <div class="consent-item">
+              <input type="checkbox" id="consent1" onchange="updateEscrowBtn()">
+              <label for="consent1">에스크로 예치 후 연구 설정 변경 불가에 동의합니다</label>
+            </div>
+            <div class="consent-item">
+              <input type="checkbox" id="consent2" onchange="updateEscrowBtn()">
+              <label for="consent2">참여자 보상은 조건 충족 시 자동 지급됨을 이해합니다</label>
+            </div>
+            <div class="consent-item">
+              <input type="checkbox" id="consent3" onchange="updateEscrowBtn()">
+              <label for="consent3">XRPL 에스크로 정책 및 UniQdata 이용약관에 동의합니다</label>
+            </div>
+            <div style="margin-top: 16px;">
+              <button id="escrowBtn" class="btn btn-disabled" style="width: 100%; padding: 16px; font-size: 16px;" disabled onclick="alert('에스크로 예치 처리 중...\n\n1. 참여자 보상 에스크로 생성 (6,400 XRP)\n2. 플랫폼 수수료 전송 (340 XRP)\n3. 에스크로 완료 → 모집 실행 섹션 활성화')">&#x1F512; 에스크로 예치하기</button>
             </div>
           </div>
 
-          <a href="#" class="btn btn-amber" style="width: 100%; display: block; margin-top: 12px;" onclick="alert('IRB 제출 + 에스크로 예치 처리 중...')">IRB 제출 + 에스크로 예치</a>
-        </div>
-      </div>
+          <!-- Section 5: 모집 실행 (잠금 상태) -->
+          <div class="locked-section">
+            <div class="locked-header">
+              <span class="lock-icon">&#x1F512;</span>
+              <h3>모집 실행</h3>
+              <span class="lock-msg">에스크로 예치 완료 후 활성화됩니다</span>
+            </div>
+            <div class="locked-body">
+              <!-- 모집 요약 -->
+              <div style="font-size: 14px; font-weight: 600; color: #374151; margin-bottom: 12px;">&#x1F4CB; Step 4 모집 요약</div>
+              <div class="recruit-summary">
+                <div class="recruit-summary-item">
+                  <div class="label">타겟 대상자</div>
+                  <div class="value">4명 (사전 초대)</div>
+                </div>
+                <div class="recruit-summary-item">
+                  <div class="label">공개 모집</div>
+                  <div class="value">60명</div>
+                </div>
+                <div class="recruit-summary-item">
+                  <div class="label">목표 인원</div>
+                  <div class="value">100명 (선착순)</div>
+                </div>
+                <div class="recruit-summary-item">
+                  <div class="label">초대 수락 대기</div>
+                  <div class="value">3일</div>
+                </div>
+              </div>
 
-      <!-- Section 5: XRPL 에스크로 정보 -->
-      <div class="xrpl-info">
-        <h4>&#x26D3;&#xFE0F; XRPL 에스크로 작동 방식</h4>
-        <ul>
-          <li>예치금은 XRPL 블록체인의 에스크로 계약에 안전하게 보관됩니다</li>
-          <li><strong>IRB 승인 시</strong> XRPL에 승인 기록이 앵커링됩니다 (tx hash 기록)</li>
-          <li><strong>참여자 보상</strong>은 연구 조건 충족 시 조건부 해제됩니다</li>
-          <li><strong>IRB 신청비</strong> (400 XRP)는 제출 시 즉시 기관 지갑으로 전송됩니다</li>
-          <li>연구자가 임의로 에스크로 예치금을 인출할 수 없습니다</li>
-          <li>모든 트랜잭션은 블록체인에 투명하게 기록됩니다</li>
-        </ul>
-      </div>
+              <!-- 모집 버튼 -->
+              <div class="recruit-btn-group">
+                <button class="btn btn-purple btn-disabled" disabled>&#x1F4E8; 사전 초대 발송 시작</button>
+                <button class="btn btn-blue btn-disabled" disabled>&#x1F310; 공개 모집 시작</button>
+              </div>
 
-      <!-- Section 6: 동의 체크박스 -->
-      <div class="consent-box">
-        <div class="consent-item">
-          <input type="checkbox" id="consent1" checked>
-          <label for="consent1">연구 설정 내용을 확인했으며, 에스크로 예치에 동의합니다.</label>
-        </div>
-        <div class="consent-item">
-          <input type="checkbox" id="consent2" checked>
-          <label for="consent2">IRB 심의 기간 동안 참여자 모집이 불가함을 이해합니다.</label>
-        </div>
-        <div class="consent-item">
-          <input type="checkbox" id="consent3" checked>
-          <label for="consent3">IRB 승인 후 자동으로 모집이 시작될 수 있음에 동의합니다.</label>
-        </div>
-        <div class="consent-item">
-          <input type="checkbox" id="consent4" checked>
-          <label for="consent4">XRPL 에스크로 정책 및 UniQdata 이용약관에 동의합니다.</label>
-        </div>
-      </div>
+              <!-- 안내 노트 -->
+              <div class="recruit-info-note">
+                &#x2139;&#xFE0F; 사전 초대 &#x2192; 수락 대기(3일) &#x2192; 미수락 분은 공개 모집으로 전환. 목표 인원 도달 시 자동 마감 &#x2192; 연구 일괄 시작.
+              </div>
+            </div>
+          </div>
 
-      <!-- 네비게이션 버튼 -->
-      <div class="btn-row">
-        <a href="create-step5.html" class="btn btn-secondary">&#x2190; 이전</a>
-        <a href="#" class="btn btn-amber" onclick="alert('IRB 제출 + 에스크로 예치 처리 중...\n\n1. IRB 서류 제출\n2. XRPL 에스크로 생성\n3. IRB 신청비 전송\n\n심의 대기 상태로 전환됩니다.')">IRB 제출 + 에스크로 예치 &#x2192;</a>
-      </div>
+          <!-- 네비게이션 버튼 -->
+          <div class="btn-row">
+            <a href="create-step5.html" class="btn btn-secondary">&#x2190; 이전</a>
+            <button id="navEscrowBtn" class="btn btn-amber" onclick="alert('에스크로 예치 프로세스를 시작합니다.')">에스크로 예치하기 &#x2192;</button>
+          </div>
 
-      <!-- 스텝 네비게이션 -->
-      <div class="step-nav">
-        <a href="create-step5.html">&#x2190; Step 5</a>
-        <a href="list.html">연구 목록 &#x2192;</a>
-      </div>
+        </div><!-- /.editor-panel -->
 
-      <!-- 디자이너 노트 -->
-      <div class="designer-note">
-        <h3>&#x1F4CB; 디자이너 노트: Step 5 - IRB 제출 + 에스크로 예치</h3>
-        <div class="content">
-          <strong>두 가지 경로 (Two-Path) 로직:</strong><br>
-          &bull; <strong>면제 경로 (Path A)</strong>: 에스크로 예치 통과 &#x2192; 바로 Step 6 모집 설정<br>
-          &bull; <strong>심의 경로 (Path B)</strong>: IRB 제출 + 에스크로 예치 &#x2192; 심의 대기 &#x2192; 승인 알림 &#x2192; Step 6 활성화<br><br>
+        <!-- AI 에스크로 어시스턴트 -->
+        <div class="chat-panel">
+          <div class="chat-panel-inner">
+            <div class="chat-header">
+              <div class="title">
+                <span class="icon">&#x1F916;</span>
+                AI 에스크로 어시스턴트
+              </div>
+              <div class="sub">예치와 모집 실행을 안내합니다</div>
+            </div>
 
-          <strong>에스크로 예치 전략:</strong><br>
-          &bull; IRB 신청비 + 참여자 보상 에스크로 동시 예치 (연구자 편의)<br>
-          &bull; IRB 승인 시 바로 모집 가능하도록 에스크로를 미리 예치<br>
-          &bull; IRB 신청비 (400 XRP)는 제출 즉시 기관 지갑으로 전송<br>
-          &bull; 참여자 보상 (6,400 XRP)은 에스크로에 잠금 (조건부 해제)<br><br>
+            <div class="chat-context">
+              <div class="label">현재 연구</div>
+              <div class="value">당뇨 복약 순응도 연구 &#x2014; 에스크로 예치 중</div>
+              <div class="chat-context-chips">
+                <span class="chat-context-chip">IRB 승인</span>
+                <span class="chat-context-chip">7,140 XRP</span>
+                <span class="chat-context-chip">100명 목표</span>
+                <span class="chat-context-chip">선착순</span>
+              </div>
+            </div>
 
-          <strong>IRB 심의 대기 상태:</strong><br>
-          &bull; 연구 상태: "irb_pending" (심의 대기 중)<br>
-          &bull; 에스크로 상태: "funded" (예치 완료)<br>
-          &bull; IRB 승인 시 자동으로 "recruiting" 상태 전환 가능<br>
-          &bull; IRB 수정 요청 시 연구자에게 알림 &#x2192; 수정 후 재제출<br><br>
+            <div class="chat-messages">
+              <div class="msg ai">
+                <div class="sender">AI 어시스턴트</div>
+                IRB 심의가 승인되어 프로젝트 지갑이 자동 생성되었습니다. 현재 잔액은 <strong>0 XRP</strong>이므로, 내 지갑에서 <strong>7,140 XRP</strong>를 입금해주세요.<br><br>
+                입금 후 에스크로 예치를 진행하면 모집을 시작할 수 있습니다.
+              </div>
 
-          <strong>UI 설계 의도:</strong><br>
-          &bull; 이 연구는 RCT이므로 Path B(심의)가 자동 선택됨<br>
-          &bull; Path A는 비활성으로 표시하여 면제 불가 사유를 명확히 전달<br>
-          &bull; 플로우 다이어그램으로 심의 과정의 분기를 시각화<br>
-          &bull; 에스크로 금액 breakdown을 보라색 카드로 강조 표시
-        </div>
-      </div>
+              <div class="msg user">
+                <div class="sender">김연구</div>
+                에스크로 예치하면 바로 모집이 시작돼?
+              </div>
 
-      <!-- 기능 명세 -->
-      <div style="background: linear-gradient(135deg, #ecfdf5, #d1fae5); border: 2px solid #10b981; border-radius: 12px; padding: 16px; margin-top: 12px;">
-        <h3 style="color: #047857; margin-bottom: 12px; font-size: 14px;">&#x2699;&#xFE0F; 기능 명세</h3>
-        <div style="font-size: 12px; color: #374151; line-height: 1.8;">
-          <strong>핵심 기능:</strong><br>
-          &bull; 지갑 잔액 확인 및 충전<br>
-          &bull; 연구 설정 전체 요약 (수정 링크 포함)<br>
-          &bull; IRB 상태 판별 (면제/정규심의)<br>
-          &bull; 에스크로 금액 산출 및 표시<br>
-          &bull; 두 가지 경로 자동 선택 UI<br>
-          &bull; 동의 체크리스트 확인<br><br>
+              <div class="msg ai">
+                <div class="sender">AI 어시스턴트</div>
+                아닙니다. 에스크로 예치 완료 후 <strong>'모집 실행' 섹션이 활성화</strong>됩니다. 사전 초대 발송과 공개 모집 시작을 직접 클릭해야 합니다.<br><br>
+                목표 <strong>100명</strong>이 선착순으로 채워지면 자동 마감 &#x2192; 연구가 일괄 시작됩니다.
+              </div>
+            </div>
 
-          <strong>에스크로 처리:</strong><br>
-          &bull; EscrowCreate 트랜잭션 생성 (참여자 보상)<br>
-          &bull; Payment 트랜잭션 생성 (IRB 신청비 즉시 전송)<br>
-          &bull; 조건부 해제 설정 (IRB 승인 + 참여 완료)<br>
-          &bull; TX Hash 저장 및 상태 추적<br><br>
+            <div class="chat-quick">
+              <div class="label">빠른 액션</div>
+              <div class="chat-quick-chips">
+                <span class="chat-quick-chip">필요 금액 입금</span>
+                <span class="chat-quick-chip">에스크로 상세 보기</span>
+                <span class="chat-quick-chip">모집 미리보기</span>
+                <span class="chat-quick-chip">지갑 충전</span>
+              </div>
+            </div>
 
-          <strong>IRB 경로 판별 로직:</strong><br>
-          &bull; RCT &#x2192; 정규심의 필수<br>
-          &bull; 건강 데이터 (L3/L4) 수집 &#x2192; 정규심의 필수<br>
-          &bull; 익명 설문 + L1/L2 데이터만 &#x2192; 면제 가능<br>
-          &bull; 기존 데이터 2차 분석 &#x2192; 면제 가능
-        </div>
-      </div>
+            <div class="chat-input">
+              <div class="chat-input-wrapper">
+                <input type="text" placeholder="예: 에스크로 예치 후 환불 가능해?">
+                <button class="chat-send-btn">&#x27A4;</button>
+              </div>
+            </div>
+          </div>
+        </div><!-- /.chat-panel -->
 
-      <!-- 백엔드 호출 -->
-      <div style="background: linear-gradient(135deg, #f5f3ff, #ede9fe); border: 2px solid #8b5cf6; border-radius: 12px; padding: 16px; margin-top: 12px;">
-        <h3 style="color: #6d28d9; margin-bottom: 12px; font-size: 14px;">&#x1F517; 백엔드 호출</h3>
-        <div style="font-size: 11px; font-family: 'SF Mono', Monaco, monospace; color: #374151; line-height: 1.8;">
+      </div><!-- /.workspace -->
+    </div><!-- /.workspace-wrap -->
+  </div><!-- /.layout -->
 
-          <strong style="font-family: -apple-system, sans-serif;">1. IRB 제출:</strong><br>
-          <code style="background: #1f2937; color: #a5b4fc; padding: 8px 12px; border-radius: 6px; display: block; margin: 6px 0;">
-POST /enterprise/irb/submit<br>
-{<br>
-&nbsp;&nbsp;"project_id": "uuid",<br>
-&nbsp;&nbsp;"documents": [...]<br>
-}<br><br>
-&#x2192; {<br>
-&nbsp;&nbsp;"submission_id": "uuid",<br>
-&nbsp;&nbsp;"status": "submitted"<br>
-}
-          </code>
+  <!-- 디자이너 노트 토글 -->
+  <button class="toggle-notes" onclick="toggleNotes()">&#x1F4CB; 디자이너 노트</button>
 
-          <strong style="font-family: -apple-system, sans-serif;">2. 에스크로 준비:</strong><br>
-          <code style="background: #1f2937; color: #a5b4fc; padding: 8px 12px; border-radius: 6px; display: block; margin: 6px 0;">
-POST /api/xrpl/escrow/prepare<br>
-{<br>
-&nbsp;&nbsp;"project_id": "uuid",<br>
-&nbsp;&nbsp;"amount_xrp": 7140,<br>
-&nbsp;&nbsp;"breakdown": {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;"irb_fee": 400,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;"compensation": 6400,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;"platform_fee": 340<br>
-&nbsp;&nbsp;}<br>
-}<br><br>
-&#x2192; {<br>
-&nbsp;&nbsp;"escrow_tx": "...",<br>
-&nbsp;&nbsp;"irb_fee_tx": "..."<br>
-}
-          </code>
+  <!-- 디자이너 노트 -->
+  <div class="designer-notes" id="designer-note">
+    <h3>&#x1F4CB; 디자이너 노트: Step 6 - 에스크로 예치 + 모집 실행</h3>
+    <div class="content">
+      <strong>레이아웃:</strong><br>
+      &#x2460; Nav (240px) | &#x2461; 에스크로 예치 에디터 (flex:1) | &#x2462; AI 에스크로 어시스턴트 (360px)<br>
+      Step 4/5와 동일한 workspace-wrap 패턴 (step-bar &#x2192; workspace &#x2192; editor + chat)<br><br>
 
-          <strong style="font-family: -apple-system, sans-serif;">3. IRB + 에스크로 통합 제출:</strong><br>
-          <code style="background: #1f2937; color: #a5b4fc; padding: 8px 12px; border-radius: 6px; display: block; margin: 6px 0;">
-POST /enterprise/projects/:id/submit-with-escrow<br>
-{<br>
-&nbsp;&nbsp;"escrow_tx_hash": "A1B2C3...",<br>
-&nbsp;&nbsp;"irb_submission_id": "uuid"<br>
-}<br><br>
-&#x2192; {<br>
-&nbsp;&nbsp;"status": "irb_pending",<br>
-&nbsp;&nbsp;"escrow_status": "funded"<br>
-}
-          </code>
-        </div>
-      </div>
+      <strong>&#x2461; 에디터 5개 섹션:</strong><br>
+      - 프로젝트 지갑: IRB 승인 후 자동 생성. 다크 카드로 잔액/필요금액/진행률 표시<br>
+      - 내 지갑 입금: 잔액 확인 &#x2192; 금액 입력 &#x2192; 빠른 버튼 &#x2192; 입금 실행<br>
+      - 에스크로 금액 내역: 보라색 그라디언트 카드, IRB 신청비(기납부)/보상/수수료 breakdown<br>
+      - 에스크로 예치 동의: 3개 체크박스 전체 체크 시 예치 버튼 활성화<br>
+      - 모집 실행: 에스크로 예치 완료 전 잠금 상태. Step 4 모집 요약 표시, 초대/공개 모집 버튼<br><br>
+
+      <strong>&#x2462; AI 에스크로 어시스턴트:</strong><br>
+      - 예치 &#x2192; 모집 실행 흐름을 안내하는 대화형 패널<br>
+      - 맥락 칩: IRB 승인, 7,140 XRP, 100명 목표, 선착순<br>
+      - 빠른 액션: 필요 금액 입금, 에스크로 상세 보기, 모집 미리보기, 지갑 충전<br><br>
+
+      <strong>흐름 (Flow):</strong><br>
+      &#x2460; IRB 승인 &#x2192; 프로젝트 지갑 자동 생성<br>
+      &#x2461; 내 지갑에서 프로젝트 지갑으로 입금<br>
+      &#x2462; 에스크로 예치 동의 &#x2192; 예치 실행<br>
+      &#x2463; 모집 실행 섹션 활성화<br>
+      &#x2464; 사전 초대 발송 &#x2192; 수락 대기(3일) &#x2192; 미수락분 공개 전환<br>
+      &#x2465; 목표 인원 달성 &#x2192; 자동 마감 &#x2192; 연구 일괄 시작<br><br>
+
+      <strong>핵심 포인트:</strong><br>
+      &bull; 에스크로 예치와 모집 실행을 하나의 Step으로 통합<br>
+      &bull; 모집 실행은 에스크로 예치 완료 후에만 활성화 (잠금 UX)<br>
+      &bull; 체크박스 3개 모두 체크해야 예치 버튼 활성화 (동의 확보)
     </div>
   </div>
+
+  <!-- 기능 명세 -->
+  <div class="designer-notes" id="func-spec">
+    <h3 style="color: #047857;">&#x2699;&#xFE0F; 기능 명세: Step 6 - 에스크로 예치 + 모집 실행</h3>
+    <div class="content" style="columns: 1;">
+      <strong>핵심 기능:</strong><br>
+      &bull; 프로젝트 지갑 잔액 확인 및 진행률 표시<br>
+      &bull; 내 지갑 &#x2192; 프로젝트 지갑 입금 (금액 입력 + 빠른 버튼)<br>
+      &bull; 에스크로 금액 내역 (IRB 신청비/보상/수수료 breakdown)<br>
+      &bull; 에스크로 예치 동의 (3개 체크박스 전체 체크 시 활성화)<br>
+      &bull; 모집 실행 (에스크로 예치 후 잠금 해제): 사전 초대 + 공개 모집<br><br>
+
+      <strong>비즈니스 로직:</strong><br>
+      &bull; IRB 승인 시 프로젝트 지갑이 XRPL에 자동 생성됨<br>
+      &bull; IRB 신청비(400 XRP)는 Step 5에서 이미 납부됨 (기납부 표시)<br>
+      &bull; 에스크로 예치 = 참여자 보상(6,400) + 플랫폼 수수료(340) = 6,740 XRP<br>
+      &bull; 총 합계 7,140 XRP는 IRB 신청비 포함 전체 연구 비용<br>
+      &bull; 에스크로 예치 후 연구 설정 변경 불가 (잠금)<br>
+      &bull; 사전 초대 &#x2192; 3일 대기 &#x2192; 미수락분 공개 모집 전환<br>
+      &bull; 목표 100명 달성 시 자동 마감 &#x2192; 연구 일괄 시작
+    </div>
+  </div>
+
+  <!-- 백엔드 호출 -->
+  <div class="designer-notes" id="backend-spec">
+    <h3 style="color: #6d28d9;">&#x1F517; 백엔드 호출: Step 6</h3>
+    <div class="content" style="columns: 1;">
+      <strong>1. 프로젝트 지갑 생성 (IRB 승인 시 자동):</strong><br>
+      <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0; font-size: 11px; font-family: 'SF Mono', Monaco, monospace;">
+POST /api/xrpl/wallet/create<br>
+{ "project_id": "uuid", "type": "project" }<br>
+&#x2192; { "wallet_address": "rProjWallet3x7K...9mQ", "balance": 0 }
+      </code><br>
+
+      <strong>2. 내 지갑 &#x2192; 프로젝트 지갑 입금:</strong><br>
+      <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0; font-size: 11px; font-family: 'SF Mono', Monaco, monospace;">
+POST /api/xrpl/payment<br>
+{<br>
+&nbsp;&nbsp;"from": "rMyWallet...",<br>
+&nbsp;&nbsp;"to": "rProjWallet3x7K...9mQ",<br>
+&nbsp;&nbsp;"amount_xrp": 7140<br>
+}<br>
+&#x2192; { "tx_hash": "A1B2C3...", "status": "success" }
+      </code><br>
+
+      <strong>3. 에스크로 예치:</strong><br>
+      <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0; font-size: 11px; font-family: 'SF Mono', Monaco, monospace;">
+POST /api/xrpl/escrow/create<br>
+{<br>
+&nbsp;&nbsp;"project_id": "uuid",<br>
+&nbsp;&nbsp;"source_wallet": "rProjWallet3x7K...9mQ",<br>
+&nbsp;&nbsp;"compensation_amount": 6400,<br>
+&nbsp;&nbsp;"platform_fee": 340,<br>
+&nbsp;&nbsp;"conditions": {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"release_on": "participant_complete",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"refund_on": "research_cancelled"<br>
+&nbsp;&nbsp;}<br>
+}<br>
+&#x2192; {<br>
+&nbsp;&nbsp;"escrow_tx_hash": "E4F5G6...",<br>
+&nbsp;&nbsp;"escrow_status": "funded",<br>
+&nbsp;&nbsp;"recruitment_unlocked": true<br>
+}
+      </code><br>
+
+      <strong>4. 모집 시작:</strong><br>
+      <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0; font-size: 11px; font-family: 'SF Mono', Monaco, monospace;">
+POST /enterprise/projects/:id/recruitment/start<br>
+{<br>
+&nbsp;&nbsp;"pre_invite": true,<br>
+&nbsp;&nbsp;"open_recruit": false,<br>
+&nbsp;&nbsp;"invite_accept_deadline_days": 3<br>
+}<br>
+&#x2192; {<br>
+&nbsp;&nbsp;"status": "recruiting",<br>
+&nbsp;&nbsp;"invites_sent": 4,<br>
+&nbsp;&nbsp;"open_slots": 60<br>
+}
+      </code>
+    </div>
+  </div>
+
+  <script>
+    // 동의 체크박스에 따라 에스크로 예치 버튼 활성화/비활성화
+    function updateEscrowBtn() {
+      var c1 = document.getElementById('consent1').checked;
+      var c2 = document.getElementById('consent2').checked;
+      var c3 = document.getElementById('consent3').checked;
+      var btn = document.getElementById('escrowBtn');
+      if (c1 && c2 && c3) {
+        btn.disabled = false;
+        btn.className = 'btn btn-amber-lg';
+        btn.innerHTML = '&#x1F4B0; 에스크로 예치하기';
+      } else {
+        btn.disabled = true;
+        btn.className = 'btn btn-disabled';
+        btn.style.width = '100%';
+        btn.style.padding = '16px';
+        btn.style.fontSize = '16px';
+        btn.innerHTML = '&#x1F512; 에스크로 예치하기';
+      }
+    }
+
+    // 디자이너 노트 토글 (3개 패널 순환)
+    var notesPanels = ['designer-note', 'func-spec', 'backend-spec'];
+    var notesIndex = -1;
+    function toggleNotes() {
+      // 현재 표시된 패널 찾기
+      var currentShown = -1;
+      for (var i = 0; i < notesPanels.length; i++) {
+        if (document.getElementById(notesPanels[i]).classList.contains('show')) {
+          currentShown = i;
+          break;
+        }
+      }
+      // 모두 닫기
+      for (var i = 0; i < notesPanels.length; i++) {
+        document.getElementById(notesPanels[i]).classList.remove('show');
+      }
+      // 다음 패널 열기 (없으면 첫 번째, 마지막이면 닫기)
+      if (currentShown === -1) {
+        document.getElementById(notesPanels[0]).classList.add('show');
+      } else if (currentShown < notesPanels.length - 1) {
+        document.getElementById(notesPanels[currentShown + 1]).classList.add('show');
+      }
+      // 마지막이면 모두 닫힌 상태 유지
+    }
+  </script>
+
   <script src="page-spec.js"></script>
   <link rel="stylesheet" href="../tooltip-spec.css">
   <script src="../tooltip-spec.js"></script>
