@@ -3,11 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>연구 생성 Step 1 - AI 연구 설계 - Wireframe</title>
+  <title>연구 생성 Step 1 - AI 인터뷰 - Wireframe</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: -apple-system, sans-serif; background: #f5f5f5; }
-    .layout { display: flex; min-height: 100vh; }
+
+    /* ===== 레이아웃 ===== */
+    .layout { display: flex; height: 100vh; width: 100%; }
+
+    /* ① 사이드바 */
     .sidebar {
       width: 240px;
       background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
@@ -17,19 +21,14 @@
       flex-shrink: 0;
     }
     .logo {
-      padding: 20px 24px;
-      font-size: 20px;
-      font-weight: 700;
+      padding: 20px 24px; font-size: 20px; font-weight: 700;
       border-bottom: 1px solid rgba(255,255,255,0.1);
-      display: flex;
-      align-items: center;
-      gap: 10px;
+      display: flex; align-items: center; gap: 10px;
     }
     .logo-icon {
       width: 32px; height: 32px;
       background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-      border-radius: 8px;
-      display: flex; align-items: center; justify-content: center;
+      border-radius: 8px; display: flex; align-items: center; justify-content: center;
       font-size: 16px; font-weight: bold;
     }
     .nav-section { padding: 16px 12px; border-bottom: 1px solid rgba(255,255,255,0.05); }
@@ -42,56 +41,6 @@
     .nav-item:hover { background: rgba(255,255,255,0.05); color: #e2e8f0; }
     .nav-item.active { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
     .nav-item .icon { width: 20px; text-align: center; }
-
-    /* Step Bar */
-    .step-bar {
-      background: #1e293b;
-      border-bottom: 1px solid #334155;
-      padding: 10px 0;
-      flex-shrink: 0;
-    }
-    .step-bar-inner {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0;
-      max-width: 600px;
-      margin: 0 auto;
-    }
-    .sb-step {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-    }
-    .sb-num {
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 11px;
-      font-weight: 600;
-    }
-    .sb-step.done .sb-num { background: #22c55e; color: white; }
-    .sb-step.active .sb-num { background: #8b5cf6; color: white; }
-    .sb-step.pending .sb-num { background: #334155; color: #64748b; }
-    .sb-label {
-      font-size: 10px;
-      color: #64748b;
-      white-space: nowrap;
-    }
-    .sb-step.active .sb-label { color: #e2e8f0; }
-    .sb-line {
-      width: 40px;
-      height: 2px;
-      background: #334155;
-      margin: 0 4px;
-      margin-bottom: 18px;
-    }
-    .sb-line.done { background: #22c55e; }
-
     .sidebar-footer {
       margin-top: auto; padding: 16px; border-top: 1px solid rgba(255,255,255,0.05);
     }
@@ -105,50 +54,160 @@
     .user-name { font-size: 14px; color: #e2e8f0; }
     .user-org { font-size: 12px; color: #64748b; }
 
-    .main { flex: 1; padding: 32px; max-width: 900px; margin: 0 auto; }
-    .main h1 { font-size: 28px; margin-bottom: 8px; }
-    .main .subtitle { color: #6b7280; margin-bottom: 32px; }
+    /* Step Bar */
+    .step-bar {
+      background: #1e293b; border-bottom: 1px solid #334155;
+      padding: 10px 0; flex-shrink: 0;
+    }
+    .step-bar-inner {
+      display: flex; align-items: center; justify-content: center;
+      gap: 0; max-width: 600px; margin: 0 auto;
+    }
+    .sb-step { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+    .sb-num {
+      width: 24px; height: 24px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 600;
+    }
+    .sb-step.done .sb-num { background: #22c55e; color: white; }
+    .sb-step.active .sb-num { background: #8b5cf6; color: white; }
+    .sb-step.pending .sb-num { background: #334155; color: #64748b; }
+    .sb-label { font-size: 10px; color: #64748b; white-space: nowrap; }
+    .sb-step.active .sb-label { color: #e2e8f0; }
+    .sb-line { width: 40px; height: 2px; background: #334155; margin: 0 4px; margin-bottom: 18px; }
+    .sb-line.done { background: #22c55e; }
 
+    /* ===== 워크스페이스 (채팅 + 레포트) ===== */
+    .workspace-wrap { flex: 1; display: flex; flex-direction: column; }
+    .workspace { flex: 1; display: flex; overflow: hidden; }
 
-    /* AI 설계 카드 */
-    .ai-design-card { background: white; border: 1px solid #e5e7eb; border-radius: 16px; padding: 48px; text-align: center; }
-    .ai-icon { width: 80px; height: 80px; background: linear-gradient(135deg, #8b5cf6, #6366f1); border-radius: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px; font-size: 40px; }
-    .ai-design-card h2 { font-size: 24px; margin-bottom: 12px; color: #1f2937; }
-    .ai-design-card .desc { color: #6b7280; margin-bottom: 32px; font-size: 16px; }
+    /* ② 채팅 패널 */
+    .chat-panel {
+      flex: 1; display: flex; flex-direction: column;
+      background: #fafafa; border-right: 1px solid #e5e7eb;
+    }
+    .chat-header {
+      padding: 16px 24px; border-bottom: 1px solid #e5e7eb;
+      background: white;
+    }
+    .chat-header h2 { font-size: 16px; color: #1f2937; }
+    .chat-header p { font-size: 12px; color: #6b7280; margin-top: 4px; }
+    .chat-messages {
+      flex: 1; overflow-y: auto; padding: 24px;
+      display: flex; flex-direction: column; gap: 16px;
+    }
+    .msg { max-width: 85%; }
+    .msg.ai {
+      align-self: flex-start;
+      background: white; border: 1px solid #e5e7eb; border-radius: 12px 12px 12px 2px;
+      padding: 14px 18px;
+    }
+    .msg.user {
+      align-self: flex-end;
+      background: #8b5cf6; color: white; border-radius: 12px 12px 2px 12px;
+      padding: 14px 18px;
+    }
+    .msg .sender { font-size: 11px; font-weight: 600; color: #6b7280; margin-bottom: 6px; }
+    .msg.user .sender { color: rgba(255,255,255,0.7); }
+    .msg .text { font-size: 14px; line-height: 1.6; }
+    .msg.user .text { color: white; }
+    .msg .follow-up { margin-top: 12px; padding-top: 12px; border-top: 1px solid #f3f4f6; }
+    .msg .question { font-size: 13px; color: #7c3aed; font-weight: 500; margin-bottom: 4px; }
+    .msg .hint { font-size: 12px; color: #9ca3af; }
 
-    .ai-input-area { max-width: 700px; margin: 0 auto; }
-    .ai-textarea { width: 100%; height: 160px; border: 2px solid #e5e7eb; border-radius: 12px; padding: 20px; font-size: 16px; resize: none; font-family: inherit; line-height: 1.6; }
-    .ai-textarea:focus { outline: none; border-color: #8b5cf6; }
-    .ai-textarea::placeholder { color: #9ca3af; }
+    /* 예시 칩 */
+    .suggestion-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    .chip {
+      padding: 8px 14px; background: #f5f3ff; border: 1px solid #ddd6fe;
+      border-radius: 20px; font-size: 12px; color: #7c3aed; cursor: pointer;
+    }
+    .chip:hover { background: #ede9fe; border-color: #8b5cf6; }
 
-    .ai-generate-btn { width: 100%; padding: 18px 32px; background: linear-gradient(135deg, #8b5cf6, #6366f1); border: none; border-radius: 12px; color: white; font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 20px; display: flex; align-items: center; justify-content: center; gap: 10px; }
-    .ai-generate-btn:hover { background: linear-gradient(135deg, #7c3aed, #4f46e5); }
+    /* 진행 요약 바 */
+    .progress-bar-wrap {
+      padding: 12px 24px; background: white; border-top: 1px solid #e5e7eb;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    .progress-items { display: flex; gap: 16px; flex-wrap: wrap; }
+    .progress-item { display: flex; align-items: center; gap: 6px; font-size: 12px; }
+    .progress-item .dot { width: 8px; height: 8px; border-radius: 50%; }
+    .progress-item .dot.filled { background: #22c55e; }
+    .progress-item .dot.empty { background: #e5e7eb; }
+    .progress-item .label { color: #6b7280; }
+    .progress-item .label.filled { color: #1f2937; font-weight: 500; }
 
-    .or-divider { display: flex; align-items: center; gap: 16px; margin: 24px 0; color: #9ca3af; font-size: 14px; }
-    .or-divider::before, .or-divider::after { content: ''; flex: 1; height: 1px; background: #e5e7eb; }
+    /* 입력 영역 */
+    .chat-input {
+      padding: 16px 24px; background: white; border-top: 1px solid #e5e7eb;
+      display: flex; gap: 12px; align-items: flex-end;
+    }
+    .chat-input textarea {
+      flex: 1; border: 1px solid #e5e7eb; border-radius: 12px;
+      padding: 12px 16px; font-size: 14px; resize: none; height: 48px;
+      font-family: inherit; line-height: 1.5;
+    }
+    .chat-input textarea:focus { outline: none; border-color: #8b5cf6; }
+    .chat-input button {
+      width: 48px; height: 48px; border-radius: 12px; border: none;
+      background: linear-gradient(135deg, #8b5cf6, #6366f1);
+      color: white; font-size: 20px; cursor: pointer; flex-shrink: 0;
+    }
+    .chat-input button:hover { background: linear-gradient(135deg, #7c3aed, #4f46e5); }
 
-    .manual-link { color: #8b5cf6; font-size: 14px; text-decoration: none; }
-    .manual-link:hover { text-decoration: underline; }
+    /* ③ 연구 레포트 패널 */
+    .report-panel {
+      width: 400px; flex-shrink: 0; background: white;
+      border-left: 1px solid #e5e7eb; display: flex; flex-direction: column; overflow-y: auto;
+    }
+    .report-header {
+      padding: 16px 20px; border-bottom: 1px solid #e5e7eb;
+      background: #fafbfc; position: sticky; top: 0; z-index: 1;
+    }
+    .report-header h3 { font-size: 14px; color: #1f2937; }
+    .report-header p { font-size: 11px; color: #6b7280; margin-top: 2px; }
+    .report-body { padding: 20px; }
 
-    /* 예시 프롬프트 */
-    .example-prompts { margin-top: 32px; text-align: left; }
-    .example-prompts h4 { font-size: 14px; color: #6b7280; margin-bottom: 12px; }
-    .prompt-chips { display: flex; flex-wrap: wrap; gap: 8px; }
-    .prompt-chip { padding: 10px 16px; background: #f3f4f6; border: 1px solid #e5e7eb; border-radius: 20px; font-size: 13px; color: #374151; cursor: pointer; }
-    .prompt-chip:hover { background: #ede9fe; border-color: #8b5cf6; color: #7c3aed; }
+    .report-section { margin-bottom: 24px; }
+    .report-section-title {
+      font-size: 13px; font-weight: 600; color: #1f2937;
+      margin-bottom: 12px; display: flex; align-items: center; gap: 6px;
+    }
+    .trend-card {
+      background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px;
+      padding: 14px; margin-bottom: 10px;
+    }
+    .trend-card .title { font-size: 13px; font-weight: 600; color: #1e40af; margin-bottom: 4px; }
+    .trend-card .authors { font-size: 11px; color: #6b7280; }
+    .trend-card .journal { font-size: 11px; color: #8b5cf6; }
+    .trend-card .doi { font-size: 10px; color: #9ca3af; margin-top: 4px; }
+    .trend-card .snippet { font-size: 12px; color: #374151; margin-top: 8px; line-height: 1.5; }
 
-    /* 스텝 네비게이션 */
-    .step-nav { display: flex; gap: 10px; margin-top: 32px; flex-wrap: wrap; }
-    .step-nav a { padding: 8px 16px; background: #eee; border-radius: 6px; text-decoration: none; color: #333; font-size: 14px; }
+    .stat-row { display: flex; gap: 10px; margin-bottom: 12px; }
+    .stat-box {
+      flex: 1; background: #f8fafc; border: 1px solid #e2e8f0;
+      border-radius: 10px; padding: 12px; text-align: center;
+    }
+    .stat-box .num { font-size: 24px; font-weight: 700; color: #1e40af; }
+    .stat-box .desc { font-size: 10px; color: #6b7280; margin-top: 4px; }
 
-    /* 디자이너 노트 */
-    .designer-note { background: linear-gradient(135deg, #fdf4ff, #fae8ff); border: 2px solid #d946ef; border-radius: 12px; padding: 20px; margin-top: 32px; }
-    .designer-note h3 { color: #a21caf; margin-bottom: 12px; font-size: 14px; }
-    .designer-note .content { font-size: 12px; color: #374151; line-height: 1.7; }
+    .keyword-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+    .keyword-tag {
+      padding: 4px 10px; background: #eff6ff; border: 1px solid #bfdbfe;
+      border-radius: 12px; font-size: 11px; color: #1d4ed8;
+    }
+
+    .empty-report {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      height: 300px; color: #9ca3af; text-align: center;
+    }
+    .empty-report .icon { font-size: 48px; margin-bottom: 16px; opacity: 0.5; }
+    .empty-report .text { font-size: 14px; }
+    .empty-report .hint { font-size: 12px; margin-top: 8px; }
   </style>
 </head>
 <body>
   <div class="layout">
+    <!-- ① 사이드바 -->
     <div class="sidebar">
       <div class="logo">
         <div class="logo-icon">U</div>
@@ -168,26 +227,49 @@
         </a>
       </div>
 
-      <!-- 임시저장 목록 -->
-      <div style="flex:1; overflow-y:auto; padding:0 16px; margin-top:16px; border-top:1px solid #1e293b; padding-top:16px;">
-        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
-          <span style="font-size:11px; font-weight:600; color:#64748b; text-transform:uppercase; letter-spacing:0.5px;">임시저장</span>
-          <span style="background:#334155; color:#94a3b8; font-size:10px; padding:2px 6px; border-radius:8px;">2</span>
+      <!-- 내 연구 (접힌 상태) -->
+      <div class="nav-section" style="flex:1; overflow-y:auto;">
+        <div class="nav-section-title" style="display:flex; align-items:center; justify-content:space-between;">
+          내 연구
+          <span style="background:#3b82f6; color:white; font-size:11px; padding:2px 8px; border-radius:10px; font-weight:600;">3</span>
         </div>
-        <a href="#" style="display:flex; align-items:center; gap:10px; padding:8px 10px; border-radius:8px; text-decoration:none; margin-bottom:4px; background:rgba(251,191,36,0.08);" onmouseover="this.style.background='rgba(251,191,36,0.12)'" onmouseout="this.style.background='rgba(251,191,36,0.08)'">
-          <span style="width:6px; height:6px; background:#fbbf24; border-radius:50; flex-shrink:0;"></span>
-          <div style="flex:1; min-width:0;">
-            <div style="font-size:12px; color:#e2e8f0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">소아 비만 개입 연구</div>
-            <div style="font-size:10px; color:#64748b; margin-top:2px;">Step 3 · 2일 전</div>
+        <div style="display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:8px; cursor:pointer; margin-bottom:4px;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
+          <span style="font-size:14px;">📁</span>
+          <span style="flex:1; font-size:13px; color:#94a3b8;">당뇨병 복약 순응도</span>
+          <span style="width:8px; height:8px; background:#22c55e; border-radius:50%;"></span>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:8px; cursor:pointer; margin-bottom:4px;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
+          <span style="font-size:14px;">📁</span>
+          <span style="flex:1; font-size:13px; color:#94a3b8;">노인 수면 패턴</span>
+          <span style="width:8px; height:8px; background:#3b82f6; border-radius:50%;"></span>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:8px; cursor:pointer;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
+          <span style="font-size:14px;">📄</span>
+          <span style="flex:1; font-size:13px; color:#94a3b8;">ADHD 생활습관</span>
+          <span style="width:8px; height:8px; background:#64748b; border-radius:50%;"></span>
+        </div>
+
+        <!-- 임시저장 -->
+        <div style="margin-top:16px; padding-top:12px; border-top:1px solid #1e293b;">
+          <div style="display:flex; align-items:center; justify-content:space-between; padding:0 12px; margin-bottom:8px;">
+            <span style="font-size:11px; font-weight:600; color:#64748b; text-transform:uppercase; letter-spacing:0.5px;">임시저장</span>
+            <span style="background:#334155; color:#94a3b8; font-size:10px; padding:2px 6px; border-radius:8px;">2</span>
           </div>
-        </a>
-        <a href="#" style="display:flex; align-items:center; gap:10px; padding:8px 10px; border-radius:8px; text-decoration:none; margin-bottom:4px;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
-          <span style="width:6px; height:6px; background:#64748b; border-radius:50%; flex-shrink:0;"></span>
-          <div style="flex:1; min-width:0;">
-            <div style="font-size:12px; color:#94a3b8; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">직장인 스트레스 코르티솔</div>
-            <div style="font-size:10px; color:#64748b; margin-top:2px;">Step 1 · 5일 전</div>
-          </div>
-        </a>
+          <a href="#" style="display:flex; align-items:center; gap:10px; padding:8px 12px; border-radius:8px; text-decoration:none; margin-bottom:4px; background:rgba(251,191,36,0.08);">
+            <span style="width:6px; height:6px; background:#fbbf24; border-radius:50%; flex-shrink:0;"></span>
+            <div style="flex:1; min-width:0;">
+              <div style="font-size:12px; color:#e2e8f0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">소아 비만 개입 연구</div>
+              <div style="font-size:10px; color:#64748b; margin-top:2px;">Step 3 · 2일 전</div>
+            </div>
+          </a>
+          <a href="#" style="display:flex; align-items:center; gap:10px; padding:8px 12px; border-radius:8px; text-decoration:none;">
+            <span style="width:6px; height:6px; background:#64748b; border-radius:50%; flex-shrink:0;"></span>
+            <div style="flex:1; min-width:0;">
+              <div style="font-size:12px; color:#94a3b8; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">직장인 스트레스 코르티솔</div>
+              <div style="font-size:10px; color:#64748b; margin-top:2px;">Step 1 · 5일 전</div>
+            </div>
+          </a>
+        </div>
       </div>
 
       <div class="sidebar-footer">
@@ -201,10 +283,8 @@
       </div>
     </div>
 
-    <div class="main">
-      <h1>새 연구 프로젝트</h1>
-      <p class="subtitle">AI가 연구 설계를 도와드립니다</p>
-
+    <!-- 워크스페이스 -->
+    <div class="workspace-wrap">
       <!-- Step Bar -->
       <div class="step-bar">
         <div class="step-bar-inner">
@@ -222,112 +302,185 @@
         </div>
       </div>
 
-      <!-- AI 연구 설계 카드 -->
-      <div class="ai-design-card">
-        <div class="ai-icon">🤖</div>
-        <h2>어떤 연구를 하고 싶으신가요?</h2>
-        <p class="desc">연구 목적, 대상, 알고 싶은 것을 자유롭게 설명해주세요.<br>AI가 최적의 연구 설계를 제안해드립니다.</p>
+      <div class="workspace">
+        <!-- ② AI 채팅 패널 -->
+        <div class="chat-panel">
+          <div class="chat-header">
+            <h2>AI 연구 인터뷰</h2>
+            <p>연구 아이디어를 말씀해주세요. AI가 빠진 부분을 질문하며 함께 설계합니다.</p>
+          </div>
 
-        <div class="ai-input-area">
-          <textarea class="ai-textarea" placeholder="예: 제2형 당뇨 환자들에서 식단이 혈당 변동에 어떤 영향을 주는지 알고 싶습니다. 특히 저탄수화물 식단과 일반 식단의 차이를 비교하고 싶어요."></textarea>
+          <div class="chat-messages">
+            <!-- AI 첫 인사 -->
+            <div class="msg ai">
+              <div class="sender">AI 연구 어시스턴트</div>
+              <div class="text">
+                안녕하세요! 새 연구 프로젝트를 시작하시는군요.<br><br>
+                어떤 연구를 하고 싶으신지 자유롭게 말씀해주세요. 주제, 궁금한 점, 가설 등 무엇이든 좋습니다.
+              </div>
+              <div class="suggestion-chips">
+                <div class="chip">식단이 혈당에 미치는 영향</div>
+                <div class="chip">수면과 혈압의 관계</div>
+                <div class="chip">앱 사용 경험 UX 리서치</div>
+                <div class="chip">운동 습관과 체중</div>
+              </div>
+            </div>
 
-          <a href="create-step2.html" class="ai-generate-btn">
-            <span>⚡</span>
-            AI 연구 설계 생성
-          </a>
+            <!-- 사용자 입력 -->
+            <div class="msg user">
+              <div class="sender">김연구</div>
+              <div class="text">제2형 당뇨 환자들한테 저탄수화물 식단이 혈당 변동에 어떤 영향을 주는지 알고 싶어요. 특히 CGM으로 측정해서 일반 식단이랑 비교하고 싶습니다.</div>
+            </div>
 
-          <div class="or-divider">또는</div>
-          <a href="create-step2.html" class="manual-link">직접 설계하기 →</a>
+            <!-- AI 분석 + 후속 질문 -->
+            <div class="msg ai">
+              <div class="sender">AI 연구 어시스턴트</div>
+              <div class="text">
+                좋은 주제입니다! 정리하면:<br><br>
+                <strong>파악된 내용:</strong><br>
+                · 대상: 제2형 당뇨 환자<br>
+                · 개입: 저탄수화물 식단 vs 일반 식단<br>
+                · 측정: CGM 기반 혈당 변동성<br>
+                · 방향: 비교 연구 (인과관계 검증)
+              </div>
+              <div class="follow-up">
+                <div class="question">몇 가지 더 여쭤볼게요:</div>
+                <div class="text" style="margin-top:8px;">
+                  1. <strong>대상자 연령대</strong>는 어떻게 생각하세요? (예: 30-65세?)<br>
+                  2. <strong>연구 기간</strong>은 어느 정도를 생각하세요?<br>
+                  3. 저탄수화물의 <strong>구체적 기준</strong>이 있나요? (예: 일 탄수화물 50g 이하?)
+                </div>
+              </div>
+            </div>
 
-          <!-- 예시 프롬프트 -->
-          <div class="example-prompts">
-            <h4>예시 연구 주제</h4>
-            <div class="prompt-chips">
-              <div class="prompt-chip">복약 순응도가 혈당 관리에 미치는 영향</div>
-              <div class="prompt-chip">수면 패턴과 혈압 변동 상관관계</div>
-              <div class="prompt-chip">운동 습관이 체중 감량에 미치는 효과</div>
-              <div class="prompt-chip">식단 기록과 혈당 변화 추적</div>
+            <!-- 사용자 답변 -->
+            <div class="msg user">
+              <div class="sender">김연구</div>
+              <div class="text">30-65세요. 기간은 8주 정도? 탄수화물은 하루 50g 이하로 하려고요. 한국인 식습관 고려해서 밥 중심 식단이랑 비교하고 싶어요.</div>
+            </div>
+
+            <!-- AI 추가 질문 -->
+            <div class="msg ai">
+              <div class="sender">AI 연구 어시스턴트</div>
+              <div class="text">
+                좋습니다. 더 구체화해볼게요:<br><br>
+                4. <strong>주요 결과지표</strong>로 MAGE(혈당 변동 폭)를 생각하시는 건가요? 아니면 HbA1c도 포함?<br>
+                5. <strong>참여자 수</strong>는 생각해보셨나요? 유사 연구 기준으로 군당 42-50명이 적절합니다.<br>
+                6. 참여자 <strong>무작위 배정</strong>(RCT)으로 하실 건가요?
+              </div>
+              <div class="hint" style="margin-top:8px; font-size:12px; color:#9ca3af;">
+                → 오른쪽 패널에서 관련 최신 연구들을 확인하실 수 있습니다
+              </div>
+            </div>
+          </div>
+
+          <!-- 진행 요약 -->
+          <div class="progress-bar-wrap">
+            <div class="progress-items">
+              <div class="progress-item"><div class="dot filled"></div><span class="label filled">주제</span></div>
+              <div class="progress-item"><div class="dot filled"></div><span class="label filled">대상</span></div>
+              <div class="progress-item"><div class="dot filled"></div><span class="label filled">개입</span></div>
+              <div class="progress-item"><div class="dot filled"></div><span class="label filled">기간</span></div>
+              <div class="progress-item"><div class="dot empty"></div><span class="label">결과지표</span></div>
+              <div class="progress-item"><div class="dot empty"></div><span class="label">방법론</span></div>
+              <div class="progress-item"><div class="dot empty"></div><span class="label">가설</span></div>
+            </div>
+          </div>
+
+          <!-- 입력 -->
+          <div class="chat-input">
+            <textarea placeholder="답변을 입력하세요..."></textarea>
+            <button>↑</button>
+          </div>
+        </div>
+
+        <!-- ③ 연구 레포트 패널 -->
+        <div class="report-panel">
+          <div class="report-header">
+            <h3>연구 레포트</h3>
+            <p>실시간 RAG 검색 | PubMed + 학술DB</p>
+          </div>
+
+          <div class="report-body">
+            <!-- 연구 동향 -->
+            <div class="report-section">
+              <div class="report-section-title">📊 연구 동향</div>
+              <div class="stat-row">
+                <div class="stat-box">
+                  <div class="num">41</div>
+                  <div class="desc">관련 RCT<br>(2023-2025)</div>
+                </div>
+                <div class="stat-box">
+                  <div class="num">62%</div>
+                  <div class="desc">RCT 비율<br>(vs 코호트 25%)</div>
+                </div>
+              </div>
+              <p style="font-size:12px; color:#374151; line-height:1.6; margin-bottom:12px;">
+                최근 3년간 저탄수화물 식단과 혈당 변동 관련 연구는 <strong>RCT 중심으로 전환</strong>되는 추세. CGM 기반 측정이 표준화되고 있으며, 특히 <strong>MAGE</strong>를 주요 지표로 사용하는 연구가 증가.
+              </p>
+            </div>
+
+            <!-- 최신 논문 -->
+            <div class="report-section">
+              <div class="report-section-title">📄 관련 논문</div>
+              <div class="trend-card">
+                <div class="title">Low-carbohydrate diet and glycemic variability in T2DM: A systematic review</div>
+                <div class="authors">Kim et al. 2025</div>
+                <div class="journal">Diabetes Care</div>
+                <div class="doi">DOI: 10.2337/dc25-0142</div>
+                <div class="snippet">8주간 저탄수화물 개입 후 MAGE가 평균 23% 감소. 한국인 대상 연구는 3건에 불과하여 추가 연구 필요.</div>
+              </div>
+              <div class="trend-card">
+                <div class="title">CGM-based outcomes in dietary intervention trials: A meta-analysis</div>
+                <div class="authors">Park & Lee 2024</div>
+                <div class="journal">J Clin Endocrinol Metab</div>
+                <div class="doi">DOI: 10.1210/jc.2024-0891</div>
+                <div class="snippet">CGM 기반 RCT에서 TIR(Time in Range)과 MAGE 모두 유의한 개선. 최소 6주 이상 개입 권장.</div>
+              </div>
+              <div class="trend-card">
+                <div class="title">Korean dietary patterns and blood glucose control in diabetes management</div>
+                <div class="authors">Choi et al. 2025</div>
+                <div class="journal">Nutrition Research</div>
+                <div class="doi">DOI: 10.1016/j.nutres.2025-03-018</div>
+                <div class="snippet">한국인 고탄수화물 식습관(밥 중심)에서 저탄수화물 전환 시 순응도 문제 보고. 단계적 감량 프로토콜 제안.</div>
+              </div>
+            </div>
+
+            <!-- 샘플사이즈 근거 -->
+            <div class="report-section">
+              <div class="report-section-title">🧮 샘플사이즈 근거</div>
+              <div class="stat-row">
+                <div class="stat-box">
+                  <div class="num">84</div>
+                  <div class="desc">최소 필요<br>(power=0.8)</div>
+                </div>
+                <div class="stat-box">
+                  <div class="num">100</div>
+                  <div class="desc">현재 목표<br>(탈락 고려)</div>
+                </div>
+              </div>
+              <p style="font-size:11px; color:#6b7280; line-height:1.5;">
+                유사 RCT 기준: 효과크기 d=0.6, 유의수준 0.05, 검정력 0.80 → 최소 n=84 (군당 42명). 20% 탈락률 고려 시 100명 적절.
+              </p>
+            </div>
+
+            <!-- 키워드 -->
+            <div class="report-section">
+              <div class="report-section-title">🔑 관련 키워드</div>
+              <div class="keyword-tags">
+                <div class="keyword-tag">low-carbohydrate diet</div>
+                <div class="keyword-tag">CGM</div>
+                <div class="keyword-tag">MAGE</div>
+                <div class="keyword-tag">T2DM</div>
+                <div class="keyword-tag">glycemic variability</div>
+                <div class="keyword-tag">RCT</div>
+                <div class="keyword-tag">Korean diet</div>
+              </div>
             </div>
           </div>
         </div>
       </div>
-
-      <!-- 스텝 네비게이션 -->
-      <div class="step-nav">
-        <a href="list.html">← 목록</a>
-        <a href="create-step2.html">Step 2 (연구 설계) →</a>
-        <a href="create-step3.html">Step 3 (데이터 수집) →</a>
-        <a href="create-step4.html">Step 4 (모집 설정) →</a>
-        <a href="create-step5.html">Step 5 (IRB 판정) →</a>
-        <a href="create-step6.html">Step 6 (에스크로) →</a>
-      </div>
-
-      <!-- 디자이너 노트 -->
-      <div class="designer-note">
-        <h3>📋 디자이너 노트: Step 1 - AI 연구 설계</h3>
-        <div class="content">
-          <strong>핵심 변화:</strong><br>
-          • 기존: 폼 하나하나 채워가는 방식<br>
-          • 신규: AI에게 자연어로 연구 목적 설명 → AI가 전체 설계 생성<br><br>
-
-          <strong>플로우:</strong><br>
-          1. 연구자가 텍스트로 연구 목적 입력<br>
-          2. "AI 연구 설계 생성" 클릭<br>
-          3. AI가 방법론/참여조건/데이터/AI도구 전체 설계<br>
-          4. Step 2에서 AI가 채운 값 확인/수정<br><br>
-
-          <strong>새로운 6단계:</strong><br>
-          1. AI 설계 (자연어 입력)<br>
-          2. 설계 확인 (방법론 + 기본정보 + 참여조건)<br>
-          3. 데이터 수집 (패시브/능동/바이오마커)<br>
-          4. AI 분석 도구 선택<br>
-          5. 예산 설정<br>
-          6. 에스크로 예치<br><br>
-
-          <strong>연구 방법론 옵션:</strong><br>
-          • 전향적 코호트, RCT, SMART, MRT, N-of-1, 횡단조사 등
-        </div>
-      </div>
-
-      <!-- 기능 명세 -->
-      <div style="background: linear-gradient(135deg, #ecfdf5, #d1fae5); border: 2px solid #10b981; border-radius: 12px; padding: 16px; margin-top: 12px;">
-        <h3 style="color: #047857; margin-bottom: 12px; font-size: 14px;">⚙️ 기능 명세</h3>
-        <div style="font-size: 12px; color: #374151; line-height: 1.8;">
-          <strong>핵심 기능:</strong><br>
-          • 자연어로 연구 목적 입력<br>
-          • AI 연구 설계 생성 요청<br>
-          • 예시 프롬프트 선택 기능<br>
-          • 수동 입력 옵션 (AI 없이 직접)<br><br>
-
-          <strong>AI 생성 결과물:</strong><br>
-          • 추천 연구 방법론<br>
-          • 참여자 조건 (연령, 질환, 데이터)<br>
-          • 수집 데이터 항목<br>
-          • 추천 AI 분석 도구
-        </div>
-      </div>
-
-      <!-- 백엔드 호출 -->
-      <div style="background: linear-gradient(135deg, #f5f3ff, #ede9fe); border: 2px solid #8b5cf6; border-radius: 12px; padding: 16px; margin-top: 12px;">
-        <h3 style="color: #6d28d9; margin-bottom: 12px; font-size: 14px;">🔗 백엔드 호출</h3>
-        <div style="font-size: 11px; font-family: 'SF Mono', Monaco, monospace; color: #374151; line-height: 1.8;">
-          <strong style="font-family: -apple-system, sans-serif;">AI 연구 설계 생성:</strong><br>
-          <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
-POST /api/v2/ai/research-design<br>
-{ "prompt": "당뇨 환자의 혈당 변동과 식단 패턴의 인과관계 분석" }<br>
-→ {<br>
-&nbsp;&nbsp;"methodology": "prospective_cohort",<br>
-&nbsp;&nbsp;"participants": { "age_min": 30, "conditions": ["diabetes_t2"] },<br>
-&nbsp;&nbsp;"data_collection": ["cgm", "meal_photo", "sleep"],<br>
-&nbsp;&nbsp;"ai_tools": ["causal_discovery", "shap"]<br>
-}
-          </code>
-        </div>
-      </div>
     </div>
   </div>
-  <script src="page-spec.js"></script>
-  <link rel="stylesheet" href="../tooltip-spec.css">
-  <script src="../tooltip-spec.js"></script>
 </body>
 </html>
