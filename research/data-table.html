@@ -514,6 +514,7 @@
         </div>
         <div class="top-bar-title">
           <h1>연구 데이터</h1>
+          <button class="toggle-notes" style="position:static; margin-left:auto; padding:6px 14px; font-size:12px;" onclick="document.querySelectorAll('.designer-notes').forEach(el => el.classList.toggle('show'))">📋 디자이너 노트</button>
         </div>
         <div class="top-bar-tabs">
           <a href="data-overview.html" class="top-bar-tab">개요</a>
@@ -991,9 +992,6 @@
       </div><!-- /.workspace -->
     </div><!-- /.workspace-wrap -->
   </div><!-- /.layout -->
-
-  <!-- 디자이너 노트 토글 -->
-  <button class="toggle-notes" onclick="document.querySelectorAll('.designer-notes').forEach(el => el.classList.toggle('show'))">📋 디자이너 노트</button>
 
   <!-- 디자이너 노트 -->
   <div class="designer-notes">
