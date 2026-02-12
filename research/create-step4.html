@@ -479,75 +479,141 @@
               <h3>👥 사전 초대자 지정</h3>
               <span style="font-size: 12px; color: #8b5cf6; font-weight: 500;">핵심 기능</span>
             </div>
-            <div class="card-body">
-              <p style="font-size: 13px; color: #6b7280; margin-bottom: 16px;">UniQdata에 가입된 사용자 중 조건에 맞는 참여자를 사전 초대합니다</p>
+            <div class="card-body" style="padding: 0;">
+              <div style="display: flex; min-height: 420px;">
 
-              <!-- 검색바 -->
-              <div class="search-bar">
-                <input type="text" placeholder="사용자 검색 (닉네임, 건강 태그, 관심 분야)">
-                <button>검색</button>
-              </div>
+                <!-- 왼쪽: 초대 리스트 -->
+                <div style="flex: 1; border-right: 1px solid #e5e7eb; padding: 20px; display: flex; flex-direction: column;">
+                  <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                    <div style="font-size: 14px; font-weight: 600; color: #1f2937;">초대 리스트</div>
+                    <span style="font-size: 12px; color: #8b5cf6; font-weight: 600;">4명 선택됨</span>
+                  </div>
 
-              <!-- 필터 칩 -->
-              <div class="filter-chips">
-                <span class="filter-chip">전체</span>
-                <span class="filter-chip active">당뇨 (T2DM)</span>
-                <span class="filter-chip">고혈압</span>
-                <span class="filter-chip">심장질환</span>
-                <span class="filter-chip">비만</span>
-              </div>
-
-              <!-- 초대자 리스트 -->
-              <div class="invitee-list">
-                <div class="invitee-item">
-                  <div class="invitee-info">
-                    <div class="invitee-avatar">박</div>
-                    <div class="invitee-details">
-                      <div class="name">박○○ (56세/F)</div>
-                      <div class="meta">T2DM, CGM 사용 중</div>
+                  <div class="invitee-list" style="flex: 1; overflow-y: auto;">
+                    <div class="invitee-item">
+                      <div class="invitee-info">
+                        <div class="invitee-avatar">박</div>
+                        <div class="invitee-details">
+                          <div class="name">박○○ (56세/F)</div>
+                          <div class="meta">T2DM, CGM 사용 중</div>
+                        </div>
+                      </div>
+                      <button class="invitee-remove">✕</button>
+                    </div>
+                    <div class="invitee-item">
+                      <div class="invitee-info">
+                        <div class="invitee-avatar">이</div>
+                        <div class="invitee-details">
+                          <div class="name">이○○ (62세/M)</div>
+                          <div class="meta">T2DM, 복약 관리 중</div>
+                        </div>
+                      </div>
+                      <button class="invitee-remove">✕</button>
+                    </div>
+                    <div class="invitee-item">
+                      <div class="invitee-info">
+                        <div class="invitee-avatar">최</div>
+                        <div class="invitee-details">
+                          <div class="name">최○○ (48세/F)</div>
+                          <div class="meta">T2DM, 인슐린 펌프</div>
+                        </div>
+                      </div>
+                      <button class="invitee-remove">✕</button>
+                    </div>
+                    <div class="invitee-item">
+                      <div class="invitee-info">
+                        <div class="invitee-avatar">정</div>
+                        <div class="invitee-details">
+                          <div class="name">정○○ (55세/M)</div>
+                          <div class="meta">T2DM + 고혈압</div>
+                        </div>
+                      </div>
+                      <button class="invitee-remove">✕</button>
                     </div>
                   </div>
-                  <button class="invitee-remove">제거</button>
-                </div>
-                <div class="invitee-item">
-                  <div class="invitee-info">
-                    <div class="invitee-avatar">이</div>
-                    <div class="invitee-details">
-                      <div class="name">이○○ (62세/M)</div>
-                      <div class="meta">T2DM, 복약 관리 중</div>
-                    </div>
-                  </div>
-                  <button class="invitee-remove">제거</button>
-                </div>
-                <div class="invitee-item">
-                  <div class="invitee-info">
-                    <div class="invitee-avatar">최</div>
-                    <div class="invitee-details">
-                      <div class="name">최○○ (48세/F)</div>
-                      <div class="meta">T2DM, 인슐린 펌프</div>
-                    </div>
-                  </div>
-                  <button class="invitee-remove">제거</button>
-                </div>
-                <div class="invitee-item">
-                  <div class="invitee-info">
-                    <div class="invitee-avatar">정</div>
-                    <div class="invitee-details">
-                      <div class="name">정○○ (55세/M)</div>
-                      <div class="meta">T2DM + 고혈압</div>
-                    </div>
-                  </div>
-                  <button class="invitee-remove">제거</button>
-                </div>
-              </div>
 
-              <!-- 추가 버튼 -->
-              <button class="add-btn">+ 초대자 추가</button>
+                  <!-- 카운터 -->
+                  <div class="invitee-counter" style="margin-top: 12px;">
+                    <span class="text">사전 초대자: 4명 / 목표: 100명</span>
+                    <span class="progress">4%</span>
+                  </div>
+                </div>
 
-              <!-- 카운터 -->
-              <div class="invitee-counter">
-                <span class="text">사전 초대자: 4명 / 목표: 100명</span>
-                <span class="progress">4%</span>
+                <!-- 오른쪽: 사용자 검색 -->
+                <div style="flex: 1; padding: 20px; background: #f9fafb; display: flex; flex-direction: column;">
+                  <div style="font-size: 14px; font-weight: 600; color: #1f2937; margin-bottom: 12px;">UniQdata 사용자 검색</div>
+
+                  <!-- 검색바 -->
+                  <div class="search-bar" style="margin-bottom: 12px;">
+                    <input type="text" placeholder="닉네임, 건강 태그, 관심 분야로 검색">
+                    <button>검색</button>
+                  </div>
+
+                  <!-- 필터 칩 -->
+                  <div class="filter-chips" style="margin-bottom: 16px;">
+                    <span class="filter-chip">전체</span>
+                    <span class="filter-chip active">당뇨 (T2DM)</span>
+                    <span class="filter-chip">고혈압</span>
+                    <span class="filter-chip">심장질환</span>
+                    <span class="filter-chip">비만</span>
+                  </div>
+
+                  <!-- 검색 결과 -->
+                  <div style="font-size: 12px; color: #6b7280; margin-bottom: 8px;">검색 결과 — <strong>T2DM</strong> 태그 사용자 1,200명 중</div>
+                  <div style="flex: 1; overflow-y: auto;">
+                    <div class="invitee-item" style="background: white; border: 1px solid #e5e7eb;">
+                      <div class="invitee-info">
+                        <div class="invitee-avatar" style="background: linear-gradient(135deg, #e0e7ff, #c7d2fe); color: #4338ca;">김</div>
+                        <div class="invitee-details">
+                          <div class="name">김○○ (51세/M)</div>
+                          <div class="meta">T2DM, 메트포르민 복용 중, CGM 미사용</div>
+                        </div>
+                      </div>
+                      <button style="padding: 4px 12px; border-radius: 6px; border: 1px solid #8b5cf6; background: white; color: #7c3aed; font-size: 12px; cursor: pointer; font-weight: 500;">+ 초대</button>
+                    </div>
+                    <div class="invitee-item" style="background: white; border: 1px solid #e5e7eb;">
+                      <div class="invitee-info">
+                        <div class="invitee-avatar" style="background: linear-gradient(135deg, #e0e7ff, #c7d2fe); color: #4338ca;">한</div>
+                        <div class="invitee-details">
+                          <div class="name">한○○ (63세/F)</div>
+                          <div class="meta">T2DM + 고혈압, 인슐린 주사</div>
+                        </div>
+                      </div>
+                      <button style="padding: 4px 12px; border-radius: 6px; border: 1px solid #8b5cf6; background: white; color: #7c3aed; font-size: 12px; cursor: pointer; font-weight: 500;">+ 초대</button>
+                    </div>
+                    <div class="invitee-item" style="background: white; border: 1px solid #e5e7eb;">
+                      <div class="invitee-info">
+                        <div class="invitee-avatar" style="background: linear-gradient(135deg, #e0e7ff, #c7d2fe); color: #4338ca;">윤</div>
+                        <div class="invitee-details">
+                          <div class="name">윤○○ (45세/F)</div>
+                          <div class="meta">T2DM, 식이요법, 활동량 높음</div>
+                        </div>
+                      </div>
+                      <button style="padding: 4px 12px; border-radius: 6px; border: 1px solid #8b5cf6; background: white; color: #7c3aed; font-size: 12px; cursor: pointer; font-weight: 500;">+ 초대</button>
+                    </div>
+                    <div class="invitee-item" style="background: white; border: 1px solid #e5e7eb;">
+                      <div class="invitee-info">
+                        <div class="invitee-avatar" style="background: linear-gradient(135deg, #e0e7ff, #c7d2fe); color: #4338ca;">송</div>
+                        <div class="invitee-details">
+                          <div class="name">송○○ (58세/M)</div>
+                          <div class="meta">T2DM, CGM 사용, 운동 습관</div>
+                        </div>
+                      </div>
+                      <button style="padding: 4px 12px; border-radius: 6px; border: 1px solid #8b5cf6; background: white; color: #7c3aed; font-size: 12px; cursor: pointer; font-weight: 500;">+ 초대</button>
+                    </div>
+                    <div class="invitee-item" style="background: #f3f0ff; border: 1px solid #c4b5fd; opacity: 0.6;">
+                      <div class="invitee-info">
+                        <div class="invitee-avatar" style="background: linear-gradient(135deg, #e0e7ff, #c7d2fe); color: #4338ca;">정</div>
+                        <div class="invitee-details">
+                          <div class="name">정○○ (55세/M)</div>
+                          <div class="meta">T2DM + 고혈압 — 이미 초대됨</div>
+                        </div>
+                      </div>
+                      <span style="font-size: 11px; color: #7c3aed; font-weight: 500;">초대됨 ✓</span>
+                    </div>
+                  </div>
+                </div>
+
               </div>
             </div>
           </div>
@@ -596,27 +662,39 @@
               <h3>⚙️ 모집 설정</h3>
             </div>
             <div class="card-body">
-              <!-- 모집 기간 -->
+              <!-- 목표 인원 -->
               <div class="setting-row">
                 <div class="setting-left">
-                  <div class="title">모집 기간</div>
-                  <div class="desc">참가자 모집을 진행할 기간</div>
+                  <div class="title">목표 인원</div>
+                  <div class="desc">선착순 모집 — 도달 시 자동 마감 후 연구 일괄 시작</div>
                 </div>
                 <div class="setting-right">
-                  <input type="number" class="setting-input" value="14">
-                  <span class="setting-unit">일</span>
+                  <input type="number" class="setting-input" value="100">
+                  <span class="setting-unit">명</span>
                 </div>
               </div>
 
-              <!-- 최소 참여자 -->
+              <!-- 최소 시작 인원 -->
               <div class="setting-row">
                 <div class="setting-left">
-                  <div class="title">최소 참여자</div>
-                  <div class="desc">이하이면 연구 자동 취소 + 에스크로 환불</div>
+                  <div class="title">최소 시작 인원</div>
+                  <div class="desc">이 수 이상이면 연구자가 수동으로 시작 가능</div>
                 </div>
                 <div class="setting-right">
                   <input type="number" class="setting-input" value="50">
                   <span class="setting-unit">명</span>
+                </div>
+              </div>
+
+              <!-- 초대 수락 대기 기한 -->
+              <div class="setting-row">
+                <div class="setting-left">
+                  <div class="title">초대 수락 대기</div>
+                  <div class="desc">기한 내 미수락 시 초대 자동 만료 → 공개 모집으로 전환</div>
+                </div>
+                <div class="setting-right">
+                  <input type="number" class="setting-input" value="3">
+                  <span class="setting-unit">일</span>
                 </div>
               </div>
 
@@ -740,7 +818,7 @@
               <div class="value">당뇨 복약 순응도 연구 — 모집 설정 중</div>
               <div class="chat-context-chips">
                 <span class="chat-context-chip">RCT</span>
-                <span class="chat-context-chip">목표 100명</span>
+                <span class="chat-context-chip">목표 100명 (선착순)</span>
                 <span class="chat-context-chip">사전초대 40%</span>
                 <span class="chat-context-chip">공개 60%</span>
               </div>
@@ -755,20 +833,20 @@
 
               <div class="msg user">
                 <div class="sender">김연구</div>
-                모집 기간 14일이면 충분해?
+                100명 모으는데 얼마나 걸릴까?
               </div>
 
               <div class="msg ai">
                 <div class="sender">AI 어시스턴트</div>
-                유사 연구(T2DM, 100명 규모)의 평균 모집 완료 기간은 <strong>21일</strong>입니다. 14일은 다소 빡빡한 편이지만, 사전 초대자 비율이 40%이므로 초기 등록 속도가 빠를 수 있습니다.<br><br>
-                <strong>권장: 21일</strong>로 설정하되, 조기 완료 시 자동 마감되도록 하면 안전합니다.
+                유사 연구(T2DM, 100명 규모) 기준 평균 <strong>2~3주</strong>면 선착순 마감됩니다. 사전 초대 40명이 먼저 등록되면 나머지 60명은 공개 모집으로 빠르게 채워질 겁니다.<br><br>
+                목표 인원 도달 즉시 <strong>자동 마감 → 일괄 시작</strong>되니, 별도 기간 설정 없이 진행하시면 됩니다.
               </div>
             </div>
 
             <div class="chat-quick">
               <div class="label">빠른 액션</div>
               <div class="chat-quick-chips">
-                <span class="chat-quick-chip">기간 21일로 변경</span>
+                <span class="chat-quick-chip">목표 인원 조정</span>
                 <span class="chat-quick-chip">초대자 추가</span>
                 <span class="chat-quick-chip">동의서 미리보기</span>
                 <span class="chat-quick-chip">비율 조정</span>
@@ -801,14 +879,14 @@
       <strong>② 에디터:</strong><br>
       - 사전 초대자 검색/지정 + 필터 칩<br>
       - 모집 비율 슬라이더 (사전 초대 / 공개 모집)<br>
-      - 모집 설정: 기간, 최소 참여자, 대기자, 알림 방식<br>
+      - 모집 설정: 목표 인원(선착순), 최소 시작 인원, 대기자, 알림 방식<br>
       - 모집 미리보기: 폰 목업 (참가자 시점)<br>
       - 경고 박스: 모집 시작 후 설정 변경 불가<br><br>
 
       <strong>③ AI 모집 어시스턴트:</strong><br>
       - 모집 전략 맥락을 보고 답변하는 대화형 패널<br>
-      - 플랫폼 내 매칭 가능 사용자 수, 모집 기간 권장사항 등<br>
-      - 빠른 액션 칩: 기간 변경, 초대자 추가, 동의서 미리보기, 비율 조정<br><br>
+      - 플랫폼 내 매칭 가능 사용자 수, 예상 모집 소요 기간 등<br>
+      - 빠른 액션 칩: 목표 인원 조정, 초대자 추가, 동의서 미리보기, 비율 조정<br><br>
 
       <strong>사전 초대자:</strong><br>
       • UniQdata 가입 사용자 중 조건에 맞는 참여자를 PI가 직접 선택하여 초대<br>
@@ -821,9 +899,9 @@
       • 서명 완료 시 자동 참여 등록<br><br>
 
       <strong>Safety Net:</strong><br>
-      • 최소 참여자 미달 시: 에스크로 자동 환불<br>
-      • 대기자 자동 배정으로 탈락 보충<br>
-      • 모집 기간 종료 후 미달 시 연구 자동 취소
+      • 선착순 모집: 목표 인원 도달 시 자동 마감 → 연구 일괄 시작<br>
+      • 최소 시작 인원 이상이면 연구자가 수동 시작 가능<br>
+      • 대기자 자동 배정으로 탈락 보충
     </div>
   </div>
 
@@ -834,7 +912,7 @@
       <strong>핵심 기능:</strong><br>
       • UniQdata 가입 사용자 검색 및 초대<br>
       • 모집 비율 (사전 초대 / 공개 모집) 조정<br>
-      • 모집 기간, 최소 참여자, 대기자 설정<br>
+      • 목표 인원(선착순), 최소 시작 인원, 대기자 설정<br>
       • 앱 내 동의서 열람 + 전자 서명<br>
       • 알림 채널 선택 (앱 푸시, SMS, 이메일)<br>
       • 모집 미리보기 (참가자 시점)<br><br>
@@ -842,7 +920,7 @@
       <strong>비즈니스 로직:</strong><br>
       • 모집 설정 완료 후 IRB 판정(Step 5)으로 이동<br>
       • IRB + 에스크로 완료 시 모집 시작 가능<br>
-      • 최소 참여자 미달 시 자동 취소 + 환불<br>
+      • 목표 인원 도달 시 자동 마감 → 일괄 시작<br>
       • 모집 시작 후 설정 변경 불가 (immutable)
     </div>
   </div>
@@ -864,8 +942,10 @@ POST /enterprise/projects/:id/recruitment/config<br>
 &nbsp;&nbsp;"pre_invite_ids": ["uuid1", "uuid2", ...],<br>
 &nbsp;&nbsp;"pre_invite_ratio": 0.4,<br>
 &nbsp;&nbsp;"open_ratio": 0.6,<br>
-&nbsp;&nbsp;"recruitment_days": 14,<br>
-&nbsp;&nbsp;"min_participants": 50,<br>
+&nbsp;&nbsp;"target_participants": 100,<br>
+&nbsp;&nbsp;"min_start_participants": 50,<br>
+&nbsp;&nbsp;"auto_close_on_target": true,<br>
+&nbsp;&nbsp;"invite_accept_deadline_days": 3,<br>
 &nbsp;&nbsp;"waitlist_enabled": true,<br>
 &nbsp;&nbsp;"notification_channels": ["push", "sms"]<br>
 }
