@@ -142,3 +142,106 @@ Table settlements {
   memo text
   settled_at timestamp
 }
+
+// ===== 📋 IRB (생명윤리심의) =====
+// uniqdata-ai가 판단/서류 생성, Business Engine이 데이터 저장/상태 관리
+
+// IRB 판단 결과 — uniqdata-ai 에이전트가 대화를 통해 도출
+Table irb_determinations {
+  id uuid [pk]
+  project_id uuid [ref: - research_projects.id, unique, note: '1:1']
+
+  // [1단계] 연구 여부
+  is_research boolean [note: '체계적 조사인가?']
+
+  // [2단계] 연구 유형 (시행규칙 제2조)
+  research_type varchar [note: 'human_subject|human_material|none']
+  involves_physical_intervention boolean [note: '물리적 개입?']
+  involves_interaction boolean [note: '의사소통/대인접촉 상호작용?']
+  uses_identifiable_info boolean [note: '개인식별정보 이용?']
+
+  // [3단계] 심의면제 여부
+  is_exempt boolean [note: '심의면제 해당?']
+  exemption_basis varchar [note: 'article_13 (인간대상) | article_33 (인체유래물)']
+  exemption_criteria jsonb [note: '충족한 면제 조건 번호 배열 (예: [1, 6])']
+  involves_vulnerable_subjects boolean [note: '취약 환경 연구대상자 포함?']
+
+  // [4단계] 서면동의면제 (제16조3항)
+  consent_exemption_eligible boolean [note: '서면동의 면제 가능?']
+  consent_impractical boolean [note: '동의가 현실적으로 불가능?']
+  consent_affects_validity boolean [note: '타당성에 심각한 영향?']
+  minimal_risk boolean [note: '위험이 극히 낮음?']
+  no_refusal_reason boolean [note: '거부 추정 사유 없음?']
+  excludes_minors boolean [note: '18세 미만 미포함?']
+
+  // 판단 결과
+  determination_result varchar [note: 'exempt_confirmed|review_required|not_applicable|voluntary_review']
+  submission_type_required varchar [note: 'initial|exempt_confirmation|none']
+
+  // AI 에이전트 대화 이력
+  ai_conversation_id varchar [note: '대화 세션 ID']
+  ai_reasoning text [note: 'AI 판단 근거 요약']
+  referenced_papers jsonb [note: '참고한 논문/사례 목록']
+
+  determined_by uuid [ref: > owners.id, note: '연구자']
+  created_at timestamp
+  updated_at timestamp
+}
+
+// IRB 제출물
+Table irb_submissions {
+  id uuid [pk]
+  project_id uuid [ref: > research_projects.id]
+  determination_id uuid [ref: > irb_determinations.id]
+  submission_type varchar [note: 'initial|amendment|renewal|closure|exempt_confirmation|result_report']
+  status varchar [note: 'draft|submitted|under_review|revision_requested|approved|rejected|exempt_confirmed']
+  submitted_at timestamp
+  irb_comment_summary text
+  xrpl_tx_hash varchar [note: 'APPROVED 시 XRPL 앵커링']
+  created_at timestamp
+  updated_at timestamp
+
+  indexes {
+    (project_id, status)
+  }
+}
+
+// IRB 서류 — uniqdata-ai가 생성 + 수동 업로드
+Table irb_documents {
+  id uuid [pk]
+  submission_id uuid [ref: > irb_submissions.id]
+  doc_type varchar [note: 'self_checklist|review_application|research_protocol|bioethics_pledge|bioethics_certificate|consent_form|consent_explanation|consent_exemption_reason|human_material_consent|human_material_ledger|recruitment_notice|survey_instrument|result_report|final_report']
+  title varchar
+  content text [note: '마크다운 또는 HTML']
+  file_url varchar [note: '파일 업로드 URL (PDF 등)']
+  version int [default: 1]
+  generated_by varchar [note: 'ai|manual']
+  is_required boolean [default: true]
+  status varchar [note: 'draft|ready|submitted']
+  created_at timestamp
+}
+
+// IRB 심의 의견
+Table irb_review_comments {
+  id uuid [pk]
+  submission_id uuid [ref: > irb_submissions.id]
+  reviewer_id uuid [ref: > owners.id, note: 'IRB 위원']
+  comment text
+  decision varchar [note: 'approve|revise|reject|abstain']
+  created_at timestamp
+}
+
+// 현장 점검 (참고자료 7 흐름도)
+Table irb_inspections {
+  id uuid [pk]
+  project_id uuid [ref: > research_projects.id]
+  submission_id uuid [ref: > irb_submissions.id]
+  status varchar [note: 'selected|scheduled|notified|documents_submitted|inspected|checklist_done|objection_filed|reviewed|discussed|completed']
+  inspector_id uuid [ref: > owners.id]
+  scheduled_at timestamp
+  inspection_checklist jsonb [note: '내부점검점검표']
+  objection text [note: '이의신청 내용']
+  result_summary text [note: '점검 결과']
+  created_at timestamp
+  updated_at timestamp
+}

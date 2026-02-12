@@ -72,6 +72,24 @@
     .doc-action.upload { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
     .doc-note { font-size: 12px; color: #6b7280; margin-top: 12px; padding: 10px; background: #fef3c7; border-radius: 6px; }
 
+    /* 양식 2패널 레이아웃 */
+    .doc-panel { display: flex; min-height: 420px; }
+    .doc-panel-nav { width: 200px; border-right: 1px solid #e5e7eb; padding: 16px; background: #f9fafb; flex-shrink: 0; }
+    .doc-panel-nav .nav-label { font-size: 11px; color: #6b7280; margin-bottom: 12px; text-transform: uppercase; font-weight: 600; }
+    .doc-tab { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 8px; margin-bottom: 6px; cursor: pointer; font-size: 13px; color: #374151; }
+    .doc-tab:hover { background: #f3e8ff; }
+    .doc-tab.active { background: #ede9fe; color: #7c3aed; font-weight: 600; }
+    .doc-tab .tab-icon { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; flex-shrink: 0; }
+    .doc-tab .tab-icon.done { background: #dcfce7; color: #166534; }
+    .doc-tab .tab-icon.warn { background: #fef3c7; color: #92400e; }
+    .doc-panel-content { flex: 1; padding: 20px; }
+    .tab-buttons { display: flex; gap: 4px; margin-bottom: 16px; background: #f3f4f6; padding: 4px; border-radius: 8px; }
+    .tab-btn { padding: 8px 14px; border: none; border-radius: 6px; font-size: 12px; cursor: pointer; background: transparent; color: #6b7280; font-weight: 500; }
+    .tab-btn.active { background: white; color: #7c3aed; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+    .ai-preview-box { background: #faf5ff; border: 1px solid #e9d5ff; border-radius: 8px; padding: 20px; font-size: 13px; line-height: 1.8; color: #374151; }
+    .ai-preview-box h4 { color: #7c3aed; margin-bottom: 12px; font-size: 15px; }
+    .ai-preview-box .sec-title { font-weight: 600; margin-top: 14px; margin-bottom: 4px; color: #1f2937; }
+
     /* 폼 요소 */
     label { display: block; font-size: 14px; font-weight: 500; margin-bottom: 8px; color: #374151; }
     .input { width: 100%; height: 48px; border: 1px solid #e5e7eb; border-radius: 8px; padding: 0 16px; font-size: 16px; }
@@ -151,6 +169,20 @@
         <div style="font-size: 11px; color: #6b7280; padding: 8px 12px; text-transform: uppercase;">연구</div>
         <a href="create.html" class="nav-item active">
           <span>➕</span> 새 연구
+        </a>
+      </div>
+
+      <div style="margin-top: 16px;">
+        <div style="font-size: 11px; color: #6b7280; padding: 8px 12px; text-transform: uppercase;">양식</div>
+        <a href="#" class="nav-item">
+          <span>📄</span> 양식 관리
+        </a>
+      </div>
+
+      <div style="margin-top: 16px;">
+        <div style="font-size: 11px; color: #6b7280; padding: 8px 12px; text-transform: uppercase;">도구</div>
+        <a href="#" class="nav-item">
+          <span>🤖</span> AI 도우미
         </a>
       </div>
 
@@ -249,51 +281,90 @@
       </div>
 
       <!-- ============================================ -->
-      <!-- Section 1.5: IRB 제출 서류 미리보기 (AI 생성) -->
+      <!-- Section 1.5: IRB 제출 서류 양식 (2패널: 양식목록 + AI탭) -->
       <!-- ============================================ -->
       <div class="card">
         <div class="card-header">
-          <h3>📄 IRB 제출 서류</h3>
-          <span class="ai-badge">AI 초안</span>
+          <h3>📄 IRB 제출 서류 양식</h3>
+          <span class="ai-badge">AI 초안 생성</span>
         </div>
-        <div class="card-body">
-          <ul class="doc-list">
-            <li class="doc-item">
-              <div class="doc-num">1</div>
-              <div class="doc-info">
-                <div class="doc-name">연구계획서 <span class="doc-name-sub">(Protocol)</span></div>
-              </div>
-              <span class="doc-status done">✅ AI 초안 완료</span>
-              <a href="#" class="doc-action preview" onclick="alert('연구계획서 미리보기 팝업')">미리보기</a>
-            </li>
-            <li class="doc-item">
-              <div class="doc-num">2</div>
-              <div class="doc-info">
-                <div class="doc-name">참여자 동의서 <span class="doc-name-sub">(Consent Form)</span></div>
-              </div>
-              <span class="doc-status done">✅ AI 초안 완료</span>
-              <a href="#" class="doc-action preview" onclick="alert('참여자 동의서 미리보기 팝업')">미리보기</a>
-            </li>
-            <li class="doc-item">
-              <div class="doc-num">3</div>
-              <div class="doc-info">
-                <div class="doc-name">모집 공고문 <span class="doc-name-sub">(Recruitment Notice)</span></div>
-              </div>
-              <span class="doc-status done">✅ AI 초안 완료</span>
-              <a href="#" class="doc-action preview" onclick="alert('모집 공고문 미리보기 팝업')">미리보기</a>
-            </li>
-            <li class="doc-item">
-              <div class="doc-num">4</div>
-              <div class="doc-info">
-                <div class="doc-name">연구자 이력서</div>
-              </div>
-              <span class="doc-status warning">⚠️ 직접 업로드 필요</span>
-              <a href="#" class="doc-action upload" onclick="alert('파일 업로드 팝업')">업로드</a>
-            </li>
-          </ul>
-          <div class="doc-note">
-            ⚠️ AI 초안은 제출 전 반드시 검토/수정하세요
+        <div class="doc-panel">
+          <!-- 왼쪽: 양식 목록 (서브 네비게이션) -->
+          <div class="doc-panel-nav">
+            <div class="nav-label">양식 목록</div>
+            <div class="doc-tab active" onclick="selectDocTab(this, 'protocol')">
+              <div class="tab-icon done">✓</div>
+              <div>연구계획서<br><span style="font-size:11px;color:#6b7280;">양식</span></div>
+            </div>
+            <div class="doc-tab" onclick="selectDocTab(this, 'consent')">
+              <div class="tab-icon done">✓</div>
+              <div>동의서<br><span style="font-size:11px;color:#6b7280;">양식</span></div>
+            </div>
+            <div class="doc-tab" onclick="selectDocTab(this, 'recruit')">
+              <div class="tab-icon done">✓</div>
+              <div>모집공고<br><span style="font-size:11px;color:#6b7280;">양식</span></div>
+            </div>
+            <div class="doc-tab" onclick="selectDocTab(this, 'cv')">
+              <div class="tab-icon warn">!</div>
+              <div>연구자 이력서<br><span style="font-size:11px;color:#d97706;">업로드 필요</span></div>
+            </div>
+            <div style="margin-top: 16px; padding: 10px; background: #dcfce7; border-radius: 8px; font-size: 11px; color: #166534; text-align: center; font-weight: 500;">
+              ✅ 3/4 양식 완료
+            </div>
           </div>
+
+          <!-- 오른쪽: AI 탭 / 직접수정 / 미리보기 -->
+          <div class="doc-panel-content">
+            <div class="tab-buttons">
+              <button class="tab-btn active" onclick="selectContentTab(this)">🤖 AI 생성</button>
+              <button class="tab-btn" onclick="selectContentTab(this)">✏️ 직접 수정</button>
+              <button class="tab-btn" onclick="selectContentTab(this)">👁️ 미리보기</button>
+            </div>
+
+            <!-- AI 생성 탭 내용 (연구계획서 양식 선택 시) -->
+            <div id="tab-protocol" class="ai-preview-box">
+              <h4>📋 연구계획서 양식 (AI 초안)</h4>
+              <div class="sec-title">1. 연구 제목</div>
+              <p>저탄수화물 식단의 제2형 당뇨 환자 혈당 변동 개선 효과: 무작위 대조 시험</p>
+              <div class="sec-title">2. 연구 목적</div>
+              <p>제2형 당뇨 환자에서 저탄수화물 식단이 혈당 변동성(glycemic variability)에 미치는 영향을 평가하고, 표준 식단과의 차이를 비교한다.</p>
+              <div class="sec-title">3. 연구 방법론</div>
+              <p>무작위 대조 시험 (RCT), 56일, 실험군/대조군 각 50명</p>
+              <div class="sec-title">4. 참여자 선정 기준</div>
+              <p>30-65세, 제2형 당뇨 진단, HbA1c 6.5-9.0%</p>
+              <div class="sec-title">5. 데이터 수집 계획</div>
+              <p>패시브: CGM, 심박수, 수면 | 능동: 식단 기록, 복약 체크</p>
+            </div>
+
+            <!-- 동의서 양식 (숨김 — 탭 전환 시 표시) -->
+            <div id="tab-consent" class="ai-preview-box" style="display:none;">
+              <h4>📋 참여자 동의서 양식 (AI 초안)</h4>
+              <div style="padding: 10px; background: #fef3c7; border: 1px solid #fde68a; border-radius: 6px; margin-bottom: 12px; font-size: 12px; color: #92400e;">
+                ⚠️ 이것은 IRB 제출용 <strong>동의서 양식</strong>입니다.<br>
+                실제 참여자 동의 서명은 IRB 승인 후 모집 단계(Step 6)에서 진행됩니다.
+              </div>
+              <div class="sec-title">1. 연구 제목</div>
+              <p>저탄수화물 식단의 혈당 변동 개선 효과 연구</p>
+              <div class="sec-title">2. 연구 목적 및 배경</div>
+              <p>본 연구는 저탄수화물 식단이 제2형 당뇨 환자의 혈당 변동성에 미치는 영향을 조사합니다...</p>
+              <div class="sec-title">3. 참여 기간 및 절차</div>
+              <p>총 56일 (8주) 동안 참여하며, 지정된 식단을 따르고 건강 데이터를 제출합니다.</p>
+              <div class="sec-title">4. 참여에 따른 이익 및 위험</div>
+              <p>이익: AI 건강 분석 레포트 제공, 50 XRP 보상 | 위험: 식단 변경에 따른 불편감 가능</p>
+              <div class="sec-title">5. 개인정보 보호</div>
+              <p>수집된 데이터는 가명처리 후 분석에 사용되며, 연구 종료 후 3년간 보관 후 파기합니다.</p>
+              <div class="sec-title">6. 동의 철회</div>
+              <p>참여자는 언제든지 동의를 철회할 수 있으며, 불이익 없이 연구 참여를 중단할 수 있습니다.</p>
+            </div>
+
+            <div style="display: flex; gap: 8px; margin-top: 16px;">
+              <button style="flex: 1; padding: 10px; background: #8b5cf6; color: white; border: none; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer;">🤖 AI 재생성</button>
+              <button style="flex: 1; padding: 10px; background: white; border: 1px solid #e5e7eb; color: #374151; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer;">📥 다운로드 (PDF)</button>
+            </div>
+          </div>
+        </div>
+        <div style="padding: 12px 20px; background: #fef3c7; border-top: 1px solid #fde68a; font-size: 12px; color: #92400e;">
+          ⚠️ AI 초안은 제출 전 반드시 검토/수정하세요. 이 양식들은 <strong>IRB 심의를 위한 서류 양식</strong>이며, 실제 참여자 동의 서명은 별도 절차(Step 6)입니다.
         </div>
       </div>
 
@@ -534,6 +605,22 @@ PATCH /api/v2/projects/:id<br>
       </div>
     </div>
   </div>
+  <script>
+    // 양식 탭 전환 (왼쪽 서브 네비)
+    function selectDocTab(el, type) {
+      document.querySelectorAll('.doc-tab').forEach(t => t.classList.remove('active'));
+      el.classList.add('active');
+      // 콘텐츠 전환
+      document.querySelectorAll('.ai-preview-box').forEach(box => box.style.display = 'none');
+      var target = document.getElementById('tab-' + type);
+      if (target) target.style.display = 'block';
+    }
+    // 콘텐츠 탭 전환 (AI 생성 / 직접 수정 / 미리보기)
+    function selectContentTab(el) {
+      document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
+      el.classList.add('active');
+    }
+  </script>
   <script src="page-spec.js"></script>
   <link rel="stylesheet" href="../tooltip-spec.css">
   <script src="../tooltip-spec.js"></script>

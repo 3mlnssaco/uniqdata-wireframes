@@ -355,14 +355,40 @@ wireframes/research/
 
 ---
 
-## 다음 단계
+### IRB 판단 (대화형 — uniqdata-ai 에이전트)
 
-1. Step 4~6에 AI 패널 적용
-2. 백엔드 `/ai/parse-intent` API 구현
-3. 프론트엔드 NLU 패턴 확장
-4. 실시간 ZKP 시뮬레이션 연동
-5. A/B 테스트: AI 패널 유무 비교
+AI 채팅 패널에서 IRB 관련 판단도 대화형으로 진행된다.
+단순 if-else가 아니라 LLM + RAG 기반으로 맥락적 판단.
+
+| 의도 | 예시 발화 | 액션 |
+|------|----------|------|
+| `irb_check_required` | "IRB 심의 필요해?", "심의 대상인지 확인해줘" | IRB 판단 흐름 시작 (참고자료 2) |
+| `irb_human_subject_check` | "인간대상연구야?", "설문조사인데 인간대상?" | 인간대상연구 해당 여부 판단 (시행규칙 제2조) |
+| `irb_exemption_check` | "심의면제 가능해?", "면제 조건 확인해줘" | 심의면제 여부 판단 (시행규칙 제13조/제33조) |
+| `irb_consent_exemption` | "동의 안 받아도 돼?", "서면동의 면제 가능?" | 서면동의면제 판단 (제16조3항) |
+| `irb_required_docs` | "서류 뭐 필요해?", "제출서류 알려줘" | 유형별 필요 서류 체크리스트 표시 |
+| `irb_generate_doc` | "연구계획서 만들어줘", "동의서 초안 생성해줘" | AI 서류 생성 트리거 |
+| `irb_sample_size` | "대상자 몇 명 필요해?", "샘플 사이즈 계산해줘" | 대상자 수 산출근거 생성 |
+
+### 논문 검색 (uniqdata-ai 에이전트)
+
+| 의도 | 예시 발화 | 액션 |
+|------|----------|------|
+| `search_papers` | "관련 논문 찾아줘", "최신 연구 동향 알려줘" | PubMed/Scholar 검색 → 결과 제시 |
+| `cite_methodology` | "비슷한 연구 방법론 있어?", "RCT 사례 보여줘" | 유사 방법론 논문 검색 |
+| `reference_approved` | "비슷한 연구 승인 사례 있어?", "참고할 만한 IRB 승인 사례?" | RAG에서 승인 사례 검색 |
 
 ---
 
-*Last Updated: 2026-02-01*
+## 다음 단계
+
+1. Step 4~6에 AI 패널 적용
+2. 백엔드 `/ai/chat` 스트리밍 API 구현 (uniqdata-ai)
+3. IRB 판단 대화 플로우 구현
+4. RAG 파이프라인 구축 (법령/양식/논문 임베딩)
+5. 논문 검색 API 연동 (PubMed, Semantic Scholar)
+6. A/B 테스트: AI 패널 유무 비교
+
+---
+
+*Last Updated: 2026-02-12*

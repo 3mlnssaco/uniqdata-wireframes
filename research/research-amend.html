@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>연구 수정 - IRB 변경심의 - Wireframe</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, sans-serif; background: #f5f5f5; }
+    .layout { display: flex; min-height: 100vh; }
+    .sidebar { width: 240px; background: #1a1a1a; color: white; padding: 20px; flex-shrink: 0; }
+    .logo { font-size: 18px; font-weight: bold; margin-bottom: 30px; padding: 10px; }
+    .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 8px; margin-bottom: 4px; color: #9ca3af; text-decoration: none; }
+    .nav-item.active { background: #3b82f6; color: white; }
+
+    .main { flex: 1; padding: 32px; max-width: 960px; margin: 0 auto; }
+    .main h1 { font-size: 28px; margin-bottom: 8px; }
+    .main .subtitle { color: #6b7280; margin-bottom: 32px; }
+
+    /* 카드 */
+    .card { background: white; border: 1px solid #e5e7eb; border-radius: 12px; margin-bottom: 20px; overflow: hidden; }
+    .card-header { background: #f9fafb; padding: 16px 20px; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center; }
+    .card-header h3 { font-size: 16px; font-weight: 600; }
+    .card-body { padding: 20px; }
+
+    /* 배지 */
+    .badge { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 500; }
+    .badge-green { background: #dcfce7; color: #166534; border: 1px solid #86efac; }
+    .badge-amber { background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; }
+    .badge-blue { background: #dbeafe; color: #1e40af; border: 1px solid #93c5fd; }
+    .badge-purple { background: #f3e8ff; color: #7c3aed; border: 1px solid #ddd6fe; }
+    .ai-badge { font-size: 11px; color: #7c3aed; background: #f3e8ff; padding: 4px 10px; border-radius: 12px; }
+
+    /* 현재 연구 정보 */
+    .research-info { background: linear-gradient(135deg, #f0fdf4, #dcfce7); border: 2px solid #22c55e; border-radius: 12px; padding: 20px; margin-bottom: 24px; }
+    .research-info .title { font-size: 18px; font-weight: 600; color: #1f2937; margin-bottom: 12px; }
+    .info-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+    .info-item { background: white; border-radius: 8px; padding: 12px; }
+    .info-item .label { font-size: 11px; color: #6b7280; margin-bottom: 4px; }
+    .info-item .value { font-size: 14px; font-weight: 600; color: #1f2937; }
+
+    /* 수정 사유 선택 */
+    .reason-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .reason-card { border: 2px solid #e5e7eb; border-radius: 12px; padding: 16px; cursor: pointer; transition: all 0.15s; }
+    .reason-card:hover { border-color: #8b5cf6; background: #faf5ff; }
+    .reason-card.selected { border-color: #8b5cf6; background: #f3e8ff; }
+    .reason-card .icon { font-size: 24px; margin-bottom: 8px; }
+    .reason-card .name { font-size: 14px; font-weight: 600; color: #1f2937; margin-bottom: 4px; }
+    .reason-card .desc { font-size: 12px; color: #6b7280; line-height: 1.5; }
+    .reason-card .irb-tag { margin-top: 8px; font-size: 11px; }
+
+    /* 변경 내용 diff */
+    .diff-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .diff-table th { background: #f3f4f6; padding: 10px 14px; text-align: left; font-weight: 600; color: #374151; border-bottom: 1px solid #e5e7eb; }
+    .diff-table td { padding: 10px 14px; border-bottom: 1px solid #f3f4f6; vertical-align: top; }
+    .diff-table .col-field { width: 160px; font-weight: 500; color: #374151; }
+    .diff-table .col-before { background: #fef2f2; color: #991b1b; }
+    .diff-table .col-after { background: #f0fdf4; color: #166534; }
+    .diff-table .col-after input, .diff-table .col-after select { font-size: 13px; padding: 6px 10px; border: 1px solid #86efac; border-radius: 6px; background: white; width: 100%; }
+    .diff-highlight { font-weight: 600; text-decoration: line-through; }
+
+    /* IRB 변경심의 판단 */
+    .amend-result { text-align: center; padding: 24px; }
+    .amend-badge { display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; border-radius: 12px; font-size: 16px; font-weight: 700; }
+    .amend-badge.expedited { background: #dbeafe; color: #1e40af; border: 2px solid #3b82f6; }
+    .amend-badge.full { background: #fef3c7; color: #92400e; border: 2px solid #fbbf24; }
+
+    /* 양식 패널 (2패널) */
+    .doc-panel { display: flex; min-height: 320px; }
+    .doc-panel-nav { width: 200px; border-right: 1px solid #e5e7eb; padding: 16px; background: #f9fafb; flex-shrink: 0; }
+    .doc-tab { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 8px; margin-bottom: 6px; cursor: pointer; font-size: 13px; color: #374151; }
+    .doc-tab:hover { background: #f3e8ff; }
+    .doc-tab.active { background: #ede9fe; color: #7c3aed; font-weight: 600; }
+    .doc-tab .tab-icon { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; flex-shrink: 0; }
+    .doc-tab .tab-icon.done { background: #dcfce7; color: #166534; }
+    .doc-tab .tab-icon.new { background: #dbeafe; color: #1e40af; }
+    .doc-panel-content { flex: 1; padding: 20px; }
+    .tab-buttons { display: flex; gap: 4px; margin-bottom: 16px; background: #f3f4f6; padding: 4px; border-radius: 8px; }
+    .tab-btn { padding: 8px 14px; border: none; border-radius: 6px; font-size: 12px; cursor: pointer; background: transparent; color: #6b7280; font-weight: 500; }
+    .tab-btn.active { background: white; color: #7c3aed; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+    .ai-preview-box { background: #faf5ff; border: 1px solid #e9d5ff; border-radius: 8px; padding: 20px; font-size: 13px; line-height: 1.8; color: #374151; }
+    .ai-preview-box h4 { color: #7c3aed; margin-bottom: 12px; font-size: 15px; }
+    .ai-preview-box .sec-title { font-weight: 600; margin-top: 14px; margin-bottom: 4px; color: #1f2937; }
+
+    /* 추가 에스크로 */
+    .escrow-add { background: linear-gradient(135deg, #8b5cf6, #6366f1); border-radius: 12px; padding: 20px; color: white; margin-bottom: 20px; }
+    .escrow-add h4 { margin-bottom: 12px; font-size: 16px; }
+    .escrow-row { display: flex; justify-content: space-between; padding: 8px 0; font-size: 14px; border-bottom: 1px solid rgba(255,255,255,0.15); }
+    .escrow-row:last-child { border-bottom: none; }
+    .escrow-total { display: flex; justify-content: space-between; padding: 12px 0 0; margin-top: 4px; border-top: 2px solid rgba(255,255,255,0.4); font-size: 18px; font-weight: 700; }
+
+    /* 타임라인 */
+    .timeline { padding: 0; list-style: none; }
+    .timeline-item { display: flex; gap: 16px; padding-bottom: 20px; position: relative; }
+    .timeline-item:last-child { padding-bottom: 0; }
+    .timeline-item::before { content: ''; position: absolute; left: 15px; top: 32px; bottom: 0; width: 2px; background: #e5e7eb; }
+    .timeline-item:last-child::before { display: none; }
+    .timeline-dot { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; z-index: 1; }
+    .timeline-dot.done { background: #22c55e; color: white; }
+    .timeline-dot.current { background: #8b5cf6; color: white; }
+    .timeline-dot.pending { background: #e5e7eb; color: #9ca3af; }
+    .timeline-content { flex: 1; }
+    .timeline-content .title { font-size: 14px; font-weight: 600; color: #1f2937; }
+    .timeline-content .desc { font-size: 12px; color: #6b7280; margin-top: 2px; }
+
+    /* 텍스트에어리어 */
+    .textarea { width: 100%; height: 100px; border: 1px solid #e5e7eb; border-radius: 8px; padding: 12px 16px; font-size: 14px; resize: vertical; font-family: inherit; line-height: 1.5; }
+    .textarea:focus { outline: none; border-color: #8b5cf6; }
+
+    /* 버튼 */
+    .btn { padding: 12px 28px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; text-decoration: none; display: inline-block; border: none; }
+    .btn-secondary { background: white; border: 1px solid #e5e7eb; color: #374151; }
+    .btn-primary { background: #8b5cf6; color: white; }
+    .btn-amber { background: linear-gradient(135deg, #f59e0b, #d97706); color: white; }
+    .btn-row { display: flex; justify-content: space-between; margin-top: 24px; padding-top: 24px; border-top: 1px solid #e5e7eb; }
+
+    /* 스텝 네비게이션 */
+    .step-nav { display: flex; gap: 10px; margin-top: 24px; flex-wrap: wrap; }
+    .step-nav a { padding: 8px 16px; background: #eee; border-radius: 6px; text-decoration: none; color: #333; font-size: 14px; }
+
+    /* 디자이너 노트 */
+    .designer-note { background: linear-gradient(135deg, #fdf4ff, #fae8ff); border: 2px solid #d946ef; border-radius: 12px; padding: 20px; margin-top: 24px; }
+    .designer-note h3 { color: #a21caf; margin-bottom: 12px; font-size: 14px; }
+    .designer-note .content { font-size: 12px; color: #374151; line-height: 1.7; }
+
+    /* 경고 박스 */
+    .warning-box { background: #fef3c7; border: 1px solid #fde68a; border-radius: 8px; padding: 14px 16px; font-size: 13px; color: #92400e; line-height: 1.6; margin-bottom: 16px; }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <div class="sidebar">
+      <div class="logo" style="display: flex; align-items: center; gap: 8px;">
+        <div style="width: 32px; height: 32px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: bold;">U</div>
+        UniQdata
+      </div>
+
+      <div style="margin-top: 24px;">
+        <a href="list.html" class="nav-item">
+          <span>🏠</span> 연구 허브
+        </a>
+      </div>
+
+      <div style="margin-top: 16px;">
+        <div style="font-size: 11px; color: #6b7280; padding: 8px 12px; text-transform: uppercase;">현재 연구</div>
+        <a href="#" class="nav-item active">
+          <span>📊</span> 저탄수화물 혈당 연구
+        </a>
+        <a href="#" class="nav-item" style="padding-left: 36px; font-size: 13px;">
+          <span>📋</span> 연구 대시보드
+        </a>
+        <a href="#" class="nav-item" style="padding-left: 36px; font-size: 13px; color: #f59e0b;">
+          <span>✏️</span> 연구 수정
+        </a>
+        <a href="#" class="nav-item" style="padding-left: 36px; font-size: 13px;">
+          <span>👥</span> 참여자 관리
+        </a>
+        <a href="#" class="nav-item" style="padding-left: 36px; font-size: 13px;">
+          <span>📈</span> 데이터/분석
+        </a>
+      </div>
+
+      <div style="margin-top: 16px;">
+        <div style="font-size: 11px; color: #6b7280; padding: 8px 12px; text-transform: uppercase;">양식</div>
+        <a href="#" class="nav-item">
+          <span>📄</span> 양식 관리
+        </a>
+      </div>
+
+      <div style="margin-top: 16px;">
+        <div style="font-size: 11px; color: #6b7280; padding: 8px 12px; text-transform: uppercase;">도구</div>
+        <a href="#" class="nav-item">
+          <span>🤖</span> AI 도우미
+        </a>
+      </div>
+
+      <div style="margin-top: 16px;">
+        <div style="font-size: 11px; color: #6b7280; padding: 8px 12px; text-transform: uppercase;">관리</div>
+        <a href="../team.html" class="nav-item">
+          <span>👥</span> 팀
+        </a>
+        <a href="../billing.html" class="nav-item">
+          <span>💳</span> 결제
+        </a>
+        <a href="#" class="nav-item">
+          <span>⚙️</span> 설정
+        </a>
+      </div>
+
+      <div style="margin-top: auto; padding-top: 20px; border-top: 1px solid #374151;">
+        <div style="display: flex; align-items: center; gap: 10px; padding: 12px;">
+          <div style="width: 36px; height: 36px; background: #3b82f6; border-radius: 50%; display: flex; align-items: center; justify-content: center;">김</div>
+          <div>
+            <div style="font-size: 13px; font-weight: 500;">김연구</div>
+            <div style="font-size: 11px; color: #9ca3af;">서울대학교병원</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="main">
+      <h1>연구 수정</h1>
+      <p class="subtitle">진행 중인 연구를 수정하고 IRB 변경심의를 신청합니다</p>
+
+      <!-- ============================================ -->
+      <!-- Section 1: 현재 연구 정보                      -->
+      <!-- ============================================ -->
+      <div class="research-info">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+          <div class="title">저탄수화물 식단의 혈당 변동 개선 효과 연구</div>
+          <span class="badge badge-green">🟢 진행중</span>
+        </div>
+        <div class="info-grid">
+          <div class="info-item">
+            <div class="label">IRB 승인 번호</div>
+            <div class="value">SNUH-IRB-2026-0142</div>
+          </div>
+          <div class="info-item">
+            <div class="label">현재 참여자</div>
+            <div class="value">42/100명</div>
+          </div>
+          <div class="info-item">
+            <div class="label">진행일</div>
+            <div class="value">23/56일</div>
+          </div>
+          <div class="info-item">
+            <div class="label">최초 승인일</div>
+            <div class="value">2026-01-15</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="warning-box">
+        ⚠️ <strong>주의:</strong> 연구 진행 중 프로토콜을 변경하면 IRB 변경심의(Amendment)를 제출해야 합니다.
+        변경심의 승인 전까지 변경된 내용은 적용되지 않으며, 기존 프로토콜대로 연구가 계속됩니다.
+      </div>
+
+      <!-- ============================================ -->
+      <!-- Section 2: 수정 사유 선택                      -->
+      <!-- ============================================ -->
+      <div class="card">
+        <div class="card-header">
+          <h3>📝 수정 사유 선택</h3>
+          <span style="font-size: 12px; color: #6b7280;">복수 선택 가능</span>
+        </div>
+        <div class="card-body">
+          <div class="reason-grid">
+            <div class="reason-card selected" onclick="this.classList.toggle('selected')">
+              <div class="icon">📊</div>
+              <div class="name">데이터 수집 항목 추가/변경</div>
+              <div class="desc">새로운 데이터 유형 추가 또는 기존 수집 항목 변경</div>
+              <div class="irb-tag"><span class="badge badge-amber">변경심의 필요</span></div>
+            </div>
+            <div class="reason-card" onclick="this.classList.toggle('selected')">
+              <div class="icon">🔬</div>
+              <div class="name">연구 방법론 변경</div>
+              <div class="desc">RCT → 코호트, 군 수 변경, 분석 방법 변경 등</div>
+              <div class="irb-tag"><span class="badge badge-amber">정규 변경심의</span></div>
+            </div>
+            <div class="reason-card" onclick="this.classList.toggle('selected')">
+              <div class="icon">👥</div>
+              <div class="name">참여자 기준 변경</div>
+              <div class="desc">연령 범위, 질환 조건, 참여자 수 변경 등</div>
+              <div class="irb-tag"><span class="badge badge-amber">변경심의 필요</span></div>
+            </div>
+            <div class="reason-card" onclick="this.classList.toggle('selected')">
+              <div class="icon">📅</div>
+              <div class="name">연구 기간 변경</div>
+              <div class="desc">연구 기간 연장 또는 단축</div>
+              <div class="irb-tag"><span class="badge badge-blue">신속심의 가능</span></div>
+            </div>
+            <div class="reason-card" onclick="this.classList.toggle('selected')">
+              <div class="icon">📄</div>
+              <div class="name">동의서 양식 변경</div>
+              <div class="desc">참여자 동의서 양식 내용 수정</div>
+              <div class="irb-tag"><span class="badge badge-amber">변경심의 필요</span></div>
+            </div>
+            <div class="reason-card" onclick="this.classList.toggle('selected')">
+              <div class="icon">💰</div>
+              <div class="name">보상 체계 변경</div>
+              <div class="desc">참여자 보상 금액 또는 구조 변경</div>
+              <div class="irb-tag"><span class="badge badge-blue">신속심의 가능</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================ -->
+      <!-- Section 3: 변경 내용 입력 (Diff 뷰)           -->
+      <!-- ============================================ -->
+      <div class="card">
+        <div class="card-header">
+          <h3>🔄 변경 내용</h3>
+          <span style="font-size: 12px; color: #6b7280;">현재 → 변경 후</span>
+        </div>
+        <div class="card-body" style="padding: 0;">
+          <table class="diff-table">
+            <thead>
+              <tr>
+                <th class="col-field">항목</th>
+                <th style="width: 35%;">현재 (승인된 프로토콜)</th>
+                <th style="width: 35%;">변경 후</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="col-field">패시브 데이터</td>
+                <td class="col-before">CGM, 심박수, 활동량, 수면</td>
+                <td class="col-after">
+                  <span>CGM, 심박수, 활동량, 수면, </span>
+                  <strong style="color: #16a34a;">+ 혈압 (BPM)</strong>
+                </td>
+              </tr>
+              <tr>
+                <td class="col-field">능동 데이터</td>
+                <td class="col-before">식단, 복약, 기분</td>
+                <td class="col-after">
+                  <span>식단, 복약, 기분, </span>
+                  <strong style="color: #16a34a;">+ 스트레스 설문 (PSS-10)</strong>
+                </td>
+              </tr>
+              <tr>
+                <td class="col-field">참여자 수</td>
+                <td class="col-before">100명</td>
+                <td class="col-after">
+                  <input type="number" value="100" style="width: 80px;"> 명
+                  <span style="font-size: 11px; color: #6b7280; display: block; margin-top: 4px;">변경 없음</span>
+                </td>
+              </tr>
+              <tr>
+                <td class="col-field">연구 기간</td>
+                <td class="col-before">56일 (8주)</td>
+                <td class="col-after">
+                  <input type="number" value="56" style="width: 80px;"> 일
+                  <span style="font-size: 11px; color: #6b7280; display: block; margin-top: 4px;">변경 없음</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="padding: 16px 20px; border-top: 1px solid #e5e7eb;">
+          <label style="font-size: 14px; font-weight: 500; margin-bottom: 8px; display: block;">변경 사유 상세 설명</label>
+          <textarea class="textarea" placeholder="변경 사유를 상세히 기술해주세요. 예: 혈압 데이터가 혈당-식단 상관관계 분석에 중요한 교란 변수로 확인되어 추가 수집이 필요합니다.">혈압 데이터가 혈당-식단 상관관계 분석에 중요한 교란 변수로 확인되어 추가 수집이 필요합니다. 또한 스트레스가 혈당에 미치는 영향을 보정하기 위해 PSS-10 설문을 추가합니다.</textarea>
+        </div>
+      </div>
+
+      <!-- ============================================ -->
+      <!-- Section 4: AI 변경심의 판단                    -->
+      <!-- ============================================ -->
+      <div class="card" style="border: 2px solid #3b82f6;">
+        <div class="card-header" style="background: linear-gradient(135deg, #eff6ff, #dbeafe); border-bottom: 1px solid #93c5fd;">
+          <h3>🤖 AI 변경심의 판단</h3>
+          <span class="ai-badge">AI 분석</span>
+        </div>
+        <div class="card-body">
+          <div class="amend-result">
+            <div class="amend-badge expedited">
+              📋 신속심의 (Expedited Review)
+            </div>
+            <p style="margin-top: 12px; font-size: 13px; color: #6b7280; max-width: 500px; margin-left: auto; margin-right: auto; line-height: 1.6;">
+              데이터 항목 추가는 기존 수집 방식의 확장이며, 참여자 위험 수준에 변화가 없어 신속심의 대상입니다.
+            </p>
+          </div>
+
+          <div style="background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 8px; padding: 14px; margin-top: 16px;">
+            <div style="font-size: 13px; font-weight: 600; color: #0369a1; margin-bottom: 8px;">판단 근거</div>
+            <ul style="font-size: 12px; color: #374151; line-height: 1.8; padding-left: 16px;">
+              <li>혈압 데이터: 웨어러블 기기로 자동 수집 → 참여자 추가 부담 최소</li>
+              <li>PSS-10 설문: 표준화된 설문, 소요 5분 미만 → 최소 위험</li>
+              <li>연구 방법론 변경 없음 (RCT 유지)</li>
+              <li>참여자 수/기간 변경 없음</li>
+            </ul>
+          </div>
+
+          <div style="margin-top: 16px; padding: 12px; background: #fef3c7; border: 1px solid #fde68a; border-radius: 8px; font-size: 12px; color: #92400e;">
+            ⚠️ <strong>정규심의가 되는 경우:</strong> 방법론 변경, 취약 대상자 추가, 침습적 시술 추가, 위험 수준 증가 시
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================ -->
+      <!-- Section 5: 변경심의 서류 양식 (2패널)           -->
+      <!-- ============================================ -->
+      <div class="card">
+        <div class="card-header">
+          <h3>📄 변경심의 서류 양식</h3>
+          <span class="ai-badge">AI 초안 생성</span>
+        </div>
+        <div class="doc-panel">
+          <!-- 왼쪽: 양식 목록 -->
+          <div class="doc-panel-nav">
+            <div style="font-size: 11px; color: #6b7280; margin-bottom: 12px; text-transform: uppercase; font-weight: 600;">양식 목록</div>
+            <div class="doc-tab active">
+              <div class="tab-icon new">★</div>
+              <div>변경심의<br><span style="font-size:11px;color:#1e40af;">신청서 양식</span></div>
+            </div>
+            <div class="doc-tab">
+              <div class="tab-icon done">✓</div>
+              <div>변경 전/후<br><span style="font-size:11px;color:#6b7280;">비교표</span></div>
+            </div>
+            <div class="doc-tab">
+              <div class="tab-icon done">✓</div>
+              <div>수정 동의서<br><span style="font-size:11px;color:#6b7280;">양식</span></div>
+            </div>
+            <div class="doc-tab">
+              <div class="tab-icon done">✓</div>
+              <div>수정 프로토콜<br><span style="font-size:11px;color:#6b7280;">양식</span></div>
+            </div>
+            <div style="margin-top: 16px; padding: 10px; background: #dcfce7; border-radius: 8px; font-size: 11px; color: #166534; text-align: center; font-weight: 500;">
+              ✅ 4/4 양식 완료
+            </div>
+          </div>
+
+          <!-- 오른쪽: AI 탭 -->
+          <div class="doc-panel-content">
+            <div class="tab-buttons">
+              <button class="tab-btn active">🤖 AI 생성</button>
+              <button class="tab-btn">✏️ 직접 수정</button>
+              <button class="tab-btn">👁️ 미리보기</button>
+            </div>
+
+            <div class="ai-preview-box">
+              <h4>📋 변경심의 신청서 양식 (AI 초안)</h4>
+              <div class="sec-title">1. 기존 승인 정보</div>
+              <p>IRB 승인번호: SNUH-IRB-2026-0142 | 최초 승인일: 2026-01-15</p>
+              <div class="sec-title">2. 변경 유형</div>
+              <p>데이터 수집 항목 추가 (혈압 모니터링 + 스트레스 설문)</p>
+              <div class="sec-title">3. 변경 사유</div>
+              <p>혈압이 혈당-식단 상관관계 분석의 주요 교란 변수로 확인. 스트레스의 혈당 영향 보정 목적.</p>
+              <div class="sec-title">4. 참여자 위험도 변화</div>
+              <p>변화 없음. 혈압: 웨어러블 자동 수집 (비침습). PSS-10: 표준 설문 5분.</p>
+              <div class="sec-title">5. 동의서 변경 사항</div>
+              <p>수집 데이터 목록에 "혈압", "스트레스 설문" 항목 추가. 기존 참여자에게 수정 동의 필요.</p>
+            </div>
+
+            <div style="display: flex; gap: 8px; margin-top: 16px;">
+              <button style="flex: 1; padding: 10px; background: #8b5cf6; color: white; border: none; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer;">🤖 AI 재생성</button>
+              <button style="flex: 1; padding: 10px; background: white; border: 1px solid #e5e7eb; color: #374151; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer;">📥 다운로드 (PDF)</button>
+            </div>
+          </div>
+        </div>
+        <div style="padding: 12px 20px; background: #fef3c7; border-top: 1px solid #fde68a; font-size: 12px; color: #92400e;">
+          ⚠️ AI 초안은 제출 전 반드시 검토/수정하세요. 기존 참여자에게 <strong>수정 동의서 양식</strong>으로 재동의를 받아야 합니다.
+        </div>
+      </div>
+
+      <!-- ============================================ -->
+      <!-- Section 6: 기존 참여자 재동의 안내               -->
+      <!-- ============================================ -->
+      <div class="card" style="border: 2px solid #f59e0b;">
+        <div class="card-header" style="background: linear-gradient(135deg, #fffbeb, #fef3c7);">
+          <h3>⚠️ 기존 참여자 재동의</h3>
+        </div>
+        <div class="card-body">
+          <p style="font-size: 14px; color: #374151; line-height: 1.6; margin-bottom: 16px;">
+            수집 데이터가 추가되므로, <strong>현재 참여 중인 42명</strong>에게 수정된 동의서 양식으로 재동의를 받아야 합니다.
+          </p>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 14px;">
+              <div style="font-size: 12px; color: #6b7280; margin-bottom: 4px;">재동의 대상</div>
+              <div style="font-size: 20px; font-weight: 700; color: #1f2937;">42명</div>
+              <div style="font-size: 11px; color: #6b7280; margin-top: 4px;">현재 참여 중인 전원</div>
+            </div>
+            <div style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 14px;">
+              <div style="font-size: 12px; color: #6b7280; margin-bottom: 4px;">재동의 방식</div>
+              <div style="font-size: 14px; font-weight: 600; color: #1f2937;">앱 내 알림 + 동의서 재서명</div>
+              <div style="font-size: 11px; color: #6b7280; margin-top: 4px;">변경심의 승인 후 자동 발송</div>
+            </div>
+          </div>
+          <div style="margin-top: 12px; font-size: 12px; color: #92400e; padding: 10px; background: #fef3c7; border-radius: 6px;">
+            💡 재동의 거부 시 해당 참여자는 기존 프로토콜대로 연구 계속 참여 가능 (추가 데이터만 미수집)
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================ -->
+      <!-- Section 7: 추가 에스크로 (해당 시)              -->
+      <!-- ============================================ -->
+      <div class="escrow-add">
+        <h4>💰 추가 에스크로 (변경 사항 반영)</h4>
+        <div style="font-size: 12px; opacity: 0.8; margin-bottom: 16px;">
+          데이터 추가에 따른 추가 보상 비용
+        </div>
+        <div class="escrow-row">
+          <span>변경심의 수수료</span>
+          <span>50 XRP</span>
+        </div>
+        <div class="escrow-row">
+          <span>추가 데이터 보상 (5 XRP × 100명)</span>
+          <span>500 XRP</span>
+        </div>
+        <div class="escrow-row">
+          <span>플랫폼 수수료 (5%)</span>
+          <span>28 XRP</span>
+        </div>
+        <div class="escrow-total">
+          <span>추가 예치</span>
+          <span>578 XRP</span>
+        </div>
+        <div style="text-align: right; font-size: 13px; opacity: 0.8; margin-top: 4px;">
+          ≈ $289 USD
+        </div>
+      </div>
+
+      <!-- ============================================ -->
+      <!-- Section 8: 변경심의 플로우 타임라인              -->
+      <!-- ============================================ -->
+      <div class="card">
+        <div class="card-header">
+          <h3>📍 변경심의 처리 플로우</h3>
+        </div>
+        <div class="card-body">
+          <div class="timeline">
+            <div class="timeline-item">
+              <div class="timeline-dot done">✓</div>
+              <div class="timeline-content">
+                <div class="title">1. 변경 사유 선택 + 내용 입력</div>
+                <div class="desc">완료</div>
+              </div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-dot done">✓</div>
+              <div class="timeline-content">
+                <div class="title">2. AI 변경심의 판단 + 서류 양식 생성</div>
+                <div class="desc">신속심의 판정, 4개 서류 양식 생성 완료</div>
+              </div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-dot current">3</div>
+              <div class="timeline-content">
+                <div class="title">3. 변경심의 제출 + 추가 에스크로 예치</div>
+                <div class="desc">서류 검토 후 제출 버튼 클릭</div>
+              </div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-dot pending">4</div>
+              <div class="timeline-content">
+                <div class="title">4. IRB 심의 대기</div>
+                <div class="desc">신속심의: 약 1-2주 / 정규심의: 약 4-8주</div>
+              </div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-dot pending">5</div>
+              <div class="timeline-content">
+                <div class="title">5. 승인 → 변경 적용 + XRPL 앵커링</div>
+                <div class="desc">프로토콜 업데이트, 기존 참여자 재동의 요청 자동 발송</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 제출 버튼 -->
+      <div class="btn-row">
+        <a href="#" class="btn btn-secondary">← 연구 대시보드</a>
+        <a href="#" class="btn btn-amber" onclick="alert('변경심의 제출 + 추가 에스크로 578 XRP 예치\n\n1. 변경심의 서류 제출\n2. 추가 에스크로 예치\n3. 심의 대기 상태 전환\n\n기존 연구는 현재 프로토콜대로 계속 진행됩니다.')">
+          변경심의 제출 + 추가 에스크로 예치 →
+        </a>
+      </div>
+
+      <!-- 스텝 네비게이션 -->
+      <div class="step-nav">
+        <a href="list.html">← 연구 목록</a>
+        <a href="create.html">새 연구 생성</a>
+      </div>
+
+      <!-- 디자이너 노트 -->
+      <div class="designer-note">
+        <h3>📋 디자이너 노트: 연구 수정 + IRB 변경심의</h3>
+        <div class="content">
+          <strong>진입 경로:</strong><br>
+          • 연구 대시보드 → "수정하기" 버튼 → 이 페이지<br>
+          • 사이드바: 진행 중 연구의 서브 메뉴로 접근<br><br>
+
+          <strong>변경심의 유형 (생명윤리법 시행규칙 제13조):</strong><br>
+          • <strong>신속심의 (Expedited)</strong>: 최소 위험 변경 — 데이터 추가 (비침습), 기간 연장, 보상 변경<br>
+          • <strong>정규심의 (Full Board)</strong>: 중대 변경 — 방법론 변경, 대상자 기준 변경, 침습적 시술 추가<br>
+          • <strong>보고만 (Notification)</strong>: 오타 수정, 연구자 연락처 변경 등 (IRB 보고만으로 처리)<br><br>
+
+          <strong>핵심 플로우:</strong><br>
+          • 변경 사유 선택 → 변경 내용 diff 뷰 → AI 심의 유형 판단 → 서류 양식 생성 → 추가 에스크로 → 제출<br>
+          • 변경심의 승인 전까지 기존 프로토콜대로 연구 계속 진행<br>
+          • 승인 후: 프로토콜 업데이트 + 기존 참여자 재동의 + XRPL 앵커링<br><br>
+
+          <strong>재동의 로직:</strong><br>
+          • 데이터/방법론 변경 → 기존 참여자 전원에게 수정 동의서 발송<br>
+          • 거부 시: 기존 프로토콜대로 계속 참여 (추가 변경분만 미적용)<br>
+          • 동의서 변경 → 변경 후 신규 참여자는 새 동의서로 시작<br><br>
+
+          <strong>DB:</strong><br>
+          • irb_submissions.submission_type = 'amendment'<br>
+          • irb_submissions에 parent_submission_id 추가 (원본 승인 참조)<br>
+          • amendment_details JSON 필드: 변경 전/후 값 저장
+        </div>
+      </div>
+
+      <!-- 기능 명세 -->
+      <div style="background: linear-gradient(135deg, #ecfdf5, #d1fae5); border: 2px solid #10b981; border-radius: 12px; padding: 16px; margin-top: 12px;">
+        <h3 style="color: #047857; margin-bottom: 12px; font-size: 14px;">⚙️ 기능 명세</h3>
+        <div style="font-size: 12px; color: #374151; line-height: 1.8;">
+          <strong>핵심 기능:</strong><br>
+          • 진행 중 연구의 프로토콜 변경 요청<br>
+          • 변경 사유 선택 (복수 선택 가능)<br>
+          • 변경 전/후 비교 (diff 뷰)<br>
+          • AI 기반 변경심의 유형 자동 판단 (신속/정규/보고)<br>
+          • 변경심의 서류 양식 AI 자동 생성<br>
+          • 추가 에스크로 예치 (보상 변경 시)<br>
+          • 기존 참여자 재동의 자동화<br><br>
+
+          <strong>변경심의 판단 기준 (AI):</strong><br>
+          • 데이터 추가 (비침습) → 신속심의<br>
+          • 기간 연장/단축 → 신속심의<br>
+          • 보상 금액 변경 → 신속심의<br>
+          • 방법론 변경 → 정규심의<br>
+          • 참여자 기준 변경 → 정규심의<br>
+          • 침습적 시술 추가 → 정규심의<br>
+          • 오타/연락처 수정 → 보고만
+        </div>
+      </div>
+
+      <!-- 백엔드 호출 -->
+      <div style="background: linear-gradient(135deg, #f5f3ff, #ede9fe); border: 2px solid #8b5cf6; border-radius: 12px; padding: 16px; margin-top: 12px;">
+        <h3 style="color: #6d28d9; margin-bottom: 12px; font-size: 14px;">🔗 백엔드 호출</h3>
+        <div style="font-size: 11px; font-family: 'SF Mono', Monaco, monospace; color: #374151; line-height: 1.8;">
+          <strong style="font-family: -apple-system, sans-serif;">1. 변경심의 유형 판단 (AI):</strong><br>
+          <code style="background: #1f2937; color: #a5b4fc; padding: 8px 12px; border-radius: 6px; display: block; margin: 6px 0;">
+POST /enterprise/irb/amendment/pre-review<br>
+{<br>
+&nbsp;&nbsp;"project_id": "uuid",<br>
+&nbsp;&nbsp;"reasons": ["data_collection_change"],<br>
+&nbsp;&nbsp;"changes": {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"passive_data": { "added": ["blood_pressure"] },<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"active_data": { "added": ["pss10_survey"] }<br>
+&nbsp;&nbsp;}<br>
+}<br>
+→ {<br>
+&nbsp;&nbsp;"review_type": "expedited",<br>
+&nbsp;&nbsp;"reason": "Minimal risk addition",<br>
+&nbsp;&nbsp;"re_consent_required": true,<br>
+&nbsp;&nbsp;"affected_participants": 42<br>
+}
+          </code>
+
+          <strong style="font-family: -apple-system, sans-serif;">2. 변경심의 서류 생성 (AI):</strong><br>
+          <code style="background: #1f2937; color: #a5b4fc; padding: 8px 12px; border-radius: 6px; display: block; margin: 6px 0;">
+POST /enterprise/irb/amendment/documents<br>
+{ "project_id": "uuid", "changes": {...} }<br>
+→ {<br>
+&nbsp;&nbsp;"documents": [<br>
+&nbsp;&nbsp;&nbsp;&nbsp;{ "type": "amendment_report", "status": "ai_draft" },<br>
+&nbsp;&nbsp;&nbsp;&nbsp;{ "type": "comparison_table", "status": "ai_draft" },<br>
+&nbsp;&nbsp;&nbsp;&nbsp;{ "type": "revised_consent_form", "status": "ai_draft" },<br>
+&nbsp;&nbsp;&nbsp;&nbsp;{ "type": "revised_protocol", "status": "ai_draft" }<br>
+&nbsp;&nbsp;]<br>
+}
+          </code>
+
+          <strong style="font-family: -apple-system, sans-serif;">3. 변경심의 제출 + 추가 에스크로:</strong><br>
+          <code style="background: #1f2937; color: #a5b4fc; padding: 8px 12px; border-radius: 6px; display: block; margin: 6px 0;">
+POST /enterprise/irb/amendment/submit<br>
+{<br>
+&nbsp;&nbsp;"project_id": "uuid",<br>
+&nbsp;&nbsp;"parent_submission_id": "original-irb-uuid",<br>
+&nbsp;&nbsp;"documents": [...],<br>
+&nbsp;&nbsp;"additional_escrow_xrp": 578<br>
+}<br>
+→ {<br>
+&nbsp;&nbsp;"submission_id": "uuid",<br>
+&nbsp;&nbsp;"submission_type": "amendment",<br>
+&nbsp;&nbsp;"status": "submitted",<br>
+&nbsp;&nbsp;"review_type": "expedited"<br>
+}
+          </code>
+
+          <strong style="font-family: -apple-system, sans-serif;">4. 승인 후 재동의 요청:</strong><br>
+          <code style="background: #1f2937; color: #a5b4fc; padding: 8px 12px; border-radius: 6px; display: block; margin: 6px 0;">
+POST /enterprise/projects/:id/re-consent<br>
+{<br>
+&nbsp;&nbsp;"amendment_id": "uuid",<br>
+&nbsp;&nbsp;"target_participants": "all_active",<br>
+&nbsp;&nbsp;"revised_consent_doc_id": "uuid"<br>
+}<br>
+→ {<br>
+&nbsp;&nbsp;"notifications_sent": 42,<br>
+&nbsp;&nbsp;"deadline": "2026-03-15"<br>
+}
+          </code>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="page-spec.js"></script>
+  <link rel="stylesheet" href="../tooltip-spec.css">
+  <script src="../tooltip-spec.js"></script>
+</body>
+</html>
