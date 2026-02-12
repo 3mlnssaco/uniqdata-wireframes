@@ -871,7 +871,7 @@
   </div><!-- /.layout -->
 
   <!-- 디자이너 노트 토글 -->
-  <button class="toggle-notes" onclick="document.querySelector('.designer-notes').classList.toggle('show')">📋 디자이너 노트</button>
+  <button class="toggle-notes" onclick="document.querySelectorAll('.designer-notes').forEach(el => el.classList.toggle('show'))">📋 디자이너 노트</button>
 
   <!-- 디자이너 노트 -->
   <div class="designer-notes">
