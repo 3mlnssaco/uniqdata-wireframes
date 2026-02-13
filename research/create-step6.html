@@ -888,7 +888,14 @@
       <strong>핵심 포인트:</strong><br>
       &bull; 에스크로 예치와 모집 실행을 하나의 Step으로 통합<br>
       &bull; 모집 실행은 에스크로 예치 완료 후에만 활성화 (잠금 UX)<br>
-      &bull; 체크박스 3개 모두 체크해야 예치 버튼 활성화 (동의 확보)
+      &bull; 체크박스 3개 모두 체크해야 예치 버튼 활성화 (동의 확보)<br><br>
+
+      <strong>ERD 매핑 (v6 — 33 Tables):</strong><br>
+      &bull; 프로젝트 지갑 &#x2192; <code>project_wallets</code> (uniqdata_db, 1:1 projects)<br>
+      &bull; 입금/출금 내역 &#x2192; <code>project_wallet_transactions</code> (tx_type: DEPOSIT|WITHDRAWAL|REWARD_PAYOUT|REFUND)<br>
+      &bull; 개인 지갑 잔액 &#x2192; <code>user_wallets</code> (health_db, cross-DB API 조회)<br>
+      &bull; XRPL 트랜잭션 &#x2192; <code>xrpl_transactions</code> (health_db, tx_type=ESCROW_CREATE)<br>
+      &bull; 지갑 생성 흐름: IRB 승인 &#x2192; project_wallets INSERT (status=CREATED) &#x2192; 입금 &#x2192; FUNDED &#x2192; 에스크로 &#x2192; ACTIVE
     </div>
   </div>
 
@@ -918,32 +925,53 @@
   <div class="designer-notes" id="backend-spec">
     <h3 style="color: #6d28d9;">&#x1F517; 백엔드 호출: Step 6</h3>
     <div class="content" style="columns: 1;">
+      <strong>ERD 참조 테이블:</strong><br>
+      &bull; <code>project_wallets</code> — 프로젝트 전용 지갑 (서버 키 보유, 프로젝트당 1:1)<br>
+      &bull; <code>project_wallet_transactions</code> — 입출금 내역 (DEPOSIT|WITHDRAWAL|REWARD_PAYOUT|REFUND)<br>
+      &bull; <code>xrpl_transactions</code> — XRPL 트랜잭션 기록<br>
+      &bull; <code>settlement_batches</code> / <code>settlement_items</code> — 참여자 정산<br><br>
+
       <strong>1. 프로젝트 지갑 생성 (IRB 승인 시 자동):</strong><br>
       <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0; font-size: 11px; font-family: 'SF Mono', Monaco, monospace;">
-POST /api/xrpl/wallet/create<br>
-{ "project_id": "uuid", "type": "project" }<br>
-&#x2192; { "wallet_address": "rProjWallet3x7K...9mQ", "balance": 0 }
+POST /api/v2/projects/:id/wallet/create<br>
+{ "project_id": "uuid" }<br>
+&#x2192; {<br>
+&nbsp;&nbsp;"wallet_id": "uuid",<br>
+&nbsp;&nbsp;"wallet_address": "rPrj...1A2",<br>
+&nbsp;&nbsp;"budget_total": 7740,<br>
+&nbsp;&nbsp;"budget_deposited": 0,<br>
+&nbsp;&nbsp;"status": "CREATED"<br>
+}<br>
+// &#x2192; INSERT project_wallets (status=CREATED)
       </code><br>
 
-      <strong>2. 내 지갑 &#x2192; 프로젝트 지갑 입금:</strong><br>
+      <strong>2. 개인지갑 &#x2192; 프로젝트 지갑 이체 (DEPOSIT):</strong><br>
       <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0; font-size: 11px; font-family: 'SF Mono', Monaco, monospace;">
-POST /api/xrpl/payment<br>
+POST /api/v2/projects/:id/wallet/deposit<br>
 {<br>
-&nbsp;&nbsp;"from": "rMyWallet...",<br>
-&nbsp;&nbsp;"to": "rProjWallet3x7K...9mQ",<br>
-&nbsp;&nbsp;"amount_xrp": 7740<br>
+&nbsp;&nbsp;"from_wallet": "rMyWallet...",&nbsp;&nbsp;// user_wallets.xrpl_address<br>
+&nbsp;&nbsp;"amount": 7740,<br>
+&nbsp;&nbsp;"currency": "XRP"<br>
 }<br>
-&#x2192; { "tx_hash": "A1B2C3...", "status": "success" }
+&#x2192; {<br>
+&nbsp;&nbsp;"tx_id": "uuid",<br>
+&nbsp;&nbsp;"xrpl_tx_hash": "A1B2C3...",<br>
+&nbsp;&nbsp;"status": "CONFIRMED",<br>
+&nbsp;&nbsp;"wallet_balance": 7740<br>
+}<br>
+// &#x2192; INSERT project_wallet_transactions (tx_type=DEPOSIT)<br>
+// &#x2192; UPDATE project_wallets.budget_deposited += 7740<br>
+// &#x2192; UPDATE project_wallets.status = FUNDED
       </code><br>
 
       <strong>3. 에스크로 예치:</strong><br>
       <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0; font-size: 11px; font-family: 'SF Mono', Monaco, monospace;">
-POST /api/xrpl/escrow/create<br>
+POST /api/v2/projects/:id/escrow/create<br>
 {<br>
-&nbsp;&nbsp;"project_id": "uuid",<br>
-&nbsp;&nbsp;"source_wallet": "rProjWallet3x7K...9mQ",<br>
+&nbsp;&nbsp;"project_wallet_id": "uuid",<br>
 &nbsp;&nbsp;"compensation_amount": 6400,<br>
 &nbsp;&nbsp;"platform_fee": 340,<br>
+&nbsp;&nbsp;"irb_fee": 1000,<br>
 &nbsp;&nbsp;"conditions": {<br>
 &nbsp;&nbsp;&nbsp;&nbsp;"release_on": "participant_complete",<br>
 &nbsp;&nbsp;&nbsp;&nbsp;"refund_on": "research_cancelled"<br>
@@ -953,7 +981,11 @@ POST /api/xrpl/escrow/create<br>
 &nbsp;&nbsp;"escrow_tx_hash": "E4F5G6...",<br>
 &nbsp;&nbsp;"escrow_status": "funded",<br>
 &nbsp;&nbsp;"recruitment_unlocked": true<br>
-}
+}<br>
+// &#x2192; INSERT project_wallet_transactions (tx_type=WITHDRAWAL, memo=에스크로 예치)<br>
+// &#x2192; UPDATE project_wallets.budget_spent += 7740<br>
+// &#x2192; UPDATE project_wallets.status = ACTIVE<br>
+// &#x2192; INSERT xrpl_transactions (tx_type=ESCROW_CREATE)
       </code><br>
 
       <strong>4. 모집 시작:</strong><br>
@@ -965,10 +997,11 @@ POST /enterprise/projects/:id/recruitment/start<br>
 &nbsp;&nbsp;"invite_accept_deadline_days": 3<br>
 }<br>
 &#x2192; {<br>
-&nbsp;&nbsp;"status": "recruiting",<br>
+&nbsp;&nbsp;"status": "RECRUITING",<br>
 &nbsp;&nbsp;"invites_sent": 4,<br>
 &nbsp;&nbsp;"open_slots": 60<br>
-}
+}<br>
+// &#x2192; UPDATE projects.status = RECRUITING
       </code>
     </div>
   </div>
