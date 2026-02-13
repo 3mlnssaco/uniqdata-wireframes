@@ -343,6 +343,17 @@
       display: flex; align-items: center; justify-content: center; font-size: 16px;
     }
 
+    /* 방법론 탭 */
+    .method-tab {
+      padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: 500;
+      border: 1px solid #e5e7eb; background: white; color: #6b7280; cursor: pointer;
+      transition: all 0.15s;
+    }
+    .method-tab:hover { border-color: #8b5cf6; color: #7c3aed; }
+    .method-tab.active { background: #8b5cf6; color: white; border-color: #8b5cf6; }
+    .method-section { display: none; }
+    .method-section.active { display: block; }
+
     /* 디자이너 노트 (하단 오버레이) */
     .designer-notes {
       position: fixed; bottom: 0; left: 0; right: 0;
@@ -475,6 +486,183 @@
             <span class="status-badge" style="background:#ede9fe; color:#7c3aed;">Step 4</span>
           </div>
           <p style="color: #6b7280; margin-bottom: 28px; font-size: 14px;">모집 대상자 조건과 타겟 풀을 설정합니다. 실제 모집은 IRB + 에스크로 완료 후 Step 6에서 시작됩니다.</p>
+
+          <!-- 방법론 기반 그룹 구성 -->
+          <div class="card" style="border: 2px solid #8b5cf6;">
+            <div class="card-header" style="background: linear-gradient(135deg, #7c3aed, #6366f1); border: none;">
+              <h3 style="color: white;">🔬 연구 그룹 구성</h3>
+              <span style="font-size: 11px; color: #c4b5fd; background: rgba(255,255,255,0.15); padding: 4px 10px; border-radius: 12px;">Step 2 방법론 기반</span>
+            </div>
+            <div class="card-body">
+              <!-- 방법론 선택 탭 -->
+              <div style="font-size: 12px; font-weight: 600; color: #374151; margin-bottom: 10px;">적용된 방법론</div>
+              <div style="display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap;" id="methodTabs">
+                <button class="method-tab active" onclick="selectMethod('rct')">RCT</button>
+                <button class="method-tab" onclick="selectMethod('cohort')">코호트</button>
+                <button class="method-tab" onclick="selectMethod('smart')">SMART</button>
+                <button class="method-tab" onclick="selectMethod('mrt')">MRT</button>
+                <button class="method-tab" onclick="selectMethod('nof1')">N-of-1</button>
+                <button class="method-tab" onclick="selectMethod('cross')">횡단 조사</button>
+              </div>
+
+              <!-- RCT 그룹 -->
+              <div class="method-section active" id="method-rct">
+                <div style="background: #faf5ff; border: 1px solid #ddd6fe; border-radius: 10px; padding: 16px; margin-bottom: 16px;">
+                  <div style="font-size: 13px; font-weight: 600; color: #7c3aed; margin-bottom: 8px;">무작위 대조 시험 (RCT)</div>
+                  <div style="font-size: 12px; color: #6b7280; line-height: 1.6;">참여자를 실험군과 대조군에 무작위 배정합니다. 군당 인원과 배정 비율을 설정하세요.</div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+                  <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; padding: 16px; text-align: center;">
+                    <div style="font-size: 11px; color: #059669; margin-bottom: 4px;">실험군 (Intervention)</div>
+                    <div style="font-size: 28px; font-weight: 800; color: #059669;">50명</div>
+                    <div style="font-size: 12px; color: #6b7280;">저탄수화물 식단 (≤50g/일)</div>
+                  </div>
+                  <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 10px; padding: 16px; text-align: center;">
+                    <div style="font-size: 11px; color: #2563eb; margin-bottom: 4px;">대조군 (Control)</div>
+                    <div style="font-size: 28px; font-weight: 800; color: #2563eb;">50명</div>
+                    <div style="font-size: 12px; color: #6b7280;">일반 한식 식단</div>
+                  </div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                  <span style="font-size: 13px; color: #374151; font-weight: 500;">배정 비율:</span>
+                  <select style="height: 36px; border: 1px solid #e5e7eb; border-radius: 8px; padding: 0 12px; font-size: 13px;">
+                    <option selected>1:1 (동일 배정)</option>
+                    <option>2:1 (실험군 우선)</option>
+                    <option>3:1 (실험군 3배)</option>
+                  </select>
+                  <span style="font-size: 12px; color: #6b7280;">블록 무작위 배정</span>
+                </div>
+              </div>
+
+              <!-- 코호트 그룹 -->
+              <div class="method-section" id="method-cohort">
+                <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 10px; padding: 16px; margin-bottom: 16px;">
+                  <div style="font-size: 13px; font-weight: 600; color: #2563eb; margin-bottom: 8px;">전향적 코호트</div>
+                  <div style="font-size: 12px; color: #6b7280; line-height: 1.6;">노출군과 비노출군을 관찰 추적합니다. 무작위 배정 없이 자연 발생 그룹을 추적합니다.</div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+                  <div style="background: #fef3c7; border: 1px solid #fde68a; border-radius: 10px; padding: 16px; text-align: center;">
+                    <div style="font-size: 11px; color: #92400e; margin-bottom: 4px;">노출군 (Exposed)</div>
+                    <div style="font-size: 28px; font-weight: 800; color: #92400e;">60명</div>
+                    <div style="font-size: 12px; color: #6b7280;">저탄수화물 식단 실천자</div>
+                  </div>
+                  <div style="background: #f3f4f6; border: 1px solid #e5e7eb; border-radius: 10px; padding: 16px; text-align: center;">
+                    <div style="font-size: 11px; color: #374151; margin-bottom: 4px;">비노출군 (Unexposed)</div>
+                    <div style="font-size: 28px; font-weight: 800; color: #374151;">60명</div>
+                    <div style="font-size: 12px; color: #6b7280;">일반 식단 유지자</div>
+                  </div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                  <span style="font-size: 13px; color: #374151; font-weight: 500;">추적 기간:</span>
+                  <input type="number" value="12" style="width: 60px; height: 36px; border: 1px solid #e5e7eb; border-radius: 8px; text-align: center; font-size: 13px;">
+                  <span style="font-size: 12px; color: #6b7280;">주 · 매칭 기준: 연령, 성별, BMI</span>
+                </div>
+              </div>
+
+              <!-- SMART 그룹 -->
+              <div class="method-section" id="method-smart">
+                <div style="background: #fef3c7; border: 1px solid #fde68a; border-radius: 10px; padding: 16px; margin-bottom: 16px;">
+                  <div style="font-size: 13px; font-weight: 600; color: #92400e; margin-bottom: 8px;">적응형 다단계 배정 (SMART)</div>
+                  <div style="font-size: 12px; color: #6b7280; line-height: 1.6;">1단계 개입 후 반응/비반응에 따라 2단계 개입이 달라집니다. 단계별 그룹을 설정하세요.</div>
+                </div>
+                <div style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 10px; padding: 16px;">
+                  <div style="font-size: 12px; font-weight: 600; color: #374151; margin-bottom: 12px;">Stage 1 → 반응 평가 → Stage 2</div>
+                  <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                    <div style="background: #8b5cf6; color: white; padding: 8px 14px; border-radius: 8px; font-size: 12px; font-weight: 600;">전체 100명</div>
+                    <span style="color: #6b7280;">→</span>
+                    <div style="background: #f0fdf4; border: 1px solid #bbf7d0; padding: 8px 14px; border-radius: 8px; font-size: 12px;">반응군 → 유지/강화</div>
+                    <div style="background: #fef2f2; border: 1px solid #fecaca; padding: 8px 14px; border-radius: 8px; font-size: 12px;">비반응군 → 대안 A/B</div>
+                  </div>
+                  <div style="margin-top: 12px; font-size: 12px; color: #6b7280;">
+                    4주 후 반응 평가 기준: MAGE 감소 ≥15% → 반응군
+                  </div>
+                </div>
+              </div>
+
+              <!-- MRT 그룹 -->
+              <div class="method-section" id="method-mrt">
+                <div style="background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 10px; padding: 16px; margin-bottom: 16px;">
+                  <div style="font-size: 13px; font-weight: 600; color: #047857; margin-bottom: 8px;">마이크로 무작위 시험 (MRT)</div>
+                  <div style="font-size: 12px; color: #6b7280; line-height: 1.6;">매 결정 시점마다 개입 여부를 무작위 배정합니다. JITAI(Just-In-Time Adaptive Intervention) 설계입니다.</div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px;">
+                  <div style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 10px; padding: 14px; text-align: center;">
+                    <div style="font-size: 11px; color: #6b7280;">참여자</div>
+                    <div style="font-size: 24px; font-weight: 800;">100명</div>
+                  </div>
+                  <div style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 10px; padding: 14px; text-align: center;">
+                    <div style="font-size: 11px; color: #6b7280;">결정 시점/일</div>
+                    <div style="font-size: 24px; font-weight: 800;">5회</div>
+                  </div>
+                  <div style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 10px; padding: 14px; text-align: center;">
+                    <div style="font-size: 11px; color: #6b7280;">배정 확률</div>
+                    <div style="font-size: 24px; font-weight: 800;">0.5</div>
+                  </div>
+                </div>
+                <div style="margin-top: 12px; font-size: 12px; color: #6b7280;">
+                  총 결정 시점: 100명 × 5회/일 × 56일 = 28,000 관측치
+                </div>
+              </div>
+
+              <!-- N-of-1 그룹 -->
+              <div class="method-section" id="method-nof1">
+                <div style="background: #fdf2f8; border: 1px solid #fbcfe8; border-radius: 10px; padding: 16px; margin-bottom: 16px;">
+                  <div style="font-size: 13px; font-weight: 600; color: #be185d; margin-bottom: 8px;">단일 피험자 반복 측정 (N-of-1)</div>
+                  <div style="font-size: 12px; color: #6b7280; line-height: 1.6;">1명의 참여자에 대해 A-B-A-B 교차 설계로 반복 측정합니다. 개인 맞춤 효과를 검증합니다.</div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr; gap: 12px;">
+                  <div style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 10px; padding: 16px;">
+                    <div style="font-size: 12px; font-weight: 600; margin-bottom: 8px;">A-B-A-B 교차 설계</div>
+                    <div style="display: flex; gap: 4px;">
+                      <div style="flex: 1; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; padding: 10px; text-align: center; font-size: 11px;">
+                        <strong>A기</strong><br>저탄수화물<br>2주
+                      </div>
+                      <div style="flex: 1; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 6px; padding: 10px; text-align: center; font-size: 11px;">
+                        <strong>B기</strong><br>일반 식단<br>2주
+                      </div>
+                      <div style="flex: 1; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; padding: 10px; text-align: center; font-size: 11px;">
+                        <strong>A기</strong><br>저탄수화물<br>2주
+                      </div>
+                      <div style="flex: 1; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 6px; padding: 10px; text-align: center; font-size: 11px;">
+                        <strong>B기</strong><br>일반 식단<br>2주
+                      </div>
+                    </div>
+                    <div style="margin-top: 8px; font-size: 12px; color: #6b7280;">wash-out 기간: 각 기 전환 시 3일</div>
+                  </div>
+                </div>
+                <div style="margin-top: 12px; display: flex; align-items: center; gap: 12px;">
+                  <span style="font-size: 13px; color: #374151; font-weight: 500;">동시 진행 참여자:</span>
+                  <input type="number" value="10" style="width: 60px; height: 36px; border: 1px solid #e5e7eb; border-radius: 8px; text-align: center; font-size: 13px;">
+                  <span style="font-size: 12px; color: #6b7280;">명 (각각 독립적 A-B-A-B)</span>
+                </div>
+              </div>
+
+              <!-- 횡단 조사 그룹 -->
+              <div class="method-section" id="method-cross">
+                <div style="background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 10px; padding: 16px; margin-bottom: 16px;">
+                  <div style="font-size: 13px; font-weight: 600; color: #0369a1; margin-bottom: 8px;">횡단 조사 (Cross-sectional)</div>
+                  <div style="font-size: 12px; color: #6b7280; line-height: 1.6;">한 시점 스냅샷으로 데이터를 수집합니다. 층화 표본 추출로 대표성을 확보하세요.</div>
+                </div>
+                <div style="font-size: 12px; font-weight: 600; color: #374151; margin-bottom: 10px;">층화 표본 쿼터</div>
+                <table style="width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 12px;">
+                  <thead>
+                    <tr style="background: #f9fafb;">
+                      <th style="text-align: left; padding: 8px; border-bottom: 1px solid #e5e7eb;">층 (Stratum)</th>
+                      <th style="text-align: center; padding: 8px; border-bottom: 1px solid #e5e7eb;">목표 인원</th>
+                      <th style="text-align: center; padding: 8px; border-bottom: 1px solid #e5e7eb;">비율</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr><td style="padding: 6px 8px; border-bottom: 1px solid #f3f4f6;">30~39세</td><td style="text-align: center; padding: 6px; border-bottom: 1px solid #f3f4f6;">15명</td><td style="text-align: center; padding: 6px; border-bottom: 1px solid #f3f4f6;">15%</td></tr>
+                    <tr><td style="padding: 6px 8px; border-bottom: 1px solid #f3f4f6;">40~49세</td><td style="text-align: center; padding: 6px; border-bottom: 1px solid #f3f4f6;">25명</td><td style="text-align: center; padding: 6px; border-bottom: 1px solid #f3f4f6;">25%</td></tr>
+                    <tr><td style="padding: 6px 8px; border-bottom: 1px solid #f3f4f6;">50~59세</td><td style="text-align: center; padding: 6px; border-bottom: 1px solid #f3f4f6;">35명</td><td style="text-align: center; padding: 6px; border-bottom: 1px solid #f3f4f6;">35%</td></tr>
+                    <tr><td style="padding: 6px 8px;">60~65세</td><td style="text-align: center; padding: 6px;">25명</td><td style="text-align: center; padding: 6px;">25%</td></tr>
+                  </tbody>
+                </table>
+                <div style="font-size: 12px; color: #6b7280;">총 100명 · 인구 분포 비례 할당 · 1회 데이터 수집</div>
+              </div>
+            </div>
+          </div>
 
           <!-- Section 1: 사전 초대자 지정 -->
           <div class="card">
@@ -953,6 +1141,16 @@ POST /enterprise/projects/:id/target/config<br>
     </div>
   </div>
 
+  <script>
+    function selectMethod(type) {
+      // 탭 활성화
+      document.querySelectorAll('.method-tab').forEach(t => t.classList.remove('active'));
+      event.target.classList.add('active');
+      // 섹션 전환
+      document.querySelectorAll('.method-section').forEach(s => s.classList.remove('active'));
+      document.getElementById('method-' + type).classList.add('active');
+    }
+  </script>
   <script src="page-spec.js"></script>
   <link rel="stylesheet" href="../tooltip-spec.css">
   <script src="../tooltip-spec.js"></script>
