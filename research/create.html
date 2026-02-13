@@ -25,6 +25,9 @@
     .step-num.active { background: #8b5cf6; color: white; }
     .step-num.pending { background: #e5e7eb; color: #9ca3af; }
     .step-label { font-size: 12px; color: #6b7280; text-align: center; }
+    a.step { text-decoration: none; color: inherit; cursor: pointer; }
+    a.step:hover .step-num:not(.active) { transform: scale(1.1); transition: transform 0.15s; }
+    a.step:hover .step-label { color: #374151; }
     .step-line { flex: 1; height: 2px; background: #e5e7eb; margin: 20px 8px 0; }
     .step-line.done { background: #22c55e; }
 
@@ -127,17 +130,17 @@
 
       <!-- 스텝 인디케이터 (6단계 IRB 플로우) -->
       <div class="steps">
-        <div class="step"><div class="step-num active">1</div><div class="step-label">AI 인터뷰</div></div>
+        <a class="step" href="create.html"><div class="step-num active">1</div><div class="step-label">AI 인터뷰</div></a>
         <div class="step-line"></div>
-        <div class="step"><div class="step-num pending">2</div><div class="step-label">연구 설계</div></div>
+        <a class="step" href="create-step2.html"><div class="step-num pending">2</div><div class="step-label">연구 설계</div></a>
         <div class="step-line"></div>
-        <div class="step"><div class="step-num pending">3</div><div class="step-label">데이터 수집</div></div>
+        <a class="step" href="create-step3.html"><div class="step-num pending">3</div><div class="step-label">데이터 수집</div></a>
         <div class="step-line"></div>
-        <div class="step"><div class="step-num pending">4</div><div class="step-label">타겟 설정</div></div>
+        <a class="step" href="create-step4.html"><div class="step-num pending">4</div><div class="step-label">타겟 설정</div></a>
         <div class="step-line"></div>
-        <div class="step"><div class="step-num pending">5</div><div class="step-label">IRB 완성</div></div>
+        <a class="step" href="create-step5.html"><div class="step-num pending">5</div><div class="step-label">IRB 완성</div></a>
         <div class="step-line"></div>
-        <div class="step"><div class="step-num pending">6</div><div class="step-label">에스크로</div></div>
+        <a class="step" href="create-step6.html"><div class="step-num pending">6</div><div class="step-label">에스크로</div></a>
       </div>
 
       <!-- AI 연구 설계 카드 -->

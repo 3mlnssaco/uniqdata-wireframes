@@ -27,6 +27,9 @@
     .step-num.active { background: #8b5cf6; color: white; }
     .step-num.pending { background: #e5e7eb; color: #9ca3af; }
     .step-label { font-size: 11px; color: #6b7280; text-align: center; }
+    a.step { text-decoration: none; color: inherit; cursor: pointer; }
+    a.step:hover .step-num:not(.active) { transform: scale(1.1); transition: transform 0.15s; }
+    a.step:hover .step-label { color: #374151; }
     .step-line { width: 60px; height: 2px; background: #e5e7eb; margin: 0 4px; margin-bottom: 20px; }
     .step-line.done { background: #22c55e; }
 
@@ -203,17 +206,17 @@
 
       <!-- 스텝 인디케이터 -->
       <div class="steps">
-        <div class="step"><div class="step-num done">✓</div><div class="step-label">AI 인터뷰</div></div>
+        <a class="step" href="create.html"><div class="step-num done">✓</div><div class="step-label">AI 인터뷰</div></a>
         <div class="step-line done"></div>
-        <div class="step"><div class="step-num active">2</div><div class="step-label">연구 설계</div></div>
+        <a class="step" href="create-step2.html"><div class="step-num active">2</div><div class="step-label">연구 설계</div></a>
         <div class="step-line"></div>
-        <div class="step"><div class="step-num pending">3</div><div class="step-label">데이터 수집</div></div>
+        <a class="step" href="create-step3.html"><div class="step-num pending">3</div><div class="step-label">데이터 수집</div></a>
         <div class="step-line"></div>
-        <div class="step"><div class="step-num pending">4</div><div class="step-label">타겟 설정</div></div>
+        <a class="step" href="create-step4.html"><div class="step-num pending">4</div><div class="step-label">타겟 설정</div></a>
         <div class="step-line"></div>
-        <div class="step"><div class="step-num pending">5</div><div class="step-label">IRB 완성</div></div>
+        <a class="step" href="create-step5.html"><div class="step-num pending">5</div><div class="step-label">IRB 완성</div></a>
         <div class="step-line"></div>
-        <div class="step"><div class="step-num pending">6</div><div class="step-label">에스크로</div></div>
+        <a class="step" href="create-step6.html"><div class="step-num pending">6</div><div class="step-label">에스크로</div></a>
       </div>
 
       <!-- ===== 1. 기본 정보 ===== -->

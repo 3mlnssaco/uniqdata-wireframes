@@ -100,6 +100,9 @@
       white-space: nowrap;
     }
     .sb-step.active .sb-label { color: #e2e8f0; }
+    a.sb-step { text-decoration: none; color: inherit; cursor: pointer; }
+    a.sb-step:hover .sb-num:not(.active) { transform: scale(1.1); transition: transform 0.15s; }
+    a.sb-step:hover .sb-label { color: #e2e8f0; }
     .sb-line {
       width: 40px;
       height: 2px;
@@ -608,17 +611,17 @@
       <!-- Step Bar -->
       <div class="step-bar">
         <div class="step-bar-inner">
-          <div class="sb-step done"><div class="sb-num">&#x2713;</div><div class="sb-label">AI 인터뷰</div></div>
+          <a class="sb-step done" href="create.html"><div class="sb-num">&#x2713;</div><div class="sb-label">AI 인터뷰</div></a>
           <div class="sb-line done"></div>
-          <div class="sb-step done"><div class="sb-num">&#x2713;</div><div class="sb-label">연구 설계</div></div>
+          <a class="sb-step done" href="create-step2.html"><div class="sb-num">&#x2713;</div><div class="sb-label">연구 설계</div></a>
           <div class="sb-line done"></div>
-          <div class="sb-step done"><div class="sb-num">&#x2713;</div><div class="sb-label">데이터 수집</div></div>
+          <a class="sb-step done" href="create-step3.html"><div class="sb-num">&#x2713;</div><div class="sb-label">데이터 수집</div></a>
           <div class="sb-line done"></div>
-          <div class="sb-step done"><div class="sb-num">&#x2713;</div><div class="sb-label">타겟 설정</div></div>
+          <a class="sb-step done" href="create-step4.html"><div class="sb-num">&#x2713;</div><div class="sb-label">타겟 설정</div></a>
           <div class="sb-line done"></div>
-          <div class="sb-step done"><div class="sb-num">&#x2713;</div><div class="sb-label">IRB 판정</div></div>
+          <a class="sb-step done" href="create-step5.html"><div class="sb-num">&#x2713;</div><div class="sb-label">IRB 판정</div></a>
           <div class="sb-line done"></div>
-          <div class="sb-step active"><div class="sb-num">6</div><div class="sb-label">에스크로</div></div>
+          <a class="sb-step active" href="create-step6.html"><div class="sb-num">6</div><div class="sb-label">에스크로</div></a>
         </div>
       </div>
 

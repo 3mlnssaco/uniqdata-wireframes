@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>연구 생성 Step 5 - 에스크로 예치 - Wireframe</title>
+  <title>연구 생성 Step 5 - IRB 심의 - Wireframe</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: -apple-system, sans-serif; background: #f5f5f5; }
@@ -25,6 +25,9 @@
     .step-num.active { background: #8b5cf6; color: white; }
     .step-num.pending { background: #e5e7eb; color: #9ca3af; }
     .step-label { font-size: 12px; color: #6b7280; text-align: center; }
+    a.step { text-decoration: none; color: inherit; cursor: pointer; }
+    a.step:hover .step-num:not(.active) { transform: scale(1.1); transition: transform 0.15s; }
+    a.step:hover .step-label { color: #374151; }
     .step-line { flex: 1; height: 2px; background: #e5e7eb; margin: 20px 8px 0; }
     .step-line.done { background: #22c55e; }
 
@@ -98,6 +101,58 @@
     .designer-note h3 { color: #a21caf; margin-bottom: 12px; font-size: 14px; }
     .designer-note .content { font-size: 12px; color: #374151; line-height: 1.7; }
 
+    /* IRB 유형 선택 카드 */
+    .irb-type-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 24px; }
+    .irb-type-card {
+      border: 2px solid #e5e7eb; border-radius: 12px; padding: 20px; cursor: pointer;
+      transition: all 0.2s; position: relative; background: white;
+    }
+    .irb-type-card:hover { border-color: #c4b5fd; background: #faf5ff; }
+    .irb-type-card.selected { border-color: #8b5cf6; background: #faf5ff; box-shadow: 0 0 0 3px rgba(139,92,246,0.15); }
+    .irb-type-card .type-icon { font-size: 28px; margin-bottom: 10px; }
+    .irb-type-card .type-title { font-size: 15px; font-weight: 700; color: #1f2937; margin-bottom: 4px; }
+    .irb-type-card .type-desc { font-size: 12px; color: #6b7280; line-height: 1.5; margin-bottom: 10px; }
+    .irb-type-card .type-fee { font-size: 13px; font-weight: 600; }
+    .irb-type-card .type-fee.free { color: #22c55e; }
+    .irb-type-card .type-fee.paid { color: #f59e0b; }
+    .irb-type-card .type-radio {
+      position: absolute; top: 12px; right: 12px;
+      width: 20px; height: 20px; border-radius: 50%; border: 2px solid #d1d5db;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .irb-type-card.selected .type-radio { border-color: #8b5cf6; background: #8b5cf6; }
+    .irb-type-card.selected .type-radio::after { content: ""; width: 8px; height: 8px; background: white; border-radius: 50%; }
+    .irb-type-card .type-tag {
+      display: inline-block; font-size: 10px; font-weight: 600; padding: 3px 8px;
+      border-radius: 6px; margin-bottom: 10px;
+    }
+    .irb-type-card .type-tag.green { background: #dcfce7; color: #166534; }
+    .irb-type-card .type-tag.amber { background: #fef3c7; color: #92400e; }
+    .irb-type-card .type-tag.blue { background: #dbeafe; color: #1e40af; }
+
+    /* 조건부 섹션 */
+    .irb-section { display: none; }
+    .irb-section.active { display: block; }
+
+    /* 심사비 카드 */
+    .fee-card { background: linear-gradient(135deg, #f59e0b, #d97706); border-radius: 12px; padding: 20px; color: white; text-align: center; margin-bottom: 20px; }
+    .fee-card .fee-label { font-size: 13px; opacity: 0.9; margin-bottom: 6px; }
+    .fee-card .fee-value { font-size: 32px; font-weight: 700; }
+    .fee-card .fee-usd { font-size: 14px; opacity: 0.8; margin-top: 4px; }
+
+    /* 타임라인 */
+    .timeline { margin: 16px 0; }
+    .timeline-item { display: flex; gap: 14px; padding-bottom: 16px; position: relative; }
+    .timeline-item:not(:last-child)::before {
+      content: ""; position: absolute; left: 15px; top: 36px; bottom: 0; width: 2px; background: #e5e7eb;
+    }
+    .timeline-dot { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+    .timeline-dot.done { background: #22c55e; color: white; }
+    .timeline-dot.current { background: #8b5cf6; color: white; }
+    .timeline-dot.pending { background: #e5e7eb; color: #9ca3af; }
+    .timeline-content .tl-title { font-size: 14px; font-weight: 600; color: #1f2937; }
+    .timeline-content .tl-desc { font-size: 12px; color: #6b7280; margin-top: 2px; }
+
     /* 내 연구 사이드바 */
     .research-list { margin-top: 8px; }
     .research-item { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 6px; font-size: 12px; color: #9ca3af; margin-bottom: 2px; cursor: pointer; }
@@ -156,241 +211,262 @@
     </div>
 
     <div class="main">
-      <h1>에스크로 예치</h1>
-      <p class="subtitle">연구 예산을 XRPL 에스크로에 예치합니다</p>
+      <h1>IRB 심의</h1>
+      <p class="subtitle">연구의 IRB 심의 유형을 선택하고 진행하세요</p>
 
-      <!-- 스텝 인디케이터 (6단계 IRB 플로우) -->
+      <!-- 스텝 인디케이터 -->
       <div class="steps">
-        <div class="step"><div class="step-num done">✓</div><div class="step-label">AI 인터뷰</div></div>
+        <a class="step" href="create.html"><div class="step-num done">✓</div><div class="step-label">AI 인터뷰</div></a>
         <div class="step-line done"></div>
-        <div class="step"><div class="step-num done">✓</div><div class="step-label">연구 설계</div></div>
+        <a class="step" href="create-step2.html"><div class="step-num done">✓</div><div class="step-label">연구 설계</div></a>
         <div class="step-line done"></div>
-        <div class="step"><div class="step-num done">✓</div><div class="step-label">데이터 수집</div></div>
+        <a class="step" href="create-step3.html"><div class="step-num done">✓</div><div class="step-label">데이터 수집</div></a>
         <div class="step-line done"></div>
-        <div class="step"><div class="step-num done">✓</div><div class="step-label">타겟 설정</div></div>
+        <a class="step" href="create-step4.html"><div class="step-num done">✓</div><div class="step-label">타겟 설정</div></a>
         <div class="step-line done"></div>
-        <div class="step"><div class="step-num active">5</div><div class="step-label">IRB 완성</div></div>
+        <a class="step" href="create-step5.html"><div class="step-num active">5</div><div class="step-label">IRB 심의</div></a>
         <div class="step-line"></div>
-        <div class="step"><div class="step-num pending">6</div><div class="step-label">에스크로</div></div>
+        <a class="step" href="create-step6.html"><div class="step-num pending">6</div><div class="step-label">에스크로</div></a>
       </div>
 
-      <!-- 지갑 잔액 -->
-      <div class="wallet-card">
-        <div class="wallet-header">
-          <span class="label">내 지갑 잔액</span>
-          <span class="action">+ 충전</span>
-        </div>
-        <div class="wallet-balance">45,000 XRP</div>
-        <div class="wallet-usd">≈ $22,500 USD</div>
-      </div>
-
-      <!-- 연구 요약 -->
-      <div class="card">
-        <div class="card-header">
-          <h3>📋 연구 설정 요약</h3>
-        </div>
-        <div class="card-body">
-          <div class="summary-section">
-            <div class="summary-title">
-              기본 정보
-              <span class="edit">수정</span>
-            </div>
-            <div class="summary-grid">
-              <div class="summary-item">
-                <div class="label">연구 제목</div>
-                <div class="value">저탄수화물 식단의 혈당 변동 개선 효과 연구</div>
-              </div>
-              <div class="summary-item">
-                <div class="label">연구 방법론</div>
-                <div class="value">RCT (무작위 대조 시험)</div>
-              </div>
-              <div class="summary-item">
-                <div class="label">목표 참여자</div>
-                <div class="value">100명</div>
-              </div>
-              <div class="summary-item">
-                <div class="label">연구 기간</div>
-                <div class="value">56일 (8주)</div>
-              </div>
-            </div>
-          </div>
-
-          <div class="summary-section">
-            <div class="summary-title">
-              수집 데이터
-              <span class="edit">수정</span>
-            </div>
-            <div class="summary-grid">
-              <div class="summary-item">
-                <div class="label">패시브 데이터</div>
-                <div class="value">CGM, 심박수, 활동량, 수면</div>
-              </div>
-              <div class="summary-item">
-                <div class="label">능동 데이터</div>
-                <div class="value">식단, 복약, 기분</div>
-              </div>
-            </div>
-          </div>
-
-          <div class="summary-section">
-            <div class="summary-title">
-              AI 분석 도구
-              <span class="edit">수정</span>
-            </div>
-            <div class="summary-grid">
-              <div class="summary-item">
-                <div class="label">핵심 도구</div>
-                <div class="value">DoWhy 인과추론, 그룹 비교 분석</div>
-              </div>
-              <div class="summary-item">
-                <div class="label">추가 기능</div>
-                <div class="value">자동 리포트, 이상치 탐지</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- 예치 금액 -->
-      <div class="escrow-amount">
-        <div class="label">에스크로 예치 금액</div>
-        <div class="value">6,930 XRP</div>
-        <div class="usd">≈ $3,465 USD</div>
-      </div>
-
-      <!-- IRB 승인 상태 확인 (MVP 추가) -->
-      <div style="background: linear-gradient(135deg, #f0fdf4, #dcfce7); border: 2px solid #22c55e; border-radius: 12px; padding: 20px; margin-bottom: 20px; display: flex; align-items: center; gap: 16px;">
-        <div style="width: 48px; height: 48px; background: #22c55e; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; color: white; flex-shrink: 0;">✓</div>
+      <!-- AI 판정 배너 -->
+      <div style="background: linear-gradient(135deg, #eff6ff, #dbeafe); border: 1px solid #93c5fd; border-radius: 12px; padding: 16px 20px; margin-bottom: 24px; display: flex; align-items: center; gap: 14px;">
+        <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #8b5cf6, #6366f1); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0;">🤖</div>
         <div style="flex: 1;">
-          <div style="font-weight: 700; color: #166534; font-size: 15px;">IRB 심의 승인 완료</div>
-          <div style="font-size: 13px; color: #6b7280; margin-top: 4px;">IRB-2026-001 · 서울대학교병원 기관생명윤리위원회 · 승인일: 2026-01-28</div>
+          <div style="font-size: 13px; font-weight: 600; color: #1e40af;">AI가 연구 설계를 분석하여 IRB 심의 유형을 추천합니다</div>
+          <div style="font-size: 12px; color: #6b7280; margin-top: 2px;">기존에 동의된 데이터만 사용하는 경우 면제 가능, 새로운 데이터 수집 시 심의 필요</div>
         </div>
-        <a href="irb-status.html" style="font-size: 12px; color: #8b5cf6; font-weight: 600; text-decoration: none;">IRB 현황 →</a>
       </div>
 
-      <!--
-        IRB 미승인 상태일 경우 아래 배너로 교체:
-        <div style="background: linear-gradient(135deg, #fffbeb, #fef3c7); border: 2px solid #f59e0b; border-radius: 12px; padding: 20px; margin-bottom: 20px; display: flex; align-items: center; gap: 16px;">
-          <div style="width: 48px; height: 48px; background: #f59e0b; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0;">🔒</div>
-          <div style="flex: 1;">
-            <div style="font-weight: 700; color: #92400e; font-size: 15px;">IRB 심의 진행 중 — 에스크로 잠김</div>
-            <div style="font-size: 13px; color: #6b7280; margin-top: 4px;">IRB 승인 완료 후 에스크로 예치가 활성화됩니다. 현재 상태: 예비 심사 중</div>
-          </div>
-          <a href="irb-status.html" style="font-size: 12px; color: #8b5cf6; font-weight: 600; text-decoration: none;">심의 현황 →</a>
-        </div>
-      -->
-
-      <!-- 체크리스트 -->
+      <!-- ===== IRB 유형 선택 ===== -->
       <div class="card">
         <div class="card-header">
-          <h3>✅ 예치 전 확인</h3>
+          <h3>📋 IRB 심의 유형 선택</h3>
+          <span style="font-size: 11px; color: #7c3aed; background: #f3e8ff; padding: 4px 10px; border-radius: 12px;">AI 추천: 일반 심의</span>
         </div>
         <div class="card-body">
-          <div class="checklist">
-            <div class="checklist-item">
-              <div class="icon">✓</div>
-              <div class="text"><strong>IRB 심의 승인</strong> — IRB-2026-001 승인 완료 (2026-01-28)</div>
+          <div class="irb-type-grid">
+            <!-- 면제 -->
+            <div class="irb-type-card" data-type="exempt" onclick="selectIRBType('exempt')">
+              <div class="type-radio"></div>
+              <div class="type-icon">🟢</div>
+              <span class="type-tag green">면제</span>
+              <div class="type-title">IRB 면제</div>
+              <div class="type-desc">기존 동의 데이터만 사용하거나, 공개 데이터 분석 등 IRB 심의가 불필요한 연구</div>
+              <div class="type-fee free">심사비: 없음</div>
             </div>
-            <div class="checklist-item">
-              <div class="icon">✓</div>
-              <div class="text">지갑 잔액 충분 (45,000 XRP > 6,930 XRP)</div>
+            <!-- 일반 심의 -->
+            <div class="irb-type-card selected" data-type="standard" onclick="selectIRBType('standard')">
+              <div class="type-radio"></div>
+              <div class="type-icon">🟡</div>
+              <span class="type-tag amber">일반 심의</span>
+              <div class="type-title">심사비 결제 + 심의</div>
+              <div class="type-desc">새로운 데이터를 수집하는 연구. 심사비 결제 후 IRB 위원회 심의를 거쳐 승인을 받습니다</div>
+              <div class="type-fee paid">심사비: 400 XRP</div>
             </div>
-            <div class="checklist-item">
-              <div class="icon">✓</div>
-              <div class="text">연구 설정 완료 (5단계 모두 완료)</div>
-            </div>
-            <div class="checklist-item">
-              <div class="icon">✓</div>
-              <div class="text">참여자 조건 ZKP 검증 준비 완료</div>
-            </div>
-            <div class="checklist-item">
-              <div class="icon">✓</div>
-              <div class="text">예상 모집 가능 인원: 2,847명</div>
+            <!-- 자동 승인 -->
+            <div class="irb-type-card" data-type="auto" onclick="selectIRBType('auto')">
+              <div class="type-radio"></div>
+              <div class="type-icon">🔵</div>
+              <span class="type-tag blue">간이 심의 (자동)</span>
+              <div class="type-title">자동 승인 → 모집</div>
+              <div class="type-desc">최소 위험 연구로 AI 사전 검증 통과 시 자동 승인. 승인 즉시 모집 단계로 진행</div>
+              <div class="type-fee paid">심사비: 200 XRP</div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- XRPL 정보 -->
-      <div class="xrpl-info">
-        <h4>⛓️ XRPL 에스크로 작동 방식</h4>
-        <p>
-          예치금은 XRPL 블록체인의 에스크로 계약에 안전하게 보관됩니다.<br>
-          • 참여자가 연구 조건을 충족하면 자동으로 보상이 지급됩니다<br>
-          • 연구자가 임의로 예치금을 인출할 수 없습니다<br>
-          • 모든 트랜잭션은 블록체인에 투명하게 기록됩니다
-        </p>
+      <!-- ===== 면제 섹션 ===== -->
+      <div class="irb-section" id="section-exempt">
+        <div style="background: linear-gradient(135deg, #f0fdf4, #dcfce7); border: 2px solid #22c55e; border-radius: 12px; padding: 24px; margin-bottom: 20px; text-align: center;">
+          <div style="font-size: 48px; margin-bottom: 12px;">✅</div>
+          <div style="font-size: 18px; font-weight: 700; color: #166534; margin-bottom: 8px;">IRB 심의 면제</div>
+          <div style="font-size: 13px; color: #6b7280; line-height: 1.6;">
+            이 연구는 기존 동의 데이터만 활용하므로 IRB 심의가 면제됩니다.<br>
+            심사비 없이 바로 에스크로 예치 단계로 진행할 수 있습니다.
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><h3>📝 면제 사유 확인</h3></div>
+          <div class="card-body">
+            <div class="checklist">
+              <div class="checklist-item">
+                <div class="icon">✓</div>
+                <div class="text">기존에 수집·동의된 데이터만 사용</div>
+              </div>
+              <div class="checklist-item">
+                <div class="icon">✓</div>
+                <div class="text">참여자에게 추가 위험이 없는 연구</div>
+              </div>
+              <div class="checklist-item">
+                <div class="icon">✓</div>
+                <div class="text">개인식별 불가능한 비식별 데이터 활용</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <a href="create-step4.html" class="btn btn-secondary">← 이전</a>
+          <a href="create-step6.html" class="btn btn-primary">에스크로 예치로 →</a>
+        </div>
       </div>
 
-      <!-- 경고 박스 -->
-      <div class="warning-box">
-        <h4>⚠️ 중요 안내</h4>
-        <p>
-          연구 생성 후에는 수집 데이터 항목, 참여자 조건, 동의서 내용을 변경할 수 없습니다.
-          변경이 필요한 경우 새로운 연구를 생성해야 합니다. 연구 기간 연장, 참여자 추가 모집, 추가 예산 투입은 가능합니다.
-        </p>
+      <!-- ===== 일반 심의 섹션 ===== -->
+      <div class="irb-section active" id="section-standard">
+        <!-- 심사비 -->
+        <div class="fee-card">
+          <div class="fee-label">IRB 심사비</div>
+          <div class="fee-value">400 XRP</div>
+          <div class="fee-usd">≈ $200 USD</div>
+        </div>
+
+        <!-- 심의 프로세스 타임라인 -->
+        <div class="card">
+          <div class="card-header"><h3>📊 심의 진행 프로세스</h3></div>
+          <div class="card-body">
+            <div class="timeline">
+              <div class="timeline-item">
+                <div class="timeline-dot current">1</div>
+                <div class="timeline-content">
+                  <div class="tl-title">심사비 결제</div>
+                  <div class="tl-desc">400 XRP를 결제하면 IRB 심의가 접수됩니다</div>
+                </div>
+              </div>
+              <div class="timeline-item">
+                <div class="timeline-dot pending">2</div>
+                <div class="timeline-content">
+                  <div class="tl-title">IRB 서류 자동 생성</div>
+                  <div class="tl-desc">AI가 연구 설계 기반으로 IRB 제출 서류를 자동 생성합니다</div>
+                </div>
+              </div>
+              <div class="timeline-item">
+                <div class="timeline-dot pending">3</div>
+                <div class="timeline-content">
+                  <div class="tl-title">위원회 심의 (5~14일)</div>
+                  <div class="tl-desc">기관생명윤리위원회에서 심의 진행. 수정 요청이 올 수 있습니다</div>
+                </div>
+              </div>
+              <div class="timeline-item">
+                <div class="timeline-dot pending">4</div>
+                <div class="timeline-content">
+                  <div class="tl-title">승인 완료 → 에스크로 예치</div>
+                  <div class="tl-desc">승인 후 에스크로 예치(Step 6) 단계가 활성화됩니다</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 지갑 잔액 -->
+        <div class="wallet-card">
+          <div class="wallet-header">
+            <span class="label">내 지갑 잔액</span>
+            <span class="action">+ 충전</span>
+          </div>
+          <div class="wallet-balance">45,000 XRP</div>
+          <div class="wallet-usd">≈ $22,500 USD</div>
+        </div>
+
+        <div class="warning-box">
+          <h4>⚠️ 안내</h4>
+          <p>심사비 결제 후 IRB 심의가 접수됩니다. 승인까지 평균 7~14일 소요되며, 승인 완료 시 알림을 보내드립니다. 승인 후 에스크로 예치 단계로 진행됩니다.</p>
+        </div>
+
+        <div class="btn-row">
+          <a href="create-step4.html" class="btn btn-secondary">← 이전</a>
+          <button class="btn btn-primary" onclick="alert('IRB 심사비 400 XRP 결제 처리 중...\n\n→ 결제 완료 후 IRB 심의 접수\n→ 승인 시 에스크로(Step 6) 활성화')">💳 심사비 결제 (400 XRP)</button>
+        </div>
       </div>
 
-      <!-- 동의 체크박스 -->
-      <div class="consent-box">
-        <div class="consent-item">
-          <input type="checkbox" id="consent1" checked>
-          <label for="consent1">위 연구 설정 내용을 확인했으며, 에스크로 예치에 동의합니다.</label>
+      <!-- ===== 자동 승인 섹션 ===== -->
+      <div class="irb-section" id="section-auto">
+        <!-- 심사비 -->
+        <div class="fee-card" style="background: linear-gradient(135deg, #3b82f6, #2563eb);">
+          <div class="fee-label">간이 심사비</div>
+          <div class="fee-value">200 XRP</div>
+          <div class="fee-usd">≈ $100 USD</div>
         </div>
-        <div class="consent-item">
-          <input type="checkbox" id="consent2" checked>
-          <label for="consent2">예치 후 수집 데이터 및 참여자 조건 변경이 불가능함을 이해합니다.</label>
-        </div>
-        <div class="consent-item">
-          <input type="checkbox" id="consent3" checked>
-          <label for="consent3">XRPL 에스크로 정책 및 UniQdata 이용약관에 동의합니다.</label>
-        </div>
-      </div>
 
-      <!-- 버튼 -->
-      <div class="btn-row">
-        <a href="create-step4.html" class="btn btn-secondary">← 이전</a>
-        <a href="list.html" class="btn btn-primary">✓ 연구 생성 및 예치</a>
+        <!-- AI 사전 검증 -->
+        <div class="card">
+          <div class="card-header">
+            <h3>🤖 AI 사전 검증 결과</h3>
+            <span style="font-size: 11px; color: #22c55e; background: #f0fdf4; padding: 4px 10px; border-radius: 12px; font-weight: 600;">통과</span>
+          </div>
+          <div class="card-body">
+            <div class="checklist">
+              <div class="checklist-item">
+                <div class="icon">✓</div>
+                <div class="text"><strong>최소 위험 연구</strong> — 일상적 의료 행위 수준의 위험</div>
+              </div>
+              <div class="checklist-item">
+                <div class="icon">✓</div>
+                <div class="text"><strong>취약 대상자 미포함</strong> — 소아, 임산부, 수감자 등 미포함</div>
+              </div>
+              <div class="checklist-item">
+                <div class="icon">✓</div>
+                <div class="text"><strong>비침습적 데이터 수집</strong> — 웨어러블/설문 기반</div>
+              </div>
+              <div class="checklist-item">
+                <div class="icon">✓</div>
+                <div class="text"><strong>표준 동의서 적용 가능</strong> — 별도 심의 불필요</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="background: linear-gradient(135deg, #eff6ff, #dbeafe); border: 1px solid #93c5fd; border-radius: 12px; padding: 16px 20px; margin-bottom: 20px;">
+          <div style="font-size: 14px; font-weight: 600; color: #1e40af; margin-bottom: 6px;">⚡ 자동 승인 플로우</div>
+          <div style="font-size: 13px; color: #3b82f6; line-height: 1.6;">
+            심사비 결제 → AI 검증 자동 완료 → <strong>즉시 승인</strong> → 에스크로 예치(Step 6)로 바로 이동<br>
+            별도 대기 시간 없이 모집 준비를 시작할 수 있습니다.
+          </div>
+        </div>
+
+        <!-- 지갑 잔액 -->
+        <div class="wallet-card">
+          <div class="wallet-header">
+            <span class="label">내 지갑 잔액</span>
+            <span class="action">+ 충전</span>
+          </div>
+          <div class="wallet-balance">45,000 XRP</div>
+          <div class="wallet-usd">≈ $22,500 USD</div>
+        </div>
+
+        <div class="btn-row">
+          <a href="create-step4.html" class="btn btn-secondary">← 이전</a>
+          <button class="btn btn-primary" style="background: linear-gradient(135deg, #3b82f6, #2563eb);" onclick="alert('간이 심사비 200 XRP 결제 + 자동 승인 처리 중...\n\n→ AI 검증 통과\n→ 즉시 승인 완료\n→ 에스크로 예치(Step 6)로 이동')">⚡ 결제 + 자동 승인 (200 XRP)</button>
+        </div>
       </div>
 
       <!-- 스텝 네비게이션 -->
       <div class="step-nav">
         <a href="create-step4.html">← Step 4</a>
-        <a href="list.html">연구 목록 →</a>
+        <a href="create-step6.html">Step 6 →</a>
       </div>
 
       <!-- 디자이너 노트 -->
       <div class="designer-note">
-        <h3>📋 디자이너 노트: Step 5 - 에스크로 예치</h3>
+        <h3>📋 디자이너 노트: Step 5 - IRB 심의</h3>
         <div class="content">
-          <strong>최종 단계:</strong><br>
-          • 연구 설정 전체 요약 표시<br>
-          • 예치 금액 강조 표시<br>
-          • XRPL 에스크로 작동 방식 설명<br><br>
+          <strong>IRB 심의 유형 3가지:</strong><br>
+          • <strong>면제</strong>: 기존 동의 데이터만 사용 → 심사비 없음 → 에스크로(Step 6)로 바로 이동<br>
+          • <strong>일반 심의</strong>: 새 데이터 수집 → 심사비 400 XRP 결제 → 위원회 심의(5~14일) → 승인 후 에스크로<br>
+          • <strong>자동 승인</strong>: 최소 위험 연구 → 심사비 200 XRP → AI 사전 검증 통과 시 즉시 승인 → 에스크로로 바로<br><br>
 
-          <strong>체크리스트:</strong><br>
-          • 지갑 잔액 확인<br>
-          • 연구 설정 완료 확인<br>
-          • ZKP 검증 준비 확인<br><br>
+          <strong>AI 추천 로직:</strong><br>
+          • Step 1~4의 연구 설계 분석 → 수집 데이터 유형, 대상자 위험도, 데이터 민감도(L1~L4) 기반 추천<br>
+          • L4(Restricted) 데이터 포함 시 → 일반 심의 추천<br>
+          • L1~L2 + 비침습 + 성인 대상 → 자동 승인 가능<br>
+          • 기존 동의 데이터만 사용 → 면제 추천<br><br>
 
-          <strong>동의 항목:</strong><br>
-          • 연구 설정 확인<br>
-          • 변경 불가 항목 이해<br>
-          • 이용약관 동의<br><br>
-
-          <strong>IRB 연동 (MVP 추가):</strong><br>
-          • IRB 승인 상태 확인: irb_submissions.status = 'APPROVED' 여부 체크<br>
-          • 미승인 시 에스크로 버튼 비활성화 + 잠금 배너 표시<br>
-          • IRB 번호 표시 및 irb-status.html 링크 연결<br>
-          • 프로젝트 → IRB 매핑: projects.id → irb_submissions.project_id<br><br>
-
-          <strong>버튼 동작:</strong><br>
-          • "연구 생성 및 예치" 클릭 시:<br>
-          &nbsp;&nbsp;1. IRB 승인 상태 최종 확인 (BE 재검증)<br>
-          &nbsp;&nbsp;2. XRPL 에스크로 트랜잭션 생성<br>
-          &nbsp;&nbsp;3. 연구 상태 "모집 중"으로 변경<br>
-          &nbsp;&nbsp;4. 대상 참여자에게 알림 발송<br>
-          &nbsp;&nbsp;5. 연구 목록 페이지로 이동
+          <strong>플로우 분기:</strong><br>
+          • 면제: Step 5 → Step 6 (에스크로)<br>
+          • 일반: Step 5 → 심사비 결제 → 심의 대기 → 승인 → Step 6<br>
+          • 자동: Step 5 → 심사비 결제 → 즉시 승인 → Step 6
         </div>
       </div>
 
@@ -399,15 +475,15 @@
         <h3 style="color: #047857; margin-bottom: 12px; font-size: 14px;">⚙️ 기능 명세</h3>
         <div style="font-size: 12px; color: #374151; line-height: 1.8;">
           <strong>핵심 기능:</strong><br>
-          • 지갑 잔액 표시 및 확인<br>
-          • 연구 설정 전체 요약<br>
-          • XRPL 에스크로 생성<br>
-          • 동의 체크리스트 확인<br><br>
+          • IRB 심의 유형 선택 (면제 / 일반 심의 / 자동 승인)<br>
+          • AI 기반 유형 추천 (연구 설계 분석)<br>
+          • 심사비 결제 (XRPL 결제)<br>
+          • 유형별 조건부 UI 표시<br><br>
 
-          <strong>에스크로 처리:</strong><br>
-          • EscrowCreate 트랜잭션 생성<br>
-          • 조건부 해제 설정<br>
-          • TX Hash 저장
+          <strong>비즈니스 로직:</strong><br>
+          • 면제: irb_type = 'EXEMPT', fee = 0, status = 'APPROVED' 즉시<br>
+          • 일반: irb_type = 'STANDARD', fee = 400 XRP, status = 'SUBMITTED' → 'UNDER_REVIEW' → 'APPROVED'<br>
+          • 자동: irb_type = 'EXPEDITED', fee = 200 XRP, AI 검증 통과 시 status = 'APPROVED' 즉시
         </div>
       </div>
 
@@ -415,27 +491,40 @@
       <div style="background: linear-gradient(135deg, #f5f3ff, #ede9fe); border: 2px solid #8b5cf6; border-radius: 12px; padding: 16px; margin-top: 12px;">
         <h3 style="color: #6d28d9; margin-bottom: 12px; font-size: 14px;">🔗 백엔드 호출</h3>
         <div style="font-size: 11px; font-family: 'SF Mono', Monaco, monospace; color: #374151; line-height: 1.8;">
-          <strong style="font-family: -apple-system, sans-serif;">1. 에스크로 생성 준비:</strong><br>
+          <strong style="font-family: -apple-system, sans-serif;">1. IRB 유형 판정 (AI):</strong><br>
           <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
-POST /api/v2/xrpl/escrow/prepare<br>
-{ "project_id": "uuid", "amount_xrp": 3850 }<br>
-→ { "escrow_tx": "1200002...", "escrow_address": "rEsc..." }
+POST /api/v2/ai/irb-type-recommend<br>
+{ "project_id": "uuid" }<br>
+→ { "recommended_type": "STANDARD", "reason": "L4 데이터(CGM) 포함", "eligible_types": ["STANDARD", "EXPEDITED"] }
           </code>
 
-          <strong style="font-family: -apple-system, sans-serif;">2. 연구 활성화:</strong><br>
+          <strong style="font-family: -apple-system, sans-serif;">2. IRB 심의 접수 + 심사비 결제:</strong><br>
           <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
-POST /api/v2/projects/:id/activate<br>
-{ "escrow_tx_hash": "A1B2C3..." }<br>
-→ {<br>
-&nbsp;&nbsp;"status": "recruiting",<br>
-&nbsp;&nbsp;"escrow_status": "funded",<br>
-&nbsp;&nbsp;"invite_link": "https://..."<br>
-}
+POST /enterprise/irb/submit<br>
+{ "project_id": "uuid", "irb_type": "STANDARD|EXPEDITED|EXEMPT", "fee_xrp": 400 }<br>
+→ { "irb_id": "IRB-2026-xxx", "status": "SUBMITTED", "tx_hash": "..." }
+          </code>
+
+          <strong style="font-family: -apple-system, sans-serif;">3. 자동 승인 (간이 심의):</strong><br>
+          <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
+POST /enterprise/irb/expedited-approve<br>
+{ "irb_id": "IRB-2026-xxx" }<br>
+→ { "status": "APPROVED", "approved_at": "2026-02-13T...", "next_step": "escrow" }
           </code>
         </div>
       </div>
     </div>
   </div>
+  <script>
+    function selectIRBType(type) {
+      // 카드 선택
+      document.querySelectorAll('.irb-type-card').forEach(c => c.classList.remove('selected'));
+      document.querySelector('.irb-type-card[data-type="' + type + '"]').classList.add('selected');
+      // 섹션 표시
+      document.querySelectorAll('.irb-section').forEach(s => s.classList.remove('active'));
+      document.getElementById('section-' + type).classList.add('active');
+    }
+  </script>
   <script src="page-spec.js"></script>
   <link rel="stylesheet" href="../tooltip-spec.css">
   <script src="../tooltip-spec.js"></script>
