@@ -255,6 +255,9 @@
       <div class="nav-section">
         <a href="list.html" class="nav-item"><span class="icon">🏠</span> 연구 허브</a>
         <a href="create.html" class="nav-item"><span class="icon">➕</span> 새 연구</a>
+        <a href="irb-submission.html" class="nav-item"><span class="icon">📝</span> IRB 심의 신청</a>
+        <a href="irb-status.html" class="nav-item"><span class="icon">📊</span> IRB 현황</a>
+        <a href="action-center.html" class="nav-item"><span class="icon">🔔</span> 조치 센터</a>
       </div>
 
       <!-- 내 연구들 -->
@@ -1022,56 +1025,6 @@
           <div style="margin-top: 16px; padding: 12px; background: #f9fafb; border-radius: 8px; font-size: 13px; color: #374151;">
             <strong>총 유효 레코드:</strong> 2,047개 (70명 × 평균 29.2일) &nbsp;&nbsp;
             <strong>보상 지급:</strong> 70명 완료
-          </div>
-        </div>
-
-        <!-- 디자이너 노트 -->
-        <div style="background: linear-gradient(135deg, #fdf4ff, #fae8ff); border: 2px solid #d946ef; border-radius: 12px; padding: 20px; margin-top: 24px;">
-          <h3 style="color: #a21caf; margin-bottom: 16px; font-size: 16px;">📋 디자이너 노트: 연구 개요</h3>
-
-          <div style="margin-bottom: 14px;">
-            <strong style="color: #86198f; display: block; margin-bottom: 4px;">🔴 우선순위: Phase 0 (최우선)</strong>
-            <p style="font-size: 13px; color: #374151; line-height: 1.6;">연구자가 가장 먼저, 가장 자주 보는 화면. 연구 전체 진행 상황을 한눈에 파악하는 대시보드.</p>
-          </div>
-
-          <div style="margin-bottom: 14px;">
-            <strong style="color: #86198f; display: block; margin-bottom: 4px;">구성 요소</strong>
-            <ul style="font-size: 13px; color: #374151; line-height: 1.8; padding-left: 20px;">
-              <li><strong>프로젝트 지갑 카드</strong> (우상단, 다크): 이 연구 전용 XRPL 에스크로 잔액 + 지급현황. 연구별 예산 소진 상태를 실시간 표시</li>
-              <li><strong>탭 네비게이션</strong>: 개요 · 테이블 · AI 허브 — 연구 내 3가지 뷰 전환</li>
-              <li><strong>통합 차트 영역</strong>: 4개 서브탭(데이터 수집 / 가설 검증 / 참여자 등록 / 예산 사용). 같은 차트 공간에서 관점만 전환</li>
-              <li><strong>데이터 토글 버튼</strong>: 차트에 표시할 데이터 레이어 on/off (참여인원, 응답수, 복약, 기분, 수면, 혈당)</li>
-              <li><strong>요약 통계 3칸</strong>: 수집 인원(참여자/활성/참여율) · 응답 수(총응답/일평균/추세) · 데이터 품질(완성도/복약률)</li>
-              <li><strong>멀티라인 SVG 차트</strong>: X축 날짜, Y축 이중(인원+%). 주말 영역 회색 표시. 오차범위 밴드 옵션</li>
-              <li><strong>인사이트 박스</strong> (차트 하단): AI가 자동 발견한 패턴/경고. 노랑=경고, 초록=긍정</li>
-              <li><strong>AI 패널</strong> (우측 고정, 다크): 채팅형 인사이트 + 5개 도구 탭(인사이트/인과분석/SHAP/What-If/3D). 연구 데이터 기반 자연어 질의</li>
-            </ul>
-          </div>
-
-          <div style="margin-bottom: 14px;">
-            <strong style="color: #86198f; display: block; margin-bottom: 4px;">가설 검증 탭</strong>
-            <ul style="font-size: 13px; color: #374151; line-height: 1.8; padding-left: 20px;">
-              <li><strong>가설 박스</strong>: 연구 설계 시 입력한 가설 원문 표시</li>
-              <li><strong>상관계수 3칸</strong>: 주요 변수 간 r값 (색상 = 방향/강도)</li>
-              <li><strong>시계열 차트 3개</strong>: 인과관계 추이 (실험군 vs 대조군)</li>
-              <li><strong>일치도 배지</strong>: 가설 방향과 실제 데이터의 일치 여부 (✅/⚠️)</li>
-            </ul>
-          </div>
-
-          <div style="margin-bottom: 14px;">
-            <strong style="color: #86198f; display: block; margin-bottom: 4px;">참여자 등록 탭</strong>
-            <ul style="font-size: 13px; color: #374151; line-height: 1.8; padding-left: 20px;">
-              <li><strong>누적 등록 라인</strong>: 시간 대비 등록자 수 곡선 + 목표선</li>
-              <li><strong>요약 통계</strong>: 현재/활성/목표/남은 인원 + 예상 완료일</li>
-            </ul>
-          </div>
-
-          <div>
-            <strong style="color: #86198f; display: block; margin-bottom: 4px;">예산 사용 탭</strong>
-            <ul style="font-size: 13px; color: #374151; line-height: 1.8; padding-left: 20px;">
-              <li><strong>스택 바 차트</strong>: 지급완료(파랑) + 지급예정(보라) + 잔여(회색)</li>
-              <li><strong>요약 통계</strong>: 총예산/지급완료/지급예정/잔여 + 예상 소진일</li>
-            </ul>
           </div>
         </div>
 

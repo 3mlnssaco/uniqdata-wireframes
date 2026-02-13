@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>UniQdata Architecture v6 - 양면 플랫폼 + IRB SaaS</title>
+<title>UniQdata Architecture v6 - 2-Server + 2-DB + XRPL</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
@@ -14,19 +14,30 @@
     line-height: 1.5;
   }
   h1 { text-align: center; font-size: 22px; margin-bottom: 4px; letter-spacing: 1px; }
-  .subtitle { text-align: center; font-size: 12px; color: #8b949e; margin-bottom: 4px; }
-  .date { text-align: center; font-size: 11px; color: #6b7280; margin-bottom: 8px; }
+  .subtitle { text-align: center; font-size: 12px; color: #8b949e; margin-bottom: 8px; }
 
-  .nav-links { display: flex; gap: 12px; justify-content: center; margin-bottom: 24px; }
+  .nav-links { display: flex; gap: 12px; justify-content: center; margin-bottom: 16px; flex-wrap: wrap; }
   .nav-links a { color: #58a6ff; font-size: 12px; text-decoration: none; }
   .nav-links a:hover { text-decoration: underline; }
+
+  .principle-banner {
+    background: linear-gradient(135deg, #1e3a5f, #1e40af);
+    border: 2px solid #3b82f6;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 24px;
+    text-align: center;
+  }
+  .principle-banner .title { font-size: 14px; font-weight: 700; color: #93c5fd; margin-bottom: 8px; }
+  .principle-banner .content { font-size: 12px; color: #bfdbfe; }
+  .principle-banner code { background: #1e293b; padding: 2px 6px; border-radius: 4px; }
 
   .section-divider { display: flex; align-items: center; gap: 14px; margin: 32px 0 16px; }
   .section-divider::before, .section-divider::after { content: ''; flex: 1; height: 1px; background: #30363d; }
   .section-divider span { font-size: 15px; font-weight: 700; white-space: nowrap; letter-spacing: 1px; }
 
-  /* Server boxes */
-  .server-box { border-radius: 12px; overflow: hidden; }
+  .server-diagram { display: flex; gap: 24px; margin-bottom: 24px; }
+  .server-box { flex: 1; border-radius: 12px; overflow: hidden; }
   .server-box.core { border: 2px solid #a78bfa; }
   .server-box.business { border: 2px solid #34d399; }
   .server-header { padding: 16px; font-weight: 700; font-size: 14px; }
@@ -41,802 +52,988 @@
   .server-body li .label { font-weight: 600; }
   .server-body li .desc { color: #8b949e; font-size: 11px; margin-top: 2px; }
 
-  /* Tables */
-  .data-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 16px; }
-  .data-table th { background: #21262d; padding: 12px; text-align: left; border-bottom: 1px solid #30363d; font-weight: 600; }
-  .data-table td { padding: 10px 12px; border-bottom: 1px solid #21262d; }
-  .data-table tr:hover { background: #161b22; }
-  .data-table code { background: #21262d; padding: 2px 6px; border-radius: 4px; font-size: 11px; }
+  .db-table { width: 100%; border-collapse: collapse; font-size: 11px; margin-bottom: 16px; }
+  .db-table th { background: #21262d; padding: 8px; text-align: left; border-bottom: 1px solid #30363d; font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .db-table td { padding: 6px 8px; border-bottom: 1px solid #21262d; }
+  .db-table tr:hover { background: #161b22; }
 
-  /* Tags */
-  .tag { padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 600; display: inline-block; }
+  .api-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 24px; }
+  .api-table th { background: #21262d; padding: 12px; text-align: left; border-bottom: 1px solid #30363d; font-size: 10px; text-transform: uppercase; }
+  .api-table td { padding: 10px 12px; border-bottom: 1px solid #21262d; }
+  .api-table tr:hover { background: #161b22; }
+  .tag { padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 600; }
   .tag-core { background: #4c1d95; color: #e9d5ff; }
   .tag-business { background: #064e3b; color: #a7f3d0; }
-  .tag-irb { background: #422006; color: #fbbf24; }
-  .tag-b2c { background: #1e3a5f; color: #93c5fd; }
-  .tag-xrpl { background: #312e81; color: #c7d2fe; }
+  .tag-xrpl { background: #78350f; color: #fbbf24; }
 
-  /* Card */
-  .card { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 20px; margin-bottom: 16px; }
-  .card h3 { font-size: 14px; margin-bottom: 12px; }
-
-  /* Flow nodes */
-  .flow-node { padding: 10px 16px; border-radius: 8px; font-size: 12px; font-weight: 600; display: inline-block; }
-  .flow-node.client { background: #1e3a5f; border: 1px solid #3b82f6; color: #93c5fd; }
-  .flow-node.gateway { background: #3f3f46; border: 1px solid #71717a; color: #d4d4d8; }
-  .flow-node.core { background: #4c1d95; border: 1px solid #a78bfa; color: #e9d5ff; }
-  .flow-node.business { background: #064e3b; border: 1px solid #34d399; color: #a7f3d0; }
-  .flow-node.db { background: #1e293b; border: 1px solid #64748b; color: #cbd5e1; }
-  .flow-node.xrpl { background: #312e81; border: 1px solid #818cf8; color: #c7d2fe; }
-  .flow-node.irb { background: #422006; border: 1px solid #fbbf24; color: #fcd34d; }
-  .flow-node.redis { background: #4a1c1c; border: 1px solid #ef4444; color: #fca5a5; }
-
-  /* Example steps */
   .example-box { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 20px; margin-bottom: 16px; }
   .example-title { font-size: 13px; font-weight: 700; color: #fbbf24; margin-bottom: 12px; }
   .example-step { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 10px; }
   .step-num { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; }
-  .step-num.b2c { background: #3b82f6; }
-  .step-num.b2b { background: #34d399; color: #0d1117; }
   .step-content { font-size: 12px; }
   .step-content .server { font-weight: 600; }
   .step-content .server.core { color: #a78bfa; }
   .step-content .server.business { color: #34d399; }
   .step-content .action { color: #8b949e; }
 
-  /* Status badges */
-  .status-badge { padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 700; display: inline-block; margin: 2px; }
+  .faq-item { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 16px; margin-bottom: 12px; }
+  .faq-q { font-size: 13px; font-weight: 700; color: #f87171; margin-bottom: 8px; }
+  .faq-a { font-size: 12px; color: #4ade80; }
+  .faq-a code { background: #21262d; padding: 2px 6px; border-radius: 4px; }
 
-  /* Repo links */
-  .repo-links { display: flex; gap: 16px; justify-content: center; margin-top: 24px; flex-wrap: wrap; }
+  .repo-links { display: flex; gap: 16px; justify-content: center; margin-top: 24px; }
   .repo-link { padding: 12px 24px; border-radius: 8px; text-decoration: none; font-size: 13px; font-weight: 600; }
   .repo-link.core { background: #4c1d95; color: #e9d5ff; border: 1px solid #a78bfa; }
   .repo-link.business { background: #064e3b; color: #a7f3d0; border: 1px solid #34d399; }
   .repo-link:hover { opacity: 0.8; }
 
-  /* Vision banner */
-  .vision-banner {
-    background: linear-gradient(135deg, #1e1b4b, #0c4a6e);
-    border: 2px solid #6366f1;
-    border-radius: 12px;
-    padding: 24px;
-    margin-bottom: 24px;
-    text-align: center;
+  /* Schema SQL blocks */
+  .sql-block {
+    background: #0d1117;
+    border: 1px solid #21262d;
+    border-radius: 8px;
+    padding: 16px;
+    font-size: 11px;
+    line-height: 1.7;
+    overflow-x: auto;
+    white-space: pre;
+    margin-bottom: 12px;
   }
+  .sql-block .kw { color: #79c0ff; }
+  .sql-block .tn { color: #7ee787; font-weight: 700; }
+  .sql-block .ty { color: #d2a8ff; }
+  .sql-block .cm { color: #484f58; }
+  .sql-block .ct { color: #ffa657; }
 
-  /* Phase table highlight */
-  .phase-current { background: #064e3b !important; }
-  .phase-future { background: #1e1b4b !important; }
+  /* Collapsible */
+  .collapse-btn {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 12px 16px;
+    color: #e6edf3;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .collapse-btn:hover { background: #1c2128; }
+  .collapse-btn .arrow { transition: transform 0.2s; }
+  .collapse-btn.open .arrow { transform: rotate(90deg); }
+  .collapse-body { display: none; padding: 0 4px; margin-bottom: 16px; }
+  .collapse-body.show { display: block; }
 
-  /* Responsive */
+  /* Decision matrix */
+  .matrix { border-collapse: collapse; width: 100%; font-size: 12px; margin-bottom: 24px; }
+  .matrix th { background: #21262d; padding: 12px; text-align: center; border: 1px solid #30363d; font-size: 11px; }
+  .matrix td { padding: 12px; border: 1px solid #30363d; vertical-align: top; }
+  .matrix .label-col { font-weight: 600; background: #161b22; width: 160px; }
+  .matrix .core-col { background: #1a0a3e; }
+  .matrix .biz-col { background: #0a2818; }
+
   @media (max-width: 768px) {
+    .server-diagram { flex-direction: column; }
     body { padding: 12px; }
-    h1 { font-size: 18px; }
-    .server-diagram-v6 { flex-direction: column !important; }
-    .server-diagram-v6 > div { width: 100% !important; }
-    .clients-row { flex-direction: column !important; }
-    .clients-row > div { width: 100% !important; }
-    .three-col { flex-direction: column !important; }
-    .three-col > div { width: 100% !important; }
-    .comm-grid { grid-template-columns: 1fr !important; }
-    .db-row { flex-direction: column !important; }
-    .db-row > div { width: 100% !important; }
-    .flow-scenarios { grid-template-columns: 1fr !important; }
-    .phase-table { font-size: 10px; }
-    .phase-table td, .phase-table th { padding: 6px 4px; }
   }
 </style>
 </head>
 <body>
 
-<!-- ===== HEADER ===== -->
 <h1>UniQdata Architecture v6</h1>
-<p class="subtitle">양면 플랫폼: B2C 건강 데이터 + B2B IRB SaaS — 2-Server Model</p>
-<p class="date">2026-02-11</p>
+<p class="subtitle">2-Server · 2-DB · XRPL · Full Schema · 14 Internal APIs · 8 Webhooks</p>
 
 <div class="nav-links">
-  <a href="../index.html">&larr; 와이어프레임 목록</a>
+  <a href="../index.html">← 와이어프레임 목록</a>
   <a href="SportiQue_Architecture_v5.html">v5 (구버전)</a>
+  <a href="../erd.html">ERD 보기</a>
 </div>
 
-<!-- ===== SECTION 1: 양면 플랫폼 비전 ===== -->
-<div class="section-divider"><span>&#x1F3AF; Section 1: 양면 플랫폼 비전</span></div>
-
-<div class="vision-banner">
-  <div style="font-size: 16px; font-weight: 700; color: #e9d5ff; margin-bottom: 16px;">
-    health_db.data_points (건강 데이터 풀)
-  </div>
-  <div style="display: flex; justify-content: center; gap: 48px; flex-wrap: wrap; margin-bottom: 20px;">
-    <!-- B2C -->
-    <div style="text-align: left;">
-      <div style="font-size: 13px; color: #93c5fd; font-weight: 700; margin-bottom: 8px;">
-        <span style="background: #1e3a5f; padding: 2px 8px; border-radius: 4px; border: 1px solid #3b82f6;">B2C</span>
-        환자 데이터 입력
-      </div>
-      <div style="font-size: 11px; color: #60a5fa; line-height: 1.8; padding-left: 8px; border-left: 2px solid #3b82f6;">
-        + AI 건강 레포트<br>
-        + UQD 보상 (XRPL)
-      </div>
-    </div>
-    <!-- B2B -->
-    <div style="text-align: left;">
-      <div style="font-size: 13px; color: #a7f3d0; font-weight: 700; margin-bottom: 8px;">
-        <span style="background: #064e3b; padding: 2px 8px; border-radius: 4px; border: 1px solid #34d399;">B2B</span>
-        연구자 IRB 신청
-      </div>
-      <div style="font-size: 11px; color: #6ee7b7; line-height: 1.8; padding-left: 8px; border-left: 2px solid #34d399;">
-        + 데이터 분석<br>
-        + 정산/에스크로 (XRPL)
-      </div>
-    </div>
-  </div>
-  <div style="background: #0d1117; border-radius: 8px; padding: 12px 20px; display: inline-block; font-size: 12px; color: #fbbf24; border: 1px solid #422006;">
-    "환자는 데이터를 넣고 AI 분석을 받는다. 연구자는 동의된 데이터로 연구한다. 같은 데이터 풀, 같은 인프라."
+<!-- ====== 핵심 원칙 ====== -->
+<div class="principle-banner">
+  <div class="title">📐 분리 원칙 (한 줄 규칙)</div>
+  <div class="content">
+    <strong>"환자의 몸에서 나온 데이터, 환자의 지갑, 환자의 동의는 Core. 그 외 비즈니스는 Business."</strong><br><br>
+    <code>🟢 Core (NestJS:3000)</code> = Core Team → 사용자 인증 + 건강 데이터 + XRPL + 동의 관리<br>
+    <code>🔵 Business (Spring Boot:8080)</code> = 백엔드팀 → 연구 프로젝트 + IRB + 정산 + 기관 관리
   </div>
 </div>
 
-<!-- ===== SECTION 2: 전체 아키텍처 ===== -->
-<div class="section-divider"><span>&#x1F3D7;&#xFE0F; Section 2: 전체 아키텍처</span></div>
+<!-- ====== 판단 기준: "이 데이터가 유출되면 환자가 직접 피해를 보는가?" ====== -->
+<div style="background: #450a0a; border: 1px solid #ef4444; border-radius: 8px; padding: 12px; margin-bottom: 24px; text-align: center; font-size: 12px; color: #fca5a5;">
+  ⚠️ 경계 판단 질문: <strong>"이 데이터가 유출되면 환자가 직접 피해를 보는가?"</strong> → Yes면 Core, No면 Business
+</div>
+
+<!-- ====== DB 접근 매트릭스 ====== -->
+<div class="section-divider"><span>🗄️ DB 접근 매트릭스</span></div>
+
+<div style="background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 20px; margin-bottom: 24px;">
+  <table style="width: 100%; border-collapse: collapse; font-size: 12px; text-align: center;">
+    <thead>
+      <tr>
+        <th style="background: #21262d; padding: 12px; border-bottom: 1px solid #30363d;"></th>
+        <th style="background: #4c1d95; padding: 12px; border-bottom: 1px solid #30363d; color: #e9d5ff;">health_db</th>
+        <th style="background: #064e3b; padding: 12px; border-bottom: 1px solid #30363d; color: #a7f3d0;">uniqdata_db</th>
+        <th style="background: #312e81; padding: 12px; border-bottom: 1px solid #30363d; color: #c7d2fe;">XRPL</th>
+        <th style="background: #7f1d1d; padding: 12px; border-bottom: 1px solid #30363d; color: #fca5a5;">Redis</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td style="padding: 12px; font-weight: 700; color: #e9d5ff; border-bottom: 1px solid #21262d;">🟢 Core</td>
+        <td style="padding: 12px; color: #4ade80; font-weight: 700; border-bottom: 1px solid #21262d;">R/W ✅</td>
+        <td style="padding: 12px; color: #6b7280; border-bottom: 1px solid #21262d;">❌ 접근 불가</td>
+        <td style="padding: 12px; color: #4ade80; font-weight: 700; border-bottom: 1px solid #21262d;">R/W ✅</td>
+        <td style="padding: 12px; color: #4ade80; font-weight: 700; border-bottom: 1px solid #21262d;">R/W ✅</td>
+      </tr>
+      <tr>
+        <td style="padding: 12px; font-weight: 700; color: #a7f3d0; border-bottom: 1px solid #21262d;">🔵 Business</td>
+        <td style="padding: 12px; color: #fbbf24; font-size: 11px; border-bottom: 1px solid #21262d;">Internal API 경유<br><strong>Read만</strong></td>
+        <td style="padding: 12px; color: #4ade80; font-weight: 700; border-bottom: 1px solid #21262d;">R/W ✅</td>
+        <td style="padding: 12px; color: #fbbf24; font-size: 11px; border-bottom: 1px solid #21262d;">Core 경유<br><strong>요청만</strong></td>
+        <td style="padding: 12px; color: #6b7280; border-bottom: 1px solid #21262d;">❌</td>
+      </tr>
+    </tbody>
+  </table>
+  <div style="margin-top: 12px; font-size: 10px; color: #8b949e; text-align: center;">
+    🔴 절대 규칙: Business는 health_db 커넥션 스트링을 갖지 않음 · Core는 uniqdata_db에 접근 안 함 · XRPL 라이브러리는 Core만 import
+  </div>
+</div>
+
+<!-- ====== 서버 분리 Decision Matrix ====== -->
+<div class="section-divider"><span>📐 서버 분리 Decision Matrix</span></div>
+
+<table class="matrix">
+  <tr>
+    <th class="label-col">판단 기준</th>
+    <th style="background: #4c1d95; color: #e9d5ff;">🟢 Core (NestJS:3000)</th>
+    <th style="background: #064e3b; color: #a7f3d0;">🔵 Business (Spring:8080)</th>
+  </tr>
+  <tr>
+    <td class="label-col">데이터 민감도</td>
+    <td class="core-col">민감정보 (건강데이터, 개인키, 동의 원본)</td>
+    <td class="biz-col">비민감 업무정보 (프로젝트, 정산, IRB 메타)</td>
+  </tr>
+  <tr>
+    <td class="label-col">규제 적용</td>
+    <td class="core-col">PIPA 민감정보 처리자, 생명윤리법 동의 관리</td>
+    <td class="biz-col">일반 사업자 정보 처리</td>
+  </tr>
+  <tr>
+    <td class="label-col">블록체인 접근</td>
+    <td class="core-col">XRPL 직접 R/W (지갑, 에스크로, 앵커링)</td>
+    <td class="biz-col">XRPL 접근 불가 (Core API 경유만)</td>
+  </tr>
+  <tr>
+    <td class="label-col">인증 책임</td>
+    <td class="core-col">Passkey/PRF 처리, JWT 발급, JWKS 제공</td>
+    <td class="biz-col">JWT 검증만 (JWKS 공개키로, 발급 안 함)</td>
+  </tr>
+  <tr>
+    <td class="label-col">장애 격리</td>
+    <td class="core-col">Business 장애 시에도 환자 데이터 안전</td>
+    <td class="biz-col">Core 장애 시 IRB/정산 불가 (데이터 안전)</td>
+  </tr>
+  <tr>
+    <td class="label-col">팀 배치</td>
+    <td class="core-col">Core Team (보안 클리어런스 필요)</td>
+    <td class="biz-col">백엔드팀 (일반 개발자)</td>
+  </tr>
+  <tr>
+    <td class="label-col">기술 스택</td>
+    <td class="core-col">TypeScript, xrpl.js, @simplewebauthn</td>
+    <td class="biz-col">Kotlin, Spring JPA, Claude API</td>
+  </tr>
+</table>
+
+<!-- ====== 전체 아키텍처 다이어그램 ====== -->
+<div class="section-divider"><span>🏗️ 전체 아키텍처 다이어그램</span></div>
 
 <div style="background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 24px; margin-bottom: 24px; overflow-x: auto;">
+<pre style="font-size: 11px; line-height: 1.6; color: #e6edf3;">
+┌──────────────────────────────────────────────────────────────────────────┐
+│                        <span style="color:#fbbf24;">API Gateway (nginx)</span>                               │
+│  /api/v1/auth/**,health/**,consents/**,wallets/**  → <span style="color:#a78bfa;">🟢 Core:3000</span>      │
+│  /api/v1/projects/**,irb/**,enterprises/**         → <span style="color:#34d399;">🔵 Business:8080</span>  │
+└──────────┬─────────────────────────────────────────────┬────────────────┘
+           │                                             │
+           ▼                                             ▼
+┌───────────────────────────────┐    ┌────────────────────────────────────┐
+│  <span style="color:#a78bfa;">🟢 Core (NestJS:3000)</span>          │    │  <span style="color:#34d399;">🔵 Business (Spring Boot:8080)</span>      │
+│                               │    │                                    │
+│  Auth (Passkey/PRF/JWT)       │    │  Research (프로젝트/마일스톤)       │
+│  Health (데이터 입력/리포트)   │◄───│  IRB (제출/심의/문서/워크플로우)    │
+│  Consent (동의/스코프/감사)    │ API│  Settlement (정산 계산/배치)        │
+│  XRPL (지갑/에스크로/앵커)    │───►│  Enterprise (기관/팀/구성원)        │
+│  Notification (알림)          │ WH │  FL/Marketplace (Phase 2)           │
+│                               │    │                                    │
+│  📦 <span style="color:#a78bfa;">health_db</span> (15 tables)     │    │  📦 <span style="color:#34d399;">uniqdata_db</span> (16 tables)         │
+│  📦 Redis (세션/캐시)         │    │                                    │
+└──────────┬────────────────────┘    └────────────────────────────────────┘
+           │
+           ▼
+    <span style="color:#fbbf24;">⛓ XRPL Ledger</span>  ← Core만 직접 접근
+</pre>
+</div>
 
-  <!-- CLIENTS LAYER -->
-  <div style="text-align: center; margin-bottom: 8px; font-size: 11px; color: #8b949e; letter-spacing: 2px;">CLIENTS</div>
-  <div class="clients-row" style="display: flex; justify-content: center; gap: 16px; margin-bottom: 16px; flex-wrap: wrap;">
-    <div style="background: #1e3a5f; border: 2px solid #3b82f6; padding: 14px 20px; border-radius: 10px; font-size: 12px; color: #93c5fd; min-width: 180px; text-align: center;">
-      <div style="font-size: 16px; margin-bottom: 4px;">&#x1F4F1;</div>
-      <div style="font-weight: 700;">환자 앱 (Flutter)</div>
-      <div style="font-size: 10px; color: #60a5fa; margin-top: 4px;">데이터 입력 &middot; AI 건강 레포트 &middot; UQD 보상</div>
+<!-- ====== 서버별 상세 역할 ====== -->
+<div class="section-divider"><span>🏗️ 서버별 상세 역할</span></div>
+
+<div class="server-diagram">
+  <div class="server-box core">
+    <div class="server-header">
+      🟢 uniqdata-core
+      <div class="tech">NestJS (TypeScript) · Port 3000 · Core Team 담당</div>
     </div>
-    <div style="background: #064e3b; border: 2px solid #34d399; padding: 14px 20px; border-radius: 10px; font-size: 12px; color: #a7f3d0; min-width: 240px; text-align: center;">
-      <div style="font-size: 16px; margin-bottom: 4px;">&#x1F5A5;&#xFE0F;</div>
-      <div style="font-weight: 700;">Enterprise Portal (React) &mdash; 역할 기반</div>
-      <div style="font-size: 10px; color: #6ee7b7; margin-top: 6px; line-height: 1.6;">
-        <span style="color: #34d399;">[연구자]</span> 프로젝트 관리 &middot; IRB 신청<br>
-        <span style="color: #fbbf24;">[IRB위원]</span> 심의 &middot; 투표 &middot; 의견<br>
-        <span style="color: #c4b5fd;">[기관관리]</span> 전체 현황 &middot; 설정
-      </div>
-      <div style="font-size: 9px; color: #4ade80; margin-top: 6px; border-top: 1px solid #065f46; padding-top: 4px;">같은 도메인 &middot; 같은 로그인 &middot; role 분기</div>
+    <div class="server-body">
+      <ul>
+        <li><div class="label">Auth (Passkey/PRF)</div><div class="desc">WebAuthn Level 3, PRF 키 파생, JWT 발급/갱신, JWKS 엔드포인트 제공</div></li>
+        <li><div class="label">Data Input ⭐</div><div class="desc">건강 데이터 수신 → 검증 → AES-256-GCM 암호화 → health_db.data_points 저장 → XRPL 앵커링</div></li>
+        <li><div class="label">Consent ⭐</div><div class="desc">동의서 생성/서명(ed25519)/범위 관리/철회 + XRPL CONSENT_GRANT/REVOKE 앵커링</div></li>
+        <li><div class="label">XRPL / UQD</div><div class="desc">EscrowCreate/Finish/Cancel, UQD 관리, DATA_INPUT/DATA_ACCESS 앵커링</div></li>
+        <li><div class="label">Notification</div><div class="desc">푸시 알림 통합 관리 (Core + Business 요청 모두)</div></li>
+        <li><div class="label">Internal API</div><div class="desc">14개 엔드포인트: /internal/v1/users/*, /consents/*, /data/*, /escrow/*, /notifications/*</div></li>
+      </ul>
     </div>
   </div>
 
-  <div style="text-align: center; font-size: 18px; color: #6b7280; margin-bottom: 16px;">&#x25BC;</div>
-
-  <!-- API GATEWAY -->
-  <div style="display: flex; justify-content: center; margin-bottom: 16px;">
-    <div style="background: #3f3f46; border: 2px solid #71717a; padding: 16px 32px; border-radius: 10px; font-size: 13px; color: #d4d4d8; font-weight: 700; text-align: center; max-width: 520px; width: 100%;">
-      &#x1F6AA; API Gateway (nginx)
-      <div style="display: flex; gap: 16px; justify-content: center; margin-top: 10px; flex-wrap: wrap;">
-        <div style="font-size: 10px; font-weight: 400; color: #a1a1aa;">
-          <code style="color: #c4b5fd;">/api/auth/*</code>
-          <code style="color: #c4b5fd;">/api/health/*</code>
-          <code style="color: #c4b5fd;">/api/consents/*</code>
-          <code style="color: #c4b5fd;">/api/wallets/*</code>
-          <span style="color: #6b7280;">&rarr; Core</span>
-        </div>
-        <div style="font-size: 10px; font-weight: 400; color: #a1a1aa;">
-          <code style="color: #6ee7b7;">/enterprise/*</code>
-          <code style="color: #6ee7b7;">/enterprise/irb/*</code>
-          <span style="color: #6b7280;">&rarr; Business</span>
-        </div>
-      </div>
+  <div class="server-box business">
+    <div class="server-header">
+      📊 uniqdata-enterprise-backend
+      <div class="tech">Spring Boot (Kotlin) · Port 8080 · 백엔드팀 담당</div>
     </div>
-  </div>
-
-  <div style="text-align: center; font-size: 18px; color: #6b7280; margin-bottom: 4px;">
-    <span style="margin-right: 80px;">&#x2199;&#xFE0F;</span>
-    <span style="margin-left: 80px;">&#x2198;&#xFE0F;</span>
-  </div>
-
-  <!-- SERVERS -->
-  <div class="server-diagram-v6" style="display: flex; gap: 24px; margin-bottom: 20px;">
-    <!-- Core -->
-    <div style="flex: 1;" class="server-box core">
-      <div class="server-header">
-        &#x1F510; Core (NestJS) &mdash; Port 3000
-        <div class="tech">uniqdata-core &middot; TypeScript</div>
-      </div>
-      <div class="server-body">
-        <ul>
-          <li><div class="label">&#x1F511; 인증 (Passkey/JWT)</div></li>
-          <li><div class="label">&#x1F4CA; 건강 데이터 수신/저장/암호화</div></li>
-          <li style="border-left-color: #fbbf24; background: linear-gradient(90deg, #1a1500, #0d1117);">
-            <div class="label" style="color: #fbbf24;">&#x2B50; AI 건강 레포트 (환자용) <span class="tag tag-b2c" style="margin-left: 4px;">NEW</span></div>
-          </li>
-          <li><div class="label">&#x1F4DD; 동의 관리 + XRPL 앵커링</div></li>
-          <li><div class="label">&#x26D3;&#xFE0F; XRPL / 에스크로 / UQD</div></li>
-          <li><div class="label">&#x1F514; 알림 통합</div></li>
-          <li><div class="label">&#x1F517; Internal API (Business용)</div></li>
-        </ul>
-      </div>
-    </div>
-    <!-- Communication arrows -->
-    <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; min-width: 100px; color: #6b7280; font-size: 11px; gap: 8px;">
-      <div style="color: #34d399;">&larr; Internal API</div>
-      <div style="font-size: 20px;">&harr;</div>
-      <div style="color: #a78bfa;">Webhook &rarr;</div>
-    </div>
-    <!-- Business -->
-    <div style="flex: 1;" class="server-box business">
-      <div class="server-header">
-        &#x1F4CA; Business Engine (Spring Boot) &mdash; Port 8080
-        <div class="tech">uniqdata-enterprise-backend &middot; Java</div>
-      </div>
-      <div class="server-body">
-        <ul>
-          <li><div class="label">&#x1F52C; 연구 프로젝트 + 마일스톤</div></li>
-          <li style="border-left-color: #fbbf24; background: linear-gradient(90deg, #1a1500, #0d1117);">
-            <div class="label" style="color: #fbbf24;">&#x2B50; IRB 워크플로우 (3-Case: 불필요/면제/심의) <span class="tag tag-irb" style="margin-left: 4px;">NEW</span></div>
-          </li>
-          <li style="border-left-color: #fbbf24; background: linear-gradient(90deg, #1a1500, #0d1117);">
-            <div class="label" style="color: #fbbf24;">&#x1F504; 변경심의 (Amendment) <span class="tag tag-irb" style="margin-left: 4px;">NEW</span></div>
-          </li>
-          <li><div class="label">&#x1F465; 참여자 매칭/관리</div></li>
-          <li><div class="label">&#x1F4B0; 정산 계산</div></li>
-          <li><div class="label">&#x1F3E2; 기관/팀 관리</div></li>
-        </ul>
-      </div>
-    </div>
-  </div>
-
-  <div style="text-align: center; font-size: 18px; color: #6b7280; margin-bottom: 16px;">&#x25BC;</div>
-
-  <!-- DATABASES -->
-  <div style="text-align: center; margin-bottom: 8px; font-size: 11px; color: #8b949e; letter-spacing: 2px;">STORAGE</div>
-  <div class="db-row" style="display: flex; justify-content: center; gap: 16px; flex-wrap: wrap;">
-    <div style="background: #1e293b; border: 2px solid #a78bfa; padding: 14px 18px; border-radius: 10px; font-size: 11px; color: #cbd5e1; text-align: center; min-width: 160px;">
-      <div style="font-weight: 700; color: #e9d5ff; margin-bottom: 4px;">&#x1F4E6; health_db</div>
-      <div style="font-size: 10px; color: #94a3b8;">Core 전용</div>
-      <div style="font-size: 9px; color: #64748b; margin-top: 4px;">data_points &middot; consents<br>wallets &middot; notifications</div>
-    </div>
-    <div style="background: #1e293b; border: 2px solid #34d399; padding: 14px 18px; border-radius: 10px; font-size: 11px; color: #cbd5e1; text-align: center; min-width: 160px;">
-      <div style="font-weight: 700; color: #a7f3d0; margin-bottom: 4px;">&#x1F4E6; uniqdata_db</div>
-      <div style="font-size: 10px; color: #94a3b8;">Business 전용</div>
-      <div style="font-size: 9px; color: #64748b; margin-top: 4px;">projects &middot; irb_determinations<br>irb_submissions &middot; irb_documents<br>irb_amendments &middot; settlements</div>
-    </div>
-    <div style="background: #1e1b4b; border: 2px solid #818cf8; padding: 14px 18px; border-radius: 10px; font-size: 11px; color: #c7d2fe; text-align: center; min-width: 140px;">
-      <div style="font-weight: 700; margin-bottom: 4px;">&#x26D3;&#xFE0F; XRPL Ledger</div>
-      <div style="font-size: 9px; color: #a5b4fc;">지갑 &middot; UQD &middot; 에스크로</div>
-    </div>
-    <div style="background: #3b1111; border: 2px solid #ef4444; padding: 14px 18px; border-radius: 10px; font-size: 11px; color: #fca5a5; text-align: center; min-width: 120px;">
-      <div style="font-weight: 700; margin-bottom: 4px;">&#x1F534; Redis</div>
-      <div style="font-size: 9px; color: #f87171;">세션/캐시 (공유)</div>
+    <div class="server-body">
+      <ul>
+        <li><div class="label">Research ⭐</div><div class="desc">프로젝트 CRUD, 마일스톤 추적, 참여자 매칭, 적격 기준, 데이터 요청</div></li>
+        <li><div class="label">IRB ⭐</div><div class="desc">제출/심의/문서 관리/워크플로우 히스토리, AI 문서 생성(Claude API)</div></li>
+        <li><div class="label">Settlement ⭐</div><div class="desc">보상 계산, settlement_batches/items 생성 → Core에 EscrowFinish 요청</div></li>
+        <li><div class="label">Enterprise</div><div class="desc">기관 등록/관리, 구성원 관리, OWNER/PI/IRB_MEMBER/STAFF 역할</div></li>
+        <li><div class="label">Synthetic/FL (Phase 2)</div><div class="desc">합성데이터셋 생성, FL 라운드 관리</div></li>
+        <li><div class="label">Webhook 수신</div><div class="desc">Core → data.submitted, consent.granted/revoked, escrow.*, user.kyc_updated, wallet.created</div></li>
+      </ul>
     </div>
   </div>
 </div>
 
-<!-- ===== SECTION 3: DB 접근 매트릭스 ===== -->
-<div class="section-divider"><span>&#x1F5C3;&#xFE0F; Section 3: DB 접근 매트릭스</span></div>
+<!-- ====== health_db 스키마 (15 tables) ====== -->
+<div class="section-divider"><span>🟢 health_db — 15 Tables (Core 전용)</span></div>
 
-<div class="card">
-  <table class="data-table">
-    <thead>
-      <tr>
-        <th style="width: 200px;"></th>
-        <th style="text-align: center;"><span class="tag tag-core">health_db</span></th>
-        <th style="text-align: center;"><span class="tag tag-business">uniqdata_db</span></th>
-        <th style="text-align: center;"><span class="tag tag-xrpl">XRPL</span></th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><strong style="color: #a78bfa;">Core (NestJS)</strong></td>
-        <td style="text-align: center;"><span style="color: #4ade80; font-weight: 700;">R/W</span></td>
-        <td style="text-align: center;"><span style="color: #6b7280;">&mdash;</span></td>
-        <td style="text-align: center;"><span style="color: #4ade80; font-weight: 700;">R/W</span></td>
-      </tr>
-      <tr>
-        <td><strong style="color: #34d399;">Business (Spring)</strong></td>
-        <td style="text-align: center;">
-          <span style="color: #fbbf24; font-size: 11px;">Internal API<br>Read만</span>
-        </td>
-        <td style="text-align: center;"><span style="color: #4ade80; font-weight: 700;">R/W</span></td>
-        <td style="text-align: center;">
-          <span style="color: #fbbf24; font-size: 11px;">Core 통해<br>요청만</span>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-  <div style="font-size: 10px; color: #6b7280; text-align: center;">
-    Business는 절대 health_db에 직접 접근하지 않음. XRPL도 Core를 통해서만 접근.
+<div style="display: flex; gap: 16px; margin-bottom: 16px; flex-wrap: wrap;">
+  <div style="background: #2e1065; border: 1px solid #a78bfa; padding: 12px 20px; border-radius: 8px; font-size: 12px; color: #e9d5ff; text-align: center;">
+    총 테이블: <strong>15</strong>
+  </div>
+  <div style="background: #2e1065; border: 1px solid #a78bfa; padding: 12px 20px; border-radius: 8px; font-size: 12px; color: #e9d5ff; text-align: center;">
+    1년 예상: <strong>~2.3M 레코드</strong>
+  </div>
+  <div style="background: #2e1065; border: 1px solid #a78bfa; padding: 12px 20px; border-radius: 8px; font-size: 12px; color: #e9d5ff; text-align: center;">
+    핵심: <strong>data_points ~500K/년</strong>
+  </div>
+  <div style="background: #2e1065; border: 1px solid #a78bfa; padding: 12px 20px; border-radius: 8px; font-size: 12px; color: #e9d5ff; text-align: center;">
+    스토리지: <strong>PostgreSQL 15 · 2GB</strong>
   </div>
 </div>
 
-<!-- ===== SECTION 4: IRB 상태 머신 ===== -->
-<div class="section-divider"><span>&#x1F504; Section 4: IRB 상태 머신</span></div>
+<table class="db-table">
+  <tr><th style="color:#c4b5fd;">#</th><th style="color:#c4b5fd;">테이블</th><th style="color:#c4b5fd;">설명</th><th style="color:#c4b5fd;">주요 컬럼</th><th style="color:#c4b5fd;">예상/년</th></tr>
+  <tr><td>1</td><td style="color:#e9d5ff;"><strong>users</strong></td><td>사용자 원장 (인증/신원)</td><td>id, email, role, kyc_level, status</td><td>~10K</td></tr>
+  <tr><td>2</td><td style="color:#e9d5ff;"><strong>passkey_credentials</strong></td><td>FIDO2 Passkey 크레덴셜</td><td>credential_id, public_key, sign_count, prf_supported, prf_salt</td><td>~15K</td></tr>
+  <tr><td>3</td><td style="color:#e9d5ff;"><strong>user_profiles</strong></td><td>개인 건강 프로필 (암호화)</td><td>birth_date, gender, blood_type, medications, chronic_conditions</td><td>~10K</td></tr>
+  <tr><td>4</td><td style="color:#e9d5ff;"><strong>user_wallets</strong></td><td>XRPL 지갑 (주소만, 시드 없음)</td><td>xrpl_address, xrpl_public_key, wallet_type, derivation_method</td><td>~12K</td></tr>
+  <tr><td>5</td><td style="color:#e9d5ff;"><strong>wallet_recovery_configs</strong></td><td>키 복구 설정 (SSS/Social)</td><td>recovery_method, config(JSON)</td><td>~5K</td></tr>
+  <tr><td>6</td><td style="color:#fbbf24;font-weight:700;">data_points ⭐</td><td>건강데이터 (핵심 풀)</td><td>category, value(AES-256-GCM), source, data_hash, xrpl_tx_hash</td><td style="color:#fbbf24;font-weight:700;">~500K</td></tr>
+  <tr><td>7</td><td style="color:#e9d5ff;"><strong>data_point_tags</strong></td><td>데이터 태깅/검색</td><td>tag_key, tag_value</td><td>~1M</td></tr>
+  <tr><td>8</td><td style="color:#e9d5ff;"><strong>data_access_logs</strong></td><td>접근 감사추적</td><td>accessor_id, project_id, irb_number, pseudonymized, xrpl_tx_hash</td><td>~50K</td></tr>
+  <tr><td>9</td><td style="color:#fbbf24;font-weight:700;">consents ⭐</td><td>동의 원장</td><td>consent_type, status, signature_hash, grant_tx_hash, project_id</td><td>~30K</td></tr>
+  <tr><td>10</td><td style="color:#e9d5ff;"><strong>consent_scopes</strong></td><td>동의 범위 상세</td><td>scope_type (DATA_CATEGORY|PURPOSE|RECIPIENT|DURATION|GEOGRAPHY)</td><td>~90K</td></tr>
+  <tr><td>11</td><td style="color:#e9d5ff;"><strong>consent_audit_trail</strong></td><td>동의 변경 이력</td><td>action, actor_id, changes(JSON), xrpl_tx_hash</td><td>~60K</td></tr>
+  <tr><td>12</td><td style="color:#e9d5ff;"><strong>xrpl_transactions</strong></td><td>XRPL tx 기록</td><td>tx_hash, tx_type, memo_type, memo_data(JSON), ledger_index</td><td>~200K</td></tr>
+  <tr><td>13</td><td style="color:#e9d5ff;"><strong>notifications</strong></td><td>알림</td><td>type, title, body, channel, read</td><td>~300K</td></tr>
+  <tr><td>14</td><td style="color:#e9d5ff;"><strong>notification_preferences</strong></td><td>알림 설정</td><td>push_enabled, email_enabled, health_alerts, quiet_hours</td><td>~10K</td></tr>
+  <tr><td>15</td><td style="color:#e9d5ff;"><strong>refresh_tokens</strong></td><td>JWT 리프레시 토큰</td><td>token_hash, device_info, expires_at, revoked</td><td>~30K</td></tr>
+</table>
 
-<div style="background: #161b22; border: 2px solid #fbbf24; border-radius: 12px; padding: 24px; margin-bottom: 24px; overflow-x: auto;">
-  <div style="text-align: center; margin-bottom: 20px; font-size: 13px; font-weight: 700; color: #fcd34d;">
-    IRB Submission State Machine
+<!-- health_db CREATE TABLE statements (collapsible) -->
+<button class="collapse-btn" onclick="toggle('hdb-auth')"><span class="arrow">▶</span> users + passkey_credentials + user_profiles DDL</button>
+<div class="collapse-body" id="hdb-auth">
+<div class="sql-block"><span class="kw">CREATE TABLE</span> <span class="tn">users</span> (
+    id              <span class="ty">UUID PRIMARY KEY</span> DEFAULT gen_random_uuid(),
+    email           <span class="ty">VARCHAR(255)</span> UNIQUE NOT NULL,
+    phone           <span class="ty">VARCHAR(20)</span>,
+    display_name    <span class="ty">VARCHAR(100)</span>,
+    role            <span class="ty">VARCHAR(20)</span> NOT NULL DEFAULT 'PATIENT',
+                    <span class="cm">-- PATIENT | RESEARCHER | IRB_MEMBER | ADMIN</span>
+    kyc_level       <span class="ty">SMALLINT</span> NOT NULL DEFAULT 0,
+                    <span class="cm">-- 0:미인증 1:이메일 2:전화 3:신분증</span>
+    status          <span class="ty">VARCHAR(20)</span> NOT NULL DEFAULT 'ACTIVE',
+    last_login_at   <span class="ty">TIMESTAMP</span>,
+    created_at      <span class="ty">TIMESTAMP</span> NOT NULL DEFAULT NOW(),
+    updated_at      <span class="ty">TIMESTAMP</span> NOT NULL DEFAULT NOW()
+);
+
+<span class="kw">CREATE TABLE</span> <span class="tn">passkey_credentials</span> (
+    id              <span class="ty">UUID PRIMARY KEY</span>,
+    user_id         <span class="ty">UUID</span> NOT NULL <span class="ct">REFERENCES users(id)</span>,
+    credential_id   <span class="ty">TEXT</span> NOT NULL UNIQUE,
+    public_key      <span class="ty">TEXT</span> NOT NULL,        <span class="cm">-- COSE 공개키</span>
+    sign_count      <span class="ty">BIGINT</span> DEFAULT 0,
+    device_type     <span class="ty">VARCHAR(30)</span>,         <span class="cm">-- 'platform'|'cross-platform'</span>
+    device_name     <span class="ty">VARCHAR(100)</span>,
+    prf_supported   <span class="ty">BOOLEAN</span> DEFAULT FALSE,
+    prf_salt        <span class="ty">BYTEA</span>,              <span class="cm">-- PRF용 salt (32바이트)</span>
+    created_at      <span class="ty">TIMESTAMP</span> NOT NULL DEFAULT NOW()
+);
+
+<span class="kw">CREATE TABLE</span> <span class="tn">user_profiles</span> (
+    id              <span class="ty">UUID PRIMARY KEY</span>,
+    user_id         <span class="ty">UUID</span> NOT NULL UNIQUE <span class="ct">REFERENCES users(id)</span>,
+    birth_date      <span class="ty">DATE</span>,              <span class="cm">-- 암호화 저장</span>
+    gender          <span class="ty">VARCHAR(10)</span>,
+    height_cm       <span class="ty">DECIMAL(5,1)</span>,
+    weight_kg       <span class="ty">DECIMAL(5,1)</span>,
+    blood_type      <span class="ty">VARCHAR(5)</span>,
+    chronic_conditions <span class="ty">TEXT[]</span>,
+    medications     <span class="ty">JSONB</span>,
+    encrypted_fields <span class="ty">JSONB</span>,
+    created_at      <span class="ty">TIMESTAMP</span> NOT NULL DEFAULT NOW()
+);</div>
+</div>
+
+<button class="collapse-btn" onclick="toggle('hdb-data')"><span class="arrow">▶</span> data_points + data_point_tags + data_access_logs DDL</button>
+<div class="collapse-body" id="hdb-data">
+<div class="sql-block"><span class="kw">CREATE TABLE</span> <span class="tn">data_points</span> (
+    id              <span class="ty">UUID PRIMARY KEY</span>,
+    user_id         <span class="ty">UUID</span> NOT NULL <span class="ct">REFERENCES users(id)</span>,
+    category        <span class="ty">VARCHAR(30)</span> NOT NULL,
+                    <span class="cm">-- VITALS | LAB_RESULT | MEDICATION | SYMPTOM |</span>
+                    <span class="cm">-- ACTIVITY | SLEEP | DIET | MENTAL_HEALTH |</span>
+                    <span class="cm">-- WEARABLE | MY_HEALTHWAY</span>
+    sub_category    <span class="ty">VARCHAR(50)</span>,       <span class="cm">-- "blood_pressure", "heart_rate", "glucose"</span>
+    value           <span class="ty">JSONB</span> NOT NULL,    <span class="cm">-- AES-256-GCM 암호화된 데이터</span>
+    value_encrypted <span class="ty">BOOLEAN</span> DEFAULT TRUE,
+    source          <span class="ty">VARCHAR(30)</span> NOT NULL,
+                    <span class="cm">-- MANUAL | WEARABLE | MY_HEALTHWAY | EMR_IMPORT | FHIR</span>
+    measured_at     <span class="ty">TIMESTAMP</span> NOT NULL,
+    data_hash       <span class="ty">VARCHAR(64)</span> NOT NULL,   <span class="cm">-- SHA-256(raw + ts)</span>
+    xrpl_tx_hash    <span class="ty">VARCHAR(64)</span>,            <span class="cm">-- XRPL 앵커링 tx</span>
+    xrpl_anchored   <span class="ty">BOOLEAN</span> DEFAULT FALSE,
+    quality_score   <span class="ty">DECIMAL(3,2)</span>,
+    created_at      <span class="ty">TIMESTAMP</span> NOT NULL DEFAULT NOW()
+);
+<span class="kw">CREATE INDEX</span> idx_dp_user_cat ON data_points(user_id, category);
+<span class="kw">CREATE INDEX</span> idx_dp_user_time ON data_points(user_id, measured_at DESC);
+<span class="kw">CREATE INDEX</span> idx_dp_hash ON data_points(data_hash);
+
+<span class="kw">CREATE TABLE</span> <span class="tn">data_point_tags</span> (
+    id              <span class="ty">UUID PRIMARY KEY</span>,
+    data_point_id   <span class="ty">UUID</span> <span class="ct">REFERENCES data_points(id)</span>,
+    tag_key         <span class="ty">VARCHAR(50)</span>,
+    tag_value       <span class="ty">VARCHAR(200)</span>
+);
+
+<span class="kw">CREATE TABLE</span> <span class="tn">data_access_logs</span> (
+    id              <span class="ty">UUID PRIMARY KEY</span>,
+    data_point_ids  <span class="ty">UUID[]</span> NOT NULL,
+    accessor_type   <span class="ty">VARCHAR(20)</span>,      <span class="cm">-- SELF | RESEARCHER | SYSTEM | AI</span>
+    accessor_id     <span class="ty">UUID</span>,
+    project_id      <span class="ty">UUID</span>,             <span class="cm">-- uniqdata_db.projects.id</span>
+    irb_number      <span class="ty">VARCHAR(50)</span>,
+    consent_id      <span class="ty">UUID</span> <span class="ct">REFERENCES consents(id)</span>,
+    access_purpose  <span class="ty">VARCHAR(50)</span>,
+    record_count    <span class="ty">INT</span> NOT NULL,
+    pseudonymized   <span class="ty">BOOLEAN</span> DEFAULT FALSE,
+    xrpl_tx_hash    <span class="ty">VARCHAR(64)</span>,
+    accessed_at     <span class="ty">TIMESTAMP</span> DEFAULT NOW()
+);</div>
+</div>
+
+<button class="collapse-btn" onclick="toggle('hdb-consent')"><span class="arrow">▶</span> consents + consent_scopes + consent_audit_trail DDL</button>
+<div class="collapse-body" id="hdb-consent">
+<div class="sql-block"><span class="kw">CREATE TABLE</span> <span class="tn">consents</span> (
+    id              <span class="ty">UUID PRIMARY KEY</span>,
+    user_id         <span class="ty">UUID</span> NOT NULL <span class="ct">REFERENCES users(id)</span>,
+    consent_type    <span class="ty">VARCHAR(30)</span> NOT NULL,
+                    <span class="cm">-- SERVICE_TERMS | PRIVACY_POLICY | RESEARCH_PARTICIPATION |</span>
+                    <span class="cm">-- DATA_SHARING | SENSITIVE_DATA | MARKETING</span>
+    status          <span class="ty">VARCHAR(20)</span> DEFAULT 'ACTIVE',
+                    <span class="cm">-- PENDING | ACTIVE | REVOKED | EXPIRED</span>
+    signature_hash  <span class="ty">VARCHAR(64)</span>,        <span class="cm">-- ed25519 서명 해시</span>
+    signature_method <span class="ty">VARCHAR(30)</span>,       <span class="cm">-- PASSKEY_PRF | E_SIGNATURE | MANUAL</span>
+    grant_tx_hash   <span class="ty">VARCHAR(64)</span>,        <span class="cm">-- CONSENT_GRANT XRPL tx</span>
+    revoke_tx_hash  <span class="ty">VARCHAR(64)</span>,        <span class="cm">-- CONSENT_REVOKE XRPL tx</span>
+    project_id      <span class="ty">UUID</span>,              <span class="cm">-- Business에서 전달받은 프로젝트 ID</span>
+    irb_number      <span class="ty">VARCHAR(50)</span>,
+    version         <span class="ty">INT</span> DEFAULT 1,
+    created_at      <span class="ty">TIMESTAMP</span> DEFAULT NOW()
+);
+
+<span class="kw">CREATE TABLE</span> <span class="tn">consent_scopes</span> (
+    id              <span class="ty">UUID PRIMARY KEY</span>,
+    consent_id      <span class="ty">UUID</span> <span class="ct">REFERENCES consents(id)</span>,
+    scope_type      <span class="ty">VARCHAR(30)</span>,
+                    <span class="cm">-- DATA_CATEGORY | PURPOSE | RECIPIENT | DURATION | GEOGRAPHY</span>
+    scope_key       <span class="ty">VARCHAR(50)</span>,   <span class="cm">-- "vitals", "drug_research", "enterprise_id:xxxx"</span>
+    scope_value     <span class="ty">TEXT</span>
+);
+
+<span class="kw">CREATE TABLE</span> <span class="tn">consent_audit_trail</span> (
+    id              <span class="ty">UUID PRIMARY KEY</span>,
+    consent_id      <span class="ty">UUID</span> <span class="ct">REFERENCES consents(id)</span>,
+    action          <span class="ty">VARCHAR(20)</span>,      <span class="cm">-- CREATED | SIGNED | MODIFIED | REVOKED</span>
+    actor_id        <span class="ty">UUID</span>,
+    changes         <span class="ty">JSONB</span>,
+    xrpl_tx_hash    <span class="ty">VARCHAR(64)</span>,
+    created_at      <span class="ty">TIMESTAMP</span> DEFAULT NOW()
+);</div>
+</div>
+
+<button class="collapse-btn" onclick="toggle('hdb-xrpl')"><span class="arrow">▶</span> user_wallets + wallet_recovery_configs + xrpl_transactions DDL</button>
+<div class="collapse-body" id="hdb-xrpl">
+<div class="sql-block"><span class="kw">CREATE TABLE</span> <span class="tn">user_wallets</span> (
+    id              <span class="ty">UUID PRIMARY KEY</span>,
+    user_id         <span class="ty">UUID</span> <span class="ct">REFERENCES users(id)</span>,
+    xrpl_address    <span class="ty">VARCHAR(60)</span> UNIQUE,  <span class="cm">-- rXXXXX...</span>
+    xrpl_public_key <span class="ty">VARCHAR(130)</span>,        <span class="cm">-- ed25519 공개키 (hex)</span>
+    wallet_type     <span class="ty">VARCHAR(20)</span> DEFAULT 'USER',
+                    <span class="cm">-- USER | SERVICE | ESCROW</span>
+    derivation_method <span class="ty">VARCHAR(20)</span> DEFAULT 'PASSKEY_PRF',
+    uqd_balance     <span class="ty">DECIMAL(18,6)</span> DEFAULT 0,
+    xrp_balance     <span class="ty">DECIMAL(18,6)</span> DEFAULT 0,
+    status          <span class="ty">VARCHAR(20)</span> DEFAULT 'ACTIVE'
+    <span class="cm">-- ⚠️ private_key, seed는 절대 저장하지 않음!</span>
+);
+
+<span class="kw">CREATE TABLE</span> <span class="tn">wallet_recovery_configs</span> (
+    id              <span class="ty">UUID PRIMARY KEY</span>,
+    user_id         <span class="ty">UUID</span> <span class="ct">REFERENCES users(id)</span>,
+    recovery_method <span class="ty">VARCHAR(30)</span>,      <span class="cm">-- SSS | SOCIAL | HSM_BACKUP</span>
+    config          <span class="ty">JSONB</span>,            <span class="cm">-- {threshold, shares, guardians, ...}</span>
+    created_at      <span class="ty">TIMESTAMP</span> DEFAULT NOW()
+);
+
+<span class="kw">CREATE TABLE</span> <span class="tn">xrpl_transactions</span> (
+    id              <span class="ty">UUID PRIMARY KEY</span>,
+    tx_hash         <span class="ty">VARCHAR(64)</span> UNIQUE,
+    tx_type         <span class="ty">VARCHAR(30)</span>,
+                    <span class="cm">-- DATA_INPUT | DATA_ACCESS | CONSENT_GRANT | CONSENT_REVOKE |</span>
+                    <span class="cm">-- ESCROW_CREATE | ESCROW_FINISH | ESCROW_CANCEL |</span>
+                    <span class="cm">-- SYNTH_SALE | FL_ROUND | UQD_TRANSFER</span>
+    from_address    <span class="ty">VARCHAR(60)</span>,
+    to_address      <span class="ty">VARCHAR(60)</span>,
+    amount          <span class="ty">DECIMAL(18,6)</span>,
+    currency        <span class="ty">VARCHAR(10)</span>,       <span class="cm">-- XRP | UQD</span>
+    memo_type       <span class="ty">VARCHAR(30)</span>,
+    memo_data       <span class="ty">JSONB</span>,
+    ledger_index    <span class="ty">BIGINT</span>,
+    status          <span class="ty">VARCHAR(20)</span>,       <span class="cm">-- SUBMITTED | VALIDATED | FAILED</span>
+    related_user_id <span class="ty">UUID</span>,
+    related_consent_id <span class="ty">UUID</span>,
+    created_at      <span class="ty">TIMESTAMP</span> DEFAULT NOW()
+);</div>
+</div>
+
+<button class="collapse-btn" onclick="toggle('hdb-notif')"><span class="arrow">▶</span> notifications + notification_preferences + refresh_tokens DDL</button>
+<div class="collapse-body" id="hdb-notif">
+<div class="sql-block"><span class="kw">CREATE TABLE</span> <span class="tn">notifications</span> (
+    id              <span class="ty">UUID PRIMARY KEY</span>,
+    user_id         <span class="ty">UUID</span> <span class="ct">REFERENCES users(id)</span>,
+    type            <span class="ty">VARCHAR(50)</span>,
+    title           <span class="ty">VARCHAR(200)</span>,
+    body            <span class="ty">TEXT</span>,
+    channel         <span class="ty">VARCHAR(20)</span>,      <span class="cm">-- PUSH | EMAIL | IN_APP</span>
+    read            <span class="ty">BOOLEAN</span> DEFAULT FALSE,
+    metadata        <span class="ty">JSONB</span>,
+    created_at      <span class="ty">TIMESTAMP</span> DEFAULT NOW()
+);
+
+<span class="kw">CREATE TABLE</span> <span class="tn">notification_preferences</span> (
+    id              <span class="ty">UUID PRIMARY KEY</span>,
+    user_id         <span class="ty">UUID</span> UNIQUE <span class="ct">REFERENCES users(id)</span>,
+    push_enabled    <span class="ty">BOOLEAN</span> DEFAULT TRUE,
+    email_enabled   <span class="ty">BOOLEAN</span> DEFAULT TRUE,
+    health_alerts   <span class="ty">BOOLEAN</span> DEFAULT TRUE,
+    research_updates <span class="ty">BOOLEAN</span> DEFAULT TRUE,
+    quiet_hours_start <span class="ty">TIME</span>,
+    quiet_hours_end   <span class="ty">TIME</span>
+);
+
+<span class="kw">CREATE TABLE</span> <span class="tn">refresh_tokens</span> (
+    id              <span class="ty">UUID PRIMARY KEY</span>,
+    user_id         <span class="ty">UUID</span> <span class="ct">REFERENCES users(id)</span>,
+    token_hash      <span class="ty">VARCHAR(64)</span> UNIQUE,
+    device_info     <span class="ty">JSONB</span>,
+    expires_at      <span class="ty">TIMESTAMP</span> NOT NULL,
+    revoked         <span class="ty">BOOLEAN</span> DEFAULT FALSE,
+    created_at      <span class="ty">TIMESTAMP</span> DEFAULT NOW()
+);</div>
+</div>
+
+<!-- ====== uniqdata_db 스키마 (16 tables) ====== -->
+<div class="section-divider"><span>🔵 uniqdata_db — 16 Tables (Business 전용)</span></div>
+
+<div style="display: flex; gap: 16px; margin-bottom: 16px; flex-wrap: wrap;">
+  <div style="background: #022c22; border: 1px solid #34d399; padding: 12px 20px; border-radius: 8px; font-size: 12px; color: #a7f3d0; text-align: center;">
+    총 테이블: <strong>16</strong>
   </div>
-
-  <!-- Main flow -->
-  <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
-    <!-- Row 1: DRAFT → SUBMITTED -->
-    <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap; justify-content: center;">
-      <span class="status-badge" style="background: #374151; color: #9ca3af; border: 1px solid #6b7280;">DRAFT</span>
-      <span style="color: #6b7280; font-size: 14px;">&rarr;</span>
-      <span class="status-badge" style="background: #1e3a5f; color: #93c5fd; border: 1px solid #3b82f6;">SUBMITTED</span>
-      <span style="color: #6b7280; font-size: 14px;">&rarr;</span>
-      <span class="status-badge" style="background: #422006; color: #fbbf24; border: 1px solid #d97706;">PRELIMINARY_REVIEW</span>
-      <span style="color: #6b7280; font-size: 14px;">&rarr;</span>
-      <span class="status-badge" style="background: #422006; color: #fbbf24; border: 1px solid #d97706;">FULL_BOARD_REVIEW</span>
-      <span style="color: #6b7280; font-size: 14px;">&rarr;</span>
-      <span class="status-badge" style="background: #064e3b; color: #4ade80; border: 1px solid #22c55e;">APPROVED</span>
-      <span style="color: #6b7280; font-size: 14px;">&rarr;</span>
-      <span class="status-badge" style="background: #312e81; color: #c7d2fe; border: 1px solid #6366f1;">&#x26D3;&#xFE0F; XRPL 앵커링</span>
-    </div>
-
-    <!-- Branch arrows -->
-    <div style="display: flex; gap: 48px; margin-top: 8px; flex-wrap: wrap; justify-content: center;">
-      <div style="display: flex; flex-direction: column; align-items: center;">
-        <span style="color: #6b7280; font-size: 11px;">&#x25BC; (예비/본 심의에서)</span>
-        <span class="status-badge" style="background: #4a2000; color: #fb923c; border: 1px solid #f97316; margin-top: 4px;">REVISION_REQUESTED</span>
-        <span style="color: #6b7280; font-size: 11px; margin-top: 4px;">&#x25BC; (재제출)</span>
-        <span class="status-badge" style="background: #1e3a5f; color: #93c5fd; border: 1px solid #3b82f6; margin-top: 4px;">SUBMITTED</span>
-      </div>
-      <div style="display: flex; flex-direction: column; align-items: center;">
-        <span style="color: #6b7280; font-size: 11px;">&#x25BC; (거절 시)</span>
-        <span class="status-badge" style="background: #450a0a; color: #f87171; border: 1px solid #ef4444; margin-top: 4px;">REJECTED</span>
-      </div>
-    </div>
+  <div style="background: #022c22; border: 1px solid #34d399; padding: 12px 20px; border-radius: 8px; font-size: 12px; color: #a7f3d0; text-align: center;">
+    1년 예상: <strong>~170K 레코드</strong>
   </div>
-
-  <!-- Legend -->
-  <div style="display: flex; gap: 12px; justify-content: center; margin-top: 20px; flex-wrap: wrap; font-size: 10px;">
-    <span style="color: #9ca3af;">&#x25CF; 초기</span>
-    <span style="color: #93c5fd;">&#x25CF; 제출</span>
-    <span style="color: #fbbf24;">&#x25CF; 심의중</span>
-    <span style="color: #fb923c;">&#x25CF; 수정요청</span>
-    <span style="color: #4ade80;">&#x25CF; 승인</span>
-    <span style="color: #f87171;">&#x25CF; 거절</span>
+  <div style="background: #022c22; border: 1px solid #34d399; padding: 12px 20px; border-radius: 8px; font-size: 12px; color: #a7f3d0; text-align: center;">
+    핵심: <strong>projects, irb_submissions</strong>
+  </div>
+  <div style="background: #022c22; border: 1px solid #34d399; padding: 12px 20px; border-radius: 8px; font-size: 12px; color: #a7f3d0; text-align: center;">
+    스토리지: <strong>PostgreSQL 15 · 1GB</strong>
   </div>
 </div>
 
-<!-- ===== SECTION 5: Phase 구분 ===== -->
-<div class="section-divider"><span>&#x1F4C5; Section 5: Phase 구분 (MVP Phases)</span></div>
+<table class="db-table">
+  <tr><th style="color:#6ee7b7;">#</th><th style="color:#6ee7b7;">테이블</th><th style="color:#6ee7b7;">설명</th><th style="color:#6ee7b7;">주요 컬럼</th><th style="color:#6ee7b7;">예상/년</th></tr>
+  <tr><td>1</td><td style="color:#a7f3d0;"><strong>enterprises</strong></td><td>기관 (병원, 제약사, CRO)</td><td>name, enterprise_type, irb_committee_id</td><td>~200</td></tr>
+  <tr><td>2</td><td style="color:#a7f3d0;"><strong>enterprise_members</strong></td><td>기관 구성원</td><td>user_id, role (OWNER|PI|IRB_MEMBER|STAFF)</td><td>~2K</td></tr>
+  <tr><td>3</td><td style="color:#fbbf24;font-weight:700;">projects ⭐</td><td>연구 프로젝트</td><td>project_type, status, pi_user_id, irb_number, reward_budget</td><td>~500</td></tr>
+  <tr><td>4</td><td style="color:#a7f3d0;"><strong>project_milestones</strong></td><td>마일스톤 추적</td><td>milestone_type, status, target_date</td><td>~2.5K</td></tr>
+  <tr><td>5</td><td style="color:#a7f3d0;"><strong>participants</strong></td><td>연구 참여자 매핑</td><td>user_id, consent_id, status, reward_earned</td><td>~15K</td></tr>
+  <tr><td>6</td><td style="color:#a7f3d0;"><strong>participation_criteria</strong></td><td>적격 기준</td><td>criteria_type (INCLUSION|EXCLUSION), field, operator, value</td><td>~3K</td></tr>
+  <tr><td>7</td><td style="color:#a7f3d0;"><strong>data_requests</strong></td><td>데이터 요청 추적</td><td>request_type, data_categories, core_request_id</td><td>~5K</td></tr>
+  <tr><td>8</td><td style="color:#fbbf24;font-weight:700;">irb_submissions ⭐</td><td>IRB 제출물</td><td>submission_type, status, ai_generated, approval_valid_until</td><td>~1K</td></tr>
+  <tr><td>9</td><td style="color:#a7f3d0;"><strong>irb_documents</strong></td><td>IRB 문서</td><td>doc_type, version, generated_by (AI|MANUAL|TEMPLATE)</td><td>~5K</td></tr>
+  <tr><td>10</td><td style="color:#a7f3d0;"><strong>irb_review_comments</strong></td><td>심의 의견</td><td>reviewer_id, review_type, decision, target_section</td><td>~3K</td></tr>
+  <tr><td>11</td><td style="color:#a7f3d0;"><strong>irb_workflow_history</strong></td><td>IRB 상태 변경 이력</td><td>from_status, to_status, changed_by, reason</td><td>~5K</td></tr>
+  <tr><td>12</td><td style="color:#a7f3d0;"><strong>settlement_batches</strong></td><td>정산 배치</td><td>batch_type, total_amount, escrow_tx_hash</td><td>~2K</td></tr>
+  <tr><td>13</td><td style="color:#a7f3d0;"><strong>settlement_items</strong></td><td>개별 정산 항목</td><td>recipient_user_id, amount, calculation_basis(JSON), paid_tx_hash</td><td>~30K</td></tr>
+  <tr><td>14</td><td style="color:#6b7280;"><em>synthetic_datasets</em> (Ph2)</td><td>합성데이터셋</td><td>generation_method, quality_score, reidentification_risk</td><td>~100</td></tr>
+  <tr><td>15</td><td style="color:#6b7280;"><em>fl_rounds</em> (Ph2)</td><td>FL 라운드</td><td>round_number, participating_nodes, dp_epsilon</td><td>~500</td></tr>
+  <tr><td>16</td><td style="color:#a7f3d0;"><strong>webhook_events</strong></td><td>Webhook 이벤트 로그</td><td>event_type, payload(JSON), status, retry_count</td><td>~100K</td></tr>
+</table>
 
-<div class="card" style="overflow-x: auto;">
-  <table class="data-table phase-table">
-    <thead>
-      <tr>
-        <th>Phase</th>
-        <th>기간</th>
-        <th>범위</th>
-        <th>팀</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr class="phase-current">
-        <td><span class="tag tag-core">1A: Core 기반</span></td>
-        <td style="color: #fbbf24; font-weight: 600;">0&ndash;3개월</td>
-        <td>인증 + 데이터 입력 + AI 건강 레포트 + XRPL</td>
-        <td>Core Team</td>
-      </tr>
-      <tr class="phase-current">
-        <td><span class="tag tag-business">1B: 연구 기초</span></td>
-        <td style="color: #fbbf24; font-weight: 600;">3&ndash;6개월</td>
-        <td>연구 프로젝트 + 참여자 매칭 + 정산</td>
-        <td>Core + 백엔드팀</td>
-      </tr>
-      <tr style="background: #1a1500;">
-        <td><span class="tag tag-irb">1C: IRB 핵심</span></td>
-        <td style="color: #fbbf24; font-weight: 600;">5&ndash;6개월</td>
-        <td>IRB 서류 AI 생성 + 심의 트래킹 + 대시보드</td>
-        <td>백엔드팀 + AI</td>
-      </tr>
-      <tr class="phase-future">
-        <td><span class="tag" style="background: #312e81; color: #c7d2fe;">2: 확장</span></td>
-        <td style="color: #8b949e;">6&ndash;18개월</td>
-        <td style="color: #8b949e;">FL + 다기관 IRB + DaaS</td>
-        <td style="color: #8b949e;">PMF 검증 후</td>
-      </tr>
-    </tbody>
-  </table>
+<!-- uniqdata_db CREATE TABLE statements (collapsible) -->
+<button class="collapse-btn" onclick="toggle('udb-enterprise')"><span class="arrow">▶</span> enterprises + enterprise_members DDL</button>
+<div class="collapse-body" id="udb-enterprise">
+<div class="sql-block"><span class="kw">CREATE TABLE</span> <span class="tn">enterprises</span> (
+    id              <span class="ty">UUID PRIMARY KEY</span>,
+    name            <span class="ty">VARCHAR(200)</span> NOT NULL,
+    enterprise_type <span class="ty">VARCHAR(30)</span>,
+                    <span class="cm">-- HOSPITAL | PHARMA | CRO | UNIVERSITY | INSURANCE | GOVERNMENT</span>
+    business_number <span class="ty">VARCHAR(20)</span>,
+    irb_committee_id <span class="ty">UUID</span>,
+    status          <span class="ty">VARCHAR(20)</span> DEFAULT 'ACTIVE',
+    created_at      <span class="ty">TIMESTAMP</span> DEFAULT NOW()
+);
+
+<span class="kw">CREATE TABLE</span> <span class="tn">enterprise_members</span> (
+    id              <span class="ty">UUID PRIMARY KEY</span>,
+    enterprise_id   <span class="ty">UUID</span> <span class="ct">REFERENCES enterprises(id)</span>,
+    user_id         <span class="ty">UUID</span> NOT NULL,     <span class="cm">-- health_db.users.id</span>
+    role            <span class="ty">VARCHAR(20)</span>,
+                    <span class="cm">-- OWNER | PI | IRB_MEMBER | STAFF | VIEWER</span>
+    status          <span class="ty">VARCHAR(20)</span> DEFAULT 'ACTIVE',
+    created_at      <span class="ty">TIMESTAMP</span> DEFAULT NOW()
+);
+<span class="kw">CREATE UNIQUE INDEX</span> ON enterprise_members(enterprise_id, user_id);</div>
 </div>
 
-<!-- ===== SECTION 6: 데이터 흐름 예시 ===== -->
-<div class="section-divider"><span>&#x1F500; Section 6: 데이터 흐름 예시</span></div>
+<button class="collapse-btn" onclick="toggle('udb-project')"><span class="arrow">▶</span> projects + participants + milestones + criteria + data_requests DDL</button>
+<div class="collapse-body" id="udb-project">
+<div class="sql-block"><span class="kw">CREATE TABLE</span> <span class="tn">projects</span> (
+    id              <span class="ty">UUID PRIMARY KEY</span>,
+    enterprise_id   <span class="ty">UUID</span> <span class="ct">REFERENCES enterprises(id)</span>,
+    title           <span class="ty">VARCHAR(300)</span> NOT NULL,
+    project_type    <span class="ty">VARCHAR(30)</span>,
+                    <span class="cm">-- CLINICAL_TRIAL | OBSERVATIONAL | RETROSPECTIVE |</span>
+                    <span class="cm">-- REGISTRY | DATA_ANALYSIS | FL_STUDY | SYNTHETIC_DATA</span>
+    status          <span class="ty">VARCHAR(30)</span> DEFAULT 'DRAFT',
+                    <span class="cm">-- DRAFT | IRB_PENDING | IRB_APPROVED | RECRUITING |</span>
+                    <span class="cm">-- ACTIVE | DATA_LOCKED | ANALYSIS | COMPLETED</span>
+    pi_user_id      <span class="ty">UUID</span> NOT NULL,     <span class="cm">-- 연구책임자 (health_db.users.id)</span>
+    irb_number      <span class="ty">VARCHAR(50)</span>,
+    target_participant_count <span class="ty">INT</span>,
+    required_data_categories <span class="ty">TEXT[]</span>,   <span class="cm">-- ['VITALS','LAB_RESULT']</span>
+    reward_per_participant   <span class="ty">DECIMAL(18,6)</span>,
+    total_reward_budget      <span class="ty">DECIMAL(18,6)</span>,
+    escrow_xrpl_tx_hash      <span class="ty">VARCHAR(64)</span>,
+    created_at      <span class="ty">TIMESTAMP</span> DEFAULT NOW()
+);
 
-<div class="flow-scenarios" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px;">
+<span class="kw">CREATE TABLE</span> <span class="tn">participants</span> (
+    id              <span class="ty">UUID PRIMARY KEY</span>,
+    project_id      <span class="ty">UUID</span> <span class="ct">REFERENCES projects(id)</span>,
+    user_id         <span class="ty">UUID</span> NOT NULL,     <span class="cm">-- health_db.users.id</span>
+    consent_id      <span class="ty">UUID</span>,             <span class="cm">-- health_db.consents.id</span>
+    status          <span class="ty">VARCHAR(20)</span> DEFAULT 'INVITED',
+                    <span class="cm">-- INVITED | CONSENTED | ENROLLED | ACTIVE |</span>
+                    <span class="cm">-- COMPLETED | WITHDRAWN | EXCLUDED</span>
+    reward_earned   <span class="ty">DECIMAL(18,6)</span> DEFAULT 0,
+    reward_paid     <span class="ty">DECIMAL(18,6)</span> DEFAULT 0,
+    created_at      <span class="ty">TIMESTAMP</span> DEFAULT NOW()
+);
+<span class="kw">CREATE UNIQUE INDEX</span> ON participants(project_id, user_id);
 
-  <!-- Scenario 1: B2C -->
-  <div class="example-box" style="border-left: 4px solid #3b82f6;">
-    <div class="example-title" style="color: #93c5fd;">
-      Scenario 1: 환자 데이터 입력 + AI 레포트 <span class="tag tag-b2c">B2C</span>
-    </div>
-    <div class="example-step">
-      <div class="step-num b2c">1</div>
-      <div class="step-content">
-        <span style="color: #93c5fd; font-weight: 600;">&#x1F4F1; 환자 앱</span>
-        <span class="action">&rarr; POST /api/health/data-points &rarr;</span>
-        <span class="server core">[Core]</span>
-      </div>
-    </div>
-    <div class="example-step">
-      <div class="step-num b2c">2</div>
-      <div class="step-content">
-        <span class="server core">[Core]</span>
-        <span class="action">검증 &rarr; 암호화 &rarr; health_db 저장</span>
-      </div>
-    </div>
-    <div class="example-step">
-      <div class="step-num b2c">3</div>
-      <div class="step-content">
-        <span class="server core">[Core]</span>
-        <span class="action">UQD 크레딧 적립</span>
-        <span class="flow-node xrpl" style="padding: 2px 6px; font-size: 10px;">XRPL</span>
-      </div>
-    </div>
-    <div class="example-step">
-      <div class="step-num b2c">4</div>
-      <div class="step-content">
-        <span class="server core">[Core]</span>
-        <span class="action">Webhook <code style="background:#21262d; padding:1px 4px; border-radius:3px; font-size:10px;">data.submitted</code> &rarr;</span>
-        <span class="server business">[Business]</span>
-        <span class="action">(마일스톤)</span>
-      </div>
-    </div>
-    <div class="example-step">
-      <div class="step-num b2c">5</div>
-      <div class="step-content">
-        <span style="color: #93c5fd; font-weight: 600;">&#x1F4F1; 환자 앱</span>
-        <span class="action">&rarr; GET /api/health/dashboard &rarr;</span>
-        <span class="server core">[Core]</span>
-      </div>
-    </div>
-    <div class="example-step">
-      <div class="step-num b2c">6</div>
-      <div class="step-content">
-        <span class="server core">[Core]</span>
-        <span class="action">AI 건강 레포트 생성 &rarr; 환자에게 반환</span>
-      </div>
-    </div>
-  </div>
+<span class="kw">CREATE TABLE</span> <span class="tn">project_milestones</span> (
+    id              <span class="ty">UUID PRIMARY KEY</span>,
+    project_id      <span class="ty">UUID</span> <span class="ct">REFERENCES projects(id)</span>,
+    milestone_type  <span class="ty">VARCHAR(30)</span>,
+                    <span class="cm">-- IRB_SUBMISSION | IRB_APPROVAL | RECRUITMENT_START |</span>
+                    <span class="cm">-- RECRUITMENT_COMPLETE | DATA_COLLECTION | CLOSURE</span>
+    status          <span class="ty">VARCHAR(20)</span> DEFAULT 'PENDING',
+    target_date     <span class="ty">DATE</span>,
+    completed_at    <span class="ty">TIMESTAMP</span>,
+    sequence_order  <span class="ty">INT</span>
+);
 
-  <!-- Scenario 2: B2B -->
-  <div class="example-box" style="border-left: 4px solid #34d399;">
-    <div class="example-title" style="color: #a7f3d0;">
-      Scenario 2: 연구자 IRB 신청 + 데이터 분석 <span class="tag tag-business">B2B</span>
-    </div>
-    <div class="example-step">
-      <div class="step-num b2b">1</div>
-      <div class="step-content">
-        <span style="color: #a7f3d0; font-weight: 600;">&#x1F5A5;&#xFE0F; Enterprise Portal</span>
-        <span class="action">&rarr;</span>
-        <span class="server business">[Business]</span>
-        <span class="action">POST /enterprise/projects</span>
-      </div>
-    </div>
-    <div class="example-step">
-      <div class="step-num b2b">2</div>
-      <div class="step-content">
-        <span style="color: #a7f3d0; font-weight: 600;">&#x1F5A5;&#xFE0F; Enterprise Portal</span>
-        <span class="action">&rarr;</span>
-        <span class="server business">[Business]</span>
-        <span class="action">POST /enterprise/irb/submissions</span>
-      </div>
-    </div>
-    <div class="example-step">
-      <div class="step-num b2b">3</div>
-      <div class="step-content">
-        <span class="server business">[Business]</span>
-        <span class="action">AI로 프로토콜/동의서 초안 생성</span>
-      </div>
-    </div>
-    <div class="example-step">
-      <div class="step-num b2b">4</div>
-      <div class="step-content">
-        <span style="color: #fcd34d; font-weight: 600;">&#x1F4CB; IRB 위원 (Enterprise Portal)</span>
-        <span class="action">&rarr;</span>
-        <span class="server business">[Business]</span>
-        <span class="action">심의 (approve/revise/reject)</span>
-      </div>
-    </div>
-    <div class="example-step">
-      <div class="step-num b2b">5</div>
-      <div class="step-content">
-        <span class="action">승인 후 &rarr;</span>
-        <span class="server core">[Core]</span>
-        <span class="action"><span style="color: #c7d2fe; font-weight: 600;">XRPL 승인 앵커링</span> + 동의 검증 &rarr; health_db 조회 &rarr; 가명처리 &rarr; 반환</span>
-      </div>
-    </div>
-    <div class="example-step">
-      <div class="step-num b2b">6</div>
-      <div class="step-content">
-        <span class="server business">[Business]</span>
-        <span class="action">정산 계산 &rarr;</span>
-        <span class="server core">[Core]</span>
-        <span class="action">XRPL 에스크로 실행</span>
-      </div>
-    </div>
-  </div>
+<span class="kw">CREATE TABLE</span> <span class="tn">participation_criteria</span> (
+    id              <span class="ty">UUID PRIMARY KEY</span>,
+    project_id      <span class="ty">UUID</span> <span class="ct">REFERENCES projects(id)</span>,
+    criteria_type   <span class="ty">VARCHAR(20)</span>,      <span class="cm">-- INCLUSION | EXCLUSION</span>
+    field           <span class="ty">VARCHAR(50)</span>,      <span class="cm">-- "age", "gender", "chronic_conditions"</span>
+    operator        <span class="ty">VARCHAR(20)</span>,      <span class="cm">-- EQUALS | BETWEEN | IN | NOT_IN | GTE | LTE</span>
+    value           <span class="ty">JSONB</span>
+);
+
+<span class="kw">CREATE TABLE</span> <span class="tn">data_requests</span> (
+    id              <span class="ty">UUID PRIMARY KEY</span>,
+    project_id      <span class="ty">UUID</span> <span class="ct">REFERENCES projects(id)</span>,
+    requester_id    <span class="ty">UUID</span>,
+    request_type    <span class="ty">VARCHAR(30)</span>,      <span class="cm">-- PARTICIPANT_DATA | AGGREGATE | EXPORT</span>
+    data_categories <span class="ty">TEXT[]</span>,
+    status          <span class="ty">VARCHAR(20)</span> DEFAULT 'PENDING',
+    core_request_id <span class="ty">UUID</span>,             <span class="cm">-- Core Internal API 요청 ID</span>
+    created_at      <span class="ty">TIMESTAMP</span> DEFAULT NOW()
+);</div>
 </div>
 
-<!-- ===== SECTION 7: 통신 패턴 ===== -->
-<div class="section-divider"><span>&#x1F4E1; Section 7: 통신 패턴</span></div>
+<button class="collapse-btn" onclick="toggle('udb-irb')"><span class="arrow">▶</span> irb_submissions + irb_documents + irb_review_comments + irb_workflow_history DDL</button>
+<div class="collapse-body" id="udb-irb">
+<div class="sql-block"><span class="kw">CREATE TABLE</span> <span class="tn">irb_submissions</span> (
+    id              <span class="ty">UUID PRIMARY KEY</span>,
+    project_id      <span class="ty">UUID</span> <span class="ct">REFERENCES projects(id)</span>,
+    enterprise_id   <span class="ty">UUID</span> <span class="ct">REFERENCES enterprises(id)</span>,
+    submission_type <span class="ty">VARCHAR(30)</span>,
+                    <span class="cm">-- INITIAL | AMENDMENT | CONTINUING_REVIEW | CLOSURE</span>
+    status          <span class="ty">VARCHAR(30)</span> DEFAULT 'DRAFT',
+                    <span class="cm">-- DRAFT | SUBMITTED | PRELIMINARY_REVIEW |</span>
+                    <span class="cm">-- FULL_BOARD_REVIEW | REVISION_REQUESTED |</span>
+                    <span class="cm">-- APPROVED | CONDITIONALLY_APPROVED | REJECTED</span>
+    version         <span class="ty">INT</span> DEFAULT 1,
+    ai_generated    <span class="ty">BOOLEAN</span> DEFAULT FALSE,
+    ai_model_used   <span class="ty">VARCHAR(50)</span>,      <span class="cm">-- "claude-sonnet-4-5"</span>
+    approval_valid_until <span class="ty">DATE</span>,
+    created_at      <span class="ty">TIMESTAMP</span> DEFAULT NOW()
+);
 
-<div class="comm-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px;">
+<span class="kw">CREATE TABLE</span> <span class="tn">irb_documents</span> (
+    id              <span class="ty">UUID PRIMARY KEY</span>,
+    submission_id   <span class="ty">UUID</span> <span class="ct">REFERENCES irb_submissions(id)</span>,
+    doc_type        <span class="ty">VARCHAR(50)</span>,
+                    <span class="cm">-- PROTOCOL | CONSENT_FORM | INVESTIGATOR_BROCHURE |</span>
+                    <span class="cm">-- CASE_REPORT_FORM | AMENDMENT_REPORT | SAFETY_REPORT</span>
+    title           <span class="ty">VARCHAR(300)</span>,
+    content         <span class="ty">TEXT</span>,              <span class="cm">-- 마크다운/HTML</span>
+    version         <span class="ty">INT</span> DEFAULT 1,
+    generated_by    <span class="ty">VARCHAR(20)</span>,       <span class="cm">-- AI | MANUAL | TEMPLATE</span>
+    previous_version_id <span class="ty">UUID</span> <span class="ct">REFERENCES irb_documents(id)</span>,
+    created_at      <span class="ty">TIMESTAMP</span> DEFAULT NOW()
+);
 
-  <!-- Internal API -->
-  <div style="background: #161b22; border: 2px solid #34d399; border-radius: 12px; overflow: hidden;">
-    <div style="background: linear-gradient(135deg, #064e3b, #065f46); padding: 14px 20px; font-size: 13px; font-weight: 700; color: #a7f3d0;">
-      Internal API <span style="font-size: 11px; font-weight: 400; color: #6ee7b7;">(Business &rarr; Core)</span>
-    </div>
-    <div style="padding: 16px;">
-      <div style="margin-bottom: 10px;">
-        <code style="font-size: 11px; color: #a78bfa; background: #21262d; padding: 3px 8px; border-radius: 4px;">POST /internal/data/query</code>
-        <div style="font-size: 10px; color: #8b949e; margin-top: 4px; padding-left: 8px;">IRB 승인 후 데이터 조회</div>
-      </div>
-      <div style="margin-bottom: 10px;">
-        <code style="font-size: 11px; color: #a78bfa; background: #21262d; padding: 3px 8px; border-radius: 4px;">GET /internal/consents/verify</code>
-        <div style="font-size: 10px; color: #8b949e; margin-top: 4px; padding-left: 8px;">동의 상태 확인</div>
-      </div>
-      <div style="margin-bottom: 10px;">
-        <code style="font-size: 11px; color: #a78bfa; background: #21262d; padding: 3px 8px; border-radius: 4px;">POST /internal/escrow/create</code>
-        <div style="font-size: 10px; color: #8b949e; margin-top: 4px; padding-left: 8px;">에스크로 생성</div>
-      </div>
-      <div>
-        <code style="font-size: 11px; color: #a78bfa; background: #21262d; padding: 3px 8px; border-radius: 4px;">POST /internal/notification/send</code>
-        <div style="font-size: 10px; color: #8b949e; margin-top: 4px; padding-left: 8px;">알림</div>
-      </div>
-    </div>
-  </div>
+<span class="kw">CREATE TABLE</span> <span class="tn">irb_review_comments</span> (
+    id              <span class="ty">UUID PRIMARY KEY</span>,
+    submission_id   <span class="ty">UUID</span> <span class="ct">REFERENCES irb_submissions(id)</span>,
+    reviewer_id     <span class="ty">UUID</span>,
+    review_type     <span class="ty">VARCHAR(20)</span>,       <span class="cm">-- PRIMARY | SECONDARY | FULL_BOARD</span>
+    decision        <span class="ty">VARCHAR(20)</span>,       <span class="cm">-- APPROVE | MINOR_REVISION | REJECT</span>
+    comment         <span class="ty">TEXT</span>,
+    target_document_id <span class="ty">UUID</span>,
+    target_section  <span class="ty">VARCHAR(100)</span>,
+    is_confidential <span class="ty">BOOLEAN</span> DEFAULT FALSE,
+    created_at      <span class="ty">TIMESTAMP</span> DEFAULT NOW()
+);
 
-  <!-- Webhook -->
-  <div style="background: #161b22; border: 2px solid #a78bfa; border-radius: 12px; overflow: hidden;">
-    <div style="background: linear-gradient(135deg, #4c1d95, #5b21b6); padding: 14px 20px; font-size: 13px; font-weight: 700; color: #e9d5ff;">
-      Webhook <span style="font-size: 11px; font-weight: 400; color: #c4b5fd;">(Core &rarr; Business)</span>
-    </div>
-    <div style="padding: 16px;">
-      <div style="margin-bottom: 10px;">
-        <code style="font-size: 11px; color: #34d399; background: #21262d; padding: 3px 8px; border-radius: 4px;">data.submitted</code>
-        <div style="font-size: 10px; color: #8b949e; margin-top: 4px; padding-left: 8px;">마일스톤 업데이트</div>
-      </div>
-      <div style="margin-bottom: 10px;">
-        <code style="font-size: 11px; color: #34d399; background: #21262d; padding: 3px 8px; border-radius: 4px;">consent.signed</code>
-        <div style="font-size: 10px; color: #8b949e; margin-top: 4px; padding-left: 8px;">참여자 등록</div>
-      </div>
-      <div style="margin-bottom: 10px;">
-        <code style="font-size: 11px; color: #34d399; background: #21262d; padding: 3px 8px; border-radius: 4px;">consent.revoked</code>
-        <div style="font-size: 10px; color: #8b949e; margin-top: 4px; padding-left: 8px;">참여자 삭제</div>
-      </div>
-      <div>
-        <code style="font-size: 11px; color: #34d399; background: #21262d; padding: 3px 8px; border-radius: 4px;">irb.approved</code>
-        <div style="font-size: 10px; color: #8b949e; margin-top: 4px; padding-left: 8px;">데이터 접근 활성화 + <span style="color: #c7d2fe; font-weight: 600;">XRPL 앵커링 (tx hash 기록)</span></div>
-      </div>
-    </div>
-  </div>
+<span class="kw">CREATE TABLE</span> <span class="tn">irb_workflow_history</span> (
+    id              <span class="ty">UUID PRIMARY KEY</span>,
+    submission_id   <span class="ty">UUID</span> <span class="ct">REFERENCES irb_submissions(id)</span>,
+    from_status     <span class="ty">VARCHAR(30)</span>,
+    to_status       <span class="ty">VARCHAR(30)</span>,
+    changed_by      <span class="ty">UUID</span>,
+    reason          <span class="ty">TEXT</span>,
+    created_at      <span class="ty">TIMESTAMP</span> DEFAULT NOW()
+);</div>
 </div>
 
-<!-- ===== SECTION 8: 기술 스택 ===== -->
-<div class="section-divider"><span>&#x1F9F0; Section 8: 기술 스택</span></div>
+<button class="collapse-btn" onclick="toggle('udb-settle')"><span class="arrow">▶</span> settlement_batches + settlement_items + webhook_events DDL</button>
+<div class="collapse-body" id="udb-settle">
+<div class="sql-block"><span class="kw">CREATE TABLE</span> <span class="tn">settlement_batches</span> (
+    id              <span class="ty">UUID PRIMARY KEY</span>,
+    project_id      <span class="ty">UUID</span> <span class="ct">REFERENCES projects(id)</span>,
+    batch_type      <span class="ty">VARCHAR(30)</span>,
+                    <span class="cm">-- PARTICIPANT_REWARD | DATA_PURCHASE | FL_CONTRIBUTION</span>
+    status          <span class="ty">VARCHAR(20)</span> DEFAULT 'PENDING',
+                    <span class="cm">-- PENDING | CALCULATING | CALCULATED |</span>
+                    <span class="cm">-- CORE_REQUESTED | ESCROW_PROCESSING | COMPLETED</span>
+    total_amount    <span class="ty">DECIMAL(18,6)</span>,
+    currency        <span class="ty">VARCHAR(10)</span> DEFAULT 'UQD',
+    item_count      <span class="ty">INT</span>,
+    escrow_tx_hash  <span class="ty">VARCHAR(64)</span>,
+    created_at      <span class="ty">TIMESTAMP</span> DEFAULT NOW()
+);
 
-<div class="card" style="overflow-x: auto;">
-  <table class="data-table">
-    <thead>
-      <tr>
-        <th>구분</th>
-        <th>기술</th>
-        <th>비고</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="tag tag-core">Core</span></td>
-        <td>NestJS (TypeScript)</td>
-        <td style="color: #8b949e;">기존</td>
-      </tr>
-      <tr>
-        <td><span class="tag tag-business">Business</span></td>
-        <td>Spring Boot (Java)</td>
-        <td style="color: #8b949e;">기존</td>
-      </tr>
-      <tr>
-        <td><span class="tag" style="background: #1e293b; color: #cbd5e1;">DB</span></td>
-        <td>PostgreSQL x 2</td>
-        <td style="color: #8b949e;">health_db + uniqdata_db</td>
-      </tr>
-      <tr>
-        <td><span class="tag" style="background: #4a1c1c; color: #fca5a5;">Cache</span></td>
-        <td>Redis</td>
-        <td style="color: #8b949e;">세션/캐시 공유</td>
-      </tr>
-      <tr>
-        <td><span class="tag tag-xrpl">Blockchain</span></td>
-        <td>XRPL (xrpl.js)</td>
-        <td style="color: #8b949e;">Testnet &rarr; Mainnet</td>
-      </tr>
-      <tr>
-        <td><span class="tag tag-irb">AI (IRB)</span></td>
-        <td>Claude API / GPT-4o</td>
-        <td style="color: #fbbf24; font-weight: 600;">NEW</td>
-      </tr>
-      <tr>
-        <td><span class="tag tag-b2c">AI (건강)</span></td>
-        <td>Claude API / 자체 모델</td>
-        <td style="color: #fbbf24; font-weight: 600;">NEW</td>
-      </tr>
-      <tr>
-        <td><span class="tag tag-business">Frontend</span></td>
-        <td>React + Vite</td>
-        <td style="color: #8b949e;">Enterprise Portal</td>
-      </tr>
-      <tr>
-        <td><span class="tag tag-b2c">Mobile</span></td>
-        <td>Flutter</td>
-        <td style="color: #8b949e;">환자 앱</td>
-      </tr>
-      <tr>
-        <td><span class="tag" style="background: #1e293b; color: #cbd5e1;">Infra</span></td>
-        <td>Railway</td>
-        <td style="color: #8b949e;">~$35-40/월</td>
-      </tr>
-    </tbody>
-  </table>
+<span class="kw">CREATE TABLE</span> <span class="tn">settlement_items</span> (
+    id              <span class="ty">UUID PRIMARY KEY</span>,
+    batch_id        <span class="ty">UUID</span> <span class="ct">REFERENCES settlement_batches(id)</span>,
+    recipient_user_id <span class="ty">UUID</span>,         <span class="cm">-- health_db.users.id</span>
+    recipient_wallet_address <span class="ty">VARCHAR(60)</span>,
+    amount          <span class="ty">DECIMAL(18,6)</span>,
+    calculation_basis <span class="ty">JSONB</span>,
+                    <span class="cm">-- {data_points_count: 150, quality_avg: 0.85, days: 90}</span>
+    status          <span class="ty">VARCHAR(20)</span> DEFAULT 'PENDING',
+                    <span class="cm">-- PENDING | PAID | FAILED | REFUNDED</span>
+    paid_tx_hash    <span class="ty">VARCHAR(64)</span>,
+    paid_at         <span class="ty">TIMESTAMP</span>
+);
+
+<span class="kw">CREATE TABLE</span> <span class="tn">webhook_events</span> (
+    id              <span class="ty">UUID PRIMARY KEY</span>,
+    event_type      <span class="ty">VARCHAR(50)</span>,
+    source          <span class="ty">VARCHAR(20)</span> DEFAULT 'CORE',
+    payload         <span class="ty">JSONB</span>,
+    status          <span class="ty">VARCHAR(20)</span> DEFAULT 'RECEIVED',
+                    <span class="cm">-- RECEIVED | PROCESSED | FAILED | RETRYING</span>
+    retry_count     <span class="ty">INT</span> DEFAULT 0,
+    error_message   <span class="ty">TEXT</span>,
+    created_at      <span class="ty">TIMESTAMP</span> DEFAULT NOW()
+);</div>
 </div>
 
-<!-- ===== SECTION 9: 인프라 비용 ===== -->
-<div class="section-divider"><span>&#x1F4B5; Section 9: 인프라 비용</span></div>
+<!-- ====== 통신 구조 ====== -->
+<div class="section-divider"><span>🔄 서버 간 통신 (14 API + 8 Webhook)</span></div>
 
-<div class="card" style="overflow-x: auto;">
-  <table class="data-table">
-    <thead>
-      <tr>
-        <th>Service</th>
-        <th>Spec</th>
-        <th style="text-align: right;">Cost</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="tag tag-core" style="font-size: 11px;">Core (NestJS)</span></td>
-        <td style="color: #8b949e;">256MB+</td>
-        <td style="text-align: right; color: #4ade80; font-weight: 600;">$5</td>
-      </tr>
-      <tr>
-        <td><span class="tag tag-business" style="font-size: 11px;">Business (Spring Boot)</span></td>
-        <td style="color: #8b949e;">1GB+ (JVM)</td>
-        <td style="text-align: right; color: #4ade80; font-weight: 600;">$10&ndash;15</td>
-      </tr>
-      <tr>
-        <td>health-db</td>
-        <td style="color: #8b949e;">2GB</td>
-        <td style="text-align: right; color: #4ade80; font-weight: 600;">$10</td>
-      </tr>
-      <tr>
-        <td>uniqdata-db</td>
-        <td style="color: #8b949e;">1GB</td>
-        <td style="text-align: right; color: #4ade80; font-weight: 600;">$5</td>
-      </tr>
-      <tr>
-        <td>Redis</td>
-        <td style="color: #8b949e;">shared</td>
-        <td style="text-align: right; color: #4ade80; font-weight: 600;">$5</td>
-      </tr>
-      <tr style="border-top: 2px solid #30363d;">
-        <td colspan="2" style="font-weight: 700; color: #e6edf3;">Total</td>
-        <td style="text-align: right; font-weight: 700; color: #fbbf24; font-size: 14px;">$35&ndash;40/월</td>
-      </tr>
-    </tbody>
-  </table>
-  <div style="background: #422006; border: 1px solid #d97706; border-radius: 6px; padding: 10px 16px; font-size: 11px; color: #fcd34d; margin-top: 8px;">
-    &#x26A0;&#xFE0F; AI API 비용: ~$100/월 별도 (Claude API + GPT-4o usage)
+<div style="display: flex; gap: 16px; margin-bottom: 24px;">
+  <!-- Business → Core (Internal API) -->
+  <div style="flex: 1; background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 16px;">
+    <div style="font-size: 13px; font-weight: 700; color: #58a6ff; margin-bottom: 12px;">
+      🔵 Business → 🟢 Core (Internal API REST) — 14개
+    </div>
+    <table style="width: 100%; font-size: 10px; border-collapse: collapse;">
+      <tr><td style="padding: 5px 0; color: #8b949e;">사용자 조회</td><td style="color: #a78bfa;"><code>GET /internal/v1/users/{id}</code></td></tr>
+      <tr><td style="padding: 5px 0; color: #8b949e;">다수 사용자</td><td style="color: #a78bfa;"><code>POST /internal/v1/users/batch</code></td></tr>
+      <tr><td style="padding: 5px 0; color: #8b949e;">지갑 조회</td><td style="color: #a78bfa;"><code>GET /internal/v1/users/{id}/wallet</code></td></tr>
+      <tr><td style="padding: 5px 0; color: #8b949e;">동의 기반 데이터</td><td style="color: #a78bfa;"><code>POST /internal/v1/data/query</code></td></tr>
+      <tr><td style="padding: 5px 0; color: #8b949e;">데이터 통계</td><td style="color: #a78bfa;"><code>GET /internal/v1/data/stats/{userId}</code></td></tr>
+      <tr><td style="padding: 5px 0; color: #8b949e;">동의 유효성</td><td style="color: #a78bfa;"><code>GET /internal/v1/consents/verify</code></td></tr>
+      <tr><td style="padding: 5px 0; color: #8b949e;">프로젝트 동의 목록</td><td style="color: #a78bfa;"><code>GET /internal/v1/consents/project/{id}</code></td></tr>
+      <tr><td style="padding: 5px 0; color: #8b949e;">동의 요청 (알림)</td><td style="color: #a78bfa;"><code>POST /internal/v1/consents/request</code></td></tr>
+      <tr><td style="padding: 5px 0; color: #8b949e;">에스크로 생성</td><td style="color: #a78bfa;"><code>POST /internal/v1/escrow/create</code></td></tr>
+      <tr><td style="padding: 5px 0; color: #8b949e;">에스크로 완료</td><td style="color: #a78bfa;"><code>POST /internal/v1/escrow/finish</code></td></tr>
+      <tr><td style="padding: 5px 0; color: #8b949e;">에스크로 취소</td><td style="color: #a78bfa;"><code>POST /internal/v1/escrow/cancel</code></td></tr>
+      <tr><td style="padding: 5px 0; color: #8b949e;">감사추적 앵커</td><td style="color: #a78bfa;"><code>POST /internal/v1/anchoring/record</code></td></tr>
+      <tr><td style="padding: 5px 0; color: #8b949e;">알림 발송</td><td style="color: #a78bfa;"><code>POST /internal/v1/notifications/send</code></td></tr>
+      <tr><td style="padding: 5px 0; color: #8b949e;">일괄 알림</td><td style="color: #a78bfa;"><code>POST /internal/v1/notifications/batch</code></td></tr>
+    </table>
+    <div style="margin-top: 8px; font-size: 9px; color: #8b949e;">인증: X-Internal-API-Key 헤더 (환경변수)</div>
+  </div>
+
+  <!-- Core → Business (Webhook) -->
+  <div style="flex: 1; background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 16px;">
+    <div style="font-size: 13px; font-weight: 700; color: #fbbf24; margin-bottom: 12px;">
+      🟢 Core → 🔵 Business (Webhook) — 8개
+    </div>
+    <table style="width: 100%; font-size: 10px; border-collapse: collapse;">
+      <tr><td style="padding: 5px 0; color: #8b949e;">데이터 제출</td><td style="color: #fbbf24;"><code>data.submitted</code></td><td style="color: #484f58; font-size: 9px;">→ 마일스톤 업데이트</td></tr>
+      <tr><td style="padding: 5px 0; color: #8b949e;">동의 승인</td><td style="color: #fbbf24;"><code>consent.granted</code></td><td style="color: #484f58; font-size: 9px;">→ participants → CONSENTED</td></tr>
+      <tr><td style="padding: 5px 0; color: #8b949e;">동의 철회</td><td style="color: #fbbf24;"><code>consent.revoked</code></td><td style="color: #484f58; font-size: 9px;">→ participants → WITHDRAWN</td></tr>
+      <tr><td style="padding: 5px 0; color: #8b949e;">에스크로 입금</td><td style="color: #fbbf24;"><code>escrow.deposited</code></td><td style="color: #484f58; font-size: 9px;">→ projects → RECRUITING</td></tr>
+      <tr><td style="padding: 5px 0; color: #8b949e;">에스크로 완료</td><td style="color: #fbbf24;"><code>escrow.finished</code></td><td style="color: #484f58; font-size: 9px;">→ settlement_items → PAID</td></tr>
+      <tr><td style="padding: 5px 0; color: #8b949e;">에스크로 취소</td><td style="color: #fbbf24;"><code>escrow.cancelled</code></td><td style="color: #484f58; font-size: 9px;">→ settlement_batches → FAILED</td></tr>
+      <tr><td style="padding: 5px 0; color: #8b949e;">KYC 변경</td><td style="color: #fbbf24;"><code>user.kyc_updated</code></td><td style="color: #484f58; font-size: 9px;">→ 적격 기준 재평가</td></tr>
+      <tr><td style="padding: 5px 0; color: #8b949e;">지갑 생성</td><td style="color: #fbbf24;"><code>wallet.created</code></td><td style="color: #484f58; font-size: 9px;">→ 로깅</td></tr>
+    </table>
+    <div style="margin-top: 8px; font-size: 9px; color: #8b949e;">인증: X-Webhook-Secret + HMAC-SHA256 서명</div>
   </div>
 </div>
 
-<!-- ===== SECTION 10: 연구 생성 6단계 플로우 ===== -->
-<div class="section-divider"><span>&#x1F3AF; Section 10: 연구 생성 플로우 (6 Steps)</span></div>
+<!-- ====== API Gateway 라우팅 ====== -->
+<div class="section-divider"><span>🛣️ API Gateway 라우팅 (nginx)</span></div>
 
-<div class="card" style="overflow-x: auto;">
-  <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px; flex-wrap: wrap;">
-    <div style="background: #1e293b; border: 2px solid #3b82f6; border-radius: 10px; padding: 12px 16px; text-align: center; min-width: 120px;">
-      <div style="font-size: 11px; color: #60a5fa; font-weight: 700;">Step 1</div>
-      <div style="font-size: 13px; color: #e2e8f0; font-weight: 600;">AI &#xC778;&#xD130;&#xBDF0;</div>
-      <div style="font-size: 9px; color: #94a3b8; margin-top: 4px;">uniqdata-ai</div>
-    </div>
-    <div style="color: #6b7280; font-size: 16px;">&#x2192;</div>
-    <div style="background: #1e293b; border: 2px solid #3b82f6; border-radius: 10px; padding: 12px 16px; text-align: center; min-width: 120px;">
-      <div style="font-size: 11px; color: #60a5fa; font-weight: 700;">Step 2</div>
-      <div style="font-size: 13px; color: #e2e8f0; font-weight: 600;">&#xC5F0;&#xAD6C; &#xC124;&#xACC4;</div>
-      <div style="font-size: 9px; color: #94a3b8; margin-top: 4px;">AI + Business</div>
-    </div>
-    <div style="color: #6b7280; font-size: 16px;">&#x2192;</div>
-    <div style="background: #1e293b; border: 2px solid #3b82f6; border-radius: 10px; padding: 12px 16px; text-align: center; min-width: 120px;">
-      <div style="font-size: 11px; color: #60a5fa; font-weight: 700;">Step 3</div>
-      <div style="font-size: 13px; color: #e2e8f0; font-weight: 600;">&#xB370;&#xC774;&#xD130; &#xC218;&#xC9D1;</div>
-      <div style="font-size: 9px; color: #94a3b8; margin-top: 4px;">Business</div>
-    </div>
-    <div style="color: #6b7280; font-size: 16px;">&#x2192;</div>
-    <div style="background: #1e293b; border: 2px solid #8b5cf6; border-radius: 10px; padding: 12px 16px; text-align: center; min-width: 120px;">
-      <div style="font-size: 11px; color: #a78bfa; font-weight: 700;">Step 4</div>
-      <div style="font-size: 13px; color: #e2e8f0; font-weight: 600;">&#xBAA8;&#xC9D1; &#xC124;&#xC815;</div>
-      <div style="font-size: 9px; color: #94a3b8; margin-top: 4px;">Business</div>
-    </div>
-    <div style="color: #6b7280; font-size: 16px;">&#x2192;</div>
-    <div style="background: #1e293b; border: 2px solid #fbbf24; border-radius: 10px; padding: 12px 16px; text-align: center; min-width: 120px;">
-      <div style="font-size: 11px; color: #fbbf24; font-weight: 700;">Step 5</div>
-      <div style="font-size: 13px; color: #e2e8f0; font-weight: 600;">IRB &#xD310;&#xC815;</div>
-      <div style="font-size: 9px; color: #94a3b8; margin-top: 4px;">AI + Business</div>
-    </div>
-    <div style="color: #6b7280; font-size: 16px;">&#x2192;</div>
-    <div style="background: #1e293b; border: 2px solid #34d399; border-radius: 10px; padding: 12px 16px; text-align: center; min-width: 120px;">
-      <div style="font-size: 11px; color: #34d399; font-weight: 700;">Step 6</div>
-      <div style="font-size: 13px; color: #e2e8f0; font-weight: 600;">&#xC5D0;&#xC2A4;&#xD06C;&#xB85C;</div>
-      <div style="font-size: 9px; color: #94a3b8; margin-top: 4px;">Core (XRPL)</div>
-    </div>
+<table class="api-table">
+  <thead><tr><th>경로 패턴</th><th>서버</th><th>설명</th><th>사용자</th></tr></thead>
+  <tbody>
+    <tr><td><code>/api/v1/auth/*</code></td><td><span class="tag tag-core">Core</span></td><td>Passkey 등록/인증, JWT 발급</td><td>전체</td></tr>
+    <tr><td><code>/api/v1/health/*</code></td><td><span class="tag tag-core">Core</span></td><td>건강 데이터 입력, 대시보드</td><td>앱 사용자</td></tr>
+    <tr><td><code>/api/v1/consents/*</code></td><td><span class="tag tag-core">Core</span></td><td>동의 서명/철회/조회</td><td>앱 사용자</td></tr>
+    <tr><td><code>/api/v1/wallets/*</code></td><td><span class="tag tag-core">Core</span></td><td>지갑 생성, 잔액, 출금</td><td>앱 사용자</td></tr>
+    <tr><td><code>/api/v1/notifications/*</code></td><td><span class="tag tag-core">Core</span></td><td>알림 조회, 읽음 처리</td><td>전체</td></tr>
+    <tr><td colspan="4" style="text-align:center;color:#30363d;">───────────────────────────────</td></tr>
+    <tr><td><code>/api/v1/projects/*</code></td><td><span class="tag tag-business">Business</span></td><td>프로젝트 CRUD, 마일스톤, 참여자</td><td>연구자</td></tr>
+    <tr><td><code>/api/v1/irb/*</code></td><td><span class="tag tag-business">Business</span></td><td>IRB 제출/심의/문서</td><td>연구자/IRB 위원</td></tr>
+    <tr><td><code>/api/v1/enterprises/*</code></td><td><span class="tag tag-business">Business</span></td><td>기관 관리, 구성원</td><td>기관 관리자</td></tr>
+    <tr><td><code>/api/v1/settlements/*</code></td><td><span class="tag tag-business">Business</span></td><td>정산 조회, 배치 관리</td><td>연구자/앱 사용자</td></tr>
+    <tr><td><code>/api/v1/my/projects/*</code></td><td><span class="tag tag-business">Business</span></td><td>내 참여 프로젝트</td><td>앱 사용자</td></tr>
+  </tbody>
+</table>
+
+<!-- ====== 데이터 흐름 예시 ====== -->
+<div class="section-divider"><span>📋 핵심 데이터 흐름 (3 시나리오)</span></div>
+
+<div class="example-box">
+  <div class="example-title">🔥 시나리오 1: 환자 데이터 입력 → XRPL 앵커링 → Webhook</div>
+  <div class="example-step"><div class="step-num" style="background:#8b5cf6;">1</div><div class="step-content"><span class="server" style="color:#93c5fd;">[📱 App]</span> <span class="action">환자가 건강데이터 입력 (혈압, 혈당 등) → POST /api/v1/health/data</span></div></div>
+  <div class="example-step"><div class="step-num" style="background:#a78bfa;">2</div><div class="step-content"><span class="server core">[Core]</span> <span class="action">Passkey 인증 → 데이터 검증 → AES-256-GCM 암호화 → <code>health_db.data_points</code> 저장</span></div></div>
+  <div class="example-step"><div class="step-num" style="background:#a78bfa;">3</div><div class="step-content"><span class="server core">[Core]</span> <span class="action">SHA-256 해시 → XRPL DATA_INPUT 앵커링 → <code>xrpl_transactions</code> 기록</span></div></div>
+  <div class="example-step"><div class="step-num" style="background:#f59e0b;">4</div><div class="step-content"><span class="server" style="color:#fbbf24;">[XRPL]</span> <span class="action">EscrowCreate (UQD 크레딧 적립)</span></div></div>
+  <div class="example-step"><div class="step-num" style="background:#a78bfa;">5</div><div class="step-content"><span class="server core">[Core]</span> → <span class="server business">[Business]</span> <span class="action">Webhook <code>data.submitted</code></span></div></div>
+  <div class="example-step"><div class="step-num" style="background:#34d399;">6</div><div class="step-content"><span class="server business">[Business]</span> <span class="action"><code>webhook_events</code> 기록 → 참여 프로젝트 <code>project_milestones</code> 업데이트</span></div></div>
+</div>
+
+<div class="example-box">
+  <div class="example-title">연구자 데이터 요청 (B2B)</div>
+  <div class="example-step"><div class="step-num" style="background:#34d399;">1</div><div class="step-content"><span class="server business">[Business]</span> <span class="action">데이터 접근 요청 (IRB 승인 번호 포함) → <code>data_requests</code> 생성</span></div></div>
+  <div class="example-step"><div class="step-num" style="background:#34d399;">2</div><div class="step-content"><span class="server business">[Business]</span> → <span class="server core">[Core]</span> <span class="action"><code>POST /internal/v1/consents/verify</code> + <code>POST /internal/v1/data/query</code></span></div></div>
+  <div class="example-step"><div class="step-num" style="background:#a78bfa;">3</div><div class="step-content"><span class="server core">[Core]</span> <span class="action">동의 스코프 검증 → health_db 조회 → 가명처리 (k-anonymity k≥5) → XRPL DATA_ACCESS 앵커링</span></div></div>
+  <div class="example-step"><div class="step-num" style="background:#34d399;">4</div><div class="step-content"><span class="server business">[Business]</span> <span class="action">가명 데이터 수신 → <code>settlement_batches</code> + <code>settlement_items</code> 생성 → Core에 EscrowFinish 요청</span></div></div>
+</div>
+
+<div class="example-box">
+  <div class="example-title">동의 생성 + Passkey PRF 서명 + XRPL 앵커링</div>
+  <div class="example-step"><div class="step-num" style="background:#8b5cf6;">1</div><div class="step-content"><span class="server" style="color:#93c5fd;">[📱 App]</span> <span class="action">환자 "동의합니다" 터치 → Passkey 생체인증 → PRF 서명키 파생</span></div></div>
+  <div class="example-step"><div class="step-num" style="background:#8b5cf6;">2</div><div class="step-content"><span class="server" style="color:#93c5fd;">[📱 App]</span> <span class="action">ed25519.sign(SHA256(consent_payload), derived_key) → 서명 + 동의 내용 서버 전송</span></div></div>
+  <div class="example-step"><div class="step-num" style="background:#a78bfa;">3</div><div class="step-content"><span class="server core">[Core]</span> <span class="action">공개키로 서명 검증 → <code>consents</code> + <code>consent_scopes</code> 저장 → <code>consent_audit_trail</code> 기록</span></div></div>
+  <div class="example-step"><div class="step-num" style="background:#f59e0b;">4</div><div class="step-content"><span class="server" style="color:#fbbf24;">[XRPL]</span> <span class="action">CONSENT_GRANT 앵커링 + EscrowCreate (보상분)</span></div></div>
+  <div class="example-step"><div class="step-num" style="background:#a78bfa;">5</div><div class="step-content"><span class="server core">[Core]</span> → <span class="server business">[Business]</span> <span class="action">Webhook <code>consent.granted</code></span></div></div>
+  <div class="example-step"><div class="step-num" style="background:#34d399;">6</div><div class="step-content"><span class="server business">[Business]</span> <span class="action"><code>participants.status</code> → CONSENTED → 프로젝트 참여자 수 업데이트</span></div></div>
+</div>
+
+<!-- ====== 보안 ====== -->
+<div class="section-divider"><span>🔒 인증/보안 계층</span></div>
+
+<div style="background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 20px; margin-bottom: 16px; overflow-x: auto;">
+<pre style="font-size: 11px; line-height: 1.6; color: #e6edf3;">
+<span style="color:#fbbf24;">[인증 흐름]</span>
+1. 사용자 → 🟢 Core: Passkey 인증 (WebAuthn Level 3 + PRF Extension)
+2. 🟢 Core → 사용자: Access Token (JWT, 15분) + Refresh Token (7일)
+3. 사용자 → Gateway: Authorization: Bearer {access_token}
+4. Gateway → 🟢 Core 또는 🔵 Business: 요청 전달
+
+<span style="color:#fbbf24;">[JWT 검증]</span>
+🟢 Core:     직접 검증 (signing key 보유)
+🔵 Business: JWKS 공개키로 검증 (Core가 /.well-known/jwks.json 제공)
+</pre>
+</div>
+
+<table class="api-table">
+  <tr><th>계층</th><th>기술</th><th>적용 대상</th></tr>
+  <tr><td style="font-weight:700;">전송</td><td>TLS 1.3</td><td>클라이언트 ↔ Gateway ↔ 서버 간 모든 통신</td></tr>
+  <tr><td style="font-weight:700;">저장</td><td>AES-256-GCM</td><td>data_points.value, user_profiles.birth_date, emergency_contact</td></tr>
+  <tr><td style="font-weight:700;">해싱</td><td>SHA-256</td><td>data_hash, consent_hash → XRPL Memo에 기록</td></tr>
+  <tr><td style="font-weight:700;">서명</td><td>ed25519 (Passkey PRF 파생)</td><td>동의 서명, 트랜잭션 서명</td></tr>
+  <tr><td style="font-weight:700;">앵커링</td><td>XRPL 원장</td><td>DATA_INPUT, DATA_ACCESS, CONSENT_GRANT/REVOKE 등</td></tr>
+  <tr><td style="font-weight:700;">키 격리</td><td>Secure Enclave / TPM</td><td>Passkey 개인키, PRF 연산 — 서버 접근 불가</td></tr>
+</table>
+
+<div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 24px;">
+  <div style="background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 12px; font-size: 11px;">
+    <div style="font-weight: 700; color: #e9d5ff; margin-bottom: 4px;">PATIENT</div>
+    <div style="color: #8b949e;">Core: 본인 데이터 R/W, 동의 R/W, 지갑 R<br>Business: 본인 참여 프로젝트 R</div>
   </div>
+  <div style="background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 12px; font-size: 11px;">
+    <div style="font-weight: 700; color: #a7f3d0; margin-bottom: 4px;">RESEARCHER</div>
+    <div style="color: #8b949e;">Core: —<br>Business: 소속 기관 프로젝트 R/W, IRB R/W</div>
+  </div>
+  <div style="background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 12px; font-size: 11px;">
+    <div style="font-weight: 700; color: #93c5fd; margin-bottom: 4px;">IRB_MEMBER</div>
+    <div style="color: #8b949e;">Core: —<br>Business: 배정 프로젝트 R, 심의 의견 W</div>
+  </div>
+  <div style="background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 12px; font-size: 11px;">
+    <div style="font-weight: 700; color: #f87171; margin-bottom: 4px;">ADMIN</div>
+    <div style="color: #8b949e;">Core: 모든 사용자 R<br>Business: 모든 기관/프로젝트 R/W</div>
+  </div>
+</div>
 
-  <div style="font-size: 12px; font-weight: 700; color: #fbbf24; margin: 16px 0 8px;">Step 5 IRB &#xD310;&#xC815; &#x2014; 3-Case &#xBD84;&#xAE30;</div>
-  <div style="display: flex; gap: 12px; flex-wrap: wrap;">
-    <div style="flex: 1; min-width: 180px; background: #052e16; border: 1px solid #22c55e; border-radius: 8px; padding: 12px;">
-      <div style="font-size: 12px; font-weight: 700; color: #22c55e;">Case &#x2460; IRB &#xBD88;&#xD544;&#xC694;</div>
-      <div style="font-size: 10px; color: #86efac; margin-top: 4px;">&#xACF5;&#xAC1C; &#xB370;&#xC774;&#xD130; 2&#xCC28; &#xBD84;&#xC11D;<br>&#x2192; &#xBC14;&#xB85C; &#xC5D0;&#xC2A4;&#xD06C;&#xB85C;</div>
+<!-- ====== 인프라 ====== -->
+<div class="section-divider"><span>🏗️ 인프라 (Railway)</span></div>
+
+<div style="background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 20px; margin-bottom: 24px;">
+  <div style="display: flex; justify-content: center; gap: 24px; flex-wrap: wrap;">
+    <div style="background: #2e1065; border: 1px solid #a78bfa; padding: 12px 20px; border-radius: 8px; font-size: 11px; color: #e9d5ff; text-align: center;">
+      🟢 core-server<br>NestJS · Port 3000<br><span style="font-size: 9px; color: #8b949e;">RAM: 256MB~ · $5/월</span>
     </div>
-    <div style="flex: 1; min-width: 180px; background: #451a03; border: 1px solid #f59e0b; border-radius: 8px; padding: 12px;">
-      <div style="font-size: 12px; font-weight: 700; color: #f59e0b;">Case &#x2461; &#xC2EC;&#xC758;&#xBA74;&#xC81C;</div>
-      <div style="font-size: 10px; color: #fcd34d; margin-top: 4px;">&#xC775;&#xBA85; &#xC124;&#xBB38; &#xB4F1;<br>&#x2192; &#xBA74;&#xC81C; &#xC2E0;&#xACE0;&#xC11C; &#xC81C;&#xCD9C; (1-2&#xC77C;)</div>
+    <div style="background: #022c22; border: 1px solid #34d399; padding: 12px 20px; border-radius: 8px; font-size: 11px; color: #a7f3d0; text-align: center;">
+      🔵 business-server<br>Spring Boot · Port 8080<br><span style="font-size: 9px; color: #8b949e;">RAM: 1GB~ · $10-15/월</span>
     </div>
-    <div style="flex: 1; min-width: 180px; background: #450a0a; border: 1px solid #ef4444; border-radius: 8px; padding: 12px;">
-      <div style="font-size: 12px; font-weight: 700; color: #ef4444;">Case &#x2462; &#xC815;&#xADDC;&#xC2EC;&#xC758;</div>
-      <div style="font-size: 10px; color: #fca5a5; margin-top: 4px;">RCT, &#xBBFC;&#xAC10; &#xB370;&#xC774;&#xD130; &#xB4F1;<br>&#x2192; Full Board Review (4-6&#xC8FC;)</div>
+    <div style="background: #1e1b4b; border: 1px solid #818cf8; padding: 12px 20px; border-radius: 8px; font-size: 11px; color: #c7d2fe; text-align: center;">
+      📦 health-db<br>PostgreSQL 15<br><span style="font-size: 9px; color: #8b949e;">2GB · $10/월</span>
+    </div>
+    <div style="background: #1e293b; border: 1px solid #64748b; padding: 12px 20px; border-radius: 8px; font-size: 11px; color: #cbd5e1; text-align: center;">
+      📦 uniqdata-db<br>PostgreSQL 15<br><span style="font-size: 9px; color: #8b949e;">1GB · $5/월</span>
+    </div>
+    <div style="background: #7f1d1d; border: 1px solid #ef4444; padding: 12px 20px; border-radius: 8px; font-size: 11px; color: #fca5a5; text-align: center;">
+      🔴 Redis<br>세션/캐시<br><span style="font-size: 9px; color: #8b949e;">$5/월</span>
     </div>
   </div>
 </div>
 
-<!-- ===== SECTION 11: 핵심 규칙 ===== -->
-<div class="section-divider"><span>&#x1F6A7; Section 11: 핵심 규칙 (Key Rules)</span></div>
+<!-- ====== FAQ ====== -->
+<div class="section-divider"><span>❓ FAQ</span></div>
 
-<div class="three-col" style="display: flex; gap: 16px; margin-bottom: 24px;">
-  <div style="flex: 1; background: #2e1065; border: 2px solid #a78bfa; border-radius: 10px; padding: 18px;">
-    <div style="font-size: 13px; font-weight: 700; color: #e9d5ff; margin-bottom: 12px;">&#x1F510; Core 영역</div>
-    <div style="font-size: 11px; color: #c4b5fd; line-height: 1.8;">
-      &#x2713; 인증 (Passkey/JWT)<br>
-      &#x2713; 건강 데이터 수신/저장<br>
-      &#x2713; 동의 관리<br>
-      &#x2713; XRPL / 에스크로 / UQD<br>
-      &#x2713; <span style="color: #fbbf24;">IRB 승인 XRPL 앵커링</span><br>
-      &#x2713; AI 건강 레포트
-    </div>
-  </div>
-  <div style="flex: 1; background: #022c22; border: 2px solid #34d399; border-radius: 10px; padding: 18px;">
-    <div style="font-size: 13px; font-weight: 700; color: #a7f3d0; margin-bottom: 12px;">&#x1F4CA; Business 영역</div>
-    <div style="font-size: 11px; color: #6ee7b7; line-height: 1.8;">
-      &#x2713; 연구 프로젝트<br>
-      &#x2713; IRB 워크플로우 (3-Case)<br>
-      &#x2713; 변경심의 (Amendment)<br>
-      &#x2713; 정산 계산<br>
-      &#x2713; 기관/팀 관리<br>
-      &#x2713; 참여자 매칭
-    </div>
-  </div>
-  <div style="flex: 1; background: #450a0a; border: 2px solid #ef4444; border-radius: 10px; padding: 18px;">
-    <div style="font-size: 13px; font-weight: 700; color: #fecaca; margin-bottom: 12px;">&#x274C; 절대 안함</div>
-    <div style="font-size: 11px; color: #fca5a5; line-height: 1.8;">
-      &#x2717; Core &rarr; Business 직접 호출<br>
-      <span style="font-size: 10px; color: #6b7280;">&nbsp;&nbsp;(Webhook만 허용)</span><br>
-      &#x2717; Business &rarr; XRPL 직접 호출<br>
-      <span style="font-size: 10px; color: #6b7280;">&nbsp;&nbsp;(Core Internal API만)</span><br>
-      &#x2717; Business &rarr; health_db 직접 접근
-    </div>
-  </div>
+<div class="faq-item">
+  <div class="faq-q">Q: 분리 기준이 "민감/비민감 데이터"인가?</div>
+  <div class="faq-a">A: 핵심 기준은 <strong>"환자에 대한 정보 vs 활동에 대한 정보"</strong>.<br>
+  사람 <em>자체</em>에 대한 것(건강, 신원, 키, 동의, 지갑) → Core<br>
+  사람이 참여하는 <em>활동</em>에 대한 것(프로젝트, IRB, 정산, 기관) → Business</div>
 </div>
 
-<!-- ===== FOOTER ===== -->
-<div style="border-top: 1px solid #30363d; margin-top: 32px; padding-top: 24px;">
-  <div class="repo-links">
-    <a href="https://github.com/SportiQue-UniQdata/uniqdata-core" class="repo-link core" target="_blank">
-      uniqdata-core (NestJS)
-    </a>
-    <a href="https://github.com/SportiQue-UniQdata/uniqdata-enterprise-backend" class="repo-link business" target="_blank">
-      uniqdata-enterprise-backend (Spring)
-    </a>
-  </div>
-
-  <p style="text-align: center; color: #6b7280; font-size: 11px; margin-top: 24px;">
-    v6.2 | 2026-02-12 | 연구 생성 6단계 플로우 + 3-Case IRB 판정 + 변경심의(Amendment) 추가
-  </p>
+<div class="faq-item">
+  <div class="faq-q">Q: health_db에는 총 몇 개 테이블?</div>
+  <div class="faq-a">A: <code>15개</code>. users, passkey_credentials, user_profiles, user_wallets, wallet_recovery_configs, data_points, data_point_tags, data_access_logs, consents, consent_scopes, consent_audit_trail, xrpl_transactions, notifications, notification_preferences, refresh_tokens</div>
 </div>
 
+<div class="faq-item">
+  <div class="faq-q">Q: uniqdata_db에는 총 몇 개 테이블?</div>
+  <div class="faq-a">A: <code>16개</code> (Phase 2 포함). enterprises, enterprise_members, projects, project_milestones, participants, participation_criteria, data_requests, irb_submissions, irb_documents, irb_review_comments, irb_workflow_history, settlement_batches, settlement_items, synthetic_datasets(Ph2), fl_rounds(Ph2), webhook_events</div>
+</div>
+
+<div class="faq-item">
+  <div class="faq-q">Q: IRB 관련 테이블은 어디에?</div>
+  <div class="faq-a">A: <code>🔵 uniqdata_db</code>에 4개: irb_submissions, irb_documents, irb_review_comments, irb_workflow_history. IRB는 연구 "활동"이므로 Business 담당.</div>
+</div>
+
+<div class="faq-item">
+  <div class="faq-q">Q: 정산은 어디서?</div>
+  <div class="faq-a">A: 정산 <strong>계산</strong>(대상자 산정, 금액 계산, settlement_batches 생성) → <code>🔵 Business</code><br>
+  정산 <strong>실행</strong>(XRPL EscrowFinish, UQD 크레딧 적립) → <code>🟢 Core</code><br>
+  Business가 <code>POST /internal/v1/escrow/finish</code>로 요청 → Core가 실행 → tx_hash 반환</div>
+</div>
+
+<div class="faq-item">
+  <div class="faq-q">Q: Internal API와 Webhook 갯수는?</div>
+  <div class="faq-a">A: Business→Core <strong>Internal API: 14개</strong> (REST, X-Internal-API-Key 인증)<br>
+  Core→Business <strong>Webhook: 8개</strong> (HMAC-SHA256 서명)</div>
+</div>
+
+<!-- ====== 레포 ====== -->
+<div class="section-divider"><span>🔗 레포지토리</span></div>
+
+<div class="repo-links">
+  <a href="https://github.com/SportiQue-UniQdata/uniqdata-core" class="repo-link core" target="_blank">
+    uniqdata-core (NestJS)
+  </a>
+  <a href="https://github.com/SportiQue-UniQdata/uniqdata-enterprise-backend" class="repo-link business" target="_blank">
+    uniqdata-enterprise-backend (Spring)
+  </a>
+</div>
+
+<p style="text-align: center; color: #6b7280; font-size: 11px; margin-top: 32px;">
+  v6.0 | 2026-02-12 | 전면 리뉴얼: 31 Tables DDL · 14 Internal APIs · 8 Webhooks · Decision Matrix · 보안 계층 · RBAC
+</p>
+
+<script>
+function toggle(id) {
+  const el = document.getElementById(id);
+  const btn = el.previousElementSibling;
+  el.classList.toggle('show');
+  btn.classList.toggle('open');
+}
+</script>
 </body>
 </html>

@@ -3,713 +3,371 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>연구 생성 Step 2 - 연구 설계 워크스페이스 - Wireframe</title>
+  <title>연구 생성 Step 2 - 연구 설계 - Wireframe</title>
+  <link rel="stylesheet" href="ai-chat-panel.css">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: -apple-system, sans-serif; background: #f5f5f5; }
+    .layout { display: flex; min-height: 100vh; width: 100%; flex-wrap: nowrap; }
+    .sidebar { width: 240px; background: #1a1a1a; color: white; padding: 20px; flex-shrink: 0; }
+    .logo { font-size: 18px; font-weight: bold; margin-bottom: 30px; padding: 10px; }
+    .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 8px; margin-bottom: 4px; color: #9ca3af; text-decoration: none; font-size: 13px; }
+    .nav-item:hover { background: #252525; color: #ccc; }
+    .nav-item.active { background: #3b82f6; color: white; }
 
-    /* ===== 4분할 레이아웃 ===== */
-    .layout { display: flex; min-height: 100vh; width: 100%; }
+    .main { flex: 1 1 auto; padding: 32px; min-width: 0; overflow-y: auto; }
+    .main h1 { font-size: 24px; margin-bottom: 4px; }
+    .main .subtitle { color: #6b7280; margin-bottom: 24px; font-size: 14px; }
 
-    /* ① Nav (좌측 사이드바) */
-    .sidebar {
-      width: 240px;
-      background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
-      color: white;
-      display: flex;
-      flex-direction: column;
-      flex-shrink: 0;
-    }
-    .logo {
-      padding: 20px 24px;
-      font-size: 20px;
-      font-weight: 700;
-      border-bottom: 1px solid rgba(255,255,255,0.1);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .logo-icon {
-      width: 32px; height: 32px;
-      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-      border-radius: 8px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 16px; font-weight: bold;
-    }
-    .nav-section { padding: 16px 12px; border-bottom: 1px solid rgba(255,255,255,0.05); }
-    .nav-section-title { font-size: 11px; text-transform: uppercase; color: #64748b; padding: 8px 12px; letter-spacing: 0.5px; }
-    .nav-item {
-      display: flex; align-items: center; gap: 12px;
-      padding: 10px 12px; border-radius: 8px; color: #94a3b8;
-      cursor: pointer; font-size: 14px; text-decoration: none; transition: all 0.15s;
-    }
-    .nav-item:hover { background: rgba(255,255,255,0.05); color: #e2e8f0; }
-    .nav-item.active { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
-    .nav-item .icon { width: 20px; text-align: center; }
+    /* 스텝 인디케이터 */
+    .steps { display: flex; justify-content: center; align-items: center; margin-bottom: 32px; gap: 0; }
+    .step { display: flex; flex-direction: column; align-items: center; }
+    .step-num { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; margin-bottom: 6px; font-size: 13px; }
+    .step-num.done { background: #22c55e; color: white; }
+    .step-num.active { background: #8b5cf6; color: white; }
+    .step-num.pending { background: #e5e7eb; color: #9ca3af; }
+    .step-label { font-size: 11px; color: #6b7280; text-align: center; }
+    .step-line { width: 60px; height: 2px; background: #e5e7eb; margin: 0 4px; margin-bottom: 20px; }
+    .step-line.done { background: #22c55e; }
 
-    /* Workspace wrapper */
-    .workspace-wrap {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      min-width: 0;
-    }
-    .workspace {
-      flex: 1;
-      display: flex;
-      min-height: 0;
-    }
-
-    /* Step Bar */
-    .step-bar {
-      background: #1e293b;
-      border-bottom: 1px solid #334155;
-      padding: 10px 0;
-      flex-shrink: 0;
-    }
-    .step-bar-inner {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0;
-      max-width: 600px;
-      margin: 0 auto;
-    }
-    .sb-step {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-    }
-    .sb-num {
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 11px;
-      font-weight: 600;
-    }
-    .sb-step.done .sb-num { background: #22c55e; color: white; }
-    .sb-step.active .sb-num { background: #8b5cf6; color: white; }
-    .sb-step.pending .sb-num { background: #334155; color: #64748b; }
-    .sb-label {
-      font-size: 10px;
-      color: #64748b;
-      white-space: nowrap;
-    }
-    .sb-step.active .sb-label { color: #e2e8f0; }
-    .sb-line {
-      width: 40px;
-      height: 2px;
-      background: #334155;
-      margin: 0 4px;
-      margin-bottom: 18px;
-    }
-    .sb-line.done { background: #22c55e; }
-
-    .sidebar-footer {
-      margin-top: auto; padding: 16px; border-top: 1px solid rgba(255,255,255,0.05);
-    }
-    .user-info { display: flex; align-items: center; gap: 12px; padding: 8px; }
-    .user-avatar {
-      width: 36px; height: 36px;
-      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-      border-radius: 50%; display: flex; align-items: center; justify-content: center;
-      font-size: 14px; color: white;
-    }
-    .user-name { font-size: 14px; color: #e2e8f0; }
-    .user-org { font-size: 12px; color: #64748b; }
-
-    /* ② 연구 설계 에디터 (중앙 좌측) */
-    .editor-panel {
-      flex: 1;
-      min-width: 0;
-      overflow-y: auto;
-      background: white;
-      border-right: 1px solid #e5e7eb;
-    }
-    .editor-header {
-      padding: 20px 24px;
-      border-bottom: 1px solid #e5e7eb;
+    /* 카드 */
+    .card { background: white; border: 1px solid #e5e7eb; border-radius: 12px; margin-bottom: 20px; overflow: hidden; }
+    .card-header {
+      background: #f9fafb; padding: 14px 20px; border-bottom: 1px solid #e5e7eb;
       display: flex; justify-content: space-between; align-items: center;
     }
-    .editor-header h2 { font-size: 18px; font-weight: 700; }
-    .editor-header .badge {
-      font-size: 11px; background: #dcfce7; color: #166534;
-      padding: 4px 10px; border-radius: 12px;
-    }
-    .editor-body { padding: 24px; }
+    .card-header h3 { font-size: 15px; font-weight: 600; }
+    .ai-badge { font-size: 11px; color: #7c3aed; background: #f3e8ff; padding: 3px 10px; border-radius: 12px; }
+    .card-body { padding: 20px; }
 
-    .field-group { margin-bottom: 20px; }
-    .field-group label {
-      display: block; font-size: 13px; font-weight: 600; color: #374151; margin-bottom: 8px;
+    /* 레포트 보기 버튼 (각 섹션 헤더 오른쪽) */
+    .report-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 6px 14px; border-radius: 8px; font-size: 12px; font-weight: 600;
+      cursor: pointer; border: 1px solid #ddd6fe; background: white; color: #7c3aed;
+      transition: all 0.15s;
     }
-    .field-group .hint { font-size: 11px; color: #9ca3af; margin-bottom: 6px; }
-    .input {
-      width: 100%; height: 44px;
-      border: 1px solid #e5e7eb; border-radius: 8px;
-      padding: 0 12px; font-size: 14px; background: white;
-    }
-    .input:focus { outline: none; border-color: #8b5cf6; box-shadow: 0 0 0 3px rgba(139,92,246,0.1); }
-    .input.ai-filled { border-color: #c4b5fd; background: #faf5ff; }
-    .textarea {
-      width: 100%; min-height: 80px;
-      border: 1px solid #e5e7eb; border-radius: 8px;
-      padding: 12px; font-size: 14px; font-family: inherit;
-      resize: vertical; line-height: 1.6;
-    }
-    .textarea.ai-filled { border-color: #c4b5fd; background: #faf5ff; }
-    .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-    .select {
-      width: 100%; height: 44px;
-      border: 1px solid #e5e7eb; border-radius: 8px;
-      padding: 0 12px; font-size: 14px; background: white;
-      appearance: auto;
-    }
-    .select.ai-filled { border-color: #c4b5fd; background: #faf5ff; }
+    .report-btn:hover { background: #f5f3ff; border-color: #a78bfa; }
+    .report-btn .icon { font-size: 14px; }
+    .header-right { display: flex; align-items: center; gap: 8px; }
 
-    .chip-group { display: flex; flex-wrap: wrap; gap: 8px; }
-    .chip {
-      padding: 6px 14px; border: 1px solid #e5e7eb; border-radius: 20px;
-      font-size: 13px; cursor: pointer; transition: all 0.2s;
-    }
-    .chip:hover { border-color: #c4b5fd; }
+    /* 폼 요소 */
+    label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 6px; color: #374151; }
+    .input { width: 100%; height: 42px; border: 1px solid #e5e7eb; border-radius: 8px; padding: 0 12px; font-size: 14px; }
+    .input.ai-filled { border-color: #8b5cf6; background: #faf5ff; }
+    .textarea { width: 100%; border: 1px solid #e5e7eb; border-radius: 8px; padding: 12px; font-size: 13px; line-height: 1.6; resize: vertical; font-family: inherit; }
+    .textarea.ai-filled { border-color: #8b5cf6; background: #faf5ff; }
+    .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+    .form-group { margin-bottom: 16px; }
+
+    /* 연구 방법론 그리드 */
+    .methodology-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .methodology-item { padding: 14px; border: 2px solid #e5e7eb; border-radius: 10px; cursor: pointer; transition: all 0.2s; }
+    .methodology-item:hover { border-color: #c4b5fd; }
+    .methodology-item.selected { border-color: #8b5cf6; background: #faf5ff; }
+    .methodology-item h4 { font-size: 13px; margin-bottom: 4px; }
+    .methodology-item p { font-size: 11px; color: #6b7280; margin-bottom: 6px; }
+    .methodology-item .tags { display: flex; flex-wrap: wrap; gap: 4px; }
+    .methodology-item .tag { font-size: 10px; background: #f3f4f6; padding: 2px 6px; border-radius: 4px; color: #6b7280; }
+
+    /* 참여자 조건 */
+    .condition-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+    .condition-row span { color: #6b7280; font-size: 13px; }
+    .input-small { width: 80px; height: 38px; border: 1px solid #e5e7eb; border-radius: 8px; padding: 0 12px; text-align: center; font-size: 13px; }
+    .input-small.ai-filled { border-color: #8b5cf6; background: #faf5ff; }
+    .chip-group { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+    .chip { padding: 7px 14px; border: 1px solid #e5e7eb; border-radius: 20px; font-size: 12px; cursor: pointer; transition: all 0.2s; }
+    .chip:hover { border-color: #8b5cf6; }
     .chip.selected { background: #8b5cf6; color: white; border-color: #8b5cf6; }
+    .info-box { background: #eff6ff; border: 1px solid #bfdbfe; padding: 10px 16px; border-radius: 8px; font-size: 13px; color: #1e40af; display: flex; align-items: center; gap: 8px; }
 
-    .section-divider {
-      height: 1px; background: #e5e7eb; margin: 28px 0;
-    }
+    /* 가설 박스 */
+    .hypothesis-box { background: #faf5ff; border: 1px solid #ddd6fe; border-radius: 10px; padding: 14px 16px; margin-bottom: 12px; }
+    .hypothesis-box .label { font-size: 11px; font-weight: 600; color: #7c3aed; margin-bottom: 4px; }
+    .hypothesis-box .text { font-size: 13px; color: #374151; line-height: 1.6; }
+    .hypothesis-box .params { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+    .hypothesis-box .param { font-size: 11px; padding: 3px 8px; border-radius: 4px; background: #ede9fe; color: #6d28d9; }
 
-    .section-title {
-      font-size: 15px; font-weight: 700; color: #111827;
-      margin-bottom: 16px; display: flex; align-items: center; gap: 8px;
-    }
-    .ai-tag {
-      font-size: 10px; background: #f3e8ff; color: #7c3aed;
-      padding: 2px 8px; border-radius: 10px; font-weight: 600;
-    }
-
-    .btn-row {
-      display: flex; justify-content: space-between;
-      padding-top: 24px; border-top: 1px solid #e5e7eb; margin-top: 24px;
-    }
-    .btn {
-      padding: 12px 28px; border-radius: 8px; font-size: 14px; font-weight: 500;
-      cursor: pointer; text-decoration: none; display: inline-block; border: none;
-    }
+    /* 버튼 */
+    .btn-row { display: flex; justify-content: space-between; margin-top: 24px; padding-top: 24px; border-top: 1px solid #e5e7eb; }
+    .btn { padding: 11px 24px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; text-decoration: none; display: inline-block; }
     .btn-secondary { background: white; border: 1px solid #e5e7eb; color: #374151; }
-    .btn-primary { background: #8b5cf6; color: white; }
+    .btn-primary { background: #8b5cf6; border: none; color: white; }
     .btn-primary:hover { background: #7c3aed; }
 
-    /* 카드형 선택 */
-    .select-cards { display: grid; gap: 10px; }
-    .select-cards.cols-2 { grid-template-columns: 1fr 1fr; }
-    .select-cards.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
-    .select-card {
-      padding: 14px 16px; border: 2px solid #e5e7eb; border-radius: 10px;
-      cursor: pointer; transition: all 0.15s; position: relative;
-    }
-    .select-card:hover { border-color: #c4b5fd; background: #faf5ff; }
-    .select-card.selected { border-color: #8b5cf6; background: #faf5ff; }
-    .select-card.selected::after {
-      content: '✓'; position: absolute; top: 8px; right: 10px;
-      width: 22px; height: 22px; background: #8b5cf6; color: white;
-      border-radius: 50%; display: flex; align-items: center; justify-content: center;
-      font-size: 12px; font-weight: 700;
-    }
-    .select-card .card-label { font-size: 14px; font-weight: 600; color: #1f2937; margin-bottom: 4px; }
-    .select-card .card-desc { font-size: 11px; color: #6b7280; line-height: 1.5; }
-    .select-card.ai-pick { border-color: #c4b5fd; }
-    .select-card.ai-pick .card-label::after {
-      content: 'AI 추천'; font-size: 9px; background: #f3e8ff; color: #7c3aed;
-      padding: 2px 6px; border-radius: 8px; margin-left: 6px; font-weight: 600; vertical-align: middle;
-    }
+    .step-nav { display: flex; gap: 10px; margin-top: 24px; flex-wrap: wrap; }
+    .step-nav a { padding: 8px 16px; background: #eee; border-radius: 6px; text-decoration: none; color: #333; font-size: 14px; }
 
-    /* ③ 연구 레포트 패널 (중앙 우측) */
-    .report-panel {
-      width: 420px;
-      background: #f8fafc;
-      border-right: 1px solid #e5e7eb;
-      overflow-y: auto;
-      flex-shrink: 0;
+    /* ===== 모달 오버레이 ===== */
+    .modal-overlay {
+      display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.4); z-index: 1000; justify-content: center; align-items: center;
     }
-    .report-header {
-      padding: 16px 20px;
-      border-bottom: 1px solid #e5e7eb;
-      background: white;
-      position: sticky; top: 0; z-index: 10;
+    .modal-overlay.show { display: flex; }
+    .modal {
+      background: white; border-radius: 16px; width: 640px; max-height: 80vh;
+      overflow: hidden; box-shadow: 0 25px 50px rgba(0,0,0,0.25);
+      display: flex; flex-direction: column;
     }
-    .report-header h3 {
-      font-size: 15px; font-weight: 700; color: #111827;
-      display: flex; align-items: center; gap: 8px;
+    .modal-header {
+      padding: 16px 24px; border-bottom: 1px solid #e5e7eb;
+      display: flex; align-items: center; justify-content: space-between;
+      background: #f9fafb;
     }
-    .report-header .sub { font-size: 12px; color: #6b7280; margin-top: 4px; }
-    .report-loading {
-      padding: 40px 20px; text-align: center; color: #9ca3af; font-size: 13px;
-    }
-    .report-body { padding: 20px; }
+    .modal-header h3 { font-size: 16px; font-weight: 600; }
+    .modal-header .badge { font-size: 11px; color: #6b7280; background: #f3f4f6; padding: 3px 10px; border-radius: 8px; }
+    .modal-close { width: 32px; height: 32px; border: 1px solid #e5e7eb; border-radius: 8px; background: white; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; }
+    .modal-body { padding: 24px; overflow-y: auto; flex: 1; }
 
-    .report-section { margin-bottom: 24px; }
-    .report-section-title {
-      font-size: 14px; font-weight: 700; color: #1f2937;
-      margin-bottom: 12px; padding-bottom: 8px; border-bottom: 2px solid #8b5cf6;
-      display: flex; align-items: center; gap: 6px;
-    }
-    .report-content {
-      font-size: 13px; color: #374151; line-height: 1.7;
-    }
-    .report-content p { margin-bottom: 8px; }
+    /* 모달 내부 콘텐츠 */
+    .paper-item { display: flex; gap: 12px; padding: 14px; border: 1px solid #e5e7eb; border-radius: 10px; margin-bottom: 10px; transition: background 0.1s; }
+    .paper-item:hover { background: #f9fafb; }
+    .paper-icon { width: 40px; height: 40px; border-radius: 10px; background: #f3f4f6; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+    .paper-info { flex: 1; }
+    .paper-title { font-size: 13px; font-weight: 600; color: #1e40af; margin-bottom: 4px; line-height: 1.4; }
+    .paper-meta { font-size: 11px; color: #6b7280; }
+    .paper-doi { font-size: 11px; color: #94a3b8; margin-top: 2px; }
 
-    /* 논문 링크 */
-    .citation-link {
-      display: flex; align-items: flex-start; gap: 8px;
-      padding: 10px 12px; margin: 8px 0;
-      background: white; border: 1px solid #e5e7eb; border-radius: 8px;
-      text-decoration: none; color: inherit; transition: all 0.2s;
-    }
-    .citation-link:hover { border-color: #8b5cf6; box-shadow: 0 2px 8px rgba(139,92,246,0.1); }
-    .citation-icon {
-      width: 32px; height: 32px; flex-shrink: 0;
-      background: #eff6ff; border-radius: 6px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 14px;
-    }
-    .citation-title { font-size: 13px; font-weight: 600; color: #1e40af; line-height: 1.4; }
-    .citation-meta { font-size: 11px; color: #6b7280; margin-top: 2px; }
-    .citation-meta .journal { color: #059669; }
-    .citation-meta .doi { color: #9ca3af; }
+    .trend-summary { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; padding: 14px 16px; margin-bottom: 16px; font-size: 13px; color: #166534; line-height: 1.6; }
+    .method-stat { display: flex; align-items: center; gap: 16px; padding: 12px 0; border-bottom: 1px solid #f3f4f6; }
+    .method-stat:last-child { border-bottom: none; }
+    .method-stat .pct { font-size: 28px; font-weight: 800; color: #1e293b; min-width: 70px; }
+    .method-stat .info { flex: 1; }
+    .method-stat .info .name { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+    .method-stat .info .desc { font-size: 12px; color: #6b7280; }
+    .method-note { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 12px 14px; font-size: 12px; color: #1e40af; margin-top: 12px; line-height: 1.6; }
 
-    /* 레포트 수치 하이라이트 */
-    .stat-row {
-      display: flex; gap: 12px; margin: 12px 0;
-    }
-    .stat-card {
-      flex: 1; padding: 12px; background: white; border: 1px solid #e5e7eb;
-      border-radius: 8px; text-align: center;
-    }
-    .stat-card .value { font-size: 20px; font-weight: 700; color: #111827; }
-    .stat-card .label { font-size: 11px; color: #6b7280; margin-top: 2px; }
+    /* 디자이너 노트 */
+    .designer-note { background: linear-gradient(135deg, #fdf4ff, #fae8ff); border: 2px solid #d946ef; border-radius: 12px; padding: 20px; margin-top: 24px; }
+    .designer-note h3 { color: #a21caf; margin-bottom: 12px; font-size: 14px; }
+    .designer-note .content { font-size: 12px; color: #374151; line-height: 1.7; }
 
-    /* ④ AI 상담 패널 (우측) */
-    .chat-panel {
-      width: 360px;
-      background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
-      color: #e5e7eb;
-      display: flex;
-      flex-direction: column;
-      flex-shrink: 0;
-    }
-    .chat-header {
-      padding: 16px 20px;
-      border-bottom: 1px solid #334155;
-      background: rgba(139, 92, 246, 0.1);
-    }
-    .chat-header .title {
-      font-size: 15px; font-weight: 700;
-      display: flex; align-items: center; gap: 8px;
-    }
-    .chat-header .title .icon {
-      width: 28px; height: 28px;
-      background: linear-gradient(135deg, #8b5cf6, #6366f1);
-      border-radius: 8px;
-      display: flex; align-items: center; justify-content: center; font-size: 14px;
-    }
-    .chat-header .sub { font-size: 12px; color: #94a3b8; margin-top: 4px; }
-
-    .chat-context {
-      margin: 12px; padding: 12px;
-      background: #1e293b; border: 1px solid #334155; border-radius: 10px;
-    }
-    .chat-context .label { font-size: 11px; color: #64748b; margin-bottom: 6px; }
-    .chat-context .value { font-size: 13px; color: #e2e8f0; line-height: 1.5; }
-    .chat-context-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
-    .chat-context-chip {
-      padding: 4px 10px; background: #8b5cf6; border-radius: 12px;
-      font-size: 11px; color: white;
-    }
-
-    .chat-messages {
-      flex: 1; overflow-y: auto; padding: 16px;
-      display: flex; flex-direction: column; gap: 12px;
-    }
-    .msg {
-      max-width: 90%; padding: 12px 14px; border-radius: 12px;
-      font-size: 13px; line-height: 1.5;
-    }
-    .msg.ai {
-      background: #1e293b; border: 1px solid #334155;
-      align-self: flex-start; border-bottom-left-radius: 4px;
-    }
-    .msg.user {
-      background: #3b82f6; color: white;
-      align-self: flex-end; border-bottom-right-radius: 4px;
-    }
-    .msg .sender { font-size: 11px; color: #64748b; margin-bottom: 4px; }
-    .msg.user .sender { color: rgba(255,255,255,0.7); }
-
-    .chat-quick {
-      padding: 12px; border-top: 1px solid #334155; background: rgba(0,0,0,0.2);
-    }
-    .chat-quick .label { font-size: 11px; color: #64748b; margin-bottom: 8px; }
-    .chat-quick-chips { display: flex; flex-wrap: wrap; gap: 6px; }
-    .chat-quick-chip {
-      padding: 6px 12px; background: #334155; border: 1px solid #475569;
-      border-radius: 16px; font-size: 12px; color: #cbd5e1; cursor: pointer;
-    }
-    .chat-quick-chip:hover { background: #475569; border-color: #8b5cf6; }
-
-    .chat-input {
-      padding: 16px; border-top: 1px solid #334155; background: #0f172a;
-    }
-    .chat-input-wrapper {
-      display: flex; gap: 8px;
-      background: #1e293b; border: 1px solid #334155;
-      border-radius: 12px; padding: 4px;
-    }
-    .chat-input-wrapper:focus-within { border-color: #8b5cf6; }
-    .chat-input input {
-      flex: 1; background: transparent; border: none;
-      padding: 10px 12px; font-size: 13px; color: #e2e8f0; outline: none;
-    }
-    .chat-input input::placeholder { color: #64748b; }
-    .chat-send-btn {
-      width: 40px; height: 40px;
-      background: linear-gradient(135deg, #8b5cf6, #6366f1);
-      border: none; border-radius: 8px; color: white; cursor: pointer;
-      display: flex; align-items: center; justify-content: center; font-size: 16px;
-    }
-
-    /* 디자이너 노트 (하단 오버레이) */
-    .designer-notes {
-      position: fixed; bottom: 0; left: 0; right: 0;
-      background: linear-gradient(135deg, #fdf4ff, #fae8ff);
-      border-top: 2px solid #d946ef;
-      padding: 20px 32px;
-      max-height: 300px; overflow-y: auto;
-      z-index: 100;
-      display: none;
-    }
-    .designer-notes.show { display: block; }
-    .designer-notes h3 { color: #a21caf; margin-bottom: 12px; font-size: 14px; }
-    .designer-notes .content { font-size: 12px; color: #374151; line-height: 1.7; columns: 2; column-gap: 32px; }
-
-    .toggle-notes {
-      position: fixed; bottom: 16px; right: 16px;
-      padding: 10px 16px; background: #d946ef; color: white;
-      border: none; border-radius: 8px; font-size: 13px; font-weight: 600;
-      cursor: pointer; z-index: 101; box-shadow: 0 4px 12px rgba(217,70,239,0.3);
-    }
-
+    /* 내 연구 사이드바 */
+    .research-list { margin-top: 8px; }
+    .research-item { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 6px; font-size: 12px; color: #9ca3af; margin-bottom: 2px; cursor: pointer; }
+    .research-item:hover { background: #252525; color: #ccc; }
+    .research-dot { width: 6px; height: 6px; border-radius: 50%; }
+    .research-dot.active { background: #22c55e; }
+    .research-dot.draft { background: #6b7280; }
+    .research-step { font-size: 10px; color: #6b7280; }
   </style>
 </head>
 <body>
   <div class="layout">
-    <!-- ① Nav -->
     <div class="sidebar">
-      <div class="logo">
-        <div class="logo-icon">U</div>
+      <div class="logo" style="display: flex; align-items: center; gap: 8px;">
+        <div style="width: 32px; height: 32px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: bold;">U</div>
         UniQdata
       </div>
 
-      <div class="nav-section">
-        <a href="list.html" class="nav-item">
-          <span class="icon">🏠</span> 연구 허브
-        </a>
+      <div style="margin-top: 24px;">
+        <a href="list.html" class="nav-item"><span>🏠</span> 연구 허브</a>
       </div>
 
-      <div class="nav-section">
-        <div class="nav-section-title">연구</div>
-        <a href="create.html" class="nav-item active">
-          <span class="icon">➕</span> 새 연구
-        </a>
+      <div style="margin-top: 16px;">
+        <div style="font-size: 11px; color: #6b7280; padding: 8px 12px; text-transform: uppercase;">연구</div>
+        <a href="create.html" class="nav-item active"><span>➕</span> 새 연구</a>
       </div>
 
-      <!-- 내 연구 (접힌 상태) -->
-      <div class="nav-section" style="flex:1; overflow-y:auto;">
-        <div class="nav-section-title" style="display:flex; align-items:center; justify-content:space-between;">
-          내 연구
-          <span style="background:#3b82f6; color:white; font-size:11px; padding:2px 8px; border-radius:10px; font-weight:600;">3</span>
-        </div>
-        <div style="display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:8px; cursor:pointer; margin-bottom:4px;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
-          <span style="font-size:14px;">📁</span>
-          <span style="flex:1; font-size:13px; color:#94a3b8;">당뇨병 복약 순응도</span>
-          <span style="width:8px; height:8px; background:#22c55e; border-radius:50%;"></span>
-        </div>
-        <div style="display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:8px; cursor:pointer; margin-bottom:4px;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
-          <span style="font-size:14px;">📁</span>
-          <span style="flex:1; font-size:13px; color:#94a3b8;">노인 수면 패턴</span>
-          <span style="width:8px; height:8px; background:#3b82f6; border-radius:50%;"></span>
-        </div>
-        <div style="display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:8px; cursor:pointer;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
-          <span style="font-size:14px;">📄</span>
-          <span style="flex:1; font-size:13px; color:#94a3b8;">ADHD 생활습관</span>
-          <span style="width:8px; height:8px; background:#64748b; border-radius:50%;"></span>
-        </div>
-
-        <!-- 임시저장 -->
-        <div style="margin-top:16px; padding-top:12px; border-top:1px solid #1e293b;">
-          <div style="display:flex; align-items:center; justify-content:space-between; padding:0 12px; margin-bottom:8px;">
-            <span style="font-size:11px; font-weight:600; color:#64748b; text-transform:uppercase; letter-spacing:0.5px;">임시저장</span>
-            <span style="background:#334155; color:#94a3b8; font-size:10px; padding:2px 6px; border-radius:8px;">2</span>
-          </div>
-          <a href="#" style="display:flex; align-items:center; gap:10px; padding:8px 12px; border-radius:8px; text-decoration:none; margin-bottom:4px; background:rgba(251,191,36,0.08);">
-            <span style="width:6px; height:6px; background:#fbbf24; border-radius:50%; flex-shrink:0;"></span>
-            <div style="flex:1; min-width:0;">
-              <div style="font-size:12px; color:#e2e8f0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">소아 비만 개입 연구</div>
-              <div style="font-size:10px; color:#64748b; margin-top:2px;">Step 3 · 2일 전</div>
-            </div>
-          </a>
-          <a href="#" style="display:flex; align-items:center; gap:10px; padding:8px 12px; border-radius:8px; text-decoration:none;">
-            <span style="width:6px; height:6px; background:#64748b; border-radius:50%; flex-shrink:0;"></span>
-            <div style="flex:1; min-width:0;">
-              <div style="font-size:12px; color:#94a3b8; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">직장인 스트레스 코르티솔</div>
-              <div style="font-size:10px; color:#64748b; margin-top:2px;">Step 1 · 5일 전</div>
-            </div>
-          </a>
+      <div style="margin-top: 16px;">
+        <div style="font-size: 10px; color: #64748b; padding: 6px 12px; text-transform: uppercase; letter-spacing: 0.5px;">내 연구 <span style="background: #3b82f6; color: white; padding: 1px 6px; border-radius: 8px; font-size: 9px; margin-left: 4px;">3</span></div>
+        <div class="research-list">
+          <div class="research-item"><span class="research-dot active"></span> 당뇨병 복약 순응도 <span class="research-dot" style="background: transparent;"></span></div>
+          <div class="research-item"><span class="research-dot active"></span> 노인 수면 패턴</div>
+          <div class="research-item"><span class="research-dot draft"></span> ADHD 생활습관</div>
         </div>
       </div>
 
-      <div class="sidebar-footer">
-        <div class="user-info">
-          <div class="user-avatar">김</div>
+      <div style="margin-top: 16px;">
+        <div style="font-size: 10px; color: #64748b; padding: 6px 12px; text-transform: uppercase;">임시저장 <span style="background: #f59e0b; color: white; padding: 1px 6px; border-radius: 8px; font-size: 9px; margin-left: 4px;">2</span></div>
+        <div class="research-list">
+          <div class="research-item"><span class="research-dot" style="background: #f59e0b;"></span> 소아 비만 개입 연구 <span class="research-step">Step 3 · 2일 전</span></div>
+          <div class="research-item"><span class="research-dot" style="background: #f59e0b;"></span> 직장인 스트레스 코르티솔 <span class="research-step">Step 1 · 5일 전</span></div>
+        </div>
+      </div>
+
+      <div style="margin-top: auto; padding-top: 20px; border-top: 1px solid #374151;">
+        <div style="display: flex; align-items: center; gap: 10px; padding: 12px;">
+          <div style="width: 36px; height: 36px; background: #3b82f6; border-radius: 50%; display: flex; align-items: center; justify-content: center;">김</div>
           <div>
-            <div class="user-name">김연구</div>
-            <div class="user-org">서울대학교병원</div>
+            <div style="font-size: 13px; font-weight: 500;">김연구</div>
+            <div style="font-size: 11px; color: #9ca3af;">서울대학교병원</div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Workspace Wrap -->
-    <div class="workspace-wrap">
-      <!-- Step Bar -->
-      <div class="step-bar">
-        <div class="step-bar-inner">
-          <div class="sb-step done"><div class="sb-num">✓</div><div class="sb-label">AI 인터뷰</div></div>
-          <div class="sb-line done"></div>
-          <div class="sb-step active"><div class="sb-num">2</div><div class="sb-label">연구 설계</div></div>
-          <div class="sb-line"></div>
-          <div class="sb-step pending"><div class="sb-num">3</div><div class="sb-label">데이터 수집</div></div>
-          <div class="sb-line"></div>
-          <div class="sb-step pending"><div class="sb-num">4</div><div class="sb-label">타겟 설정</div></div>
-          <div class="sb-line"></div>
-          <div class="sb-step pending"><div class="sb-num">5</div><div class="sb-label">IRB 판정</div></div>
-          <div class="sb-line"></div>
-          <div class="sb-step pending"><div class="sb-num">6</div><div class="sb-label">에스크로</div></div>
-        </div>
+    <div class="main">
+      <h1>연구 설계 <span class="ai-badge">AI 생성 초안</span></h1>
+      <p class="subtitle">각 항목을 확인하고 필요시 수정하세요 · 📖 버튼을 누르면 관련 레포트를 볼 수 있습니다</p>
+
+      <!-- 스텝 인디케이터 -->
+      <div class="steps">
+        <div class="step"><div class="step-num done">✓</div><div class="step-label">AI 인터뷰</div></div>
+        <div class="step-line done"></div>
+        <div class="step"><div class="step-num active">2</div><div class="step-label">연구 설계</div></div>
+        <div class="step-line"></div>
+        <div class="step"><div class="step-num pending">3</div><div class="step-label">데이터 수집</div></div>
+        <div class="step-line"></div>
+        <div class="step"><div class="step-num pending">4</div><div class="step-label">타겟 설정</div></div>
+        <div class="step-line"></div>
+        <div class="step"><div class="step-num pending">5</div><div class="step-label">IRB 완성</div></div>
+        <div class="step-line"></div>
+        <div class="step"><div class="step-num pending">6</div><div class="step-label">에스크로</div></div>
       </div>
-      <!-- Workspace (3 panels) -->
-      <div class="workspace">
-    <!-- ② 연구 설계 에디터 -->
-    <div class="editor-panel">
-      <div class="editor-header">
-        <h2>연구 설계</h2>
-        <span class="badge">AI 생성 초안</span>
-      </div>
-      <div class="editor-body">
-        <!-- ===== 1. 기본 정보 ===== -->
-        <div class="section-title">📝 기본 정보</div>
 
-        <div class="field-group">
-          <label>연구 제목</label>
-          <input type="text" class="input ai-filled" value="저탄수화물 식단의 제2형 당뇨 환자 혈당 변동 개선 효과: 무작위 대조 시험">
+      <!-- ===== 1. 기본 정보 ===== -->
+      <div class="card">
+        <div class="card-header">
+          <h3>📝 기본 정보</h3>
         </div>
-
-        <div class="field-group">
-          <label>연구 약칭</label>
-          <input type="text" class="input ai-filled" value="LoCHO-GV Trial">
-        </div>
-
-        <div class="field-group">
-          <label>연구 배경</label>
-          <textarea class="textarea ai-filled" style="min-height:100px">제2형 당뇨병 환자에서 혈당 변동성(Glycemic Variability, GV)은 평균 혈당(HbA1c)과 독립적으로 심혈관 합병증 위험을 예측하는 중요 지표로 부상하고 있다. 최근 연속혈당측정(CGM) 기술의 보급으로 실시간 GV 측정이 가능해졌으나, 저탄수화물 식단 개입이 GV에 미치는 효과를 CGM 기반으로 검증한 RCT는 국내에 3건에 불과하다. 특히 한국인의 고탄수화물 식습관(밥 중심)을 고려한 실현 가능한 저탄수화물 프로토콜에 대한 연구가 부족하다.</textarea>
-        </div>
-
-        <div class="field-group">
-          <label>연구 목적</label>
-          <textarea class="textarea ai-filled">제2형 당뇨 환자에서 8주간 저탄수화물 식단 개입(일 탄수화물 50g 이하)이 CGM 기반 혈당 변동성(MAGE, CV%)에 미치는 효과를 일반 식단 대조군과 비교하여 무작위 대조 시험으로 검증한다.</textarea>
-        </div>
-
-        <div class="section-divider"></div>
-
-        <!-- ===== 2. 연구 가설 ===== -->
-        <div class="section-title">🎯 연구 가설 <span class="ai-tag">AI 생성</span></div>
-
-        <div class="field-group">
-          <label>주 가설 (Primary)</label>
-          <textarea class="textarea ai-filled">8주간 저탄수화물 식단 개입군은 일반 식단 대조군 대비 CGM 기반 MAGE(Mean Amplitude of Glycemic Excursions)가 유의하게 감소할 것이다 (효과크기 d≥0.6, α=0.05).</textarea>
-        </div>
-
-        <div class="field-group">
-          <label>보조 가설 (Secondary)</label>
-          <textarea class="textarea ai-filled" style="min-height:80px">H2a: 개입군의 혈당 변동계수(CV%)가 대조군 대비 유의하게 감소할 것이다.
-H2b: 개입군의 시간 범위 내 혈당(Time in Range, TIR 70-180mg/dL) 비율이 유의하게 증가할 것이다.
-H2c: 개입군의 HbA1c가 대조군 대비 유의하게 감소할 것이다.
-H2d: 식단 순응도가 높을수록(탄수화물 섭취량 감소) GV 개선 폭이 클 것이다.</textarea>
-        </div>
-
-        <div class="section-divider"></div>
-
-        <!-- ===== 3. 연구 방법론 ===== -->
-        <div class="section-title">📋 연구 설계 <span class="ai-tag">AI 추천</span></div>
-
-        <div class="field-group">
-          <label>연구 유형</label>
-          <div class="select-cards cols-3">
-            <div class="select-card selected ai-pick" onclick="selectCard(this)">
-              <div class="card-label">RCT</div>
-              <div class="card-desc">무작위 대조 시험. 인과관계 검증에 최적</div>
-            </div>
-            <div class="select-card" onclick="selectCard(this)">
-              <div class="card-label">전향적 코호트</div>
-              <div class="card-desc">관찰 연구. 자연 경과 추적</div>
-            </div>
-            <div class="select-card" onclick="selectCard(this)">
-              <div class="card-label">SMART</div>
-              <div class="card-desc">적응형 다단계. 반응에 따라 전략 변경</div>
-            </div>
-            <div class="select-card" onclick="selectCard(this)">
-              <div class="card-label">MRT</div>
-              <div class="card-desc">마이크로 무작위. 실시간 개입 최적화</div>
-            </div>
-            <div class="select-card" onclick="selectCard(this)">
-              <div class="card-label">N-of-1</div>
-              <div class="card-desc">개인 내 반복 시험. 개인 맞춤 근거</div>
-            </div>
-            <div class="select-card" onclick="selectCard(this)">
-              <div class="card-label">횡단 조사</div>
-              <div class="card-desc">한 시점 조사. 유병률/상관관계</div>
-            </div>
+        <div class="card-body">
+          <div class="form-group">
+            <label>연구 제목</label>
+            <textarea class="textarea ai-filled" rows="2" style="resize:none;">저탄수화물 식단의 제2형 당뇨 환자 혈당 변동 개선 효과: 무작위 대조 시험</textarea>
           </div>
-        </div>
-
-        <div class="field-group">
-          <label>배정 방법</label>
-          <div class="select-cards cols-2">
-            <div class="select-card selected ai-pick" onclick="selectCard(this)">
-              <div class="card-label">블록 무작위배정</div>
-              <div class="card-desc">군 간 균형 보장. 소규모 RCT에 적합</div>
-            </div>
-            <div class="select-card" onclick="selectCard(this)">
-              <div class="card-label">단순 무작위배정</div>
-              <div class="card-desc">완전 무작위. 대규모에서 유효</div>
-            </div>
-            <div class="select-card" onclick="selectCard(this)">
-              <div class="card-label">층화 무작위배정</div>
-              <div class="card-desc">주요 변수(성별, 연령 등) 기준 층화 후 배정</div>
-            </div>
-            <div class="select-card" onclick="selectCard(this)">
-              <div class="card-label">적응적 무작위배정</div>
-              <div class="card-desc">불균형 실시간 보정. 복잡한 설계</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="field-group">
-          <label>맹검</label>
-          <div class="select-cards cols-3">
-            <div class="select-card" onclick="selectCard(this)">
-              <div class="card-label">이중 맹검</div>
-              <div class="card-desc">참여자 + 평가자 모두 모름. 가장 엄격</div>
-            </div>
-            <div class="select-card selected ai-pick" onclick="selectCard(this)">
-              <div class="card-label">단일 맹검</div>
-              <div class="card-desc">평가자만 모름. 식단 연구에 현실적</div>
-            </div>
-            <div class="select-card" onclick="selectCard(this)">
-              <div class="card-label">비맹검</div>
-              <div class="card-desc">모두 알고 있음. 맹검 불가 시</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="input-row">
-          <div class="field-group">
-            <label>연구 기간</label>
-            <input type="text" class="input ai-filled" value="56일 (8주)">
-          </div>
-          <div class="field-group">
-            <label>추적 관찰</label>
-            <input type="text" class="input ai-filled" value="종료 후 4주 (총 12주)">
-          </div>
-        </div>
-
-        <div class="field-group">
-          <label>군 배정 (Arms)</label>
-          <div style="display:flex; gap:12px; margin-top:4px;">
-            <div style="flex:1; padding:14px; border:2px solid #c4b5fd; border-radius:10px; background:#faf5ff;">
-              <div style="font-size:12px; font-weight:700; color:#7c3aed; margin-bottom:6px;">실험군 (n=50)</div>
-              <div style="font-size:13px; color:#374151; line-height:1.6;">
-                저탄수화물 식단<br>
-                일 탄수화물 ≤50g<br>
-                영양사 주 1회 상담<br>
-                식단 가이드북 제공
-              </div>
-            </div>
-            <div style="flex:1; padding:14px; border:2px solid #e5e7eb; border-radius:10px; background:#f9fafb;">
-              <div style="font-size:12px; font-weight:700; color:#6b7280; margin-bottom:6px;">대조군 (n=50)</div>
-              <div style="font-size:13px; color:#374151; line-height:1.6;">
-                일반 식단 유지<br>
-                특별한 식단 제한 없음<br>
-                영양사 주 1회 상담 (일반)<br>
-                일반 건강 가이드북 제공
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="section-divider"></div>
-
-        <!-- ===== 4. 참여자 ===== -->
-        <div class="section-title">👥 참여자 <span class="ai-tag">AI 추천</span></div>
-
-        <div class="input-row">
-          <div class="field-group">
-            <label>목표 참여자 수</label>
-            <input type="number" class="input ai-filled" value="100">
-            <div class="hint">최소 84명 필요 (power=0.80, d=0.6) + 탈락 20% = 100명</div>
-          </div>
-          <div class="field-group">
-            <label>배정 비율</label>
-            <input type="text" class="input ai-filled" value="1:1 (실험 50 : 대조 50)">
-          </div>
-        </div>
-
-        <div class="field-group">
-          <label>포함 기준 (Inclusion Criteria)</label>
-          <div style="background:#faf5ff; border:1px solid #c4b5fd; border-radius:8px; padding:14px; font-size:13px; line-height:1.8; color:#374151;">
-            <div>1. 만 30~60세 성인</div>
-            <div>2. 제2형 당뇨병 진단 (ICD-10: E11) 1년 이상</div>
-            <div>3. HbA1c 6.5~10.0%</div>
-            <div>4. CGM 기기 착용 가능 (또는 신규 착용 동의)</div>
-            <div>5. 스마트폰 보유 및 앱 사용 가능</div>
-            <div>6. 서면 동의 가능</div>
-          </div>
-        </div>
-
-        <div class="field-group">
-          <label>제외 기준 (Exclusion Criteria)</label>
-          <div style="background:#fff1f2; border:1px solid #fecaca; border-radius:8px; padding:14px; font-size:13px; line-height:1.8; color:#374151;">
-            <div>1. 제1형 당뇨 또는 임신성 당뇨</div>
-            <div>2. 신장 질환 (eGFR &lt; 30) — 저탄수화물 식단 위험</div>
-            <div>3. 섭식 장애 기왕력</div>
-            <div>4. 최근 3개월 내 인슐린 용량 변경</div>
-            <div>5. 다른 식이 임상시험 참여 중</div>
-            <div>6. 연구 기간 내 입원 예정</div>
-          </div>
-        </div>
-
-        <div class="field-group">
-          <label>연령 범위</label>
           <div class="input-row">
-            <input type="number" class="input ai-filled" value="30" placeholder="최소">
-            <input type="number" class="input ai-filled" value="60" placeholder="최대">
+            <div class="form-group">
+              <label>연구 약칭</label>
+              <input type="text" class="input ai-filled" value="LoCHO-GV Trial">
+            </div>
+            <div class="form-group">
+              <label>연구 기간 (일)</label>
+              <input type="number" class="input ai-filled" value="56">
+            </div>
           </div>
         </div>
+      </div>
 
-        <div class="field-group">
+      <!-- ===== 2. 연구 배경 ===== -->
+      <div class="card">
+        <div class="card-header">
+          <h3>📖 연구 배경</h3>
+          <div class="header-right">
+            <span class="ai-badge">AI 생성</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <textarea class="textarea ai-filled" rows="5">제2형 당뇨병 환자에서 혈당 변동성(Glycemic Variability, GV)은 평균 혈당(HbA1c)과 독립적으로 심혈관 합병증 위험을 예측하는 중요 지표로 부상하고 있다. 최근 연속혈당측정(CGM) 기술의 보급으로 실시간 GV 측정이 가능해졌으나, 저탄수화물 식단 개입이 GV에 미치는 효과를 CGM 기반으로 검증한 RCT는 국내에 3건에 불과하다. 특히 한국이 고탄수화물 식사문화를 보유한 점을 고려하면, 저탄수화물 식단 개입의 실현 가능성과 효과를 동시에 검증할 필요가 있다.</textarea>
+        </div>
+      </div>
+
+      <!-- ===== 3. 연구 목적 ===== -->
+      <div class="card">
+        <div class="card-header">
+          <h3>🎯 연구 목적</h3>
+          <span class="ai-badge">AI 생성</span>
+        </div>
+        <div class="card-body">
+          <textarea class="textarea ai-filled" rows="3">제2형 당뇨 환자에서 8주간 저탄수화물 식단 개입(일 탄수화물 50g 이하)이 CGM 기반 혈당 변동성(MAGE, CV%)에 미치는 효과를 일반 식단 대조군과 비교하여 무작위 대조 시험으로 검증한다.</textarea>
+        </div>
+      </div>
+
+      <!-- ===== 4. 연구 가설 (+ 연구 동향 버튼) ===== -->
+      <div class="card">
+        <div class="card-header">
+          <h3>🧪 연구 가설</h3>
+          <div class="header-right">
+            <span class="ai-badge">AI 생성</span>
+            <button class="report-btn" onclick="openModal('trend-modal')">
+              <span class="icon">📈</span> 연구 동향
+            </button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="hypothesis-box">
+            <div class="label">주 가설 (Primary)</div>
+            <div class="text">8주간 저탄수화물 식단 개입군은 일반 식단 대조군 대비 CGM 기반 MAGE(Mean Amplitude of Glycemic Excursions)가 유의하게 감소할 것이다 (효과크기 d≥0.6, α=0.05).</div>
+            <div class="params">
+              <span class="param">효과크기 d=0.6</span>
+              <span class="param">α=0.05</span>
+              <span class="param">검정력 1-β=0.80</span>
+            </div>
+          </div>
+          <div class="hypothesis-box">
+            <div class="label">부 가설 (Secondary)</div>
+            <div class="text">저탄수화물 식단 개입군은 대조군 대비 CV%(Coefficient of Variation)가 유의하게 감소하고, 식사 후 2시간 혈당 피크가 유의하게 낮을 것이다.</div>
+            <div class="params">
+              <span class="param">CV% 감소</span>
+              <span class="param">식후 2h 피크</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== 5. 연구 방법론 (+ 방법론 비교 버튼) ===== -->
+      <div class="card">
+        <div class="card-header">
+          <h3>📋 연구 방법론</h3>
+          <div class="header-right">
+            <span class="ai-badge">AI 추천</span>
+            <button class="report-btn" onclick="openModal('method-modal')">
+              <span class="icon">⚗</span> 방법론 비교
+            </button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="methodology-grid">
+            <div class="methodology-item" data-id="prospective_cohort">
+              <h4>전향적 코호트</h4>
+              <p>시간에 따른 추적 관찰</p>
+              <div class="tags"><span class="tag">시계열 분석</span><span class="tag">트렌드 예측</span></div>
+            </div>
+            <div class="methodology-item selected" data-id="rct">
+              <h4>RCT</h4>
+              <p>무작위 대조 시험</p>
+              <div class="tags"><span class="tag">그룹 비교</span><span class="tag">효과 크기</span></div>
+            </div>
+            <div class="methodology-item" data-id="smart">
+              <h4>SMART</h4>
+              <p>적응형 다단계 배정</p>
+              <div class="tags"><span class="tag">적응형 분석</span><span class="tag">최적 경로</span></div>
+            </div>
+            <div class="methodology-item" data-id="mrt">
+              <h4>MRT</h4>
+              <p>마이크로 무작위 시험</p>
+              <div class="tags"><span class="tag">JITAI</span><span class="tag">순간 효과</span></div>
+            </div>
+            <div class="methodology-item" data-id="n_of_1">
+              <h4>N-of-1</h4>
+              <p>단일 피험자 반복 측정</p>
+              <div class="tags"><span class="tag">개인화</span><span class="tag">맞춤 치료</span></div>
+            </div>
+            <div class="methodology-item" data-id="cross_sectional">
+              <h4>횡단 조사</h4>
+              <p>한 시점 스냅샷</p>
+              <div class="tags"><span class="tag">분포 분석</span><span class="tag">세그먼트</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== 6. 참여자 조건 ===== -->
+      <div class="card">
+        <div class="card-header">
+          <h3>👥 참여자 조건 (ZKP 검증)</h3>
+          <div class="header-right">
+            <span class="ai-badge">AI 추천</span>
+            <button class="report-btn" onclick="openModal('sample-modal')">
+              <span class="icon">📊</span> 표본 설계
+            </button>
+          </div>
+        </div>
+        <div class="card-body">
+          <label>연령</label>
+          <div class="condition-row">
+            <input type="number" class="input-small ai-filled" value="30">
+            <span>세 ~</span>
+            <input type="number" class="input-small ai-filled" value="60">
+            <span>세</span>
+          </div>
+
+          <label>목표 참여자</label>
+          <div class="condition-row">
+            <input type="number" class="input-small ai-filled" value="100" style="width: 100px;">
+            <span>명</span>
+          </div>
+
           <label>건강 조건</label>
           <div class="chip-group">
             <div class="chip selected">제2형 당뇨</div>
@@ -718,419 +376,345 @@ H2d: 식단 순응도가 높을수록(탄수화물 섭취량 감소) GV 개선 �
             <div class="chip">비만</div>
             <div class="chip selected">CGM 사용자</div>
           </div>
-        </div>
 
-        <div class="section-divider"></div>
-
-        <!-- ===== 5. 결과 변수 ===== -->
-        <div class="section-title">📊 결과 변수 (Outcomes)</div>
-
-        <div class="field-group">
-          <label>1차 결과변수 (Primary Outcome)</label>
-          <div style="background:#faf5ff; border:2px solid #c4b5fd; border-radius:10px; padding:16px;">
-            <div style="font-size:14px; font-weight:600; color:#7c3aed; margin-bottom:8px;">MAGE (Mean Amplitude of Glycemic Excursions)</div>
-            <div style="font-size:13px; color:#374151; line-height:1.6;">
-              <strong>측정:</strong> CGM 데이터에서 산출 (연속 혈당 변동 진폭 평균)<br>
-              <strong>시점:</strong> Baseline (0주), 4주, 8주, 추적(12주)<br>
-              <strong>단위:</strong> mg/dL<br>
-              <strong>임상적 의의:</strong> MAGE ≥10mg/dL 감소 시 임상적으로 유의미
-            </div>
+          <div class="info-box">
+            📊 예상 모집 가능 인원: <strong>2,847명</strong> · ZKP 조건 교집합 · k≥5 충족
           </div>
         </div>
+      </div>
 
-        <div class="field-group">
-          <label>2차 결과변수 (Secondary Outcomes)</label>
-          <div style="display:flex; flex-direction:column; gap:8px;">
-            <div style="padding:12px; border:1px solid #e5e7eb; border-radius:8px; font-size:13px;">
-              <strong>혈당 변동계수 (CV%)</strong> — CGM 기반, 목표: CV &lt; 36%
-            </div>
-            <div style="padding:12px; border:1px solid #e5e7eb; border-radius:8px; font-size:13px;">
-              <strong>Time in Range (TIR)</strong> — 70-180mg/dL 범위 내 시간 비율, CGM 기반
-            </div>
-            <div style="padding:12px; border:1px solid #e5e7eb; border-radius:8px; font-size:13px;">
-              <strong>HbA1c</strong> — 혈액검사, Baseline/8주/12주
-            </div>
-            <div style="padding:12px; border:1px solid #e5e7eb; border-radius:8px; font-size:13px;">
-              <strong>저혈당 빈도</strong> — CGM &lt; 70mg/dL 에피소드 횟수/주
-            </div>
-            <div style="padding:12px; border:1px solid #e5e7eb; border-radius:8px; font-size:13px;">
-              <strong>식단 순응도</strong> — 식사 기록 기반 일 탄수화물 섭취량 (g)
-            </div>
-          </div>
+      <!-- 버튼 -->
+      <div class="btn-row">
+        <a href="create.html" class="btn btn-secondary">← 이전</a>
+        <a href="create-step3.html" class="btn btn-primary">다음: 데이터 수집 →</a>
+      </div>
+
+      <div class="step-nav">
+        <a href="create.html">← Step 1</a>
+        <a href="create-step3.html">Step 3 →</a>
+      </div>
+
+      <!-- 기능 명세 -->
+      <div style="background: linear-gradient(135deg, #ecfdf5, #d1fae5); border: 2px solid #10b981; border-radius: 12px; padding: 16px; margin-top: 24px;">
+        <h3 style="color: #047857; margin-bottom: 12px; font-size: 14px;">⚙️ 기능 명세 (v2 — 레포트 모달 분리)</h3>
+        <div style="font-size: 12px; color: #374151; line-height: 1.8;">
+          <strong>변경 사항 (v1 → v2):</strong><br>
+          • 오른쪽 "📋 연구 레포트" 패널 삭제 → 페이지 간결화<br>
+          • 각 섹션 헤더 오른쪽에 레포트 버튼 추가:<br>
+          &nbsp;&nbsp;- 연구 가설 → 📈 연구 동향 (RAG + PubMed 논문 검색 결과)<br>
+          &nbsp;&nbsp;- 연구 방법론 → ⚗ 방법론 비교 (유사 연구 방법론 분포)<br>
+          &nbsp;&nbsp;- 참여자 조건 → 📊 표본 설계 (검정력 분석, 표본 크기 계산)<br>
+          • 버튼 클릭 시 모달 오버레이로 해당 레포트 표시<br>
+          • 사용자 타이핑 영역(왼쪽)과 레포트 참고(모달)가 분리됨<br><br>
+
+          <strong>모달 레포트 내용 (RAG + PubMed):</strong><br>
+          • 📈 연구 동향: 최근 3~5년 관련 논문 검색, 주요 발견 요약, DOI 링크<br>
+          • ⚗ 방법론 비교: 유사 연구의 방법론 분포(RCT/코호트/단면), 추천 근거<br>
+          • 📊 표본 설계: 효과크기 기반 검정력 분석, 최소 n 계산, 탈락율 반영<br><br>
+
+          <strong>핵심 기능 (유지):</strong><br>
+          • AI 생성 초안 확인/수정<br>
+          • 연구 방법론 6종 선택<br>
+          • ZKP 기반 참여자 조건 설정 + 매칭 시뮬레이션<br>
+          • AI 채팅 패널로 자연어 수정
         </div>
+      </div>
 
-        <div class="field-group">
-          <label>통제변수 / 공변량</label>
-          <textarea class="textarea ai-filled">연령, 성별, BMI, 당뇨 유병기간, 기저 HbA1c, 경구혈당강하제 종류/용량, 인슐린 사용 여부, 기저 운동량 (IPAQ), 기저 식사 패턴</textarea>
-        </div>
+      <!-- 백엔드 호출 -->
+      <div style="background: linear-gradient(135deg, #f5f3ff, #ede9fe); border: 2px solid #8b5cf6; border-radius: 12px; padding: 16px; margin-top: 12px;">
+        <h3 style="color: #6d28d9; margin-bottom: 12px; font-size: 14px;">🔗 백엔드 API</h3>
+        <div style="font-size: 11px; font-family: 'SF Mono', Monaco, monospace; color: #374151; line-height: 1.8;">
 
-        <div class="section-divider"></div>
+          <strong style="font-family: -apple-system, sans-serif;">1. 연구 동향 레포트 (모달용)</strong><br>
+          <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
+GET /api/v2/ai/research-trends<br>
+  ?topic=low_carb_glycemic_variability<br>
+  &methodology=rct<br>
+  &years=3<br>
+→ { papers: [...], summary: "...", trend_keywords: [...] }
+          </code>
 
-        <!-- ===== 6. 개입 프로토콜 ===== -->
-        <div class="section-title">💊 개입 프로토콜 <span class="ai-tag">AI 생성</span></div>
+          <strong style="font-family: -apple-system, sans-serif;">2. 방법론 비교 레포트 (모달용)</strong><br>
+          <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
+GET /api/v2/ai/methodology-comparison<br>
+  ?topic=dietary_glycemic_intervention<br>
+  &condition=diabetes_t2<br>
+→ { distribution: { rct: 62, cohort: 25, cross: 13 }, recommendation: "rct", rationale: "..." }
+          </code>
 
-        <div class="field-group">
-          <label>실험군 프로토콜</label>
-          <div style="background:#faf5ff; border:1px solid #c4b5fd; border-radius:8px; padding:14px; font-size:13px; line-height:1.8; color:#374151;">
-            <div><strong>1주차:</strong> 오리엔테이션 + CGM 착용 + 기저 데이터 수집 (일반 식단 유지)</div>
-            <div><strong>2~9주차:</strong> 저탄수화물 식단 실행 (일 탄수화물 ≤50g)</div>
-            <div style="padding-left:16px;">• 주 1회 영양사 비대면 상담 (식단 모니터링 + 피드백)</div>
-            <div style="padding-left:16px;">• 매 식사 앱 식단 기록 (사진 + 텍스트)</div>
-            <div style="padding-left:16px;">• 대체 식품 리스트 제공 (한식 기반 저탄수화물 메뉴)</div>
-            <div><strong>10~13주차:</strong> 추적 관찰 (식단 자유, CGM 유지)</div>
-          </div>
-        </div>
+          <strong style="font-family: -apple-system, sans-serif;">3. 표본 설계 레포트 (모달용)</strong><br>
+          <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
+POST /api/v2/ai/sample-design<br>
+  { effect_size: 0.6, alpha: 0.05, power: 0.80, dropout_rate: 0.20 }<br>
+→ { min_n: 84, recommended_n: 100, per_group: 50, rationale: "..." }
+          </code>
 
-        <div class="field-group">
-          <label>측정 일정 (Visit Schedule)</label>
-          <div style="overflow-x:auto;">
-            <table style="width:100%; font-size:12px; border-collapse:collapse; margin-top:4px;">
-              <thead>
-                <tr style="background:#f9fafb;">
-                  <th style="padding:10px 12px; border:1px solid #e5e7eb; text-align:left;">항목</th>
-                  <th style="padding:10px 8px; border:1px solid #e5e7eb; text-align:center;">V1<br><span style="color:#9ca3af">0주</span></th>
-                  <th style="padding:10px 8px; border:1px solid #e5e7eb; text-align:center;">V2<br><span style="color:#9ca3af">4주</span></th>
-                  <th style="padding:10px 8px; border:1px solid #e5e7eb; text-align:center;">V3<br><span style="color:#9ca3af">8주</span></th>
-                  <th style="padding:10px 8px; border:1px solid #e5e7eb; text-align:center;">V4<br><span style="color:#9ca3af">12주</span></th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr><td style="padding:8px 12px; border:1px solid #e5e7eb;">동의서/스크리닝</td><td style="padding:8px; border:1px solid #e5e7eb; text-align:center; color:#8b5cf6; font-weight:700;">●</td><td style="padding:8px; border:1px solid #e5e7eb;"></td><td style="padding:8px; border:1px solid #e5e7eb;"></td><td style="padding:8px; border:1px solid #e5e7eb;"></td></tr>
-                <tr><td style="padding:8px 12px; border:1px solid #e5e7eb;">CGM (연속)</td><td style="padding:8px; border:1px solid #e5e7eb; text-align:center; color:#8b5cf6; font-weight:700;">●</td><td style="padding:8px; border:1px solid #e5e7eb; text-align:center; color:#8b5cf6; font-weight:700;">●</td><td style="padding:8px; border:1px solid #e5e7eb; text-align:center; color:#8b5cf6; font-weight:700;">●</td><td style="padding:8px; border:1px solid #e5e7eb; text-align:center; color:#8b5cf6; font-weight:700;">●</td></tr>
-                <tr><td style="padding:8px 12px; border:1px solid #e5e7eb;">HbA1c</td><td style="padding:8px; border:1px solid #e5e7eb; text-align:center; color:#8b5cf6; font-weight:700;">●</td><td style="padding:8px; border:1px solid #e5e7eb;"></td><td style="padding:8px; border:1px solid #e5e7eb; text-align:center; color:#8b5cf6; font-weight:700;">●</td><td style="padding:8px; border:1px solid #e5e7eb; text-align:center; color:#8b5cf6; font-weight:700;">●</td></tr>
-                <tr><td style="padding:8px 12px; border:1px solid #e5e7eb;">식단 기록 (매일)</td><td style="padding:8px; border:1px solid #e5e7eb; text-align:center; color:#22c55e;">↔</td><td style="padding:8px; border:1px solid #e5e7eb; text-align:center; color:#22c55e;">↔</td><td style="padding:8px; border:1px solid #e5e7eb; text-align:center; color:#22c55e;">↔</td><td style="padding:8px; border:1px solid #e5e7eb; text-align:center; color:#22c55e;">↔</td></tr>
-                <tr><td style="padding:8px 12px; border:1px solid #e5e7eb;">복약 기록 (매일)</td><td style="padding:8px; border:1px solid #e5e7eb; text-align:center; color:#22c55e;">↔</td><td style="padding:8px; border:1px solid #e5e7eb; text-align:center; color:#22c55e;">↔</td><td style="padding:8px; border:1px solid #e5e7eb; text-align:center; color:#22c55e;">↔</td><td style="padding:8px; border:1px solid #e5e7eb; text-align:center; color:#22c55e;">↔</td></tr>
-                <tr><td style="padding:8px 12px; border:1px solid #e5e7eb;">신체 계측 (BMI)</td><td style="padding:8px; border:1px solid #e5e7eb; text-align:center; color:#8b5cf6; font-weight:700;">●</td><td style="padding:8px; border:1px solid #e5e7eb; text-align:center; color:#8b5cf6; font-weight:700;">●</td><td style="padding:8px; border:1px solid #e5e7eb; text-align:center; color:#8b5cf6; font-weight:700;">●</td><td style="padding:8px; border:1px solid #e5e7eb;"></td></tr>
-                <tr><td style="padding:8px 12px; border:1px solid #e5e7eb;">영양사 상담</td><td style="padding:8px; border:1px solid #e5e7eb; text-align:center; color:#22c55e;">↔</td><td style="padding:8px; border:1px solid #e5e7eb; text-align:center; color:#22c55e;">↔</td><td style="padding:8px; border:1px solid #e5e7eb; text-align:center; color:#22c55e;">↔</td><td style="padding:8px; border:1px solid #e5e7eb;"></td></tr>
-              </tbody>
-            </table>
-            <div style="font-size:11px; color:#9ca3af; margin-top:6px;">● = 시점 측정 &nbsp; ↔ = 연속/반복 측정</div>
-          </div>
-        </div>
+          <strong style="font-family: -apple-system, sans-serif;">4. 프로젝트 초안 저장</strong><br>
+          <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
+POST /api/v2/projects<br>
+PATCH /api/v2/projects/:id<br>
+  { title, methodology, duration, target_participants, eligibility: { zkp_circuits: [...] } }
+          </code>
 
-        <div class="section-divider"></div>
-
-        <!-- ===== 7. 분석 계획 ===== -->
-        <div class="section-title">🧮 통계 분석 계획 <span class="ai-tag">AI 생성</span></div>
-
-        <div class="field-group">
-          <label>주 분석 (Primary Analysis)</label>
-          <textarea class="textarea ai-filled">ITT(Intention-to-Treat) 원칙 적용. 반복측정 혼합효과모형(Linear Mixed-Effects Model)으로 MAGE의 군간 차이를 시점별로 비교. 고정효과: 군(실험/대조), 시점(0/4/8/12주), 군×시점 교호작용. 랜덤효과: 대상자(절편). 유의수준 α=0.05.</textarea>
-        </div>
-
-        <div class="field-group">
-          <label>보조 분석</label>
-          <div style="background:#f9fafb; border:1px solid #e5e7eb; border-radius:8px; padding:14px; font-size:13px; line-height:1.8; color:#374151;">
-            <div>• Per-Protocol 분석 (순응도 80% 이상 대상)</div>
-            <div>• 하위그룹 분석: 기저 HbA1c 수준별, BMI별, 인슐린 사용 여부별</div>
-            <div>• 매개 분석(Mediation): 탄수화물 섭취량 → MAGE 변화 경로</div>
-            <div>• 생존 분석: TIR 목표(≥70%) 달성까지 소요 시간</div>
-            <div>• 안전성 분석: 저혈당 에피소드 빈도 비교 (Poisson regression)</div>
-          </div>
-        </div>
-
-        <div class="field-group">
-          <label>결측치 처리</label>
-          <div class="select-cards cols-3">
-            <div class="select-card selected ai-pick" onclick="selectCard(this)">
-              <div class="card-label">다중 대체법</div>
-              <div class="card-desc">Multiple Imputation (m=20). ITT 원칙 준수에 최적</div>
-            </div>
-            <div class="select-card" onclick="selectCard(this)">
-              <div class="card-label">LOCF</div>
-              <div class="card-desc">최종 관측값 이월. 민감도 분석 비교용</div>
-            </div>
-            <div class="select-card" onclick="selectCard(this)">
-              <div class="card-label">완전사례 분석</div>
-              <div class="card-desc">결측 제외. 탈락 적을 때만</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="section-divider"></div>
-
-        <!-- ===== 8. 윤리적 고려 ===== -->
-        <div class="section-title">⚖️ 윤리적 고려 <span class="ai-tag">AI 생성</span></div>
-
-        <div class="field-group">
-          <label>예상 위험</label>
-          <div style="background:#fff7ed; border:1px solid #fed7aa; border-radius:8px; padding:14px; font-size:13px; line-height:1.8; color:#374151;">
-            <div><strong>저혈당 위험 (중간):</strong> 저탄수화물 식단 + 혈당강하제 병용 시 저혈당 발생 가능. → CGM 실시간 모니터링 + 저혈당 알림 설정</div>
-            <div><strong>영양 불균형 (낮음):</strong> 극단적 탄수화물 제한 시 → 영양사 주 1회 상담으로 관리</div>
-            <div><strong>개인정보 (낮음):</strong> CGM/건강 데이터 수집 → L4 암호화 + 접근 로그</div>
-          </div>
-        </div>
-
-        <div class="field-group">
-          <label>참여자 보호 방안</label>
-          <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:8px; padding:14px; font-size:13px; line-height:1.8; color:#374151;">
-            <div>• 저혈당 발생 시 즉시 주치의 연락 프로토콜 (CGM &lt; 54mg/dL → 자동 알림)</div>
-            <div>• 중도 탈락 기준: 심각한 저혈당 2회 이상, HbA1c &gt; 12% 도달</div>
-            <div>• 주 1회 영양사 모니터링으로 식단 안전성 확인</div>
-            <div>• DSMB(Data Safety Monitoring Board) 중간 분석: 4주 시점 안전성 검토</div>
-          </div>
-        </div>
-
-        <div class="field-group">
-          <label>참여자 보상</label>
-          <div class="input-row">
-            <div>
-              <input type="text" class="input ai-filled" value="일 500원 (데이터 제출 기준)">
-              <div class="hint">8주 × 500원 = 최대 28,000원</div>
-            </div>
-            <div>
-              <input type="text" class="input ai-filled" value="완료 보너스 10,000원">
-              <div class="hint">8주 전체 완료 시 추가 지급</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- 버튼 -->
-        <div class="btn-row">
-          <a href="create.html" class="btn btn-secondary">← 이전</a>
-          <a href="create-step3.html" class="btn btn-primary">다음: 데이터 수집 →</a>
+          <strong style="font-family: -apple-system, sans-serif;">5. ZKP 매칭 시뮬레이션</strong><br>
+          <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
+POST /api/v2/pool/simulate<br>
+  { zkp_circuits: [...] }<br>
+→ { estimated_matches: 2847, k_anonymity_check: "pass" }
+          </code>
         </div>
       </div>
     </div>
 
-    <!-- ③ 연구 레포트 -->
-    <div class="report-panel">
-      <div class="report-header">
-        <h3>📋 연구 레포트</h3>
-        <div class="sub">설계 기반 자동 생성 | RAG + PubMed</div>
-      </div>
-      <div class="report-body">
-
-        <!-- 연구 동향 -->
-        <div class="report-section">
-          <div class="report-section-title">📈 연구 동향</div>
-          <div class="report-content">
-            <p>최근 3년간 저탄수화물 식단과 혈당 변동 관련 연구는 <strong>RCT 중심</strong>으로 전환되는 추세. 2023~2025년 사이 41건의 RCT가 등록되었으며, CGM 기반 측정이 표준화되고 있음.</p>
-            <p>특히 <strong>MAGE(Mean Amplitude of Glycemic Excursions)</strong>를 주요 지표로 사용하는 연구가 증가 중.</p>
-          </div>
-
-          <a href="https://pubmed.ncbi.nlm.nih.gov/38012345/" class="citation-link" target="_blank">
-            <div class="citation-icon">📄</div>
-            <div>
-              <div class="citation-title">Low-carbohydrate diet and glycemic variability in T2DM: A systematic review</div>
-              <div class="citation-meta">Kim et al. 2025 | <span class="journal">Diabetes Care</span> | <span class="doi">DOI: 10.2337/dc25-0142</span></div>
-            </div>
-          </a>
-
-          <a href="https://pubmed.ncbi.nlm.nih.gov/37654321/" class="citation-link" target="_blank">
-            <div class="citation-icon">📄</div>
-            <div>
-              <div class="citation-title">CGM-based outcomes in dietary intervention trials: A meta-analysis</div>
-              <div class="citation-meta">Park & Lee 2024 | <span class="journal">J Clin Endocrinol Metab</span> | <span class="doi">DOI: 10.1210/jc.2024-0891</span></div>
-            </div>
-          </a>
-        </div>
-
-        <!-- 방법론 비교 -->
-        <div class="report-section">
-          <div class="report-section-title">🔬 방법론 비교</div>
-          <div class="report-content">
-            <p>유사 연구의 방법론 분포:</p>
-          </div>
-
-          <div class="stat-row">
-            <div class="stat-card">
-              <div class="value">62%</div>
-              <div class="label">RCT</div>
-            </div>
-            <div class="stat-card">
-              <div class="value">25%</div>
-              <div class="label">코호트</div>
-            </div>
-            <div class="stat-card">
-              <div class="value">13%</div>
-              <div class="label">단면</div>
-            </div>
-          </div>
-
-          <div class="report-content">
-            <p>RCT 선택은 해당 연구 질문에 <strong>가장 적합</strong>. 개입 효과를 인과적으로 검증 가능.</p>
-          </div>
-
-          <a href="https://pubmed.ncbi.nlm.nih.gov/38876543/" class="citation-link" target="_blank">
-            <div class="citation-icon">📄</div>
-            <div>
-              <div class="citation-title">Superiority of RCT design for dietary glycemic control studies</div>
-              <div class="citation-meta">Chen et al. 2026 | <span class="journal">BMJ Open</span> | <span class="doi">DOI: 10.1136/bmjopen-2025-078432</span></div>
-            </div>
-          </a>
-        </div>
-
-        <!-- 샘플사이즈 근거 -->
-        <div class="report-section">
-          <div class="report-section-title">🔢 샘플사이즈 근거</div>
-
-          <div class="stat-row">
-            <div class="stat-card">
-              <div class="value">84</div>
-              <div class="label">최소 필요 (power=0.8)</div>
-            </div>
-            <div class="stat-card">
-              <div class="value">100</div>
-              <div class="label">현재 목표 (탈락 고려)</div>
-            </div>
-          </div>
-
-          <div class="report-content">
-            <p>유사 RCT 기준: 효과크기 d=0.6, 유의수준 0.05, 검정력 0.80 → <strong>최소 n=84</strong> (군당 42명). 20% 탈락률 고려 시 100명 적절.</p>
-          </div>
-
-          <a href="https://pubmed.ncbi.nlm.nih.gov/37234567/" class="citation-link" target="_blank">
-            <div class="citation-icon">📄</div>
-            <div>
-              <div class="citation-title">Sample size estimation for CGM-based dietary RCTs</div>
-              <div class="citation-meta">Tanaka et al. 2024 | <span class="journal">Trials</span> | <span class="doi">DOI: 10.1186/s13063-024-08432</span></div>
-            </div>
-          </a>
-        </div>
-
-        <!-- 연구 갭 -->
-        <div class="report-section">
-          <div class="report-section-title">🔍 연구 갭</div>
-          <div class="report-content">
-            <p><strong>국내 연구 부족:</strong> 한국인 대상 저탄수화물 식단 + CGM 연구는 3건에 불과. 국내 식습관 특성(밥 중심)을 고려한 연구 필요.</p>
-            <p><strong>장기 추적 부족:</strong> 기존 연구 대부분 4주 이내. 8주 설계는 차별화 포인트.</p>
-          </div>
-
-          <a href="https://pubmed.ncbi.nlm.nih.gov/38345678/" class="citation-link" target="_blank">
-            <div class="citation-icon">📄</div>
-            <div>
-              <div class="citation-title">Gaps in dietary intervention research for Korean diabetic patients</div>
-              <div class="citation-meta">Song et al. 2025 | <span class="journal">Korean J Internal Med</span> | <span class="doi">DOI: 10.3904/kjim.2025.0234</span></div>
-            </div>
-          </a>
-        </div>
-
-      </div>
-    </div>
-
-    <!-- ④ AI 상담 -->
-    <div class="chat-panel">
-      <div class="chat-header">
+    <!-- ===== AI 채팅 패널 ===== -->
+    <aside class="ai-chat-panel">
+      <div class="ai-chat-header">
         <div class="title">
           <span class="icon">🤖</span>
           AI 연구 설계 어시스턴트
         </div>
-        <div class="sub">설계 전체를 보고 조언합니다</div>
+        <div class="subtitle">설계 전체를 보고 조언합니다</div>
       </div>
 
-      <div class="chat-context">
+      <div class="ai-context-card">
         <div class="label">현재 연구</div>
         <div class="value">저탄수화물 식단 혈당 변동 RCT</div>
-        <div class="chat-context-chips">
-          <span class="chat-context-chip">RCT</span>
-          <span class="chat-context-chip">30-60세</span>
-          <span class="chat-context-chip">당뇨 T2</span>
-          <span class="chat-context-chip">n=100</span>
+        <div class="ai-context-chips">
+          <span class="ai-context-chip active">RCT</span>
+          <span class="ai-context-chip active">30-60세</span>
+          <span class="ai-context-chip active">당뇨 T2</span>
+          <span class="ai-context-chip active">n=100</span>
         </div>
       </div>
 
-      <div class="chat-messages">
-        <div class="msg ai">
-          <div class="sender">AI 어시스턴트</div>
+      <div class="ai-chat-messages" id="ai-chat-messages">
+        <!-- AI 메시지: 분석 결과 -->
+        <div style="padding: 12px 16px; background: #f9fafb; border-radius: 10px; margin: 8px 12px; font-size: 12px; color: #374151; line-height: 1.6;">
+          <div style="font-weight: 600; color: #7c3aed; margin-bottom: 6px;">AI 어시스턴트</div>
           연구 설계를 분석했습니다. 전반적으로 잘 구성되어 있어요. 몇 가지 제안드립니다:<br><br>
-          1. <strong>목표 참여자 100명</strong>은 검정력 분석상 적절합니다 (군당 50명, 탈락 20% 고려)<br><br>
-          2. <strong>CGM + 식사기록</strong> 조합이 핵심이네요. 식사 사진 AI 분석을 활용하면 기록 부담을 줄일 수 있습니다<br><br>
-          3. 통제변수에 <strong>복약 순응도</strong>가 포함되어 있어 좋습니다. 인슐린 사용 여부도 추가 고려해보세요
+          1. 목표 참여자 100명은 검정력 분석상 적절합니다 (군당 50명, 탈락 20% 고려)<br><br>
+          2. CGM + 식사기록 조합이 핵심이에요. 식사 사진 AI 분석을 활용하면 기록 부담을 줄일 수 있습니다<br><br>
+          3. 통제변수에 복약 순응도가 포함되어 있어 좋습니다. 인슐린 사용 여부도 추가 고려해보세요
         </div>
 
-        <div class="msg user">
-          <div class="sender">김연구</div>
+        <!-- 사용자 질문 -->
+        <div style="padding: 10px 16px; background: #eff6ff; border-radius: 10px; margin: 8px 12px; font-size: 12px; color: #1e40af; text-align: right;">
+          <div style="font-weight: 600; margin-bottom: 4px;">김연구</div>
           대상자 수 100명이면 충분할까? 더 늘려야 하나?
         </div>
 
-        <div class="msg ai">
-          <div class="sender">AI 어시스턴트</div>
+        <!-- AI 응답 -->
+        <div style="padding: 12px 16px; background: #f9fafb; border-radius: 10px; margin: 8px 12px; font-size: 12px; color: #374151; line-height: 1.6;">
+          <div style="font-weight: 600; color: #7c3aed; margin-bottom: 6px;">AI 어시스턴트</div>
           현재 설계 기준으로 분석했습니다:<br><br>
-          - 효과크기 d=0.6 (유사 연구 기반)<br>
-          - 유의수준 α=0.05, 검정력 1-β=0.80<br>
-          - <strong>최소 n=84</strong> (군당 42명)<br><br>
-          100명(군당 50명)이면 <strong>탈락률 19%까지 허용</strong> 가능합니다. 충분합니다.<br><br>
-          만약 하위그룹 분석(예: BMI별)을 계획한다면 150명으로 늘리는 것을 권장합니다.
-        </div>
-
-        <div class="msg user">
-          <div class="sender">김연구</div>
-          기분 데이터도 수집해야 할까?
-        </div>
-
-        <div class="msg ai">
-          <div class="sender">AI 어시스턴트</div>
-          식단 변경이 <strong>심리적 부담</strong>을 줄 수 있어 기분 데이터는 유용합니다.<br><br>
-          단, 주요 종속변수(혈당 변동)에 집중하려면 <strong>탐색적 변수</strong>로 분류하세요. 필수 수집보다는 선택으로 두면 참여자 부담이 줄어듭니다.
+          • 효과크기 d=0.6 (유사 연구 기반)<br>
+          • 유의수준 α=0.05, 검정력 1-β=0.80<br>
+          • 최소 n=84 (군당 42명)<br><br>
+          100명(군당 50명)이면 탈락률 19%까지 허용됩니다. 충분합니다.
         </div>
       </div>
 
-      <div class="chat-quick">
-        <div class="label">빠른 질문</div>
-        <div class="chat-quick-chips">
-          <span class="chat-quick-chip">검정력 재계산</span>
-          <span class="chat-quick-chip">변수 추가 영향</span>
-          <span class="chat-quick-chip">IRB 예상 유형</span>
-          <span class="chat-quick-chip">유사 연구 더 보기</span>
+      <div class="ai-quick-actions">
+        <div class="label">빠른 설정</div>
+        <div class="ai-quick-chips">
+          <span class="ai-quick-chip">RCT로 변경</span>
+          <span class="ai-quick-chip">코호트로 변경</span>
+          <span class="ai-quick-chip">40대 이상</span>
+          <span class="ai-quick-chip">기간 늘려줘</span>
         </div>
       </div>
 
-      <div class="chat-input">
-        <div class="chat-input-wrapper">
-          <input type="text" placeholder="설계에 대해 질문하세요...">
-          <button class="chat-send-btn">➤</button>
+      <div class="ai-chat-input">
+        <div class="ai-input-wrapper">
+          <input type="text" id="ai-chat-input" placeholder="예: 연구 기간을 90일로 늘려줘">
+          <button class="ai-send-btn" id="ai-send-btn">➤</button>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- ========== 모달: 연구 동향 ========== -->
+  <div class="modal-overlay" id="trend-modal" onclick="if(event.target===this)closeModal('trend-modal')">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>📈 연구 동향</h3>
+        <div style="display:flex; align-items:center; gap: 8px;">
+          <span class="badge">RAG + PubMed</span>
+          <button class="modal-close" onclick="closeModal('trend-modal')">✕</button>
+        </div>
+      </div>
+      <div class="modal-body">
+        <div class="trend-summary">
+          최근 3년간 저탄수화물 식단과 혈당 변동 관련 연구는 <strong>RCT 중심</strong>으로 전환되는 추세. 2023~2025년 사이 41건의 RCT가 등록되었으며, CGM 기반 측정이 표준화되고 있음. 특히 <strong>MAGE(Mean Amplitude of Glycemic Excursions)</strong>를 주요 지표로 사용하는 연구가 증가 중.
+        </div>
+
+        <div style="font-size: 13px; font-weight: 600; margin-bottom: 12px; color: #374151;">관련 논문</div>
+
+        <div class="paper-item">
+          <div class="paper-icon">📄</div>
+          <div class="paper-info">
+            <div class="paper-title">Low-carbohydrate diet and glycemic variability in T2DM: A systematic review</div>
+            <div class="paper-meta">Kim et al. 2025 | <span style="color: #059669; font-weight: 600;">Diabetes Care</span></div>
+            <div class="paper-doi">DOI: 10.2337/dc25-0142</div>
+          </div>
+        </div>
+
+        <div class="paper-item">
+          <div class="paper-icon">📄</div>
+          <div class="paper-info">
+            <div class="paper-title">CGM-based outcomes in dietary intervention trials: A meta-analysis</div>
+            <div class="paper-meta">Park & Lee 2024 | <span style="font-weight: 600;">J Clin Endocrinol Metab</span></div>
+            <div class="paper-doi">DOI: 10.1210/jc.2024-0891</div>
+          </div>
+        </div>
+
+        <div class="paper-item">
+          <div class="paper-icon">📄</div>
+          <div class="paper-info">
+            <div class="paper-title">MAGE reduction through carbohydrate restriction: 8-week RCT</div>
+            <div class="paper-meta">Chen et al. 2024 | <span style="font-weight: 600;">Nutrients</span></div>
+            <div class="paper-doi">DOI: 10.3390/nu16040512</div>
+          </div>
+        </div>
+
+        <div class="paper-item">
+          <div class="paper-icon">📄</div>
+          <div class="paper-info">
+            <div class="paper-title">Superiority of RCT design for dietary glycemic control studies</div>
+            <div class="paper-meta">Chen et al. 2026 | <span style="color: #059669; font-weight: 600;">BMJ Open</span></div>
+            <div class="paper-doi">DOI: 10.1136/bmjopen-2025-078432</div>
+          </div>
+        </div>
+
+        <div style="font-size: 11px; color: #94a3b8; margin-top: 12px; text-align: center;">
+          PubMed · Google Scholar · Semantic Scholar 기반 RAG 검색 · 최근 3년 · 키워드: low-carb, glycemic variability, CGM, MAGE, RCT
         </div>
       </div>
     </div>
-      </div><!-- /.workspace -->
-    </div><!-- /.workspace-wrap -->
   </div>
 
-  <!-- 디자이너 노트 토글 -->
-  <button class="toggle-notes" onclick="document.querySelector('.designer-notes').classList.toggle('show')">📋 디자이너 노트</button>
+  <!-- ========== 모달: 방법론 비교 ========== -->
+  <div class="modal-overlay" id="method-modal" onclick="if(event.target===this)closeModal('method-modal')">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>⚗ 방법론 비교</h3>
+        <div style="display:flex; align-items:center; gap: 8px;">
+          <span class="badge">유사 연구 분석</span>
+          <button class="modal-close" onclick="closeModal('method-modal')">✕</button>
+        </div>
+      </div>
+      <div class="modal-body">
+        <div style="font-size: 13px; font-weight: 600; margin-bottom: 12px; color: #374151;">유사 연구의 방법론 분포:</div>
 
-  <div class="designer-notes">
-    <h3>📋 디자이너 노트: Step 2 - 연구 설계 워크스페이스 (4분할)</h3>
-    <div class="content">
-      <strong>레이아웃 변경 (핵심):</strong><br>
-      기존 2분할(폼 + AI챗) → <strong>4분할 워크스페이스</strong>로 변경<br>
-      ① Nav (240px) | ② 설계 에디터 (flex:1) | ③ 연구 레포트 (360px) | ④ AI 상담 (360px)<br><br>
+        <div class="method-stat">
+          <div class="pct" style="color: #7c3aed;">62%</div>
+          <div class="info">
+            <div class="name">RCT <span style="font-size: 11px; color: #059669; font-weight: 400; margin-left: 6px;">✓ AI 추천</span></div>
+            <div class="desc">무작위 배정으로 교란변수 통제 · 식이 개입 효과 검증에 가장 적합</div>
+          </div>
+        </div>
+        <div class="method-stat">
+          <div class="pct">25%</div>
+          <div class="info">
+            <div class="name">코호트</div>
+            <div class="desc">장기 추적에 유리하나, 식단 개입 효과 입증력 낮음</div>
+          </div>
+        </div>
+        <div class="method-stat">
+          <div class="pct">13%</div>
+          <div class="info">
+            <div class="name">단면</div>
+            <div class="desc">현재 상태 조사 · 인과관계 추론 불가</div>
+          </div>
+        </div>
 
-      <strong>② 설계 에디터:</strong><br>
-      - 사용자가 직접 편집하는 폼 영역<br>
-      - AI가 채운 필드는 보라색 테두리 (ai-filled)<br>
-      - 모든 필드 수정 가능<br><br>
+        <div class="method-note">
+          <strong>RCT 추천 근거:</strong> 해당 연구 질문에 가장 적합. 개입 효과를 인과적으로 검증 가능. 유사 연구 중 62%가 RCT를 채택했으며, 최근 CGM 기반 RCT가 급증하는 추세.
+        </div>
+      </div>
+    </div>
+  </div>
 
-      <strong>③ 연구 레포트 (NEW):</strong><br>
-      - 에디터 필드 변경 시 <strong>자동 업데이트</strong> (디바운스 호출)<br>
-      - RAG + PubMed/Scholar API → 구조화된 레포트 생성<br>
-      - 섹션: 연구 동향 / 방법론 비교 / 샘플사이즈 근거 / 연구 갭<br>
-      - 각 근거에 <strong>논문 링크 (PubMed/DOI)</strong> 포함 → 클릭 시 논문 페이지 이동<br>
-      - API: POST /api/ai/research_design/report<br><br>
+  <!-- ========== 모달: 표본 설계 ========== -->
+  <div class="modal-overlay" id="sample-modal" onclick="if(event.target===this)closeModal('sample-modal')">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>📊 표본 설계</h3>
+        <div style="display:flex; align-items:center; gap: 8px;">
+          <span class="badge">검정력 분석</span>
+          <button class="modal-close" onclick="closeModal('sample-modal')">✕</button>
+        </div>
+      </div>
+      <div class="modal-body">
+        <div class="trend-summary" style="background: #eff6ff; border-color: #93c5fd; color: #1e40af;">
+          현재 설계 기준: 효과크기 d=0.6 (유사 연구 메타분석 기반), 유의수준 α=0.05, 검정력 1-β=0.80
+        </div>
 
-      <strong>④ AI 상담:</strong><br>
-      - 자유 대화 — 설계 전체 맥락을 보고 답변<br>
-      - 빠른 질문 칩으로 자주 묻는 질문 원터치<br>
-      - API: POST /api/ai/copilot/chat (SSE 스트리밍)<br><br>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
+          <div style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 10px; padding: 16px; text-align: center;">
+            <div style="font-size: 11px; color: #6b7280; margin-bottom: 4px;">최소 필요 표본</div>
+            <div style="font-size: 28px; font-weight: 800; color: #1e293b;">84명</div>
+            <div style="font-size: 12px; color: #6b7280;">군당 42명</div>
+          </div>
+          <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; padding: 16px; text-align: center;">
+            <div style="font-size: 11px; color: #059669; margin-bottom: 4px;">추천 표본 (탈락 20% 반영)</div>
+            <div style="font-size: 28px; font-weight: 800; color: #059669;">100명</div>
+            <div style="font-size: 12px; color: #059669;">군당 50명 ✓</div>
+          </div>
+        </div>
 
-      <strong>데이터 흐름:</strong><br>
-      에디터 필드 변경 → 디바운스(500ms) → POST /api/ai/research_design/report → 레포트 패널 업데이트<br>
-      AI 채팅 → 에디터 상태 + 대화 → POST /api/ai/copilot/chat → 스트리밍 응답<br><br>
+        <div style="font-size: 13px; font-weight: 600; margin-bottom: 10px; color: #374151;">검정력 분석 파라미터:</div>
+        <table style="width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 16px;">
+          <tr style="background: #f9fafb; border-bottom: 1px solid #e5e7eb;">
+            <td style="padding: 8px 12px; font-weight: 600;">효과크기 (d)</td>
+            <td style="padding: 8px 12px;">0.6 (중간~큰 효과)</td>
+            <td style="padding: 8px 12px; color: #6b7280;">유사 연구 메타분석 기반</td>
+          </tr>
+          <tr style="border-bottom: 1px solid #e5e7eb;">
+            <td style="padding: 8px 12px; font-weight: 600;">유의수준 (α)</td>
+            <td style="padding: 8px 12px;">0.05</td>
+            <td style="padding: 8px 12px; color: #6b7280;">양측검정</td>
+          </tr>
+          <tr style="background: #f9fafb; border-bottom: 1px solid #e5e7eb;">
+            <td style="padding: 8px 12px; font-weight: 600;">검정력 (1-β)</td>
+            <td style="padding: 8px 12px;">0.80</td>
+            <td style="padding: 8px 12px; color: #6b7280;">일반적 기준</td>
+          </tr>
+          <tr style="border-bottom: 1px solid #e5e7eb;">
+            <td style="padding: 8px 12px; font-weight: 600;">예상 탈락률</td>
+            <td style="padding: 8px 12px;">20%</td>
+            <td style="padding: 8px 12px; color: #6b7280;">8주 식이 개입 평균</td>
+          </tr>
+          <tr style="background: #f9fafb;">
+            <td style="padding: 8px 12px; font-weight: 600;">최종 추천</td>
+            <td style="padding: 8px 12px; color: #059669; font-weight: 600;">100명 (군당 50명)</td>
+            <td style="padding: 8px 12px; color: #059669;">✓ 현재 설정과 일치</td>
+          </tr>
+        </table>
 
-      <strong>보안:</strong><br>
-      - 연구 메타데이터(제목, 방법론, 변수명)만 LLM에 전송<br>
-      - 실제 연구 데이터/개인정보는 전송하지 않음
+        <div class="method-note">
+          <strong>참고:</strong> 탈락률 19%까지 통계적 유의성 유지. 식이 개입 연구 평균 탈락률(15~25%) 고려 시 100명은 충분한 표본 크기.
+        </div>
+      </div>
     </div>
   </div>
 
   <script>
-    function selectCard(el) {
-      el.parentElement.querySelectorAll('.select-card').forEach(c => c.classList.remove('selected'));
-      el.classList.add('selected');
+    function openModal(id) {
+      document.getElementById(id).classList.add('show');
     }
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('show');
+    }
+    // ESC로 모달 닫기
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        document.querySelectorAll('.modal-overlay.show').forEach(m => m.classList.remove('show'));
+      }
+    });
   </script>
   <script src="page-spec.js"></script>
+  <script src="ai-chat-panel.js"></script>
   <link rel="stylesheet" href="../tooltip-spec.css">
   <script src="../tooltip-spec.js"></script>
 </body>

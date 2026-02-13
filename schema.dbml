@@ -1,681 +1,495 @@
-// UniQdata v4 Complete ERD — 40 Entities (Layout-Optimized)
-// 선 꼬임 최소화를 위해 의존성 순서 + TableGroup 적용
+// UniQdata v6 Complete ERD — 31 Tables (2-Server Architecture)
+// health_db (Core, 15 tables) + uniqdata_db (Business, 16 tables)
+// 2026-02-12 전면 리뉴얼
 
 // ═══════════════════════════════════════
 // TableGroup 선언 (레이아웃 그룹핑)
 // ═══════════════════════════════════════
 
-TableGroup core_auth {
-  accounts
-  account_logins
-  owners
+TableGroup health_auth [headercolor: #7c3aed] {
   users
-}
-
-TableGroup session_auth {
-  sessions
-  refresh_tokens
   passkey_credentials
+  user_profiles
+  refresh_tokens
 }
 
-TableGroup wallet_group {
-  wallets
-  wallet_secrets
-  wallet_credential_bindings
-  wallet_recovery_requests
+TableGroup health_wallet [headercolor: #7c3aed] {
+  user_wallets
+  wallet_recovery_configs
 }
 
-TableGroup org_group {
-  institutions
-  workspaces
-  workspace_members
-}
-
-TableGroup app_group {
-  apps
-  app_keys
-  consents
-}
-
-TableGroup data_group {
+TableGroup health_data [headercolor: #7c3aed] {
   data_points
-  data_attachments
-  data_sources
-  data_accesses
+  data_point_tags
+  data_access_logs
 }
 
-TableGroup research_group {
-  research_projects
-  participation_criteria
-  data_collection_configs
-  team_members
-  agreements
+TableGroup health_consent [headercolor: #7c3aed] {
+  consents
+  consent_scopes
+  consent_audit_trail
 }
 
-TableGroup finance_group {
-  project_wallets
-  project_wallet_deposits
-  project_wallet_withdrawals
-  escrows
-  settlements
+TableGroup health_xrpl [headercolor: #7c3aed] {
+  xrpl_transactions
 }
 
-TableGroup medication_group {
-  drug_info_cache
-  user_medications
-  medication_logs
-  medication_proofs
-}
-
-TableGroup analytics_group {
-  ai_analyses
-  features
+TableGroup health_notification [headercolor: #7c3aed] {
   notifications
+  notification_preferences
 }
 
-TableGroup audit_group {
-  audit_logs
-  anchor_logs
+TableGroup biz_enterprise [headercolor: #059669] {
+  enterprises
+  enterprise_members
 }
 
-// ═══════════════════════════════════════
-// 1. 📱 App (독립 — 최상단 좌측)
-// ═══════════════════════════════════════
+TableGroup biz_research [headercolor: #059669] {
+  projects
+  project_milestones
+  participants
+  participation_criteria
+  data_requests
+}
 
-Table apps {
+TableGroup biz_irb [headercolor: #059669] {
+  irb_submissions
+  irb_documents
+  irb_review_comments
+  irb_workflow_history
+}
+
+TableGroup biz_settlement [headercolor: #059669] {
+  settlement_batches
+  settlement_items
+}
+
+TableGroup biz_phase2 [headercolor: #6b7280] {
+  synthetic_datasets
+  fl_rounds
+}
+
+TableGroup biz_system [headercolor: #059669] {
+  webhook_events
+}
+
+// ═══════════════════════════════════════════════
+// ░░░ health_db — Core Server (NestJS:3000) ░░░
+// 15 Tables · PostgreSQL 15 · 2GB
+// ═══════════════════════════════════════════════
+
+// ─── 1. 사용자/인증 ───
+
+Table users [headercolor: #7c3aed] {
   id uuid [pk]
-  slug varchar [unique, note: 'bodab|ready-q|medi-q|uniqdata']
-  name varchar
-  description varchar
-  allowed_scopes text [note: 'health:heart_rate:read:30d']
-  allowed_origins text
-  status enum [note: 'active|inactive|suspended']
-  created_at timestamp
-  updated_at timestamp
+  email varchar(255) [unique, not null]
+  phone varchar(20)
+  display_name varchar(100)
+  role varchar(20) [not null, default: 'PATIENT', note: 'PATIENT|RESEARCHER|IRB_MEMBER|ADMIN']
+  kyc_level smallint [not null, default: 0, note: '0:미인증 1:이메일 2:전화 3:신분증']
+  status varchar(20) [not null, default: 'ACTIVE']
+  last_login_at timestamp
+  created_at timestamp [not null, default: `NOW()`]
+  updated_at timestamp [not null, default: `NOW()`]
 }
 
-Table app_keys {
+Table passkey_credentials [headercolor: #7c3aed] {
   id uuid [pk]
-  app_id uuid [ref: > apps.id]
-  key_type enum [note: 'public|secret|admin']
-  key_prefix varchar [note: 'uq_pub_test_kr_']
-  key_hash varchar [note: 'SHA-256']
-  name varchar
-  status enum [note: 'active|revoked|expired']
-  expires_at timestamp
-  last_used_at timestamp
-  created_at timestamp
-  revoked_at timestamp
+  user_id uuid [ref: > users.id, not null]
+  credential_id text [unique, not null]
+  public_key text [not null, note: 'COSE 공개키']
+  sign_count bigint [default: 0]
+  device_type varchar(30) [note: 'platform|cross-platform']
+  device_name varchar(100)
+  prf_supported boolean [default: false]
+  prf_salt bytea [note: 'PRF용 salt (32바이트)']
+  created_at timestamp [not null, default: `NOW()`]
 }
 
-// ═══════════════════════════════════════
-// 2. 🏢 Organization (독립 — 최상단 우측)
-// ═══════════════════════════════════════
-
-Table institutions {
+Table user_profiles [headercolor: #7c3aed] {
   id uuid [pk]
-  name varchar
-  type enum [note: 'university|research_institute|hospital|company|government|other']
-  domains text [note: '도메인 배열: snu.ac.kr']
-  status enum [note: 'pending|active|suspended']
-  logo_url varchar
-  website varchar
-  created_at timestamp
-  updated_at timestamp
+  user_id uuid [unique, ref: - users.id, note: '1:1']
+  birth_date date [note: '암호화 저장']
+  gender varchar(10)
+  height_cm decimal(5,1)
+  weight_kg decimal(5,1)
+  blood_type varchar(5)
+  chronic_conditions text [note: 'TEXT[] 배열']
+  medications jsonb
+  encrypted_fields jsonb
+  created_at timestamp [not null, default: `NOW()`]
 }
 
-Table workspaces {
-  id uuid [pk]
-  name varchar
-  type enum [note: 'individual|team|enterprise']
-  status enum [note: 'pending|active|suspended|archived']
-  institution_id uuid [ref: > institutions.id]
-  description text
-  max_members int
-  created_at timestamp
-  updated_at timestamp
-}
-
-// ═══════════════════════════════════════
-// 3. 🔑 Core Auth (중심 허브)
-// ═══════════════════════════════════════
-
-Table accounts {
-  id uuid [pk]
-  type enum [note: 'user|enterprise|researcher|admin|auditor']
-  status enum [note: 'active|suspended|deleted']
-  identity_hash varchar [unique, note: 'KYC용 1인1계정']
-  kyc_verified_at timestamp
-  kyc_provider varchar
-  created_at timestamp
-  updated_at timestamp
-}
-
-Table account_logins {
-  id uuid [pk]
-  account_id uuid [ref: > accounts.id]
-  provider enum [note: 'apple|google|kakao|email|phone']
-  provider_user_id varchar
-  email varchar
-  phone varchar
-  email_verified boolean
-  phone_verified boolean
-  password_hash varchar
-  created_at timestamp
-
-  indexes {
-    (provider, provider_user_id) [unique]
-  }
-}
-
-Table owners {
-  id uuid [pk]
-  account_id uuid [ref: - accounts.id, unique, note: '1:1']
-  created_at timestamp
-}
-
-Table users {
-  id uuid [pk]
-  account_id uuid [ref: - accounts.id, note: '1:1 프로필']
-  name varchar
-  birth_date date
-  gender varchar
-  height decimal
-  weight decimal
-  blood_type varchar
-  allergies text
-  created_at timestamp
-  updated_at timestamp
-
-  indexes {
-    account_id [unique]
-  }
-}
-
-// ═══════════════════════════════════════
-// 4. 🏢 Org Members (accounts + workspaces 의존)
-// ═══════════════════════════════════════
-
-Table workspace_members {
-  id uuid [pk]
-  workspace_id uuid [ref: > workspaces.id]
-  account_id uuid [ref: > accounts.id]
-  role enum [note: 'owner|admin|member|auditor']
-  status enum [note: 'pending|active|suspended|rejected|left']
-  display_name varchar
-  created_at timestamp
-  updated_at timestamp
-
-  indexes {
-    (workspace_id, account_id) [unique]
-  }
-}
-
-Table data_accesses {
-  id uuid [pk]
-  workspace_id uuid [ref: > workspaces.id]
-  account_id uuid [ref: > accounts.id]
-  data_product_id varchar
-  status enum [note: 'active|expired|revoked']
-  granted_by uuid [ref: > accounts.id]
-  granted_at timestamp
-  expires_at timestamp
-
-  indexes {
-    (workspace_id, account_id)
-  }
-}
-
-// ═══════════════════════════════════════
-// 5. 🔐 Session & Passkey (users + apps 의존)
-// ═══════════════════════════════════════
-
-Table sessions {
+Table refresh_tokens [headercolor: #7c3aed] {
   id uuid [pk]
   user_id uuid [ref: > users.id]
-  app_id uuid [ref: > apps.id]
-  started_at timestamp
-  ended_at timestamp
-  metadata jsonb
+  token_hash varchar(64) [unique]
+  device_info jsonb
+  expires_at timestamp [not null]
+  revoked boolean [default: false]
+  created_at timestamp [default: `NOW()`]
 }
 
-Table refresh_tokens {
-  id uuid [pk]
-  token varchar [unique]
-  user_id uuid [ref: > users.id]
-  session_id uuid [ref: > sessions.id]
-  expires_at timestamp
-  revoked_at timestamp
-  created_at timestamp
-}
+// ─── 2. XRPL/지갑 ───
 
-Table passkey_credentials {
+Table user_wallets [headercolor: #7c3aed] {
   id uuid [pk]
   user_id uuid [ref: > users.id]
-  credential_id varchar [unique]
-  public_key text
-  counter int
-  transports text
-  device_name varchar
-  created_at timestamp
-  last_used_at timestamp
+  xrpl_address varchar(60) [unique, note: 'rXXXXX...']
+  xrpl_public_key varchar(130) [note: 'ed25519 공개키 (hex)']
+  wallet_type varchar(20) [default: 'USER', note: 'USER|SERVICE|ESCROW']
+  derivation_method varchar(20) [default: 'PASSKEY_PRF']
+  uqd_balance decimal(18,6) [default: 0]
+  xrp_balance decimal(18,6) [default: 0]
+  status varchar(20) [default: 'ACTIVE']
+
+  Note: '⚠️ private_key, seed는 절대 저장하지 않음!'
 }
 
-// ═══════════════════════════════════════
-// 6. 👛 Wallet (owners + passkey 의존)
-// ═══════════════════════════════════════
-
-Table wallets {
+Table wallet_recovery_configs [headercolor: #7c3aed] {
   id uuid [pk]
-  owner_id uuid [ref: > owners.id]
-  user_id uuid [note: '@deprecated']
-  address varchar [unique, note: 'XRPL rXXX...']
-  public_key varchar
-  wallet_type enum [note: 'main|sub']
-  status enum [note: 'active|suspended|recovery']
-  created_at timestamp
+  user_id uuid [ref: > users.id]
+  recovery_method varchar(30) [note: 'SSS|SOCIAL|HSM_BACKUP']
+  config jsonb [note: '{threshold, shares, guardians, ...}']
+  created_at timestamp [default: `NOW()`]
+}
+
+// ─── 3. 건강 데이터 ───
+
+Table data_points [headercolor: #7c3aed] {
+  id uuid [pk]
+  user_id uuid [ref: > users.id, not null]
+  category varchar(30) [not null, note: 'VITALS|LAB_RESULT|MEDICATION|SYMPTOM|ACTIVITY|SLEEP|DIET|MENTAL_HEALTH|WEARABLE|MY_HEALTHWAY']
+  sub_category varchar(50) [note: 'blood_pressure, heart_rate, glucose']
+  value jsonb [not null, note: 'AES-256-GCM 암호화']
+  value_encrypted boolean [default: true]
+  source varchar(30) [not null, note: 'MANUAL|WEARABLE|MY_HEALTHWAY|EMR_IMPORT|FHIR']
+  measured_at timestamp [not null]
+  data_hash varchar(64) [not null, note: 'SHA-256(raw + ts)']
+  xrpl_tx_hash varchar(64) [note: 'XRPL 앵커링 tx']
+  xrpl_anchored boolean [default: false]
+  quality_score decimal(3,2)
+  created_at timestamp [not null, default: `NOW()`]
 
   indexes {
-    (owner_id, wallet_type) [unique]
+    (user_id, category)
+    (user_id, measured_at)
+    data_hash
   }
 }
 
-Table wallet_secrets {
-  id uuid [pk]
-  wallet_id uuid [ref: - wallets.id, unique, note: '1:1']
-  encrypted_seed_prf bytea [note: 'Passkey PRF 암호화']
-  prf_salt bytea
-  encrypted_seed_hsm bytea [note: 'HSM 복구용']
-  hsm_key_id varchar
-  encrypted_seed text [note: '@deprecated']
-  key_id varchar [note: '@deprecated']
-  created_at timestamp
-  updated_at timestamp
-}
-
-Table wallet_credential_bindings {
-  id uuid [pk]
-  wallet_id uuid [ref: > wallets.id]
-  credential_id uuid [ref: > passkey_credentials.id]
-  encrypted_seed_prf bytea [note: '기기별 PRF 암호화']
-  prf_salt bytea
-  binding_signature text
-  xrpl_tx_hash varchar
-  status enum [note: 'active|revoked']
-  created_at timestamp
-  revoked_at timestamp
-
-  indexes {
-    (wallet_id, credential_id) [unique]
-  }
-}
-
-Table wallet_recovery_requests {
-  id uuid [pk]
-  wallet_id uuid [ref: > wallets.id]
-  owner_id uuid [ref: > owners.id]
-  kyc_verified boolean
-  kyc_verified_at timestamp
-  kyc_identity_hash varchar
-  sms_verified boolean
-  sms_verified_at timestamp
-  status enum [note: 'pending|kyc_required|waiting|admin_review|approved|completed|cancelled|rejected']
-  created_at timestamp
-}
-
-// ═══════════════════════════════════════
-// 7. 📊 Data (users 의존)
-// ═══════════════════════════════════════
-
-Table data_points {
-  id uuid [pk]
-  user_id uuid [ref: > users.id]
-  category varchar
-  metric varchar
-  value jsonb
-  unit varchar
-  timestamp timestamp
-  source_id varchar
-  source_type varchar
-  metadata jsonb
-  sensitivity_level int [note: '1-4']
-  created_at timestamp
-
-  indexes {
-    (user_id, category, metric, timestamp)
-    (user_id, timestamp)
-  }
-}
-
-Table data_attachments {
+Table data_point_tags [headercolor: #7c3aed] {
   id uuid [pk]
   data_point_id uuid [ref: > data_points.id]
-  user_id uuid [ref: > users.id]
-  storage_key varchar
-  file_name varchar
-  file_type varchar [note: 'MIME type']
-  file_size bigint
-  thumbnail_key varchar
-  metadata jsonb [note: 'DICOM 태그 등']
-  storage_provider varchar [note: 'local|s3|minio']
-  sensitivity_level int [default: 4]
-  created_at timestamp
+  tag_key varchar(50)
+  tag_value varchar(200)
 }
 
-Table data_sources {
+Table data_access_logs [headercolor: #7c3aed] {
   id uuid [pk]
-  user_id uuid [ref: > users.id]
-  name varchar
-  type varchar [note: 'wearable|app|manual|integration']
-  is_active boolean
-  config jsonb
-  created_at timestamp
-  last_sync_at timestamp
+  data_point_ids text [note: 'UUID[] 배열']
+  accessor_type varchar(20) [note: 'SELF|RESEARCHER|SYSTEM|AI']
+  accessor_id uuid
+  project_id uuid [note: 'uniqdata_db.projects.id']
+  irb_number varchar(50)
+  consent_id uuid [ref: > consents.id]
+  access_purpose varchar(50)
+  record_count int [not null]
+  pseudonymized boolean [default: false]
+  xrpl_tx_hash varchar(64)
+  accessed_at timestamp [default: `NOW()`]
 }
 
-Table consents {
+// ─── 4. 동의 ───
+
+Table consents [headercolor: #7c3aed] {
+  id uuid [pk]
+  user_id uuid [ref: > users.id, not null]
+  consent_type varchar(30) [not null, note: 'SERVICE_TERMS|PRIVACY_POLICY|RESEARCH_PARTICIPATION|DATA_SHARING|SENSITIVE_DATA|MARKETING']
+  status varchar(20) [default: 'ACTIVE', note: 'PENDING|ACTIVE|REVOKED|EXPIRED']
+  signature_hash varchar(64) [note: 'ed25519 서명 해시']
+  signature_method varchar(30) [note: 'PASSKEY_PRF|E_SIGNATURE|MANUAL']
+  grant_tx_hash varchar(64) [note: 'CONSENT_GRANT XRPL tx']
+  revoke_tx_hash varchar(64) [note: 'CONSENT_REVOKE XRPL tx']
+  project_id uuid [note: 'Business에서 전달받은 프로젝트 ID']
+  irb_number varchar(50)
+  version int [default: 1]
+  created_at timestamp [default: `NOW()`]
+}
+
+Table consent_scopes [headercolor: #7c3aed] {
+  id uuid [pk]
+  consent_id uuid [ref: > consents.id]
+  scope_type varchar(30) [note: 'DATA_CATEGORY|PURPOSE|RECIPIENT|DURATION|GEOGRAPHY']
+  scope_key varchar(50) [note: 'vitals, drug_research, enterprise_id:xxxx']
+  scope_value text
+}
+
+Table consent_audit_trail [headercolor: #7c3aed] {
+  id uuid [pk]
+  consent_id uuid [ref: > consents.id]
+  action varchar(20) [note: 'CREATED|SIGNED|MODIFIED|REVOKED']
+  actor_id uuid
+  changes jsonb
+  xrpl_tx_hash varchar(64)
+  created_at timestamp [default: `NOW()`]
+}
+
+// ─── 5. XRPL 트랜잭션 ───
+
+Table xrpl_transactions [headercolor: #7c3aed] {
+  id uuid [pk]
+  tx_hash varchar(64) [unique]
+  tx_type varchar(30) [note: 'DATA_INPUT|DATA_ACCESS|CONSENT_GRANT|CONSENT_REVOKE|ESCROW_CREATE|ESCROW_FINISH|ESCROW_CANCEL|SYNTH_SALE|FL_ROUND|UQD_TRANSFER']
+  from_address varchar(60)
+  to_address varchar(60)
+  amount decimal(18,6)
+  currency varchar(10) [note: 'XRP|UQD']
+  memo_type varchar(30)
+  memo_data jsonb
+  ledger_index bigint
+  status varchar(20) [note: 'SUBMITTED|VALIDATED|FAILED']
+  related_user_id uuid
+  related_consent_id uuid
+  created_at timestamp [default: `NOW()`]
+}
+
+// ─── 6. 알림 ───
+
+Table notifications [headercolor: #7c3aed] {
   id uuid [pk]
   user_id uuid [ref: > users.id]
-  app_id uuid [ref: > apps.id]
-  scopes text [note: '동의 범위 배열']
-  purpose varchar
-  status enum [note: 'pending|approved|denied|revoked|expired']
-  created_at timestamp
-  approved_at timestamp
-  revoked_at timestamp
-  expires_at timestamp
-  xrpl_tx_hash varchar
-  revocation_tx_hash varchar
+  type varchar(50)
+  title varchar(200)
+  body text
+  channel varchar(20) [note: 'PUSH|EMAIL|IN_APP']
+  read boolean [default: false]
   metadata jsonb
-}
-
-// ═══════════════════════════════════════
-// 8. 🔬 Research (owners + institutions 의존)
-// ═══════════════════════════════════════
-
-Table research_projects {
-  id uuid [pk]
-  owner_id uuid [ref: > owners.id, note: 'PI']
-  institution_id uuid [ref: > institutions.id]
-  title varchar
-  description text
-  methodology varchar [note: 'longitudinal|cross_sectional|cohort|case_control']
-  status enum [note: 'draft|recruiting|collecting|analyzing|completed|cancelled']
-  created_at timestamp
-  updated_at timestamp
+  created_at timestamp [default: `NOW()`]
 
   indexes {
-    (owner_id, status)
+    (user_id, created_at)
   }
 }
 
-Table participation_criteria {
+Table notification_preferences [headercolor: #7c3aed] {
   id uuid [pk]
-  project_id uuid [ref: - research_projects.id, unique, note: '1:1']
-  age_min int
-  age_max int
-  conditions jsonb [note: '필수 조건']
-  exclusions jsonb [note: '제외 조건']
-  required_data jsonb [note: '필수 데이터']
-  regions jsonb [note: '지역 제한']
-  created_at timestamp
+  user_id uuid [unique, ref: - users.id]
+  push_enabled boolean [default: true]
+  email_enabled boolean [default: true]
+  health_alerts boolean [default: true]
+  research_updates boolean [default: true]
+  quiet_hours_start time
+  quiet_hours_end time
 }
 
-Table data_collection_configs {
+// ═══════════════════════════════════════════════════
+// ░░░ uniqdata_db — Business Server (Spring:8080) ░░░
+// 16 Tables · PostgreSQL 15 · 1GB
+// ═══════════════════════════════════════════════════
+
+// ─── 7. 기관 ───
+
+Table enterprises [headercolor: #059669] {
   id uuid [pk]
-  project_id uuid [ref: - research_projects.id, unique, note: '1:1']
-  passive_data jsonb [note: 'heart_rate, steps...']
-  active_data jsonb [note: 'mood, pain_level...']
-  biomarkers jsonb [note: 'voice_analysis, cgm...']
-  collection_frequency jsonb
-  created_at timestamp
+  name varchar(200) [not null]
+  enterprise_type varchar(30) [note: 'HOSPITAL|PHARMA|CRO|UNIVERSITY|INSURANCE|GOVERNMENT']
+  business_number varchar(20)
+  irb_committee_id uuid
+  status varchar(20) [default: 'ACTIVE']
+  created_at timestamp [default: `NOW()`]
 }
 
-Table team_members {
+Table enterprise_members [headercolor: #059669] {
   id uuid [pk]
-  project_id uuid [ref: > research_projects.id]
-  owner_id uuid [ref: > owners.id]
-  role enum [note: 'owner|admin|member']
-  invited_by uuid [ref: > owners.id]
-  joined_at timestamp
-  created_at timestamp
+  enterprise_id uuid [ref: > enterprises.id]
+  user_id uuid [not null, note: 'health_db.users.id']
+  role varchar(20) [note: 'OWNER|PI|IRB_MEMBER|STAFF|VIEWER']
+  status varchar(20) [default: 'ACTIVE']
+  created_at timestamp [default: `NOW()`]
 
   indexes {
-    (project_id, owner_id) [unique]
+    (enterprise_id, user_id) [unique]
   }
 }
 
-Table agreements {
-  id uuid [pk]
-  project_id uuid [ref: > research_projects.id]
-  owner_id uuid [ref: > owners.id, note: '참여자']
-  status enum [note: 'pending|active|completed|withdrawn|expired']
-  data_scopes jsonb [note: '동의한 데이터 범위']
-  start_date date
-  end_date date
-  created_at timestamp
+// ─── 8. 연구 프로젝트 ───
 
-  indexes {
-    (project_id, owner_id) [unique]
-    (owner_id, status)
-  }
+Table projects [headercolor: #059669] {
+  id uuid [pk]
+  enterprise_id uuid [ref: > enterprises.id]
+  title varchar(300) [not null]
+  project_type varchar(30) [note: 'CLINICAL_TRIAL|OBSERVATIONAL|RETROSPECTIVE|REGISTRY|DATA_ANALYSIS|FL_STUDY|SYNTHETIC_DATA']
+  status varchar(30) [default: 'DRAFT', note: 'DRAFT|IRB_PENDING|IRB_APPROVED|RECRUITING|ACTIVE|DATA_LOCKED|ANALYSIS|COMPLETED']
+  pi_user_id uuid [not null, note: '연구책임자 (health_db.users.id)']
+  irb_number varchar(50)
+  target_participant_count int
+  required_data_categories text [note: 'TEXT[] 배열']
+  reward_per_participant decimal(18,6)
+  total_reward_budget decimal(18,6)
+  escrow_xrpl_tx_hash varchar(64)
+  created_at timestamp [default: `NOW()`]
 }
 
-// ═══════════════════════════════════════
-// 9. 💰 Finance (research 의존)
-// ═══════════════════════════════════════
-
-Table project_wallets {
+Table project_milestones [headercolor: #059669] {
   id uuid [pk]
-  project_id uuid [ref: - research_projects.id, unique, note: '1:1']
-  wallet_address varchar [unique]
-  encrypted_seed bytea [note: 'KMS 암호화']
-  kms_key_id varchar
-  total_deposited decimal
-  total_spent decimal
-  status enum [note: 'active|suspended|closed']
-  created_at timestamp
-}
-
-Table project_wallet_deposits {
-  id uuid [pk]
-  project_id uuid [ref: > research_projects.id]
-  depositor_owner_id uuid [ref: > owners.id]
-  amount decimal
-  tx_hash varchar [unique]
-  deposited_at timestamp
-}
-
-Table project_wallet_withdrawals {
-  id uuid [pk]
-  project_id uuid [ref: > research_projects.id]
-  withdrawer_owner_id uuid [ref: > owners.id]
-  amount decimal
-  tx_hash varchar [unique]
-  withdrawn_at timestamp
-}
-
-Table escrows {
-  id uuid [pk]
-  project_id uuid [ref: > research_projects.id]
-  owner_address varchar
-  amount decimal
-  condition varchar [note: 'Crypto-Condition']
-  fulfillment varchar
-  sequence int
-  tx_hash varchar [unique]
-  status enum [note: 'created|partial_released|completed|cancelled']
-  created_at timestamp
-}
-
-Table settlements {
-  id uuid [pk]
-  agreement_id uuid [ref: > agreements.id]
-  amount decimal
-  tx_hash varchar [unique]
-  type varchar [note: 'data_submit|bonus|completion']
-  memo text
-  settled_at timestamp
-}
-
-// ═══════════════════════════════════════
-// 10. 💊 Medication (users 의존)
-// ═══════════════════════════════════════
-
-Table drug_info_cache {
-  drug_code varchar [pk]
-  name varchar
-  category varchar
-  manufacturer varchar
-  ingredients jsonb
-  effects text
-  side_effects text
-  interactions jsonb
-  category_hash varchar [note: 'ZKP용']
-  fetched_at timestamp
-  expires_at timestamp
-}
-
-Table user_medications {
-  id uuid [pk]
-  user_id uuid [ref: > users.id]
-  name_encrypted text [note: 'L4 암호화']
-  dosage_encrypted text
-  purpose_encrypted text
-  category_hash varchar [note: 'ZKP용']
-  name_hash varchar
-  schedule_times text [note: 'morning,noon,evening,bedtime']
-  drug_code varchar
-  is_active boolean
-  medication_type varchar [note: 'regular|as_needed']
-  start_date date
-  end_date date
-  xrpl_tx_hash varchar
-  created_at timestamp
-  updated_at timestamp
-
-  indexes {
-    (user_id, name_hash) [unique]
-    (user_id, is_active)
-  }
-}
-
-Table medication_logs {
-  id uuid [pk]
-  user_id uuid [ref: > users.id]
-  medication_id uuid [ref: > user_medications.id]
-  scheduled_time varchar [note: 'morning|noon|evening|bedtime']
-  taken boolean
-  taken_at timestamp
-  skipped_reason text
-  recorded_at timestamp
-  xrpl_tx_hash varchar
-  created_at timestamp
-
-  indexes {
-    (user_id, recorded_at)
-    (medication_id, recorded_at)
-  }
-}
-
-Table medication_proofs {
-  id uuid [pk]
-  user_id uuid [ref: > users.id]
-  proof_type varchar [note: 'category_membership|adherence_rate']
-  category_hash varchar
-  commitment bytea [note: 'Pedersen commitment']
-  proof_data jsonb
-  valid_from timestamp
-  valid_until timestamp
-  created_at timestamp
-}
-
-// ═══════════════════════════════════════
-// 11. 🤖 AI & Analytics (users 의존)
-// ═══════════════════════════════════════
-
-Table ai_analyses {
-  id uuid [pk]
-  user_id uuid [ref: > users.id]
-  type varchar
-  status enum [note: 'pending|processing|completed|failed']
-  input jsonb
-  result jsonb
-  error_message varchar
-  requested_at timestamp
+  project_id uuid [ref: > projects.id]
+  milestone_type varchar(30) [note: 'IRB_SUBMISSION|IRB_APPROVAL|RECRUITMENT_START|RECRUITMENT_COMPLETE|DATA_COLLECTION|CLOSURE']
+  status varchar(20) [default: 'PENDING']
+  target_date date
   completed_at timestamp
+  sequence_order int
 }
 
-Table features {
+Table participants [headercolor: #059669] {
   id uuid [pk]
-  user_id uuid [ref: > users.id]
-  category varchar
-  feature_type varchar
+  project_id uuid [ref: > projects.id]
+  user_id uuid [not null, note: 'health_db.users.id']
+  consent_id uuid [note: 'health_db.consents.id']
+  status varchar(20) [default: 'INVITED', note: 'INVITED|CONSENTED|ENROLLED|ACTIVE|COMPLETED|WITHDRAWN|EXCLUDED']
+  reward_earned decimal(18,6) [default: 0]
+  reward_paid decimal(18,6) [default: 0]
+  created_at timestamp [default: `NOW()`]
+
+  indexes {
+    (project_id, user_id) [unique]
+  }
+}
+
+Table participation_criteria [headercolor: #059669] {
+  id uuid [pk]
+  project_id uuid [ref: > projects.id]
+  criteria_type varchar(20) [note: 'INCLUSION|EXCLUSION']
+  field varchar(50) [note: 'age, gender, chronic_conditions']
+  operator varchar(20) [note: 'EQUALS|BETWEEN|IN|NOT_IN|GTE|LTE']
   value jsonb
-  period_start timestamp
-  period_end timestamp
-  source_metrics varchar
-  created_at timestamp
 }
 
-// ═══════════════════════════════════════
-// 12. 🔔 Notifications (users + apps 의존)
-// ═══════════════════════════════════════
-
-Table notifications {
+Table data_requests [headercolor: #059669] {
   id uuid [pk]
-  user_id uuid [ref: > users.id]
-  app_id uuid [ref: > apps.id]
-  type varchar [note: 'data_access|recovery_started|medication_reminder...']
-  title varchar
-  body varchar
-  metadata jsonb
-  read_at timestamp
-  created_at timestamp
-
-  indexes {
-    (user_id, created_at)
-    (user_id, read_at)
-  }
+  project_id uuid [ref: > projects.id]
+  requester_id uuid
+  request_type varchar(30) [note: 'PARTICIPANT_DATA|AGGREGATE|EXPORT']
+  data_categories text [note: 'TEXT[] 배열']
+  status varchar(20) [default: 'PENDING']
+  core_request_id uuid [note: 'Core Internal API 요청 ID']
+  created_at timestamp [default: `NOW()`]
 }
 
-// ═══════════════════════════════════════
-// 13. 🔍 Audit (users + apps 의존)
-// ═══════════════════════════════════════
+// ─── 9. IRB ───
 
-Table audit_logs {
+Table irb_submissions [headercolor: #059669] {
   id uuid [pk]
-  user_id uuid [ref: > users.id]
-  app_id uuid [ref: > apps.id]
-  action varchar [note: 'read|write|delete|export']
-  category varchar
-  metric varchar
-  data_point_id uuid
-  record_count int
-  xrpl_tx_hash varchar
-  xrpl_anchor_status varchar
-  xrpl_ledger_index int
-  timestamp timestamp
-  ip_address varchar
-  user_agent varchar
-  metadata jsonb
-
-  indexes {
-    (user_id, timestamp)
-    (app_id, timestamp)
-  }
+  project_id uuid [ref: > projects.id]
+  enterprise_id uuid [ref: > enterprises.id]
+  submission_type varchar(30) [note: 'INITIAL|AMENDMENT|CONTINUING_REVIEW|CLOSURE']
+  status varchar(30) [default: 'DRAFT', note: 'DRAFT|SUBMITTED|PRELIMINARY_REVIEW|FULL_BOARD_REVIEW|REVISION_REQUESTED|APPROVED|CONDITIONALLY_APPROVED|REJECTED']
+  version int [default: 1]
+  ai_generated boolean [default: false]
+  ai_model_used varchar(50) [note: 'claude-sonnet-4-5']
+  approval_valid_until date
+  created_at timestamp [default: `NOW()`]
 }
 
-Table anchor_logs {
+Table irb_documents [headercolor: #059669] {
   id uuid [pk]
-  user_id uuid [ref: > users.id]
-  anchor_type enum [note: 'wallet_binding|consent_grant|escrow_create|settlement...']
-  tx_hash varchar [unique]
-  from_address varchar
-  to_address varchar
-  created_at timestamp
+  submission_id uuid [ref: > irb_submissions.id]
+  doc_type varchar(50) [note: 'PROTOCOL|CONSENT_FORM|INVESTIGATOR_BROCHURE|CASE_REPORT_FORM|AMENDMENT_REPORT|SAFETY_REPORT']
+  title varchar(300)
+  content text [note: '마크다운/HTML']
+  version int [default: 1]
+  generated_by varchar(20) [note: 'AI|MANUAL|TEMPLATE']
+  previous_version_id uuid [ref: > irb_documents.id]
+  created_at timestamp [default: `NOW()`]
+}
 
-  indexes {
-    (user_id, created_at)
-  }
+Table irb_review_comments [headercolor: #059669] {
+  id uuid [pk]
+  submission_id uuid [ref: > irb_submissions.id]
+  reviewer_id uuid
+  review_type varchar(20) [note: 'PRIMARY|SECONDARY|FULL_BOARD']
+  decision varchar(20) [note: 'APPROVE|MINOR_REVISION|REJECT']
+  comment text
+  target_document_id uuid
+  target_section varchar(100)
+  is_confidential boolean [default: false]
+  created_at timestamp [default: `NOW()`]
+}
+
+Table irb_workflow_history [headercolor: #059669] {
+  id uuid [pk]
+  submission_id uuid [ref: > irb_submissions.id]
+  from_status varchar(30)
+  to_status varchar(30)
+  changed_by uuid
+  reason text
+  created_at timestamp [default: `NOW()`]
+}
+
+// ─── 10. 정산 ───
+
+Table settlement_batches [headercolor: #059669] {
+  id uuid [pk]
+  project_id uuid [ref: > projects.id]
+  batch_type varchar(30) [note: 'PARTICIPANT_REWARD|DATA_PURCHASE|FL_CONTRIBUTION']
+  status varchar(20) [default: 'PENDING', note: 'PENDING|CALCULATING|CALCULATED|CORE_REQUESTED|ESCROW_PROCESSING|COMPLETED']
+  total_amount decimal(18,6)
+  currency varchar(10) [default: 'UQD']
+  item_count int
+  escrow_tx_hash varchar(64)
+  created_at timestamp [default: `NOW()`]
+}
+
+Table settlement_items [headercolor: #059669] {
+  id uuid [pk]
+  batch_id uuid [ref: > settlement_batches.id]
+  recipient_user_id uuid [note: 'health_db.users.id']
+  recipient_wallet_address varchar(60)
+  amount decimal(18,6)
+  calculation_basis jsonb [note: '{data_points_count: 150, quality_avg: 0.85, days: 90}']
+  status varchar(20) [default: 'PENDING', note: 'PENDING|PAID|FAILED|REFUNDED']
+  paid_tx_hash varchar(64)
+  paid_at timestamp
+}
+
+// ─── 11. Phase 2 ───
+
+Table synthetic_datasets [headercolor: #6b7280] {
+  id uuid [pk]
+  project_id uuid [ref: > projects.id]
+  generation_method varchar(30) [note: 'GAN|VAE|CTGAN|RULE_BASED']
+  source_data_summary jsonb
+  row_count int
+  quality_score decimal(3,2)
+  reidentification_risk decimal(5,4)
+  status varchar(20) [default: 'GENERATING']
+  created_at timestamp [default: `NOW()`]
+
+  Note: 'Phase 2'
+}
+
+Table fl_rounds [headercolor: #6b7280] {
+  id uuid [pk]
+  project_id uuid [ref: > projects.id]
+  round_number int
+  participating_nodes int
+  dp_epsilon decimal(5,2) [note: 'Differential Privacy']
+  aggregation_method varchar(30) [note: 'FedAvg|FedProx']
+  status varchar(20) [default: 'PENDING']
+  created_at timestamp [default: `NOW()`]
+
+  Note: 'Phase 2'
+}
+
+// ─── 12. 시스템 ───
+
+Table webhook_events [headercolor: #059669] {
+  id uuid [pk]
+  event_type varchar(50) [note: 'data.submitted|consent.granted|consent.revoked|escrow.deposited|escrow.finished|escrow.cancelled|user.kyc_updated|wallet.created']
+  source varchar(20) [default: 'CORE']
+  payload jsonb
+  status varchar(20) [default: 'RECEIVED', note: 'RECEIVED|PROCESSED|FAILED|RETRYING']
+  retry_count int [default: 0]
+  error_message text
+  created_at timestamp [default: `NOW()`]
 }

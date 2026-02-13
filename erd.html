@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>UniQData ERD v4</title>
+  <title>UniQData ERD v6 — 2-Server Architecture</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -33,7 +33,6 @@
     .zoom-btn:hover { background: #334155; color: #fff; }
     .zoom-level { font-size: 12px; color: #64748b; width: 44px; text-align: center; }
 
-    /* Two-row tabs */
     .tabs-wrapper {
       background: #0f0f1a;
       border-bottom: 1px solid #1e293b;
@@ -89,7 +88,6 @@
       border-radius: 10px;
     }
 
-    /* Canvas */
     .canvas-wrapper {
       flex: 1;
       overflow: hidden;
@@ -112,7 +110,6 @@
       transform-origin: 0 0;
     }
 
-    /* Table Card */
     .table-card {
       position: absolute;
       background: #12121a;
@@ -169,18 +166,16 @@
     .col-type { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #475569; }
     .table-more { padding: 6px 16px; font-size: 10px; color: #475569; border-top: 1px solid #1e293b; }
 
-    /* Relations - cleaner lines */
     .relations-layer { position: absolute; top: 0; left: 0; pointer-events: none; overflow: visible; }
     .relation-path { fill: none; stroke: #4b5563; stroke-width: 1; opacity: 0.3; }
     .relation-path.highlighted { stroke: #60a5fa; stroke-width: 1.5; opacity: 0.9; }
     .relation-dot { fill: #4b5563; opacity: 0.3; }
     .relation-dot.highlighted { fill: #60a5fa; opacity: 0.9; }
 
-    /* Column Headers */
     .col-header {
       position: absolute;
       top: -35px;
-      width: 200px;
+      width: 210px;
       text-align: center;
       font-size: 11px;
       font-weight: 600;
@@ -191,7 +186,6 @@
       border-bottom: 2px solid;
     }
 
-    /* Info Panels */
     .legend {
       position: fixed;
       bottom: 20px;
@@ -237,11 +231,16 @@
     .detail-close { margin-top: 12px; font-size: 10px; color: #475569; cursor: pointer; }
     .detail-close:hover { color: #94a3b8; }
 
-    /* Client badge colors */
-    .client-all { --c: #64748b; }
-    .client-enterprise { --c: #8b5cf6; }
-    .client-userapp { --c: #10b981; }
-    .client-bodab { --c: #f59e0b; }
+    .server-badge {
+      display: inline-block;
+      font-size: 9px;
+      padding: 1px 5px;
+      border-radius: 4px;
+      margin-left: 6px;
+      font-weight: 600;
+    }
+    .server-core { background: #7c3aed30; color: #a78bfa; border: 1px solid #7c3aed50; }
+    .server-biz { background: #05966930; color: #34d399; border: 1px solid #05966950; }
   </style>
 </head>
 <body>
@@ -253,465 +252,382 @@
 const { useState, useEffect, useCallback, useRef } = React;
 
 // ============================================================
-// DATA DEFINITIONS
+// DATA DEFINITIONS — v6 2-Server Architecture (31 Tables)
 // ============================================================
 
-const CLIENTS = {
-  all: { label: "전체 UniQData", icon: "🗄️", color: "#64748b", desc: "40 tables" },
-  enterprise: { label: "Enterprise Portal", icon: "🏢", color: "#8b5cf6", desc: "연구자 웹" },
-  userapp: { label: "User App", icon: "📱", color: "#10b981", desc: "개인 앱" },
-  bodab: { label: "보답", icon: "👴", color: "#f59e0b", desc: "노인케어" },
+const SERVERS = {
+  all: { label: "전체 UniQData", icon: "🗄️", color: "#64748b", desc: "31 tables" },
+  health_db: { label: "Core (health_db)", icon: "🟣", color: "#7c3aed", desc: "NestJS:3000 · 15 tables" },
+  uniqdata_db: { label: "Business (uniqdata_db)", icon: "🟢", color: "#059669", desc: "Spring Boot:8080 · 16 tables" },
 };
 
 const DOMAINS = {
   all: { label: "전체", color: "#64748b" },
-  core: { label: "Core Auth", color: "#818cf8" },
-  wallet: { label: "Wallet", color: "#f59e0b" },
-  org: { label: "Organization", color: "#10b981" },
-  app: { label: "App & Session", color: "#3b82f6" },
-  data: { label: "Data", color: "#a855f7" },
-  research: { label: "Research", color: "#ec4899" },
-  finance: { label: "Finance", color: "#f97316" },
-  medication: { label: "Medication", color: "#14b8a6" },
-  analytics: { label: "AI & Audit", color: "#6366f1" },
+  auth: { label: "Auth / Profile", color: "#818cf8" },
+  wallet: { label: "Wallet / XRPL", color: "#f59e0b" },
+  health: { label: "Health Data", color: "#a855f7" },
+  consent: { label: "Consent", color: "#ec4899" },
+  notify: { label: "Notification", color: "#06b6d4" },
+  org: { label: "Enterprise", color: "#10b981" },
+  research: { label: "Research", color: "#3b82f6" },
+  irb: { label: "IRB", color: "#f97316" },
+  finance: { label: "Settlement", color: "#ef4444" },
+  phase2: { label: "Phase 2", color: "#6b7280" },
+  system: { label: "System", color: "#475569" },
 };
 
-// Client → Table mapping
-const CLIENT_TABLES = {
-  all: null, // null = all tables
-  enterprise: [
-    "accounts", "account_logins", "owners", "users",
-    "institutions", "workspaces", "workspace_members",
-    "apps", "app_keys", "sessions", "passkey_credentials",
-    "research_projects", "participation_criteria", "data_collection_configs", "team_members", "agreements",
-    "project_wallets", "project_wallet_deposits", "project_wallet_withdrawals", "escrows", "settlements",
-    "data_accesses", "consents",
-    "audit_logs", "anchor_logs"
+// Server → Table mapping
+const SERVER_TABLES = {
+  all: null,
+  health_db: [
+    "users", "passkey_credentials", "user_profiles", "refresh_tokens",
+    "user_wallets", "wallet_recovery_configs",
+    "data_points", "data_point_tags", "data_access_logs",
+    "consents", "consent_scopes", "consent_audit_trail",
+    "xrpl_transactions",
+    "notifications", "notification_preferences"
   ],
-  userapp: [
-    "accounts", "account_logins", "owners", "users",
-    "wallets", "wallet_secrets", "wallet_credential_bindings", "wallet_recovery_requests",
-    "passkey_credentials", "sessions", "refresh_tokens",
-    "data_points", "data_sources", "data_attachments", "consents",
-    "agreements",
-    "ai_analyses", "features", "notifications",
-    "audit_logs", "anchor_logs"
-  ],
-  bodab: [
-    "accounts", "account_logins", "owners", "users",
-    "wallets", "wallet_secrets", "passkey_credentials",
-    "data_points", "data_sources", "consents",
-    "user_medications", "medication_logs", "medication_proofs", "drug_info_cache",
-    "ai_analyses", "notifications",
-    "audit_logs", "anchor_logs"
+  uniqdata_db: [
+    "enterprises", "enterprise_members",
+    "projects", "project_milestones", "participants", "participation_criteria", "data_requests",
+    "irb_submissions", "irb_documents", "irb_review_comments", "irb_workflow_history",
+    "settlement_batches", "settlement_items",
+    "synthetic_datasets", "fl_rounds",
+    "webhook_events"
   ],
 };
 
-// API Endpoints → Tables (by client)
+// API Endpoints
 const API_ENDPOINTS = {
-  enterprise: {
-    all: { label: "전체 API", tables: null, method: "", color: "#64748b", desc: "Enterprise Portal 전체 테이블" },
-    auth_login: {
-      label: "POST /auth/login",
-      tables: ["accounts", "account_logins", "sessions", "passkey_credentials", "owners", "institutions"],
-      method: "POST", color: "#22c55e",
-      desc: "연구자 로그인. Passkey 인증 후 세션 생성, 기관 매칭"
+  health_db: {
+    all: { label: "전체 API", tables: null, method: "", color: "#64748b", desc: "Core Server 전체 테이블" },
+    get_user: {
+      label: "GET /internal/users/:id",
+      tables: ["users", "user_profiles", "passkey_credentials"],
+      method: "GET", color: "#3b82f6",
+      desc: "사용자 정보 + 프로필 + 패스키 목록 조회"
     },
-    auth_logout: {
-      label: "POST /auth/logout",
-      tables: ["sessions"],
+    verify_kyc: {
+      label: "POST /internal/users/:id/verify-kyc",
+      tables: ["users"],
       method: "POST", color: "#22c55e",
-      desc: "세션 종료"
+      desc: "KYC 레벨 업데이트"
     },
-    projects_create: {
-      label: "POST /projects",
-      tables: ["research_projects", "participation_criteria", "data_collection_configs", "project_wallets", "owners", "institutions"],
+    get_wallet: {
+      label: "GET /internal/wallets/by-user/:id",
+      tables: ["user_wallets"],
+      method: "GET", color: "#3b82f6",
+      desc: "사용자 지갑 조회 (잔액, 주소)"
+    },
+    create_escrow: {
+      label: "POST /internal/wallets/:id/escrow",
+      tables: ["user_wallets", "xrpl_transactions"],
       method: "POST", color: "#22c55e",
-      desc: "연구 프로젝트 생성. 참여 조건, 수집 설정, 프로젝트 지갑 함께 생성"
+      desc: "XRPL 에스크로 생성"
     },
-    projects_list: {
-      label: "GET /projects",
-      tables: ["research_projects", "team_members", "owners", "institutions"],
+    release_escrow: {
+      label: "POST /internal/wallets/:id/release",
+      tables: ["user_wallets", "xrpl_transactions"],
+      method: "POST", color: "#22c55e",
+      desc: "에스크로 해제 (정산)"
+    },
+    query_data: {
+      label: "POST /internal/data/query",
+      tables: ["data_points", "data_point_tags", "data_access_logs", "consents"],
+      method: "POST", color: "#22c55e",
+      desc: "건강 데이터 조회 (동의 검증 후)"
+    },
+    pseudonymize: {
+      label: "POST /internal/data/pseudonymize",
+      tables: ["data_points", "data_access_logs"],
+      method: "POST", color: "#22c55e",
+      desc: "데이터 비식별화 처리"
+    },
+    create_consent: {
+      label: "POST /internal/consents",
+      tables: ["consents", "consent_scopes", "consent_audit_trail", "xrpl_transactions"],
+      method: "POST", color: "#22c55e",
+      desc: "연구 참여 동의 생성 + XRPL 앵커링"
+    },
+    check_consent: {
+      label: "GET /internal/consents/check",
+      tables: ["consents", "consent_scopes"],
+      method: "GET", color: "#3b82f6",
+      desc: "동의 유효성 검증"
+    },
+    revoke_consent: {
+      label: "PUT /internal/consents/:id/revoke",
+      tables: ["consents", "consent_audit_trail", "xrpl_transactions"],
+      method: "PUT", color: "#f59e0b",
+      desc: "동의 철회 + XRPL 앵커링"
+    },
+    send_notification: {
+      label: "POST /internal/notifications",
+      tables: ["notifications", "notification_preferences"],
+      method: "POST", color: "#22c55e",
+      desc: "알림 발송 (Push/Email/In-App)"
+    },
+  },
+  uniqdata_db: {
+    all: { label: "전체 API", tables: null, method: "", color: "#64748b", desc: "Business Server 전체 테이블" },
+    create_project: {
+      label: "POST /api/projects",
+      tables: ["projects", "project_milestones", "participation_criteria", "enterprises"],
+      method: "POST", color: "#22c55e",
+      desc: "연구 프로젝트 생성 + 마일스톤 + 참여 기준"
+    },
+    list_projects: {
+      label: "GET /api/projects",
+      tables: ["projects", "enterprises", "enterprise_members"],
       method: "GET", color: "#3b82f6",
       desc: "내가 속한 프로젝트 목록 조회"
     },
-    projects_data: {
-      label: "GET /projects/:id/data",
-      tables: ["research_projects", "agreements", "consents", "data_points", "users", "audit_logs"],
-      method: "GET", color: "#3b82f6",
-      desc: "프로젝트 참여자 데이터 조회. 동의 검증 → 데이터 조회 → 감사 로그"
-    },
-    projects_participants: {
-      label: "GET /projects/:id/participants",
-      tables: ["research_projects", "agreements", "users", "participation_criteria"],
-      method: "GET", color: "#3b82f6",
-      desc: "프로젝트 참여자 목록 및 통계"
-    },
-    projects_team: {
-      label: "POST /projects/:id/team",
-      tables: ["research_projects", "team_members", "owners", "accounts"],
+    request_data: {
+      label: "POST /api/data-requests",
+      tables: ["data_requests", "projects", "participants"],
       method: "POST", color: "#22c55e",
-      desc: "프로젝트 팀원 초대"
+      desc: "데이터 요청 → Core Internal API 호출"
     },
-    projects_deposit: {
-      label: "POST /projects/:id/deposit",
-      tables: ["project_wallets", "project_wallet_deposits", "owners", "anchor_logs"],
+    submit_irb: {
+      label: "POST /api/irb/submissions",
+      tables: ["irb_submissions", "irb_documents", "projects", "enterprises"],
       method: "POST", color: "#22c55e",
-      desc: "프로젝트 예산 입금. XRPL 트랜잭션 앵커링"
+      desc: "IRB 심의 제출 (AI 자동 생성 포함)"
     },
-    settlements_create: {
-      label: "POST /settlements",
-      tables: ["escrows", "settlements", "agreements", "project_wallet_withdrawals", "anchor_logs"],
-      method: "POST", color: "#22c55e",
-      desc: "참여자 보상 정산. 에스크로 해제 → 정산 기록 → XRPL 앵커링"
-    },
-    agreements_request: {
-      label: "POST /agreements",
-      tables: ["agreements", "research_projects", "owners", "users"],
-      method: "POST", color: "#22c55e",
-      desc: "사용자에게 연구 참여 동의 요청"
-    },
-    agreements_accept: {
-      label: "PUT /agreements/:id/accept",
-      tables: ["agreements", "consents", "anchor_logs"],
+    review_irb: {
+      label: "PUT /api/irb/:id/review",
+      tables: ["irb_submissions", "irb_review_comments", "irb_workflow_history"],
       method: "PUT", color: "#f59e0b",
-      desc: "사용자 동의 수락 처리. Consent 생성 및 XRPL 앵커링"
+      desc: "IRB 심의 결정 (승인/수정/반려)"
     },
-    analyses_create: {
-      label: "POST /analyses",
-      tables: ["ai_analyses", "features", "data_points", "users", "research_projects"],
+    create_settlement: {
+      label: "POST /api/settlements/batch",
+      tables: ["settlement_batches", "settlement_items", "participants", "projects"],
       method: "POST", color: "#22c55e",
-      desc: "AI 분석 요청. 프로젝트 컨텍스트 포함"
+      desc: "정산 배치 생성 → Core 에스크로 해제 요청"
     },
-  },
-  userapp: {
-    all: { label: "전체 API", tables: null, method: "", color: "#64748b", desc: "User App 전체 테이블" },
-    auth_login: {
-      label: "POST /auth/login",
-      tables: ["accounts", "account_logins", "sessions", "passkey_credentials", "users"],
-      method: "POST", color: "#22c55e",
-      desc: "사용자 로그인. Passkey 인증"
+    wh_data_submitted: {
+      label: "🔔 data.submitted",
+      tables: ["webhook_events", "data_requests"],
+      method: "WEBHOOK", color: "#a855f7",
+      desc: "Core → Business: 새 데이터 제출 알림"
     },
-    auth_passkey: {
-      label: "POST /auth/passkey",
-      tables: ["passkey_credentials", "users", "accounts"],
-      method: "POST", color: "#22c55e",
-      desc: "새 Passkey 등록"
-    },
-    wallet_create: {
-      label: "POST /wallet",
-      tables: ["wallets", "wallet_secrets", "wallet_credential_bindings", "owners", "anchor_logs"],
-      method: "POST", color: "#22c55e",
-      desc: "XRPL 지갑 생성. PRF로 암호화된 시드 저장"
-    },
-    wallet_get: {
-      label: "GET /wallet",
-      tables: ["wallets", "owners"],
-      method: "GET", color: "#3b82f6",
-      desc: "내 지갑 정보 조회"
-    },
-    wallet_recover: {
-      label: "POST /wallet/recover",
-      tables: ["wallets", "wallet_recovery_requests", "wallet_secrets", "owners"],
-      method: "POST", color: "#22c55e",
-      desc: "지갑 복구 요청"
-    },
-    data_sync: {
-      label: "POST /data/sync",
-      tables: ["data_points", "data_sources", "data_attachments", "users", "audit_logs"],
-      method: "POST", color: "#22c55e",
-      desc: "건강 데이터 동기화. HealthKit/Health Connect → 서버"
-    },
-    data_get: {
-      label: "GET /data",
-      tables: ["data_points", "data_sources", "users", "consents"],
-      method: "GET", color: "#3b82f6",
-      desc: "내 건강 데이터 조회"
-    },
-    consents_list: {
-      label: "GET /consents",
-      tables: ["consents", "users", "agreements"],
-      method: "GET", color: "#3b82f6",
-      desc: "내가 부여한 동의 목록"
-    },
-    consents_revoke: {
-      label: "DELETE /consents/:id",
-      tables: ["consents", "anchor_logs"],
-      method: "DELETE", color: "#ef4444",
-      desc: "동의 철회. XRPL 앵커링"
-    },
-    agreements_list: {
-      label: "GET /agreements",
-      tables: ["agreements", "users", "research_projects"],
-      method: "GET", color: "#3b82f6",
-      desc: "나에게 온 연구 참여 요청 목록"
-    },
-    agreements_respond: {
-      label: "PUT /agreements/:id",
-      tables: ["agreements", "consents", "anchor_logs"],
-      method: "PUT", color: "#f59e0b",
-      desc: "연구 참여 수락/거절"
-    },
-    ai_request: {
-      label: "POST /ai/analyze",
-      tables: ["ai_analyses", "features", "data_points", "users"],
-      method: "POST", color: "#22c55e",
-      desc: "내 데이터 AI 분석 요청"
-    },
-    ai_results: {
-      label: "GET /ai/results",
-      tables: ["ai_analyses", "features", "users"],
-      method: "GET", color: "#3b82f6",
-      desc: "AI 분석 결과 조회"
-    },
-    notifications: {
-      label: "GET /notifications",
-      tables: ["notifications", "users"],
-      method: "GET", color: "#3b82f6",
-      desc: "알림 목록"
-    },
-  },
-  bodab: {
-    all: { label: "전체 API", tables: null, method: "", color: "#64748b", desc: "보답 앱 전체 테이블" },
-    auth_login: {
-      label: "POST /auth/login",
-      tables: ["accounts", "account_logins", "sessions", "passkey_credentials", "users"],
-      method: "POST", color: "#22c55e",
-      desc: "사용자/보호자 로그인"
-    },
-    data_sync: {
-      label: "POST /data/sync",
-      tables: ["data_points", "data_sources", "users", "audit_logs"],
-      method: "POST", color: "#22c55e",
-      desc: "일상 데이터, 음성 바이오마커 동기화"
-    },
-    meds_list: {
-      label: "GET /medications",
-      tables: ["user_medications", "drug_info_cache", "users"],
-      method: "GET", color: "#3b82f6",
-      desc: "복용 중인 약 목록"
-    },
-    meds_add: {
-      label: "POST /medications",
-      tables: ["user_medications", "drug_info_cache", "users"],
-      method: "POST", color: "#22c55e",
-      desc: "새 약 등록"
-    },
-    meds_log: {
-      label: "POST /medications/:id/log",
-      tables: ["medication_logs", "user_medications", "users", "audit_logs"],
-      method: "POST", color: "#22c55e",
-      desc: "복약 기록 (복용/미복용)"
-    },
-    meds_proof: {
-      label: "POST /medications/proof",
-      tables: ["medication_proofs", "user_medications", "anchor_logs"],
-      method: "POST", color: "#22c55e",
-      desc: "복약 증명 (ZKP 커밋먼트)"
-    },
-    consents_manage: {
-      label: "GET /consents",
-      tables: ["consents", "users"],
-      method: "GET", color: "#3b82f6",
-      desc: "보호자/연구 동의 관리"
-    },
-    ai_analyze: {
-      label: "POST /ai/analyze",
-      tables: ["ai_analyses", "data_points", "users"],
-      method: "POST", color: "#22c55e",
-      desc: "건강 패턴 AI 분석 요청"
-    },
-    notifications: {
-      label: "GET /notifications",
-      tables: ["notifications", "users"],
-      method: "GET", color: "#3b82f6",
-      desc: "복약 알림, 이상 징후 알림"
+    wh_consent_granted: {
+      label: "🔔 consent.granted",
+      tables: ["webhook_events", "participants", "projects"],
+      method: "WEBHOOK", color: "#a855f7",
+      desc: "Core → Business: 연구 동의 완료 → 참여자 등록"
     },
   },
 };
 
+// ============================================================
+// TABLE DEFINITIONS (31 Tables)
+// ============================================================
+
 const TABLES = [
-  // Core Auth
-  { name: "accounts", domain: "core", cols: [
-    { n: "id", t: "uuid", pk: true }, { n: "type", t: "enum" }, { n: "status", t: "enum" },
-    { n: "identity_hash", t: "varchar" }, { n: "kyc_verified_at", t: "ts" }, { n: "created_at", t: "ts" }
+  // ─── health_db: Auth / Profile ───
+  { name: "users", domain: "auth", server: "health_db", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "email", t: "varchar", }, { n: "phone", t: "varchar" },
+    { n: "display_name", t: "varchar" }, { n: "role", t: "enum" }, { n: "kyc_level", t: "smallint" },
+    { n: "status", t: "varchar" }, { n: "last_login_at", t: "ts" }, { n: "created_at", t: "ts" }
   ]},
-  { name: "account_logins", domain: "core", cols: [
-    { n: "id", t: "uuid", pk: true }, { n: "account_id", t: "uuid", fk: "accounts" },
-    { n: "provider", t: "enum" }, { n: "email", t: "varchar" }, { n: "phone", t: "varchar" }
-  ]},
-  { name: "owners", domain: "core", cols: [
-    { n: "id", t: "uuid", pk: true }, { n: "account_id", t: "uuid", fk: "accounts" }, { n: "created_at", t: "ts" }
-  ]},
-  { name: "users", domain: "core", cols: [
-    { n: "id", t: "uuid", pk: true }, { n: "account_id", t: "uuid", fk: "accounts" },
-    { n: "name", t: "varchar" }, { n: "birth_date", t: "date" }, { n: "gender", t: "varchar" }
-  ]},
-  // Wallet
-  { name: "wallets", domain: "wallet", cols: [
-    { n: "id", t: "uuid", pk: true }, { n: "owner_id", t: "uuid", fk: "owners" },
-    { n: "address", t: "varchar" }, { n: "wallet_type", t: "enum" }, { n: "status", t: "enum" }
-  ]},
-  { name: "wallet_secrets", domain: "wallet", cols: [
-    { n: "id", t: "uuid", pk: true }, { n: "wallet_id", t: "uuid", fk: "wallets" },
-    { n: "encrypted_seed_prf", t: "bytea" }, { n: "prf_salt", t: "bytea" }
-  ]},
-  { name: "wallet_credential_bindings", domain: "wallet", cols: [
-    { n: "id", t: "uuid", pk: true }, { n: "wallet_id", t: "uuid", fk: "wallets" },
-    { n: "credential_id", t: "uuid", fk: "passkey_credentials" }, { n: "xrpl_tx_hash", t: "varchar" }
-  ]},
-  { name: "wallet_recovery_requests", domain: "wallet", cols: [
-    { n: "id", t: "uuid", pk: true }, { n: "wallet_id", t: "uuid", fk: "wallets" },
-    { n: "owner_id", t: "uuid", fk: "owners" }, { n: "status", t: "enum" }
-  ]},
-  // App
-  { name: "apps", domain: "app", cols: [
-    { n: "id", t: "uuid", pk: true }, { n: "slug", t: "varchar" }, { n: "name", t: "varchar" },
-    { n: "allowed_scopes", t: "text" }, { n: "status", t: "enum" }
-  ]},
-  { name: "app_keys", domain: "app", cols: [
-    { n: "id", t: "uuid", pk: true }, { n: "app_id", t: "uuid", fk: "apps" },
-    { n: "key_type", t: "enum" }, { n: "key_hash", t: "varchar" }, { n: "status", t: "enum" }
-  ]},
-  { name: "sessions", domain: "app", cols: [
+  { name: "passkey_credentials", domain: "auth", server: "health_db", cols: [
     { n: "id", t: "uuid", pk: true }, { n: "user_id", t: "uuid", fk: "users" },
-    { n: "app_id", t: "uuid", fk: "apps" }, { n: "started_at", t: "ts" }
+    { n: "credential_id", t: "text" }, { n: "public_key", t: "text" },
+    { n: "sign_count", t: "bigint" }, { n: "prf_supported", t: "bool" }, { n: "prf_salt", t: "bytea" }
   ]},
-  { name: "refresh_tokens", domain: "app", cols: [
+  { name: "user_profiles", domain: "auth", server: "health_db", cols: [
     { n: "id", t: "uuid", pk: true }, { n: "user_id", t: "uuid", fk: "users" },
-    { n: "session_id", t: "uuid", fk: "sessions" }, { n: "expires_at", t: "ts" }
+    { n: "birth_date", t: "date" }, { n: "gender", t: "varchar" },
+    { n: "height_cm", t: "decimal" }, { n: "weight_kg", t: "decimal" },
+    { n: "chronic_conditions", t: "text" }, { n: "medications", t: "jsonb" }
   ]},
-  { name: "passkey_credentials", domain: "app", cols: [
+  { name: "refresh_tokens", domain: "auth", server: "health_db", cols: [
     { n: "id", t: "uuid", pk: true }, { n: "user_id", t: "uuid", fk: "users" },
-    { n: "credential_id", t: "varchar" }, { n: "public_key", t: "text" }, { n: "counter", t: "int" }
+    { n: "token_hash", t: "varchar" }, { n: "device_info", t: "jsonb" },
+    { n: "expires_at", t: "ts" }, { n: "revoked", t: "bool" }
   ]},
-  // Org
-  { name: "institutions", domain: "org", cols: [
-    { n: "id", t: "uuid", pk: true }, { n: "name", t: "varchar" }, { n: "type", t: "enum" },
-    { n: "domains", t: "text" }, { n: "status", t: "enum" }
-  ]},
-  { name: "workspaces", domain: "org", cols: [
-    { n: "id", t: "uuid", pk: true }, { n: "name", t: "varchar" }, { n: "type", t: "enum" },
-    { n: "institution_id", t: "uuid", fk: "institutions" }, { n: "max_members", t: "int" }
-  ]},
-  { name: "workspace_members", domain: "org", cols: [
-    { n: "id", t: "uuid", pk: true }, { n: "workspace_id", t: "uuid", fk: "workspaces" },
-    { n: "account_id", t: "uuid", fk: "accounts" }, { n: "role", t: "enum" }
-  ]},
-  // Data
-  { name: "data_points", domain: "data", cols: [
+
+  // ─── health_db: Wallet / XRPL ───
+  { name: "user_wallets", domain: "wallet", server: "health_db", cols: [
     { n: "id", t: "uuid", pk: true }, { n: "user_id", t: "uuid", fk: "users" },
-    { n: "category", t: "varchar" }, { n: "metric", t: "varchar" }, { n: "value", t: "jsonb" }
+    { n: "xrpl_address", t: "varchar" }, { n: "xrpl_public_key", t: "varchar" },
+    { n: "wallet_type", t: "enum" }, { n: "derivation_method", t: "varchar" },
+    { n: "uqd_balance", t: "decimal" }, { n: "xrp_balance", t: "decimal" }, { n: "status", t: "varchar" }
   ]},
-  { name: "data_attachments", domain: "data", cols: [
+  { name: "wallet_recovery_configs", domain: "wallet", server: "health_db", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "user_id", t: "uuid", fk: "users" },
+    { n: "recovery_method", t: "varchar" }, { n: "config", t: "jsonb" }, { n: "created_at", t: "ts" }
+  ]},
+  { name: "xrpl_transactions", domain: "wallet", server: "health_db", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "tx_hash", t: "varchar" },
+    { n: "tx_type", t: "enum" }, { n: "from_address", t: "varchar" }, { n: "to_address", t: "varchar" },
+    { n: "amount", t: "decimal" }, { n: "currency", t: "varchar" },
+    { n: "memo_data", t: "jsonb" }, { n: "status", t: "varchar" },
+    { n: "related_user_id", t: "uuid" }, { n: "related_consent_id", t: "uuid" }
+  ]},
+
+  // ─── health_db: Health Data ───
+  { name: "data_points", domain: "health", server: "health_db", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "user_id", t: "uuid", fk: "users" },
+    { n: "category", t: "varchar" }, { n: "sub_category", t: "varchar" },
+    { n: "value", t: "jsonb" }, { n: "source", t: "varchar" },
+    { n: "measured_at", t: "ts" }, { n: "data_hash", t: "varchar" },
+    { n: "xrpl_anchored", t: "bool" }, { n: "quality_score", t: "decimal" }
+  ]},
+  { name: "data_point_tags", domain: "health", server: "health_db", cols: [
     { n: "id", t: "uuid", pk: true }, { n: "data_point_id", t: "uuid", fk: "data_points" },
-    { n: "storage_key", t: "varchar" }, { n: "file_name", t: "varchar" }
+    { n: "tag_key", t: "varchar" }, { n: "tag_value", t: "varchar" }
   ]},
-  { name: "data_sources", domain: "data", cols: [
+  { name: "data_access_logs", domain: "health", server: "health_db", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "data_point_ids", t: "text" },
+    { n: "accessor_type", t: "varchar" }, { n: "accessor_id", t: "uuid" },
+    { n: "project_id", t: "uuid" }, { n: "consent_id", t: "uuid", fk: "consents" },
+    { n: "record_count", t: "int" }, { n: "pseudonymized", t: "bool" }
+  ]},
+
+  // ─── health_db: Consent ───
+  { name: "consents", domain: "consent", server: "health_db", cols: [
     { n: "id", t: "uuid", pk: true }, { n: "user_id", t: "uuid", fk: "users" },
-    { n: "name", t: "varchar" }, { n: "type", t: "varchar" }, { n: "is_active", t: "bool" }
+    { n: "consent_type", t: "varchar" }, { n: "status", t: "varchar" },
+    { n: "signature_hash", t: "varchar" }, { n: "grant_tx_hash", t: "varchar" },
+    { n: "revoke_tx_hash", t: "varchar" }, { n: "project_id", t: "uuid" },
+    { n: "irb_number", t: "varchar" }, { n: "version", t: "int" }
   ]},
-  { name: "data_accesses", domain: "data", cols: [
-    { n: "id", t: "uuid", pk: true }, { n: "workspace_id", t: "uuid", fk: "workspaces" },
-    { n: "account_id", t: "uuid", fk: "accounts" }, { n: "status", t: "enum" }
+  { name: "consent_scopes", domain: "consent", server: "health_db", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "consent_id", t: "uuid", fk: "consents" },
+    { n: "scope_type", t: "varchar" }, { n: "scope_key", t: "varchar" }, { n: "scope_value", t: "text" }
   ]},
-  { name: "consents", domain: "data", cols: [
+  { name: "consent_audit_trail", domain: "consent", server: "health_db", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "consent_id", t: "uuid", fk: "consents" },
+    { n: "action", t: "varchar" }, { n: "actor_id", t: "uuid" },
+    { n: "changes", t: "jsonb" }, { n: "xrpl_tx_hash", t: "varchar" }
+  ]},
+
+  // ─── health_db: Notification ───
+  { name: "notifications", domain: "notify", server: "health_db", cols: [
     { n: "id", t: "uuid", pk: true }, { n: "user_id", t: "uuid", fk: "users" },
-    { n: "app_id", t: "uuid", fk: "apps" }, { n: "scopes", t: "text" }, { n: "status", t: "enum" }
+    { n: "type", t: "varchar" }, { n: "title", t: "varchar" },
+    { n: "body", t: "text" }, { n: "channel", t: "varchar" },
+    { n: "read", t: "bool" }, { n: "metadata", t: "jsonb" }
   ]},
-  // Research
-  { name: "research_projects", domain: "research", cols: [
-    { n: "id", t: "uuid", pk: true }, { n: "owner_id", t: "uuid", fk: "owners" },
-    { n: "institution_id", t: "uuid", fk: "institutions" }, { n: "title", t: "varchar" }, { n: "status", t: "enum" }
-  ]},
-  { name: "participation_criteria", domain: "research", cols: [
-    { n: "id", t: "uuid", pk: true }, { n: "project_id", t: "uuid", fk: "research_projects" },
-    { n: "age_min", t: "int" }, { n: "age_max", t: "int" }, { n: "conditions", t: "jsonb" }
-  ]},
-  { name: "data_collection_configs", domain: "research", cols: [
-    { n: "id", t: "uuid", pk: true }, { n: "project_id", t: "uuid", fk: "research_projects" },
-    { n: "passive_data", t: "jsonb" }, { n: "active_data", t: "jsonb" }
-  ]},
-  { name: "team_members", domain: "research", cols: [
-    { n: "id", t: "uuid", pk: true }, { n: "project_id", t: "uuid", fk: "research_projects" },
-    { n: "owner_id", t: "uuid", fk: "owners" }, { n: "role", t: "enum" }
-  ]},
-  { name: "agreements", domain: "research", cols: [
-    { n: "id", t: "uuid", pk: true }, { n: "project_id", t: "uuid", fk: "research_projects" },
-    { n: "owner_id", t: "uuid", fk: "owners" }, { n: "status", t: "enum" }
-  ]},
-  // Finance
-  { name: "project_wallets", domain: "finance", cols: [
-    { n: "id", t: "uuid", pk: true }, { n: "project_id", t: "uuid", fk: "research_projects" },
-    { n: "wallet_address", t: "varchar" }, { n: "total_deposited", t: "decimal" }
-  ]},
-  { name: "project_wallet_deposits", domain: "finance", cols: [
-    { n: "id", t: "uuid", pk: true }, { n: "project_id", t: "uuid", fk: "research_projects" },
-    { n: "depositor_owner_id", t: "uuid", fk: "owners" }, { n: "amount", t: "decimal" }
-  ]},
-  { name: "project_wallet_withdrawals", domain: "finance", cols: [
-    { n: "id", t: "uuid", pk: true }, { n: "project_id", t: "uuid", fk: "research_projects" },
-    { n: "withdrawer_owner_id", t: "uuid", fk: "owners" }, { n: "amount", t: "decimal" }
-  ]},
-  { name: "escrows", domain: "finance", cols: [
-    { n: "id", t: "uuid", pk: true }, { n: "project_id", t: "uuid", fk: "research_projects" },
-    { n: "amount", t: "decimal" }, { n: "tx_hash", t: "varchar" }, { n: "status", t: "enum" }
-  ]},
-  { name: "settlements", domain: "finance", cols: [
-    { n: "id", t: "uuid", pk: true }, { n: "agreement_id", t: "uuid", fk: "agreements" },
-    { n: "amount", t: "decimal" }, { n: "tx_hash", t: "varchar" }
-  ]},
-  // Medication
-  { name: "drug_info_cache", domain: "medication", cols: [
-    { n: "drug_code", t: "varchar", pk: true }, { n: "name", t: "varchar" },
-    { n: "category", t: "varchar" }, { n: "ingredients", t: "jsonb" }
-  ]},
-  { name: "user_medications", domain: "medication", cols: [
+  { name: "notification_preferences", domain: "notify", server: "health_db", cols: [
     { n: "id", t: "uuid", pk: true }, { n: "user_id", t: "uuid", fk: "users" },
-    { n: "name_encrypted", t: "text" }, { n: "category_hash", t: "varchar" }, { n: "is_active", t: "bool" }
+    { n: "push_enabled", t: "bool" }, { n: "email_enabled", t: "bool" },
+    { n: "health_alerts", t: "bool" }, { n: "research_updates", t: "bool" }
   ]},
-  { name: "medication_logs", domain: "medication", cols: [
-    { n: "id", t: "uuid", pk: true }, { n: "user_id", t: "uuid", fk: "users" },
-    { n: "medication_id", t: "uuid", fk: "user_medications" }, { n: "taken", t: "bool" }
+
+  // ═══ uniqdata_db: Enterprise ═══
+  { name: "enterprises", domain: "org", server: "uniqdata_db", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "name", t: "varchar" },
+    { n: "enterprise_type", t: "enum" }, { n: "business_number", t: "varchar" },
+    { n: "irb_committee_id", t: "uuid" }, { n: "status", t: "varchar" }
   ]},
-  { name: "medication_proofs", domain: "medication", cols: [
-    { n: "id", t: "uuid", pk: true }, { n: "user_id", t: "uuid", fk: "users" },
-    { n: "proof_type", t: "varchar" }, { n: "commitment", t: "bytea" }
+  { name: "enterprise_members", domain: "org", server: "uniqdata_db", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "enterprise_id", t: "uuid", fk: "enterprises" },
+    { n: "user_id", t: "uuid" }, { n: "role", t: "enum" }, { n: "status", t: "varchar" }
   ]},
-  // Analytics
-  { name: "ai_analyses", domain: "analytics", cols: [
-    { n: "id", t: "uuid", pk: true }, { n: "user_id", t: "uuid", fk: "users" },
-    { n: "project_id", t: "uuid", fk: "research_projects" }, { n: "app_id", t: "uuid", fk: "apps" },
-    { n: "type", t: "varchar" }, { n: "status", t: "enum" }, { n: "result", t: "jsonb" }
+
+  // ═══ uniqdata_db: Research ═══
+  { name: "projects", domain: "research", server: "uniqdata_db", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "enterprise_id", t: "uuid", fk: "enterprises" },
+    { n: "title", t: "varchar" }, { n: "project_type", t: "enum" },
+    { n: "status", t: "varchar" }, { n: "pi_user_id", t: "uuid" },
+    { n: "irb_number", t: "varchar" }, { n: "target_participant_count", t: "int" },
+    { n: "reward_per_participant", t: "decimal" }, { n: "total_reward_budget", t: "decimal" }
   ]},
-  { name: "features", domain: "analytics", cols: [
-    { n: "id", t: "uuid", pk: true }, { n: "user_id", t: "uuid", fk: "users" },
-    { n: "project_id", t: "uuid", fk: "research_projects" },
-    { n: "category", t: "varchar" }, { n: "feature_type", t: "varchar" }
+  { name: "project_milestones", domain: "research", server: "uniqdata_db", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "project_id", t: "uuid", fk: "projects" },
+    { n: "milestone_type", t: "varchar" }, { n: "status", t: "varchar" },
+    { n: "target_date", t: "date" }, { n: "completed_at", t: "ts" }
   ]},
-  { name: "notifications", domain: "analytics", cols: [
-    { n: "id", t: "uuid", pk: true }, { n: "user_id", t: "uuid", fk: "users" },
-    { n: "app_id", t: "uuid", fk: "apps" }, { n: "type", t: "varchar" }
+  { name: "participants", domain: "research", server: "uniqdata_db", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "project_id", t: "uuid", fk: "projects" },
+    { n: "user_id", t: "uuid" }, { n: "consent_id", t: "uuid" },
+    { n: "status", t: "varchar" }, { n: "reward_earned", t: "decimal" }, { n: "reward_paid", t: "decimal" }
   ]},
-  { name: "audit_logs", domain: "analytics", cols: [
-    { n: "id", t: "uuid", pk: true }, { n: "user_id", t: "uuid", fk: "users" },
-    { n: "app_id", t: "uuid", fk: "apps" }, { n: "action", t: "varchar" }
+  { name: "participation_criteria", domain: "research", server: "uniqdata_db", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "project_id", t: "uuid", fk: "projects" },
+    { n: "criteria_type", t: "varchar" }, { n: "field", t: "varchar" },
+    { n: "operator", t: "varchar" }, { n: "value", t: "jsonb" }
   ]},
-  { name: "anchor_logs", domain: "analytics", cols: [
-    { n: "id", t: "uuid", pk: true }, { n: "user_id", t: "uuid", fk: "users" },
-    { n: "anchor_type", t: "enum" }, { n: "tx_hash", t: "varchar" }
+  { name: "data_requests", domain: "research", server: "uniqdata_db", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "project_id", t: "uuid", fk: "projects" },
+    { n: "requester_id", t: "uuid" }, { n: "request_type", t: "varchar" },
+    { n: "data_categories", t: "text" }, { n: "status", t: "varchar" },
+    { n: "core_request_id", t: "uuid" }
+  ]},
+
+  // ═══ uniqdata_db: IRB ═══
+  { name: "irb_submissions", domain: "irb", server: "uniqdata_db", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "project_id", t: "uuid", fk: "projects" },
+    { n: "enterprise_id", t: "uuid", fk: "enterprises" },
+    { n: "submission_type", t: "varchar" }, { n: "status", t: "varchar" },
+    { n: "version", t: "int" }, { n: "ai_generated", t: "bool" },
+    { n: "approval_valid_until", t: "date" }
+  ]},
+  { name: "irb_documents", domain: "irb", server: "uniqdata_db", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "submission_id", t: "uuid", fk: "irb_submissions" },
+    { n: "doc_type", t: "varchar" }, { n: "title", t: "varchar" },
+    { n: "content", t: "text" }, { n: "version", t: "int" },
+    { n: "generated_by", t: "varchar" }, { n: "previous_version_id", t: "uuid", fk: "irb_documents" }
+  ]},
+  { name: "irb_review_comments", domain: "irb", server: "uniqdata_db", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "submission_id", t: "uuid", fk: "irb_submissions" },
+    { n: "reviewer_id", t: "uuid" }, { n: "review_type", t: "varchar" },
+    { n: "decision", t: "varchar" }, { n: "comment", t: "text" },
+    { n: "is_confidential", t: "bool" }
+  ]},
+  { name: "irb_workflow_history", domain: "irb", server: "uniqdata_db", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "submission_id", t: "uuid", fk: "irb_submissions" },
+    { n: "from_status", t: "varchar" }, { n: "to_status", t: "varchar" },
+    { n: "changed_by", t: "uuid" }, { n: "reason", t: "text" }
+  ]},
+
+  // ═══ uniqdata_db: Settlement ═══
+  { name: "settlement_batches", domain: "finance", server: "uniqdata_db", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "project_id", t: "uuid", fk: "projects" },
+    { n: "batch_type", t: "varchar" }, { n: "status", t: "varchar" },
+    { n: "total_amount", t: "decimal" }, { n: "currency", t: "varchar" },
+    { n: "item_count", t: "int" }, { n: "escrow_tx_hash", t: "varchar" }
+  ]},
+  { name: "settlement_items", domain: "finance", server: "uniqdata_db", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "batch_id", t: "uuid", fk: "settlement_batches" },
+    { n: "recipient_user_id", t: "uuid" }, { n: "recipient_wallet_address", t: "varchar" },
+    { n: "amount", t: "decimal" }, { n: "calculation_basis", t: "jsonb" },
+    { n: "status", t: "varchar" }, { n: "paid_tx_hash", t: "varchar" }
+  ]},
+
+  // ═══ uniqdata_db: Phase 2 ═══
+  { name: "synthetic_datasets", domain: "phase2", server: "uniqdata_db", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "project_id", t: "uuid", fk: "projects" },
+    { n: "generation_method", t: "varchar" }, { n: "row_count", t: "int" },
+    { n: "quality_score", t: "decimal" }, { n: "reidentification_risk", t: "decimal" },
+    { n: "status", t: "varchar" }
+  ]},
+  { name: "fl_rounds", domain: "phase2", server: "uniqdata_db", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "project_id", t: "uuid", fk: "projects" },
+    { n: "round_number", t: "int" }, { n: "participating_nodes", t: "int" },
+    { n: "dp_epsilon", t: "decimal" }, { n: "aggregation_method", t: "varchar" },
+    { n: "status", t: "varchar" }
+  ]},
+
+  // ═══ uniqdata_db: System ═══
+  { name: "webhook_events", domain: "system", server: "uniqdata_db", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "event_type", t: "varchar" },
+    { n: "source", t: "varchar" }, { n: "payload", t: "jsonb" },
+    { n: "status", t: "varchar" }, { n: "retry_count", t: "int" }, { n: "error_message", t: "text" }
   ]},
 ];
 
-// Cardinality map (1:1 relations, rest are N:1)
+// 1:1 relations
 const ONE_TO_ONE = new Set([
-  "wallet_secrets→wallets",
-  "project_wallets→research_projects",
-  "owners→accounts",
-  "users→accounts"
+  "user_profiles→users",
+  "notification_preferences→users",
 ]);
 
-// Build relations with cardinality
+// Build relations
 const RELATIONS = [];
 TABLES.forEach(t => {
   t.cols.forEach(c => {
@@ -724,78 +640,67 @@ TABLES.forEach(t => {
 });
 
 // ============================================================
-// LAYOUT - Tree structure from accounts
+// LAYOUT
 // ============================================================
 
-// Clean grouped layout by functional area
 const AREA_LAYOUT = {
-  // === AUTH (col 0) ===
-  accounts:        { col: 0, row: 0 },
-  account_logins:  { col: 0, row: 1 },
-  owners:          { col: 0, row: 2 },
-  users:           { col: 0, row: 3 },
+  // === Col 0: Auth ===
+  users:                    { col: 0, row: 0 },
+  passkey_credentials:      { col: 0, row: 1 },
+  user_profiles:            { col: 0, row: 2 },
+  refresh_tokens:           { col: 0, row: 3 },
 
-  // === WALLET (col 1) ===
-  wallets:                     { col: 1, row: 0 },
-  wallet_secrets:              { col: 1, row: 1 },
-  wallet_credential_bindings:  { col: 1, row: 2 },
-  wallet_recovery_requests:    { col: 1, row: 3 },
+  // === Col 1: Wallet / XRPL ===
+  user_wallets:             { col: 1, row: 0 },
+  wallet_recovery_configs:  { col: 1, row: 1 },
+  xrpl_transactions:        { col: 1, row: 2 },
 
-  // === APP & SESSION (col 2) ===
-  apps:                 { col: 2, row: 0 },
-  app_keys:             { col: 2, row: 1 },
-  passkey_credentials:  { col: 2, row: 2 },
-  sessions:             { col: 2, row: 3 },
-  refresh_tokens:       { col: 2, row: 4 },
+  // === Col 2: Health Data ===
+  data_points:              { col: 2, row: 0 },
+  data_point_tags:          { col: 2, row: 1 },
+  data_access_logs:         { col: 2, row: 2 },
 
-  // === ORG (col 3) ===
-  institutions:       { col: 3, row: 0 },
-  workspaces:         { col: 3, row: 1 },
-  workspace_members:  { col: 3, row: 2 },
-  data_accesses:      { col: 3, row: 3 },
+  // === Col 3: Consent ===
+  consents:                 { col: 3, row: 0 },
+  consent_scopes:           { col: 3, row: 1 },
+  consent_audit_trail:      { col: 3, row: 2 },
 
-  // === RESEARCH (col 4) ===
-  research_projects:       { col: 4, row: 0 },
-  participation_criteria:  { col: 4, row: 1 },
-  data_collection_configs: { col: 4, row: 2 },
-  team_members:            { col: 4, row: 3 },
-  agreements:              { col: 4, row: 4 },
+  // === Col 4: Notification ===
+  notifications:            { col: 4, row: 0 },
+  notification_preferences: { col: 4, row: 1 },
 
-  // === FINANCE (col 5) ===
-  project_wallets:            { col: 5, row: 0 },
-  project_wallet_deposits:    { col: 5, row: 1 },
-  project_wallet_withdrawals: { col: 5, row: 2 },
-  escrows:                    { col: 5, row: 3 },
-  settlements:                { col: 5, row: 4 },
+  // === Col 5: Enterprise ===
+  enterprises:              { col: 5, row: 0 },
+  enterprise_members:       { col: 5, row: 1 },
 
-  // === DATA (col 6) ===
-  data_sources:      { col: 6, row: 0 },
-  data_points:       { col: 6, row: 1 },
-  data_attachments:  { col: 6, row: 2 },
-  consents:          { col: 6, row: 3 },
+  // === Col 6: Research ===
+  projects:                 { col: 6, row: 0 },
+  project_milestones:       { col: 6, row: 1 },
+  participants:             { col: 6, row: 2 },
+  participation_criteria:   { col: 6, row: 3 },
+  data_requests:            { col: 6, row: 4 },
 
-  // === MEDICATION (col 7) ===
-  drug_info_cache:    { col: 7, row: 0 },
-  user_medications:   { col: 7, row: 1 },
-  medication_logs:    { col: 7, row: 2 },
-  medication_proofs:  { col: 7, row: 3 },
+  // === Col 7: IRB ===
+  irb_submissions:          { col: 7, row: 0 },
+  irb_documents:            { col: 7, row: 1 },
+  irb_review_comments:      { col: 7, row: 2 },
+  irb_workflow_history:     { col: 7, row: 3 },
 
-  // === ANALYTICS (col 8) ===
-  ai_analyses:    { col: 8, row: 0 },
-  features:       { col: 8, row: 1 },
-  notifications:  { col: 8, row: 2 },
-  audit_logs:     { col: 8, row: 3 },
-  anchor_logs:    { col: 8, row: 4 },
+  // === Col 8: Settlement / Phase2 / System ===
+  settlement_batches:       { col: 8, row: 0 },
+  settlement_items:         { col: 8, row: 1 },
+  synthetic_datasets:       { col: 8, row: 2 },
+  fl_rounds:                { col: 8, row: 3 },
+  webhook_events:           { col: 8, row: 4 },
 };
 
-function calculateLayout(client, domain, api = "all") {
-  let clientTables = CLIENT_TABLES[client];
-  let tables = clientTables ? TABLES.filter(t => clientTables.includes(t.name)) : TABLES;
+function calculateLayout(server, domain, api = "all") {
+  let serverTables = SERVER_TABLES[server];
+  let tables = serverTables ? TABLES.filter(t => serverTables.includes(t.name)) : TABLES;
 
-  // API filter takes priority when selected
-  const clientApis = API_ENDPOINTS[client];
-  if (api !== "all" && clientApis && clientApis[api]) {
-    const apiTables = clientApis[api].tables;
+  const serverApis = API_ENDPOINTS[server];
+  if (api !== "all" && serverApis && serverApis[api]) {
+    const apiTables = serverApis[api].tables;
     if (apiTables) {
       tables = TABLES.filter(t => apiTables.includes(t.name));
     }
@@ -815,16 +720,15 @@ function calculateLayout(client, domain, api = "all") {
       });
 
   const positions = {};
-  const CARD_W = 200;
+  const CARD_W = 210;
   const ROW_H = 22;
   const HEADER_H = 36;
-  const COL_WIDTH = 240;
+  const COL_WIDTH = 250;
   const CARD_GAP = 28;
 
-  // API view - simple grid layout (no overlap)
   if (api !== "all") {
     const GRID_COLS = 3;
-    const GRID_GAP_X = 250;
+    const GRID_GAP_X = 260;
     const GRID_GAP_Y = 30;
 
     visible.forEach((t, idx) => {
@@ -832,7 +736,6 @@ function calculateLayout(client, domain, api = "all") {
       const row = Math.floor(idx / GRID_COLS);
       const h = HEADER_H + t.cols.length * ROW_H + 16;
 
-      // Calculate Y based on max height in previous rows
       let y = 0;
       for (let r = 0; r < row; r++) {
         let maxH = 0;
@@ -847,20 +750,12 @@ function calculateLayout(client, domain, api = "all") {
         y += maxH + GRID_GAP_Y;
       }
 
-      positions[t.name] = {
-        x: col * GRID_GAP_X,
-        y,
-        w: CARD_W + 20,
-        h,
-        ghost: false
-      };
+      positions[t.name] = { x: col * GRID_GAP_X, y, w: CARD_W + 20, h, ghost: false };
     });
   } else if (domain === "all") {
-    // Stack cards vertically in each column - no overlapping
     const colHeights = {};
     for (let i = 0; i < 9; i++) colHeights[i] = 0;
 
-    // Sort by column then row to maintain order
     const sortedTables = [...visible].sort((a, b) => {
       const posA = AREA_LAYOUT[a.name] || { col: 4, row: 5 };
       const posB = AREA_LAYOUT[b.name] || { col: 4, row: 5 };
@@ -871,21 +766,13 @@ function calculateLayout(client, domain, api = "all") {
     sortedTables.forEach(t => {
       const pos = AREA_LAYOUT[t.name] || { col: 4, row: 5 };
       const h = HEADER_H + t.cols.length * ROW_H + 16;
-      positions[t.name] = {
-        x: pos.col * COL_WIDTH,
-        y: colHeights[pos.col],
-        w: CARD_W,
-        h,
-        ghost: false
-      };
+      positions[t.name] = { x: pos.col * COL_WIDTH, y: colHeights[pos.col], w: CARD_W, h, ghost: false };
       colHeights[pos.col] += h + CARD_GAP;
     });
   } else {
-    // Domain view - primary center, refs left
     const primary = visible.filter(t => t.domain === domain);
     const refs = visible.filter(t => t.domain !== domain);
 
-    // Primary tables in center
     let primaryY = 0;
     primary.forEach(t => {
       const h = HEADER_H + t.cols.length * ROW_H + 16;
@@ -893,7 +780,6 @@ function calculateLayout(client, domain, api = "all") {
       primaryY += h + 32;
     });
 
-    // Refs on left, compact
     let refY = 0;
     refs.forEach(t => {
       const h = HEADER_H + Math.min(t.cols.length, 3) * ROW_H + 16;
@@ -924,8 +810,15 @@ function TableCard({ table, pos, hovered, selected, onHover, onClick }) {
       onClick={() => onClick(table.name)}
     >
       <div className="table-header" style={{ background: domain.color }}>
-        <span className="table-name">{pos.ghost ? `↗ ${table.name}` : table.name}</span>
-        <span className="table-meta">{table.cols.length} cols</span>
+        <span className="table-name">
+          {pos.ghost ? `↗ ${table.name}` : table.name}
+        </span>
+        <span className="table-meta">
+          {table.cols.length} cols
+          <span className={`server-badge ${table.server === 'health_db' ? 'server-core' : 'server-biz'}`}>
+            {table.server === 'health_db' ? 'Core' : 'Biz'}
+          </span>
+        </span>
       </div>
       <div className="table-cols">
         {visibleCols.map(col => (
@@ -946,7 +839,7 @@ function TableCard({ table, pos, hovered, selected, onHover, onClick }) {
 }
 
 function App() {
-  const [client, setClient] = useState("all");
+  const [server, setServer] = useState("all");
   const [domain, setDomain] = useState("all");
   const [api, setApi] = useState("all");
   const [hovered, setHovered] = useState(null);
@@ -956,12 +849,11 @@ function App() {
   const [dragging, setDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
 
-  const { visible, positions } = calculateLayout(client, domain, api);
+  const { visible, positions } = calculateLayout(server, domain, api);
 
-  // Count tables per domain for current client
+  const serverTablesSet = SERVER_TABLES[server];
+  const filteredTables = serverTablesSet ? TABLES.filter(t => serverTablesSet.includes(t.name)) : TABLES;
   const domainCounts = {};
-  const clientTables = CLIENT_TABLES[client];
-  const filteredTables = clientTables ? TABLES.filter(t => clientTables.includes(t.name)) : TABLES;
   Object.keys(DOMAINS).forEach(d => {
     domainCounts[d] = d === "all" ? filteredTables.length : filteredTables.filter(t => t.domain === d).length;
   });
@@ -980,12 +872,12 @@ function App() {
   );
 
   useEffect(() => {
-    const isAll = client === "all" && domain === "all" && api === "all";
+    const isAll = server === "all" && domain === "all" && api === "all";
     const isApiView = api !== "all";
-    setZoom(isAll ? 0.6 : isApiView ? 1.0 : 0.95);
+    setZoom(isAll ? 0.55 : isApiView ? 1.0 : 0.95);
     setPan(isAll ? { x: 20, y: 50 } : { x: 50, y: 40 });
     setSelected(null);
-  }, [client, domain, api]);
+  }, [server, domain, api]);
 
   const handleWheel = useCallback(e => {
     e.preventDefault();
@@ -1010,6 +902,18 @@ function App() {
     }
   });
 
+  const COL_HEADERS = [
+    { col: 0, label: "Auth", color: "#818cf8" },
+    { col: 1, label: "Wallet/XRPL", color: "#f59e0b" },
+    { col: 2, label: "Health Data", color: "#a855f7" },
+    { col: 3, label: "Consent", color: "#ec4899" },
+    { col: 4, label: "Notification", color: "#06b6d4" },
+    { col: 5, label: "Enterprise", color: "#10b981" },
+    { col: 6, label: "Research", color: "#3b82f6" },
+    { col: 7, label: "IRB", color: "#f97316" },
+    { col: 8, label: "Settlement", color: "#ef4444" },
+  ];
+
   return (
     <div className="app">
       <div className="header">
@@ -1019,8 +923,9 @@ function App() {
             <span className="secondary">Data</span>
           </div>
           <span className="header-stats">
-            ERD v4 · {visible.length} tables
-            {api !== "all" && API_ENDPOINTS[client] && API_ENDPOINTS[client][api] && ` · ${API_ENDPOINTS[client][api].label}`}
+            ERD v6 · {visible.length} tables
+            {server !== "all" && ` · ${SERVERS[server].desc}`}
+            {api !== "all" && API_ENDPOINTS[server] && API_ENDPOINTS[server][api] && ` · ${API_ENDPOINTS[server][api].label}`}
           </span>
         </div>
         <div className="zoom-controls">
@@ -1032,16 +937,16 @@ function App() {
 
       <div className="tabs-wrapper">
         <div className="tabs-row">
-          <span className="tabs-label">클라이언트</span>
-          {Object.entries(CLIENTS).map(([key, c]) => (
+          <span className="tabs-label">서버</span>
+          {Object.entries(SERVERS).map(([key, s]) => (
             <button
               key={key}
-              className={`tab ${client === key ? 'active' : ''}`}
-              style={{ '--tab-bg': c.color, '--tab-color': '#fff' }}
-              onClick={() => { setClient(key); setDomain("all"); setApi("all"); }}
+              className={`tab ${server === key ? 'active' : ''}`}
+              style={{ '--tab-bg': s.color, '--tab-color': '#fff' }}
+              onClick={() => { setServer(key); setDomain("all"); setApi("all"); }}
             >
-              <span className="icon">{c.icon}</span>
-              {c.label}
+              <span className="icon">{s.icon}</span>
+              {s.label}
             </button>
           ))}
         </div>
@@ -1059,10 +964,10 @@ function App() {
             </button>
           ))}
         </div>
-        {API_ENDPOINTS[client] && (
+        {API_ENDPOINTS[server] && (
           <div className="tabs-row">
-            <span className="tabs-label">API</span>
-            {Object.entries(API_ENDPOINTS[client]).map(([key, ep]) => (
+            <span className="tabs-label">{server === 'health_db' ? 'Internal API' : 'API / Webhook'}</span>
+            {Object.entries(API_ENDPOINTS[server]).map(([key, ep]) => (
               <button
                 key={key}
                 className={`tab ${api === key ? 'active' : ''}`}
@@ -1095,13 +1000,11 @@ function App() {
               const fromTable = TABLES.find(t => t.name === r.from);
               const fromColIdx = fromTable ? fromTable.cols.findIndex(c => c.n === r.fromCol) : 0;
 
-              // Simple: from right edge of FK row to left edge of target header
               const fx = fp.x + fp.w;
               const fy = fp.y + 30 + fromColIdx * 20 + 10;
               const tx = tp.x;
               const ty = tp.y + 15;
 
-              // Simple bezier curve
               const midX = (fx + tx) / 2;
               const d = `M ${fx} ${fy} C ${midX} ${fy}, ${midX} ${ty}, ${tx} ${ty}`;
 
@@ -1115,38 +1018,31 @@ function App() {
               );
             })}
           </svg>
-          {domain === "all" && api === "all" && [
-            { col: 0, label: "Auth", color: "#818cf8" },
-            { col: 1, label: "Wallet", color: "#f59e0b" },
-            { col: 2, label: "App", color: "#3b82f6" },
-            { col: 3, label: "Org", color: "#10b981" },
-            { col: 4, label: "Research", color: "#ec4899" },
-            { col: 5, label: "Finance", color: "#f97316" },
-            { col: 6, label: "Data", color: "#a855f7" },
-            { col: 7, label: "Meds", color: "#14b8a6" },
-            { col: 8, label: "Analytics", color: "#6366f1" },
-          ].map(h => (
-            <div key={h.col} className="col-header" style={{ left: h.col * 240, borderColor: h.color, color: h.color }}>
+          {domain === "all" && api === "all" && COL_HEADERS.map(h => (
+            <div key={h.col} className="col-header" style={{ left: h.col * 250, borderColor: h.color, color: h.color }}>
               {h.label}
             </div>
           ))}
-          {api !== "all" && API_ENDPOINTS[client] && API_ENDPOINTS[client][api] && (
+          {api !== "all" && API_ENDPOINTS[server] && API_ENDPOINTS[server][api] && (
             <div style={{
               position: 'absolute',
               top: -70,
               left: 0,
               background: '#151521f0',
-              border: `2px solid ${API_ENDPOINTS[client][api].color}`,
+              border: `2px solid ${API_ENDPOINTS[server][api].color}`,
               color: '#fff',
               padding: '12px 20px',
               borderRadius: 10,
               maxWidth: 500,
             }}>
-              <div style={{ fontSize: 15, fontWeight: 600, marginBottom: 6, color: API_ENDPOINTS[client][api].color }}>
-                {API_ENDPOINTS[client][api].method} {API_ENDPOINTS[client][api].label.split(' ').slice(1).join(' ')}
+              <div style={{ fontSize: 15, fontWeight: 600, marginBottom: 6, color: API_ENDPOINTS[server][api].color }}>
+                {API_ENDPOINTS[server][api].method && API_ENDPOINTS[server][api].method !== 'WEBHOOK'
+                  ? `${API_ENDPOINTS[server][api].method} ${API_ENDPOINTS[server][api].label.split(' ').slice(1).join(' ')}`
+                  : API_ENDPOINTS[server][api].label
+                }
               </div>
               <div style={{ fontSize: 12, color: '#94a3b8', lineHeight: 1.4 }}>
-                {API_ENDPOINTS[client][api].desc}
+                {API_ENDPOINTS[server][api].desc}
               </div>
             </div>
           )}
@@ -1160,6 +1056,8 @@ function App() {
         <div className="legend-title">범례</div>
         <div className="legend-item"><span className="legend-icon" style={{color:'#fbbf24'}}>🔑</span> Primary Key</div>
         <div className="legend-item"><span className="legend-icon" style={{color:'#60a5fa'}}>→</span> Foreign Key</div>
+        <div className="legend-item"><span className="legend-icon" style={{color:'#a78bfa'}}>■</span> Core (health_db)</div>
+        <div className="legend-item"><span className="legend-icon" style={{color:'#34d399'}}>■</span> Business (uniqdata_db)</div>
       </div>
 
       {selected && (() => {
@@ -1172,6 +1070,9 @@ function App() {
             <div className="detail-header">
               <span className="detail-name" style={{color: d.color}}>{t.name}</span>
               <span className="detail-badge" style={{background: d.color}}>{d.label}</span>
+              <span className={`server-badge ${t.server === 'health_db' ? 'server-core' : 'server-biz'}`}>
+                {t.server === 'health_db' ? 'health_db' : 'uniqdata_db'}
+              </span>
             </div>
             <div className="detail-stats">{t.cols.length} columns · {rels.length} relations</div>
             {rels.length > 0 && (

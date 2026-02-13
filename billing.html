@@ -190,8 +190,11 @@
     <div class="sidebar">
       <div class="logo">UniQdata</div>
       <a href="research/list.html" class="nav-item">🏠 연구 허브</a>
-      <a href="research/list.html" class="nav-item">📊 연구 관리</a>
-      <a href="data-pool.html" class="nav-item">🗄️ Data Pool</a>
+      <a href="research/create.html" class="nav-item">➕ 새 연구</a>
+      <a href="research/irb-submission.html" class="nav-item">📝 IRB 심의 신청</a>
+      <a href="research/irb-status.html" class="nav-item">📊 IRB 현황</a>
+      <a href="research/action-center.html" class="nav-item">🔔 조치 센터</a>
+      <div style="border-top: 1px solid #333; margin: 12px 0;"></div>
       <a href="team.html" class="nav-item">👥 팀</a>
       <a href="billing.html" class="nav-item active">💳 결제/에스크로</a>
     </div>
@@ -422,51 +425,6 @@
 
         <div class="note">
           <strong>결제/에스크로</strong> - 연구별 지출/정산 원장, 온체인 검증, 외부 입출금 및 MFA 기반 이체 흐름.
-        </div>
-
-        <!-- 디자이너 노트 -->
-        <div style="background: linear-gradient(135deg, #fdf4ff, #fae8ff); border: 2px solid #d946ef; border-radius: 12px; padding: 20px; margin-top: 16px;">
-          <h3 style="color: #a21caf; margin-bottom: 16px; font-size: 16px;">📋 디자이너 노트: 결제/에스크로</h3>
-          <div style="margin-bottom: 14px;">
-            <strong style="color: #86198f; display: block; margin-bottom: 4px;">🟡 우선순위: Phase 1B (3~6개월)</strong>
-            <p style="font-size: 13px; color: #374151; line-height: 1.6;">연구비 정산과 XRPL 지갑 관리 화면. 연구 예산 잠금(에스크로)~참여자 정산~환불까지 전체 자금 흐름을 추적하는 페이지.</p>
-          </div>
-          <div style="margin-bottom: 14px;">
-            <strong style="color: #86198f; display: block; margin-bottom: 4px;">상단 개요 (3칸 그리드)</strong>
-            <ul style="font-size: 13px; color: #374151; line-height: 1.8; padding-left: 20px;">
-              <li><strong>개인 지갑 카드</strong>: 연구자 본인의 XRPL 운영 지갑. 잔액(XRP), USD 환산, 지갑 주소(축약), 연결 상태 표시. 프로젝트 지갑과 별개인 개인 자산</li>
-              <li><strong>에스크로 요약</strong>: 현재 잠금 중(연구에 예치된 금액) / 정산 대기(참여자 지급 예정) / 환불 예정(미사용분 반환) / 사용 가능(자유 이동 가능) 4분류</li>
-              <li><strong>검증 상태</strong>: 내부 DB 원장 vs 온체인 실제 TX의 대사(reconciliation) 매칭률. 불일치 건수 표시</li>
-            </ul>
-          </div>
-          <div style="margin-bottom: 14px;">
-            <strong style="color: #86198f; display: block; margin-bottom: 4px;">액션 버튼 (4칸)</strong>
-            <ul style="font-size: 13px; color: #374151; line-height: 1.8; padding-left: 20px;">
-              <li><strong>입금</strong>: 외부 지갑 → 운영 지갑으로 XRP 충전</li>
-              <li><strong>출금/이체</strong>: 운영 지갑 → 외부 지갑. 팝업으로 3-Step 인증(정보입력→이메일OTP→Passkey)</li>
-              <li><strong>연구 에스크로 예치</strong>: 연구 시작 시 예산을 에스크로 컨트랙트에 잠금</li>
-              <li><strong>참여자 정산</strong>: 데이터 제출 확인 후 참여자에게 보상 일괄 지급</li>
-            </ul>
-          </div>
-          <div style="margin-bottom: 14px;">
-            <strong style="color: #86198f; display: block; margin-bottom: 4px;">연구별 지출 원장 테이블</strong>
-            <ul style="font-size: 13px; color: #374151; line-height: 1.8; padding-left: 20px;">
-              <li><strong>열 구성</strong>: 연구명 / 유형(예치·정산·환불) / 금액 / 지갑(운영·에스크로) / 검증 상태 / TX해시</li>
-              <li><strong>검증 뱃지</strong>: 온체인 매칭(초록) = 정상, 검증 대기(노랑) = 아직 미확인, 불일치(빨강) = 재검증 필요</li>
-            </ul>
-          </div>
-          <div style="margin-bottom: 14px;">
-            <strong style="color: #86198f; display: block; margin-bottom: 4px;">출금 팝업 (모달)</strong>
-            <ul style="font-size: 13px; color: #374151; line-height: 1.8; padding-left: 20px;">
-              <li><strong>Step 1</strong>: 대상 지갑 주소, 금액, 수수료, 메모 입력 → 요약 확인</li>
-              <li><strong>Step 2</strong>: 이메일 OTP 6자리 인증</li>
-              <li><strong>Step 3</strong>: Passkey 서명 → 즉시 전송</li>
-            </ul>
-          </div>
-          <div>
-            <strong style="color: #86198f; display: block; margin-bottom: 4px;">검증/대사 알림 패널</strong>
-            <p style="font-size: 13px; color: #374151; line-height: 1.6;">불일치 TX, 승인 대기 배치, 미매칭 입금 등 조치가 필요한 항목 리스트. 각 항목에 "재검증" / "승인" / "확인" 액션 버튼</p>
-          </div>
         </div>
 
         <!-- 기능 명세 -->
