@@ -153,6 +153,31 @@
     .timeline-content .tl-title { font-size: 14px; font-weight: 600; color: #1f2937; }
     .timeline-content .tl-desc { font-size: 12px; color: #6b7280; margin-top: 2px; }
 
+    /* 결제 수단 선택 */
+    .pay-method-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 16px 0; }
+    .pay-method-card {
+      border: 2px solid #e5e7eb; border-radius: 12px; padding: 18px; cursor: pointer;
+      transition: all 0.2s; position: relative; text-align: center; background: white;
+    }
+    .pay-method-card:hover { border-color: #c4b5fd; }
+    .pay-method-card.selected { border-color: #8b5cf6; background: #faf5ff; box-shadow: 0 0 0 3px rgba(139,92,246,0.12); }
+    .pay-method-card .pm-icon { font-size: 32px; margin-bottom: 8px; }
+    .pay-method-card .pm-title { font-size: 14px; font-weight: 700; color: #1f2937; margin-bottom: 4px; }
+    .pay-method-card .pm-desc { font-size: 11px; color: #6b7280; line-height: 1.4; }
+    .pay-method-card .pm-amount { font-size: 16px; font-weight: 700; color: #8b5cf6; margin-top: 10px; }
+    .pay-method-card .pm-radio {
+      position: absolute; top: 10px; right: 10px;
+      width: 18px; height: 18px; border-radius: 50%; border: 2px solid #d1d5db;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .pay-method-card.selected .pm-radio { border-color: #8b5cf6; background: #8b5cf6; }
+    .pay-method-card.selected .pm-radio::after { content: ""; width: 7px; height: 7px; background: white; border-radius: 50%; }
+    .pay-method-card .pm-badge {
+      display: inline-block; font-size: 10px; font-weight: 600; padding: 2px 8px;
+      border-radius: 6px; margin-top: 8px;
+    }
+    .pay-method-card .pm-badge.discount { background: #fef3c7; color: #92400e; }
+
     /* 내 연구 사이드바 */
     .research-list { margin-top: 8px; }
     .research-item { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 6px; font-size: 12px; color: #9ca3af; margin-bottom: 2px; cursor: pointer; }
@@ -262,7 +287,7 @@
               <span class="type-tag amber">일반 심의</span>
               <div class="type-title">심사비 결제 + 심의</div>
               <div class="type-desc">새로운 데이터를 수집하는 연구. 심사비 결제 후 IRB 위원회 심의를 거쳐 승인을 받습니다</div>
-              <div class="type-fee paid">심사비: 400 XRP</div>
+              <div class="type-fee paid">심사비: 500,000원</div>
             </div>
             <!-- 자동 승인 -->
             <div class="irb-type-card" data-type="auto" onclick="selectIRBType('auto')">
@@ -271,7 +296,7 @@
               <span class="type-tag blue">간이 심의 (자동)</span>
               <div class="type-title">자동 승인 → 모집</div>
               <div class="type-desc">최소 위험 연구로 AI 사전 검증 통과 시 자동 승인. 승인 즉시 모집 단계로 진행</div>
-              <div class="type-fee paid">심사비: 200 XRP</div>
+              <div class="type-fee paid">심사비: 250,000원</div>
             </div>
           </div>
         </div>
@@ -319,8 +344,8 @@
         <!-- 심사비 -->
         <div class="fee-card">
           <div class="fee-label">IRB 심사비</div>
-          <div class="fee-value">400 XRP</div>
-          <div class="fee-usd">≈ $200 USD</div>
+          <div class="fee-value">500,000원</div>
+          <div class="fee-usd">일반 심의 · 위원회 심사</div>
         </div>
 
         <!-- 심의 프로세스 타임라인 -->
@@ -332,7 +357,7 @@
                 <div class="timeline-dot current">1</div>
                 <div class="timeline-content">
                   <div class="tl-title">심사비 결제</div>
-                  <div class="tl-desc">400 XRP를 결제하면 IRB 심의가 접수됩니다</div>
+                  <div class="tl-desc">500,000원 결제 시 IRB 심의가 접수됩니다</div>
                 </div>
               </div>
               <div class="timeline-item">
@@ -360,14 +385,59 @@
           </div>
         </div>
 
-        <!-- 지갑 잔액 -->
-        <div class="wallet-card">
-          <div class="wallet-header">
-            <span class="label">내 지갑 잔액</span>
-            <span class="action">+ 충전</span>
+        <!-- 결제 수단 선택 -->
+        <div class="card">
+          <div class="card-header"><h3>💳 결제 수단 선택</h3></div>
+          <div class="card-body">
+            <div class="pay-method-grid">
+              <div class="pay-method-card selected" data-method="xrp" onclick="selectPayMethod('standard', this)">
+                <div class="pm-radio"></div>
+                <div class="pm-icon">⛓️</div>
+                <div class="pm-title">블록체인 (XRP)</div>
+                <div class="pm-desc">XRPL 지갑에서 직접 결제<br>즉시 처리 · 투명한 기록</div>
+                <div class="pm-amount">≈ 1,000 XRP</div>
+                <span class="pm-badge discount">5% 할인 적용</span>
+              </div>
+              <div class="pay-method-card" data-method="card" onclick="selectPayMethod('standard', this)">
+                <div class="pm-radio"></div>
+                <div class="pm-icon">💳</div>
+                <div class="pm-title">신용카드</div>
+                <div class="pm-desc">Visa / Mastercard / 국내 카드<br>법인카드 · 세금계산서 발행 가능</div>
+                <div class="pm-amount">500,000원</div>
+              </div>
+            </div>
+
+            <!-- XRP 선택 시 지갑 정보 -->
+            <div class="pay-detail" id="std-xrp-detail">
+              <div class="wallet-card" style="margin-bottom: 0;">
+                <div class="wallet-header">
+                  <span class="label">내 지갑 잔액</span>
+                  <span class="action">+ 충전</span>
+                </div>
+                <div class="wallet-balance">45,000 XRP</div>
+                <div class="wallet-usd">≈ $22,500 USD</div>
+              </div>
+            </div>
+
+            <!-- 카드 선택 시 카드 정보 -->
+            <div class="pay-detail" id="std-card-detail" style="display: none;">
+              <div style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 12px; padding: 20px;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+                  <div>
+                    <label style="display: block; font-size: 12px; color: #6b7280; margin-bottom: 4px;">카드 번호</label>
+                    <div style="padding: 10px 14px; border: 1px solid #e5e7eb; border-radius: 8px; font-size: 14px; color: #9ca3af; background: white;">**** **** **** 1234</div>
+                  </div>
+                  <div>
+                    <label style="display: block; font-size: 12px; color: #6b7280; margin-bottom: 4px;">유효기간</label>
+                    <div style="padding: 10px 14px; border: 1px solid #e5e7eb; border-radius: 8px; font-size: 14px; color: #9ca3af; background: white;">12/28</div>
+                  </div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: #6b7280;">
+                  <span style="font-size: 16px;">🏢</span> 서울대학교병원 법인카드 · 세금계산서 자동 발행
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="wallet-balance">45,000 XRP</div>
-          <div class="wallet-usd">≈ $22,500 USD</div>
         </div>
 
         <div class="warning-box">
@@ -377,7 +447,7 @@
 
         <div class="btn-row">
           <a href="create-step4.html" class="btn btn-secondary">← 이전</a>
-          <button class="btn btn-primary" onclick="alert('IRB 심사비 400 XRP 결제 처리 중...\n\n→ 결제 완료 후 IRB 심의 접수\n→ 승인 시 에스크로(Step 6) 활성화')">💳 심사비 결제 (400 XRP)</button>
+          <button class="btn btn-primary" id="std-pay-btn" onclick="alert('IRB 심사비 결제 처리 중...\n\n→ 결제 완료 후 IRB 심의 접수\n→ 승인 시 에스크로(Step 6) 활성화')">⛓️ 심사비 결제 (≈1,000 XRP)</button>
         </div>
       </div>
 
@@ -386,8 +456,8 @@
         <!-- 심사비 -->
         <div class="fee-card" style="background: linear-gradient(135deg, #3b82f6, #2563eb);">
           <div class="fee-label">간이 심사비</div>
-          <div class="fee-value">200 XRP</div>
-          <div class="fee-usd">≈ $100 USD</div>
+          <div class="fee-value">250,000원</div>
+          <div class="fee-usd">간이 심의 · 자동 승인</div>
         </div>
 
         <!-- AI 사전 검증 -->
@@ -426,19 +496,64 @@
           </div>
         </div>
 
-        <!-- 지갑 잔액 -->
-        <div class="wallet-card">
-          <div class="wallet-header">
-            <span class="label">내 지갑 잔액</span>
-            <span class="action">+ 충전</span>
+        <!-- 결제 수단 선택 -->
+        <div class="card">
+          <div class="card-header"><h3>💳 결제 수단 선택</h3></div>
+          <div class="card-body">
+            <div class="pay-method-grid">
+              <div class="pay-method-card selected" data-method="xrp" onclick="selectPayMethod('auto', this)">
+                <div class="pm-radio"></div>
+                <div class="pm-icon">⛓️</div>
+                <div class="pm-title">블록체인 (XRP)</div>
+                <div class="pm-desc">XRPL 지갑에서 직접 결제<br>즉시 처리 · 투명한 기록</div>
+                <div class="pm-amount">≈ 500 XRP</div>
+                <span class="pm-badge discount">5% 할인 적용</span>
+              </div>
+              <div class="pay-method-card" data-method="card" onclick="selectPayMethod('auto', this)">
+                <div class="pm-radio"></div>
+                <div class="pm-icon">💳</div>
+                <div class="pm-title">신용카드</div>
+                <div class="pm-desc">Visa / Mastercard / 국내 카드<br>법인카드 · 세금계산서 발행 가능</div>
+                <div class="pm-amount">250,000원</div>
+              </div>
+            </div>
+
+            <!-- XRP 선택 시 지갑 정보 -->
+            <div class="pay-detail" id="auto-xrp-detail">
+              <div class="wallet-card" style="margin-bottom: 0;">
+                <div class="wallet-header">
+                  <span class="label">내 지갑 잔액</span>
+                  <span class="action">+ 충전</span>
+                </div>
+                <div class="wallet-balance">45,000 XRP</div>
+                <div class="wallet-usd">≈ $22,500 USD</div>
+              </div>
+            </div>
+
+            <!-- 카드 선택 시 카드 정보 -->
+            <div class="pay-detail" id="auto-card-detail" style="display: none;">
+              <div style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 12px; padding: 20px;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+                  <div>
+                    <label style="display: block; font-size: 12px; color: #6b7280; margin-bottom: 4px;">카드 번호</label>
+                    <div style="padding: 10px 14px; border: 1px solid #e5e7eb; border-radius: 8px; font-size: 14px; color: #9ca3af; background: white;">**** **** **** 1234</div>
+                  </div>
+                  <div>
+                    <label style="display: block; font-size: 12px; color: #6b7280; margin-bottom: 4px;">유효기간</label>
+                    <div style="padding: 10px 14px; border: 1px solid #e5e7eb; border-radius: 8px; font-size: 14px; color: #9ca3af; background: white;">12/28</div>
+                  </div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: #6b7280;">
+                  <span style="font-size: 16px;">🏢</span> 서울대학교병원 법인카드 · 세금계산서 자동 발행
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="wallet-balance">45,000 XRP</div>
-          <div class="wallet-usd">≈ $22,500 USD</div>
         </div>
 
         <div class="btn-row">
           <a href="create-step4.html" class="btn btn-secondary">← 이전</a>
-          <button class="btn btn-primary" style="background: linear-gradient(135deg, #3b82f6, #2563eb);" onclick="alert('간이 심사비 200 XRP 결제 + 자동 승인 처리 중...\n\n→ AI 검증 통과\n→ 즉시 승인 완료\n→ 에스크로 예치(Step 6)로 이동')">⚡ 결제 + 자동 승인 (200 XRP)</button>
+          <button class="btn btn-primary" id="auto-pay-btn" style="background: linear-gradient(135deg, #3b82f6, #2563eb);" onclick="alert('간이 심사비 결제 + 자동 승인 처리 중...\n\n→ AI 검증 통과\n→ 즉시 승인 완료\n→ 에스크로 예치(Step 6)로 이동')">⚡ 결제 + 자동 승인 (≈500 XRP)</button>
         </div>
       </div>
 
@@ -516,6 +631,23 @@ POST /enterprise/irb/expedited-approve<br>
     </div>
   </div>
   <script>
+    function selectPayMethod(section, el) {
+      var parent = el.closest('.card-body');
+      parent.querySelectorAll('.pay-method-card').forEach(function(c) { c.classList.remove('selected'); });
+      el.classList.add('selected');
+      var method = el.getAttribute('data-method');
+      var prefix = section === 'standard' ? 'std' : 'auto';
+      document.getElementById(prefix + '-xrp-detail').style.display = method === 'xrp' ? 'block' : 'none';
+      document.getElementById(prefix + '-card-detail').style.display = method === 'card' ? 'block' : 'none';
+      // 버튼 텍스트 변경
+      var btn = document.getElementById(prefix + '-pay-btn');
+      if (section === 'standard') {
+        btn.innerHTML = method === 'xrp' ? '⛓️ 심사비 결제 (≈1,000 XRP)' : '💳 심사비 결제 (500,000원)';
+      } else {
+        btn.innerHTML = method === 'xrp' ? '⚡ 결제 + 자동 승인 (≈500 XRP)' : '⚡ 결제 + 자동 승인 (250,000원)';
+      }
+    }
+
     function selectIRBType(type) {
       // 카드 선택
       document.querySelectorAll('.irb-type-card').forEach(c => c.classList.remove('selected'));
