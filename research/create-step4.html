@@ -91,6 +91,15 @@
     .designer-note { background: linear-gradient(135deg, #fdf4ff, #fae8ff); border: 2px solid #d946ef; border-radius: 12px; padding: 20px; margin-top: 24px; }
     .designer-note h3 { color: #a21caf; margin-bottom: 12px; font-size: 14px; }
     .designer-note .content { font-size: 12px; color: #374151; line-height: 1.7; }
+
+    /* 내 연구 사이드바 */
+    .research-list { margin-top: 8px; }
+    .research-item { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 6px; font-size: 12px; color: #9ca3af; margin-bottom: 2px; cursor: pointer; }
+    .research-item:hover { background: #252525; color: #ccc; }
+    .research-dot { width: 6px; height: 6px; border-radius: 50%; }
+    .research-dot.active { background: #22c55e; }
+    .research-dot.draft { background: #6b7280; }
+    .research-step { font-size: 10px; color: #6b7280; }
   </style>
 </head>
 <body>
@@ -109,31 +118,24 @@
 
       <div style="margin-top: 16px;">
         <div style="font-size: 11px; color: #6b7280; padding: 8px 12px; text-transform: uppercase;">연구</div>
-        <a href="create.html" class="nav-item active">
-          <span>➕</span> 새 연구
-        </a>
-        <a href="irb-submission.html" class="nav-item">
-          <span>📝</span> IRB 심의 신청
-        </a>
-        <a href="irb-status.html" class="nav-item">
-          <span>📊</span> IRB 현황
-        </a>
-        <a href="action-center.html" class="nav-item">
-          <span>🔔</span> 조치 센터
-        </a>
+        <a href="create.html" class="nav-item active"><span>➕</span> 새 연구</a>
       </div>
 
       <div style="margin-top: 16px;">
-        <div style="font-size: 11px; color: #6b7280; padding: 8px 12px; text-transform: uppercase;">관리</div>
-        <a href="../team.html" class="nav-item">
-          <span>👥</span> 팀
-        </a>
-        <a href="../billing.html" class="nav-item">
-          <span>💳</span> 결제
-        </a>
-        <a href="#" class="nav-item">
-          <span>⚙️</span> 설정
-        </a>
+        <div style="font-size: 10px; color: #64748b; padding: 6px 12px; text-transform: uppercase;">임시저장 <span style="background: #f59e0b; color: white; padding: 1px 6px; border-radius: 8px; font-size: 9px; margin-left: 4px;">2</span></div>
+        <div class="research-list">
+          <div class="research-item"><span class="research-dot" style="background: #f59e0b;"></span> 소아 비만 개입 연구 <span class="research-step">Step 3 · 2일 전</span></div>
+          <div class="research-item"><span class="research-dot" style="background: #f59e0b;"></span> 직장인 스트레스 코르티솔 <span class="research-step">Step 1 · 5일 전</span></div>
+        </div>
+      </div>
+
+      <div style="margin-top: 16px;">
+        <div style="font-size: 10px; color: #64748b; padding: 6px 12px; text-transform: uppercase; letter-spacing: 0.5px;">내 연구 <span style="background: #3b82f6; color: white; padding: 1px 6px; border-radius: 8px; font-size: 9px; margin-left: 4px;">3</span></div>
+        <div class="research-list">
+          <div class="research-item"><span class="research-dot active"></span> 당뇨병 복약 순응도</div>
+          <div class="research-item"><span class="research-dot active"></span> 노인 수면 패턴</div>
+          <div class="research-item"><span class="research-dot draft"></span> ADHD 생활습관</div>
+        </div>
       </div>
 
       <div style="margin-top: auto; padding-top: 20px; border-top: 1px solid #374151;">
@@ -198,6 +200,128 @@
             <button class="btn btn-secondary" style="flex: 1;">
               📋 지갑 상세
             </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 팀 구성 + 팀원 초대 (신규) -->
+      <div class="card" style="border: 2px solid #8b5cf6;">
+        <div class="card-header" style="background: linear-gradient(135deg, #7c3aed, #6366f1); border: none;">
+          <h3 style="color: white;">👥 연구팀 구성</h3>
+          <span style="font-size: 11px; color: #c4b5fd; background: rgba(255,255,255,0.15); padding: 4px 10px; border-radius: 12px;">팀 지갑 공유</span>
+        </div>
+        <div class="card-body">
+          <p style="font-size: 13px; color: #6b7280; margin-bottom: 16px;">
+            팀원을 초대하면 연구 계획 열람/수정 권한과 프로젝트 지갑에 자금 충당 권한이 부여됩니다.
+          </p>
+
+          <!-- 현재 팀원 목록 -->
+          <div style="margin-bottom: 20px;">
+            <div style="font-size: 12px; font-weight: 600; color: #374151; margin-bottom: 10px;">현재 팀원</div>
+
+            <!-- PI (나) -->
+            <div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: #faf5ff; border: 1px solid #ddd6fe; border-radius: 10px; margin-bottom: 8px;">
+              <div style="width: 40px; height: 40px; background: #8b5cf6; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 14px;">김</div>
+              <div style="flex: 1;">
+                <div style="font-size: 14px; font-weight: 600;">김연구 <span style="font-size: 11px; font-weight: 400; color: #7c3aed;">(나)</span></div>
+                <div style="font-size: 11px; color: #6b7280;">서울대학교병원 · PI (연구책임자)</div>
+              </div>
+              <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 4px;">
+                <span style="font-size: 10px; padding: 2px 8px; background: #8b5cf6; color: white; border-radius: 6px;">PI</span>
+                <span style="font-size: 10px; color: #22c55e;">승인 완료</span>
+              </div>
+            </div>
+
+            <!-- 팀원 1: 승인 완료 -->
+            <div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: white; border: 1px solid #e5e7eb; border-radius: 10px; margin-bottom: 8px;">
+              <div style="width: 40px; height: 40px; background: #3b82f6; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 14px;">이</div>
+              <div style="flex: 1;">
+                <div style="font-size: 14px; font-weight: 500;">이분석</div>
+                <div style="font-size: 11px; color: #6b7280;">서울대학교병원 · 공동연구자</div>
+              </div>
+              <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 4px;">
+                <span style="font-size: 10px; padding: 2px 8px; background: #3b82f6; color: white; border-radius: 6px;">Co-PI</span>
+                <span style="font-size: 10px; color: #22c55e;">승인 완료</span>
+              </div>
+            </div>
+
+            <!-- 팀원 2: 승인 대기 -->
+            <div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: #fffbeb; border: 1px solid #fde68a; border-radius: 10px; margin-bottom: 8px;">
+              <div style="width: 40px; height: 40px; background: #f59e0b; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 14px;">박</div>
+              <div style="flex: 1;">
+                <div style="font-size: 14px; font-weight: 500;">박통계</div>
+                <div style="font-size: 11px; color: #6b7280;">연세대학교 · 통계자문</div>
+              </div>
+              <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 4px;">
+                <span style="font-size: 10px; padding: 2px 8px; background: #f59e0b; color: white; border-radius: 6px;">자문</span>
+                <span style="font-size: 10px; color: #f59e0b;">승인 대기중</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 팀원 초대 -->
+          <div style="background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 10px; padding: 16px;">
+            <div style="font-size: 12px; font-weight: 600; color: #374151; margin-bottom: 10px;">팀원 초대</div>
+            <div style="display: flex; gap: 8px; margin-bottom: 10px;">
+              <input type="email" class="input" placeholder="이메일 주소 입력" style="flex: 1; height: 40px; font-size: 13px;">
+              <select style="height: 40px; border: 1px solid #e5e7eb; border-radius: 8px; padding: 0 12px; font-size: 13px; color: #374151; background: white;">
+                <option>Co-PI (공동연구자)</option>
+                <option>RA (연구보조)</option>
+                <option>자문 (Advisory)</option>
+                <option>모니터 (Monitor)</option>
+              </select>
+              <button class="btn btn-primary" style="padding: 8px 16px; font-size: 13px;">초대</button>
+            </div>
+            <p style="font-size: 11px; color: #9ca3af;">초대된 팀원은 이메일로 승인 링크를 받습니다. 승인 후 연구 계획 열람/수정 및 자금 충당이 가능합니다.</p>
+          </div>
+
+          <!-- 권한 매트릭스 -->
+          <div style="margin-top: 16px;">
+            <div style="font-size: 12px; font-weight: 600; color: #374151; margin-bottom: 8px;">역할별 권한</div>
+            <table style="width: 100%; border-collapse: collapse; font-size: 11px;">
+              <thead>
+                <tr style="background: #f9fafb;">
+                  <th style="text-align: left; padding: 8px; border-bottom: 1px solid #e5e7eb;">권한</th>
+                  <th style="text-align: center; padding: 8px; border-bottom: 1px solid #e5e7eb;">PI</th>
+                  <th style="text-align: center; padding: 8px; border-bottom: 1px solid #e5e7eb;">Co-PI</th>
+                  <th style="text-align: center; padding: 8px; border-bottom: 1px solid #e5e7eb;">RA</th>
+                  <th style="text-align: center; padding: 8px; border-bottom: 1px solid #e5e7eb;">자문</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td style="padding: 6px 8px; border-bottom: 1px solid #f3f4f6;">연구 계획 수정</td><td style="text-align: center; padding: 6px; border-bottom: 1px solid #f3f4f6; color: #22c55e;">O</td><td style="text-align: center; padding: 6px; border-bottom: 1px solid #f3f4f6; color: #22c55e;">O</td><td style="text-align: center; padding: 6px; border-bottom: 1px solid #f3f4f6; color: #ef4444;">X</td><td style="text-align: center; padding: 6px; border-bottom: 1px solid #f3f4f6; color: #ef4444;">X</td></tr>
+                <tr><td style="padding: 6px 8px; border-bottom: 1px solid #f3f4f6;">자금 충당</td><td style="text-align: center; padding: 6px; border-bottom: 1px solid #f3f4f6; color: #22c55e;">O</td><td style="text-align: center; padding: 6px; border-bottom: 1px solid #f3f4f6; color: #22c55e;">O</td><td style="text-align: center; padding: 6px; border-bottom: 1px solid #f3f4f6; color: #ef4444;">X</td><td style="text-align: center; padding: 6px; border-bottom: 1px solid #f3f4f6; color: #ef4444;">X</td></tr>
+                <tr><td style="padding: 6px 8px; border-bottom: 1px solid #f3f4f6;">데이터 열람</td><td style="text-align: center; padding: 6px; border-bottom: 1px solid #f3f4f6; color: #22c55e;">O</td><td style="text-align: center; padding: 6px; border-bottom: 1px solid #f3f4f6; color: #22c55e;">O</td><td style="text-align: center; padding: 6px; border-bottom: 1px solid #f3f4f6; color: #22c55e;">O</td><td style="text-align: center; padding: 6px; border-bottom: 1px solid #f3f4f6; color: #f59e0b;">제한</td></tr>
+                <tr><td style="padding: 6px 8px; border-bottom: 1px solid #f3f4f6;">IRB 서류 서명</td><td style="text-align: center; padding: 6px; border-bottom: 1px solid #f3f4f6; color: #22c55e;">O</td><td style="text-align: center; padding: 6px; border-bottom: 1px solid #f3f4f6; color: #22c55e;">O</td><td style="text-align: center; padding: 6px; border-bottom: 1px solid #f3f4f6; color: #ef4444;">X</td><td style="text-align: center; padding: 6px; border-bottom: 1px solid #f3f4f6; color: #ef4444;">X</td></tr>
+                <tr><td style="padding: 6px 8px;">팀원 초대</td><td style="text-align: center; padding: 6px; color: #22c55e;">O</td><td style="text-align: center; padding: 6px; color: #ef4444;">X</td><td style="text-align: center; padding: 6px; color: #ef4444;">X</td><td style="text-align: center; padding: 6px; color: #ef4444;">X</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- 자금 충당 현황 -->
+          <div style="margin-top: 16px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; padding: 16px;">
+            <div style="font-size: 12px; font-weight: 600; color: #374151; margin-bottom: 10px;">자금 충당 현황</div>
+            <div style="display: flex; gap: 12px; margin-bottom: 12px;">
+              <div style="flex: 1; background: white; border: 1px solid #e5e7eb; border-radius: 8px; padding: 12px; text-align: center;">
+                <div style="font-size: 11px; color: #6b7280;">김연구 (PI)</div>
+                <div style="font-size: 18px; font-weight: 700; color: #8b5cf6;">5,000 XRP</div>
+                <div style="font-size: 10px; color: #22c55e;">충당 완료</div>
+              </div>
+              <div style="flex: 1; background: white; border: 1px solid #e5e7eb; border-radius: 8px; padding: 12px; text-align: center;">
+                <div style="font-size: 11px; color: #6b7280;">이분석 (Co-PI)</div>
+                <div style="font-size: 18px; font-weight: 700; color: #3b82f6;">1,720 XRP</div>
+                <div style="font-size: 10px; color: #22c55e;">충당 완료</div>
+              </div>
+              <div style="flex: 1; background: white; border: 1px solid #fde68a; border-radius: 8px; padding: 12px; text-align: center;">
+                <div style="font-size: 11px; color: #6b7280;">박통계 (자문)</div>
+                <div style="font-size: 18px; font-weight: 700; color: #9ca3af;">— XRP</div>
+                <div style="font-size: 10px; color: #f59e0b;">승인 대기</div>
+              </div>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 8px; border-top: 1px solid #d1fae5;">
+              <span style="font-size: 12px; color: #6b7280;">충당 합계</span>
+              <span style="font-size: 16px; font-weight: 700; color: #059669;">6,720 XRP / 6,720 XRP</span>
+            </div>
           </div>
         </div>
       </div>
@@ -355,7 +479,14 @@
           <strong>지갑 이원화 구조:</strong><br>
           • 개인 지갑: 연구자 본인 XRPL 지갑<br>
           • 프로젝트 지갑: 연구별 전용 지갑 (서버 자동 생성)<br>
-          • 예산 이체: 개인 → 프로젝트 (Passkey 서명)
+          • 예산 이체: 개인 → 프로젝트 (Passkey 서명)<br><br>
+
+          <strong>🆕 팀 구성 + 초대:</strong><br>
+          • 연구팀 구성: PI, Co-PI, RA, 자문, 모니터 역할<br>
+          • 이메일 초대 → 승인 링크 → 승인 후 권한 부여<br>
+          • 역할별 권한: 연구 수정, 자금 충당, 데이터 열람, IRB 서명<br>
+          • 자금 충당: 각 팀원이 개인 지갑에서 프로젝트 지갑으로 분담 충당<br>
+          • PI만 팀원 초대 가능, Co-PI는 계획 수정/자금 충당 가능
         </div>
       </div>
 

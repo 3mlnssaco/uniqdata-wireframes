@@ -63,6 +63,15 @@
     .designer-note { background: linear-gradient(135deg, #fdf4ff, #fae8ff); border: 2px solid #d946ef; border-radius: 12px; padding: 20px; margin-top: 32px; }
     .designer-note h3 { color: #a21caf; margin-bottom: 12px; font-size: 14px; }
     .designer-note .content { font-size: 12px; color: #374151; line-height: 1.7; }
+
+    /* 내 연구 사이드바 */
+    .research-list { margin-top: 8px; }
+    .research-item { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 6px; font-size: 12px; color: #9ca3af; margin-bottom: 2px; cursor: pointer; }
+    .research-item:hover { background: #252525; color: #ccc; }
+    .research-dot { width: 6px; height: 6px; border-radius: 50%; }
+    .research-dot.active { background: #22c55e; }
+    .research-dot.draft { background: #6b7280; }
+    .research-step { font-size: 10px; color: #6b7280; }
   </style>
 </head>
 <body>
@@ -81,31 +90,24 @@
 
       <div style="margin-top: 16px;">
         <div style="font-size: 11px; color: #6b7280; padding: 8px 12px; text-transform: uppercase;">연구</div>
-        <a href="create.html" class="nav-item active">
-          <span>➕</span> 새 연구
-        </a>
-        <a href="irb-submission.html" class="nav-item">
-          <span>📝</span> IRB 심의 신청
-        </a>
-        <a href="irb-status.html" class="nav-item">
-          <span>📊</span> IRB 현황
-        </a>
-        <a href="action-center.html" class="nav-item">
-          <span>🔔</span> 조치 센터
-        </a>
+        <a href="create.html" class="nav-item active"><span>➕</span> 새 연구</a>
       </div>
 
       <div style="margin-top: 16px;">
-        <div style="font-size: 11px; color: #6b7280; padding: 8px 12px; text-transform: uppercase;">관리</div>
-        <a href="../team.html" class="nav-item">
-          <span>👥</span> 팀
-        </a>
-        <a href="../billing.html" class="nav-item">
-          <span>💳</span> 결제
-        </a>
-        <a href="#" class="nav-item">
-          <span>⚙️</span> 설정
-        </a>
+        <div style="font-size: 10px; color: #64748b; padding: 6px 12px; text-transform: uppercase;">임시저장 <span style="background: #f59e0b; color: white; padding: 1px 6px; border-radius: 8px; font-size: 9px; margin-left: 4px;">2</span></div>
+        <div class="research-list">
+          <div class="research-item"><span class="research-dot" style="background: #f59e0b;"></span> 소아 비만 개입 연구 <span class="research-step">Step 3 · 2일 전</span></div>
+          <div class="research-item"><span class="research-dot" style="background: #f59e0b;"></span> 직장인 스트레스 코르티솔 <span class="research-step">Step 1 · 5일 전</span></div>
+        </div>
+      </div>
+
+      <div style="margin-top: 16px;">
+        <div style="font-size: 10px; color: #64748b; padding: 6px 12px; text-transform: uppercase; letter-spacing: 0.5px;">내 연구 <span style="background: #3b82f6; color: white; padding: 1px 6px; border-radius: 8px; font-size: 9px; margin-left: 4px;">3</span></div>
+        <div class="research-list">
+          <div class="research-item"><span class="research-dot active"></span> 당뇨병 복약 순응도</div>
+          <div class="research-item"><span class="research-dot active"></span> 노인 수면 패턴</div>
+          <div class="research-item"><span class="research-dot draft"></span> ADHD 생활습관</div>
+        </div>
       </div>
 
       <div style="margin-top: auto; padding-top: 20px; border-top: 1px solid #374151;">

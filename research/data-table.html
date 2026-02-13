@@ -4,82 +4,208 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>연구 데이터 - 테이블 뷰 - Wireframe</title>
+  <link rel="stylesheet" href="ai-chat-panel.css">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: -apple-system, sans-serif; background: #f5f5f5; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f5; color: #1f2937; }
     .layout { display: flex; min-height: 100vh; }
 
-    /* ===== 사이드바 ===== */
-    .sidebar { width: 260px; background: #1a1a1a; color: white; padding: 16px 12px; display: flex; flex-direction: column; flex-shrink: 0; }
-    .logo { font-size: 18px; font-weight: bold; margin-bottom: 20px; padding: 10px; }
+    /* ===== SIDEBAR (260px, dark) ===== */
+    .sidebar {
+      width: 260px; background: #1a1a1a; color: white;
+      padding: 16px 12px; display: flex; flex-direction: column; flex-shrink: 0;
+    }
+    .logo {
+      font-size: 18px; font-weight: bold; margin-bottom: 20px; padding: 10px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .logo-icon {
+      width: 32px; height: 32px;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      border-radius: 8px; display: flex; align-items: center; justify-content: center;
+      font-size: 14px; color: white; font-weight: 700;
+    }
     .nav-section { margin-bottom: 8px; }
-    .nav-item { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 8px; margin-bottom: 4px; color: #9ca3af; text-decoration: none; font-size: 13px; transition: all 0.15s; }
+    .nav-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 12px; border-radius: 8px; margin-bottom: 4px;
+      color: #9ca3af; text-decoration: none; font-size: 13px; transition: all 0.15s;
+    }
     .nav-item:hover { background: #252525; color: #ccc; }
     .nav-item .icon { width: 18px; text-align: center; font-size: 14px; }
+
+    /* Research list (expandable) */
+    .research-list-header {
+      font-size: 10px; color: #64748b; padding: 6px 12px;
+      text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    .research-list-header .count {
+      background: #3b82f6; color: white; padding: 1px 6px;
+      border-radius: 8px; font-size: 9px; margin-left: 4px;
+    }
     .research-nav-item { margin-bottom: 2px; }
-    .research-nav-header { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 12px; color: #888; transition: all 0.15s; }
+    .research-nav-header {
+      display: flex; align-items: center; gap: 8px;
+      padding: 8px 12px; border-radius: 8px; cursor: pointer;
+      font-size: 12px; color: #888; transition: all 0.15s;
+    }
     .research-nav-header:hover { background: #252525; color: #ccc; }
-    .research-nav-item.expanded .research-nav-header { background: rgba(59, 130, 246, 0.1); color: #60a5fa; }
+    .research-nav-item.expanded .research-nav-header {
+      background: rgba(59, 130, 246, 0.1); color: #60a5fa;
+    }
     .research-title { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .status-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
     .status-dot.active { background: #22c55e; }
     .status-dot.recruiting { background: #3b82f6; }
     .status-dot.draft { background: #6b7280; }
-    .research-nav-sub { display: none; padding-left: 20px; margin-top: 4px; border-left: 2px solid #333; margin-left: 18px; }
+    .research-nav-sub {
+      display: none; padding-left: 20px; margin-top: 4px;
+      border-left: 2px solid #333; margin-left: 18px;
+    }
     .research-nav-item.expanded .research-nav-sub { display: block; }
-    .research-nav-item.collapsed .research-nav-sub { display: none; }
-    .nav-sub-item { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 6px; color: #777; font-size: 12px; cursor: pointer; transition: all 0.15s; text-decoration: none; margin-bottom: 2px; }
+    .nav-sub-item {
+      display: flex; align-items: center; gap: 8px;
+      padding: 8px 12px; border-radius: 6px; color: #777;
+      font-size: 12px; cursor: pointer; transition: all 0.15s;
+      text-decoration: none; margin-bottom: 2px;
+    }
     .nav-sub-item:hover { background: #252525; color: #ccc; }
-    .nav-sub-item.active { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border-left: 2px solid #3b82f6; margin-left: -2px; padding-left: 14px; }
+    .nav-sub-item.active {
+      background: rgba(59, 130, 246, 0.15); color: #60a5fa;
+      border-left: 2px solid #3b82f6; margin-left: -2px; padding-left: 14px;
+    }
     .nav-sub-item .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; opacity: 0.5; }
     .nav-sub-item.active .dot { background: #3b82f6; opacity: 1; }
+    .draft-badge {
+      font-size: 9px; background: #374151; color: #9ca3af;
+      padding: 1px 5px; border-radius: 4px; margin-left: 4px;
+    }
+    .user-profile {
+      padding: 12px; border-top: 1px solid #2a2a2a;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .user-avatar {
+      width: 32px; height: 32px;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-size: 12px; color: white;
+    }
 
-    /* ===== 메인 ===== */
+    /* ===== MAIN AREA ===== */
     .main { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
-    .header-bar { background: white; padding: 16px 24px; border-bottom: 1px solid #e5e7eb; font-size: 14px; color: #6b7280; }
-
-    /* 메인 그리드: 테이블 + 상세 패널 */
-    .main-grid { display: grid; grid-template-columns: 1fr 400px; gap: 0; height: calc(100vh - 56px); }
-    @media (max-width: 1200px) { .main-grid { grid-template-columns: 1fr; } }
+    .header-bar {
+      background: white; padding: 16px 24px;
+      border-bottom: 1px solid #e5e7eb; font-size: 14px; color: #6b7280;
+    }
+    .main-grid {
+      display: grid; grid-template-columns: 1fr 400px; gap: 0;
+      height: calc(100vh - 56px);
+    }
+    @media (max-width: 1400px) { .main-grid { grid-template-columns: 1fr; } }
     .main-content { padding: 24px; overflow: auto; }
 
-    .breadcrumb { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; font-size: 14px; color: #6b7280; }
+    .breadcrumb {
+      display: flex; align-items: center; gap: 8px;
+      margin-bottom: 16px; font-size: 14px; color: #6b7280;
+    }
     .breadcrumb a { color: #3b82f6; text-decoration: none; }
 
-    /* 제목 + 탭 */
     .page-title { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
     .page-sub { color: #6b7280; font-size: 14px; margin-bottom: 20px; }
-    .tabs { display: flex; gap: 0; border-bottom: 2px solid #e5e7eb; margin-bottom: 20px; }
-    .tab { padding: 12px 24px; font-size: 14px; color: #6b7280; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px; text-decoration: none; font-weight: 500; }
-    .tab.active { color: #3b82f6; border-bottom-color: #3b82f6; }
 
-    /* ===== 기간 토글 ===== */
-    .period-row { display: flex; gap: 16px; align-items: center; margin-bottom: 16px; flex-wrap: wrap; }
+    /* Tabs */
+    .tabs { display: flex; gap: 0; border-bottom: 2px solid #e5e7eb; margin-bottom: 20px; }
+    .tab {
+      padding: 12px 24px; font-size: 14px; color: #6b7280; cursor: pointer;
+      border-bottom: 2px solid transparent; margin-bottom: -2px;
+      text-decoration: none; font-weight: 500;
+    }
+    .tab.active { color: #3b82f6; border-bottom-color: #3b82f6; }
+    .tab:hover { color: #374151; }
+
+    /* ===== VIEW MODE TOGGLE ===== */
+    .controls-row {
+      display: flex; gap: 16px; align-items: center; margin-bottom: 16px; flex-wrap: wrap;
+    }
+    .view-toggle {
+      display: flex; border: 2px solid #8b5cf6; border-radius: 8px; overflow: hidden;
+    }
+    .view-btn {
+      padding: 10px 20px; font-size: 13px; background: white; border: none;
+      cursor: pointer; font-weight: 600; color: #6b7280; display: flex; align-items: center; gap: 6px;
+    }
+    .view-btn.active { background: #8b5cf6; color: white; }
+    .view-btn:not(.active):hover { background: #f5f3ff; }
+
     .period-toggle { display: flex; border: 2px solid #3b82f6; border-radius: 8px; overflow: hidden; }
-    .period-btn { padding: 10px 22px; font-size: 13px; background: white; border: none; cursor: pointer; font-weight: 600; color: #6b7280; }
+    .period-btn {
+      padding: 10px 22px; font-size: 13px; background: white; border: none;
+      cursor: pointer; font-weight: 600; color: #6b7280;
+    }
     .period-btn.active { background: #3b82f6; color: white; }
-    .date-nav { display: flex; align-items: center; gap: 10px; background: white; border: 1px solid #e5e7eb; border-radius: 10px; padding: 10px 16px; }
-    .date-nav-btn { width: 32px; height: 32px; border: 1px solid #e5e7eb; border-radius: 6px; background: white; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .period-btn:not(.active):hover { background: #eff6ff; }
+
+    .date-nav {
+      display: flex; align-items: center; gap: 10px;
+      background: white; border: 1px solid #e5e7eb; border-radius: 10px; padding: 10px 16px;
+    }
+    .date-nav-btn {
+      width: 32px; height: 32px; border: 1px solid #e5e7eb; border-radius: 6px;
+      background: white; font-size: 14px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+    }
     .date-nav-btn:hover { background: #f3f4f6; }
-    .date-label { font-size: 18px; font-weight: 700; color: #1f2937; min-width: 120px; text-align: center; }
+    .date-label { font-size: 18px; font-weight: 700; color: #1f2937; min-width: 130px; text-align: center; }
     .date-sub { font-size: 12px; color: #9ca3af; }
 
-    /* ===== 툴바 ===== */
-    .toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 10px; }
+    /* ===== COLUMN PRIORITY LEGEND ===== */
+    .priority-legend {
+      display: flex; align-items: center; gap: 12px; margin-bottom: 14px;
+      padding: 10px 16px; background: white; border: 1px solid #e5e7eb; border-radius: 10px;
+      font-size: 12px;
+    }
+    .priority-legend .legend-label { font-weight: 600; color: #374151; margin-right: 4px; }
+    .priority-tag {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 3px 10px; border-radius: 6px; font-weight: 600; cursor: pointer;
+      transition: all 0.15s; font-size: 11px;
+    }
+    .priority-tag.p1 { background: #fef2f2; color: #dc2626; border: 1px solid #fca5a5; }
+    .priority-tag.p2 { background: #fffbeb; color: #d97706; border: 1px solid #fcd34d; }
+    .priority-tag.p3 { background: #f3f4f6; color: #6b7280; border: 1px solid #d1d5db; }
+    .priority-tag.p3.inactive { opacity: 0.5; text-decoration: line-through; }
+    .priority-tag .dot { width: 6px; height: 6px; border-radius: 50%; }
+    .priority-tag.p1 .dot { background: #dc2626; }
+    .priority-tag.p2 .dot { background: #d97706; }
+    .priority-tag.p3 .dot { background: #6b7280; }
+    .priority-sep { color: #d1d5db; }
+
+    /* ===== TOOLBAR ===== */
+    .toolbar {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 12px; flex-wrap: wrap; gap: 10px;
+    }
     .toolbar-left { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
     .toolbar-right { display: flex; gap: 8px; }
-    .search-box { padding: 8px 12px; border: 1px solid #e5e7eb; border-radius: 8px; width: 200px; font-size: 13px; }
-    .tool-btn { padding: 8px 16px; border: 1px solid #e5e7eb; border-radius: 8px; background: white; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+    .search-box {
+      padding: 8px 12px; border: 1px solid #e5e7eb; border-radius: 8px;
+      width: 200px; font-size: 13px;
+    }
+    .tool-btn {
+      padding: 8px 16px; border: 1px solid #e5e7eb; border-radius: 8px;
+      background: white; font-size: 13px; cursor: pointer;
+      display: flex; align-items: center; gap: 6px;
+    }
     .tool-btn:hover { background: #f9fafb; }
 
-    /* ===== 임계치 알림 배너 ===== */
+    /* ===== ALERT BANNER ===== */
     .alert-banner {
       display: flex; align-items: center; gap: 12px;
       background: linear-gradient(135deg, #fef2f2, #fee2e2);
       border: 1px solid #fca5a5; border-radius: 10px;
       padding: 12px 20px; margin-bottom: 16px;
     }
-    .alert-banner .icon { font-size: 20px; }
+    .alert-banner .a-icon { font-size: 20px; }
     .alert-banner .text { flex: 1; font-size: 13px; color: #991b1b; }
     .alert-banner .text strong { color: #7f1d1d; }
     .alert-banner .action-btn {
@@ -87,28 +213,97 @@
       background: white; font-size: 12px; cursor: pointer; color: #dc2626; font-weight: 500;
     }
 
-    /* ===== 코호트 바 ===== */
-    .cohort-bar {
-      display: flex; gap: 8px; align-items: center;
-      background: linear-gradient(135deg, #faf5ff, #f3e8ff);
-      border: 1px solid #ddd6fe; border-radius: 10px;
-      padding: 10px 16px; margin-bottom: 16px;
-    }
-    .cohort-bar .label { font-size: 12px; color: #7c3aed; font-weight: 600; margin-right: 4px; }
-    .cohort-tab { padding: 7px 18px; border-radius: 6px; font-size: 13px; cursor: pointer; background: white; border: 1px solid #e5e7eb; color: #6b7280; font-weight: 500; }
-    .cohort-tab.active { background: #7c3aed; color: white; border-color: #7c3aed; }
-    .cohort-info { margin-left: auto; font-size: 11px; color: #9ca3af; }
-
-    /* ===== 요약 칩 ===== */
+    /* ===== STATS STRIP ===== */
     .stats-strip { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
-    .stat-chip { padding: 6px 12px; border-radius: 999px; background: #f1f5f9; color: #475569; font-size: 12px; border: 1px solid #e2e8f0; }
+    .stat-chip {
+      padding: 6px 12px; border-radius: 999px; background: #f1f5f9;
+      color: #475569; font-size: 12px; border: 1px solid #e2e8f0;
+    }
     .stat-chip strong { color: #0f172a; }
+    .stat-chip .good { color: #059669; font-weight: 600; }
     .stat-chip .warn { color: #d97706; font-weight: 600; }
     .stat-chip .danger { color: #dc2626; font-weight: 600; }
-    .stat-chip .good { color: #059669; font-weight: 600; }
 
-    /* ===== 데이터 테이블 ===== */
-    .table-container { background: white; border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden; }
+    /* ===== GROUP SUMMARY BAR (for group comparison) ===== */
+    .group-summary-bar {
+      display: grid; grid-template-columns: 1fr 1fr auto; gap: 16px;
+      margin-bottom: 16px;
+    }
+    .group-card {
+      background: white; border: 1px solid #e5e7eb; border-radius: 12px;
+      padding: 16px 20px;
+    }
+    .group-card.experiment { border-left: 4px solid #3b82f6; }
+    .group-card.control { border-left: 4px solid #f59e0b; }
+    .group-card .g-header {
+      display: flex; align-items: center; gap: 8px; margin-bottom: 12px;
+    }
+    .group-card .g-badge {
+      padding: 3px 10px; border-radius: 6px; font-size: 11px; font-weight: 700;
+    }
+    .group-card.experiment .g-badge { background: #dbeafe; color: #1d4ed8; }
+    .group-card.control .g-badge { background: #fef3c7; color: #92400e; }
+    .group-card .g-title { font-weight: 700; font-size: 15px; }
+    .group-card .g-n { font-size: 12px; color: #6b7280; margin-left: auto; }
+    .group-stats {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;
+    }
+    .g-stat .g-label { font-size: 11px; color: #6b7280; margin-bottom: 2px; }
+    .g-stat .g-val { font-size: 16px; font-weight: 700; font-family: 'SF Mono', Monaco, monospace; }
+    .g-stat .g-sd { font-size: 11px; color: #9ca3af; }
+
+    /* p-value card */
+    .pvalue-card {
+      background: white; border: 1px solid #e5e7eb; border-radius: 12px;
+      padding: 16px 20px; min-width: 200px;
+    }
+    .pvalue-card .pv-title {
+      font-size: 12px; font-weight: 700; color: #374151; margin-bottom: 12px;
+    }
+    .pv-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 6px 0; border-bottom: 1px solid #f1f5f9; font-size: 12px;
+    }
+    .pv-row:last-child { border-bottom: none; }
+    .pv-metric { color: #6b7280; }
+    .pv-val { font-family: 'SF Mono', Monaco, monospace; font-weight: 700; }
+    .pv-val.sig1 { color: #d97706; }
+    .pv-val.sig2 { color: #dc2626; }
+    .pv-val.sig3 { color: #7c2d12; }
+    .pv-stars { font-size: 10px; margin-left: 2px; }
+    .effect-size {
+      margin-top: 8px; padding-top: 8px; border-top: 1px solid #e5e7eb;
+      font-size: 11px; color: #6b7280;
+    }
+    .effect-size strong { color: #1f2937; }
+
+    /* ===== MINI COMPARISON CHART ===== */
+    .mini-chart-container {
+      background: white; border: 1px solid #e5e7eb; border-radius: 12px;
+      padding: 16px 20px; margin-bottom: 16px;
+    }
+    .mini-chart-title {
+      font-size: 13px; font-weight: 600; color: #374151; margin-bottom: 12px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .chart-legend {
+      display: flex; gap: 16px; margin-left: auto; font-size: 11px; color: #6b7280;
+    }
+    .chart-legend .legend-dot {
+      width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 4px;
+    }
+    .chart-legend .legend-dot.exp { background: #3b82f6; }
+    .chart-legend .legend-dot.ctrl { background: #f59e0b; }
+    .sparkline-area {
+      width: 100%; height: 80px; background: #f8fafc; border-radius: 8px;
+      position: relative; overflow: hidden;
+    }
+    .sparkline-area svg { width: 100%; height: 100%; }
+
+    /* ===== DATA TABLE ===== */
+    .table-container {
+      background: white; border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden;
+    }
     .data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
     .data-table th {
       background: #f8fafc; padding: 12px 14px; text-align: left;
@@ -128,638 +323,1280 @@
     .data-table tr.danger-row { background: #fef2f2; }
     .data-table tr:last-child td { border-bottom: none; }
 
+    /* Group header row */
+    .group-header-row td {
+      background: #f1f5f9; font-weight: 700; font-size: 13px; color: #374151;
+      padding: 10px 14px; border-bottom: 2px solid #e5e7eb;
+    }
+    .group-header-row.experiment td { background: #eff6ff; border-left: 4px solid #3b82f6; }
+    .group-header-row.control td { background: #fffbeb; border-left: 4px solid #f59e0b; }
+    .group-avg-row td {
+      background: #f8fafc; font-weight: 700; font-style: italic;
+      border-top: 2px solid #e5e7eb; border-bottom: 2px solid #e5e7eb;
+      font-size: 12px; color: #475569;
+    }
+
     .col-id { font-family: 'SF Mono', Monaco, monospace; color: #64748b; font-size: 12px; }
-    .col-unit { font-size: 11px; color: #94a3b8; font-weight: 400; }
 
-    /* 코호트 뱃지 */
-    .cohort-badge { display: inline-block; padding: 2px 7px; border-radius: 4px; font-size: 10px; font-weight: 600; margin-left: 4px; }
+    /* Cohort badges */
+    .cohort-badge {
+      display: inline-block; padding: 2px 7px; border-radius: 4px;
+      font-size: 10px; font-weight: 600; margin-left: 4px;
+    }
     .cohort-badge.a { background: #dbeafe; color: #1d4ed8; }
-    .cohort-badge.b { background: #fce7f3; color: #be185d; }
-    .cohort-badge.c { background: #d1fae5; color: #047857; }
+    .cohort-badge.b { background: #fef3c7; color: #92400e; }
 
-    /* ===== Δ 셀 (전날 대비) ===== */
-    .val-cell { display: flex; align-items: center; gap: 8px; }
-    .val-main { font-family: 'SF Mono', Monaco, monospace; font-size: 14px; font-weight: 600; color: #1e293b; }
-    .val-unit { font-size: 11px; color: #94a3b8; }
-    .val-delta {
-      display: inline-flex; align-items: center; gap: 2px;
-      font-family: 'SF Mono', Monaco, monospace; font-size: 12px; font-weight: 600;
-      padding: 2px 6px; border-radius: 4px;
+    /* ===== DELTA CELL: Delta is PRIMARY ===== */
+    .delta-cell { display: flex; flex-direction: column; gap: 1px; }
+    .delta-primary {
+      font-family: 'SF Mono', Monaco, monospace;
+      font-size: 15px; font-weight: 700; letter-spacing: -0.02em;
+      display: inline-flex; align-items: center; gap: 3px;
     }
-    .val-delta.up-bad { color: #dc2626; background: #fef2f2; }
-    .val-delta.down-good { color: #059669; background: #f0fdf4; }
-    .val-delta.up-good { color: #059669; background: #f0fdf4; }
-    .val-delta.down-bad { color: #dc2626; background: #fef2f2; }
-    .val-delta.flat { color: #6b7280; background: #f3f4f6; }
-
-    /* 임계치 초과 아이콘 */
-    .threshold-flag {
-      display: inline-flex; align-items: center; justify-content: center;
-      width: 22px; height: 22px; border-radius: 50%;
-      font-size: 12px; flex-shrink: 0;
+    .delta-primary.down-good { color: #059669; }
+    .delta-primary.up-bad { color: #dc2626; }
+    .delta-primary.up-good { color: #059669; }
+    .delta-primary.down-bad { color: #dc2626; }
+    .delta-primary.flat { color: #6b7280; }
+    .raw-secondary {
+      font-family: 'SF Mono', Monaco, monospace;
+      font-size: 11px; color: #94a3b8; font-weight: 400;
     }
-    .threshold-flag.warn { background: #fef3c7; }
-    .threshold-flag.danger { background: #fee2e2; }
-    .threshold-flag.ok { background: transparent; }
 
-    /* 복약 여부 (일간) */
+    /* Simple value (no delta emphasis) */
+    .val-simple {
+      font-family: 'SF Mono', Monaco, monospace;
+      font-size: 14px; font-weight: 600; color: #1e293b;
+    }
+
+    /* Medication status */
     .med-status { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; }
     .med-status.taken { color: #059669; }
     .med-status.missed { color: #dc2626; }
-    .med-time { font-size: 11px; color: #94a3b8; font-weight: 400; }
 
-    /* 상태 뱃지 */
-    .status-badge { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; }
+    /* Status badge */
+    .status-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 600;
+    }
     .status-badge.normal { background: #f0fdf4; color: #166534; }
     .status-badge.caution { background: #fffbeb; color: #92400e; }
+    .status-badge.improved { background: #eff6ff; color: #1d4ed8; }
     .status-badge.danger { background: #fef2f2; color: #991b1b; }
 
-    /* 페이지네이션 */
-    .pagination { display: flex; justify-content: space-between; align-items: center; padding: 16px; border-top: 1px solid #e5e7eb; }
+    /* Pagination */
+    .pagination {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 16px; border-top: 1px solid #e5e7eb;
+    }
     .pagination-info { font-size: 13px; color: #6b7280; }
     .pagination-controls { display: flex; gap: 4px; }
-    .page-btn { padding: 6px 12px; border: 1px solid #e5e7eb; border-radius: 6px; background: white; font-size: 13px; cursor: pointer; }
+    .page-btn {
+      padding: 6px 12px; border: 1px solid #e5e7eb; border-radius: 6px;
+      background: white; font-size: 13px; cursor: pointer;
+    }
     .page-btn.active { background: #3b82f6; color: white; border-color: #3b82f6; }
 
-    /* ===== 오른쪽: 참여자 상세 패널 ===== */
-    .detail-panel { background: #fafbfc; border-left: 1px solid #e5e7eb; display: flex; flex-direction: column; overflow: hidden; }
-    .detail-header { padding: 16px 20px; background: white; border-bottom: 1px solid #e5e7eb; display: flex; align-items: center; gap: 12px; }
-    .detail-header .avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #3b82f6, #8b5cf6); display: flex; align-items: center; justify-content: center; color: white; font-size: 13px; font-weight: 600; }
+    /* ===== DETAIL PANEL (right side, 400px) ===== */
+    .detail-panel {
+      background: #fafbfc; border-left: 1px solid #e5e7eb;
+      display: flex; flex-direction: column; overflow: hidden;
+    }
+    .detail-header {
+      padding: 16px 20px; background: white; border-bottom: 1px solid #e5e7eb;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .detail-header .avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      display: flex; align-items: center; justify-content: center;
+      color: white; font-size: 13px; font-weight: 600;
+    }
     .detail-header .info h3 { font-size: 15px; font-weight: 600; }
     .detail-header .info .sub { font-size: 11px; color: #6b7280; }
-    .detail-header .close-btn { margin-left: auto; width: 28px; height: 28px; border: 1px solid #e5e7eb; border-radius: 6px; background: white; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; }
+    .detail-header .close-btn {
+      margin-left: auto; width: 28px; height: 28px;
+      border: 1px solid #e5e7eb; border-radius: 6px;
+      background: white; cursor: pointer; font-size: 14px;
+      display: flex; align-items: center; justify-content: center;
+    }
     .detail-body { flex: 1; overflow-y: auto; padding: 16px 20px; }
-
-    /* 상세 패널 카드 */
     .detail-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px; }
-    .d-card { background: white; border: 1px solid #e5e7eb; border-radius: 8px; padding: 10px 12px; }
+    .d-card {
+      background: white; border: 1px solid #e5e7eb; border-radius: 8px; padding: 10px 12px;
+    }
     .d-card .lbl { font-size: 11px; color: #6b7280; margin-bottom: 2px; }
     .d-card .val { font-size: 18px; font-weight: 700; }
     .d-card .delta { font-size: 12px; margin-top: 2px; }
     .d-card .delta.good { color: #059669; }
     .d-card .delta.bad { color: #dc2626; }
 
-    /* 원천 데이터 테이블 */
-    .section-title { font-size: 13px; font-weight: 600; color: #374151; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
-    .raw-table { width: 100%; border-collapse: collapse; font-size: 12px; background: white; border-radius: 8px; overflow: hidden; border: 1px solid #e5e7eb; margin-bottom: 16px; }
-    .raw-table th { padding: 8px 10px; background: #f9fafb; text-align: center; font-weight: 600; border-bottom: 1px solid #e5e7eb; font-size: 11px; color: #6b7280; }
-    .raw-table td { padding: 7px 10px; text-align: center; border-bottom: 1px solid #f3f4f6; font-family: 'SF Mono', Monaco, monospace; font-size: 12px; }
+    .section-title {
+      font-size: 13px; font-weight: 600; color: #374151;
+      margin-bottom: 8px; display: flex; align-items: center; gap: 6px;
+    }
+    .raw-table {
+      width: 100%; border-collapse: collapse; font-size: 12px;
+      background: white; border-radius: 8px; overflow: hidden;
+      border: 1px solid #e5e7eb; margin-bottom: 16px;
+    }
+    .raw-table th {
+      padding: 8px 10px; background: #f9fafb; text-align: center;
+      font-weight: 600; border-bottom: 1px solid #e5e7eb;
+      font-size: 11px; color: #6b7280;
+    }
+    .raw-table td {
+      padding: 7px 10px; text-align: center; border-bottom: 1px solid #f3f4f6;
+      font-family: 'SF Mono', Monaco, monospace; font-size: 12px;
+    }
     .raw-table tr:last-child td { border-bottom: none; }
     .raw-table .today-row { background: #eff6ff; font-weight: 600; }
-    .raw-table .baseline-row { background: #f8fafc; }
 
+    /* ===== DESIGNER NOTES ===== */
+    .designer-notes {
+      background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+      border: 2px solid #10b981; border-radius: 12px;
+      padding: 20px; margin-top: 24px;
+    }
+    .designer-notes.collapsed .dn-body { display: none; }
+    .dn-header {
+      display: flex; align-items: center; justify-content: space-between; cursor: pointer;
+    }
+    .dn-header h3 { color: #047857; font-size: 14px; }
+    .dn-toggle {
+      padding: 4px 12px; border: 1px solid #10b981; border-radius: 6px;
+      background: white; font-size: 12px; cursor: pointer; color: #047857; font-weight: 500;
+    }
+    .dn-body { margin-top: 16px; font-size: 12px; color: #374151; line-height: 1.8; }
+    .dn-body h4 { color: #047857; margin: 12px 0 6px; font-size: 13px; }
+    .dn-body table {
+      width: 100%; border-collapse: collapse; margin: 8px 0 12px; font-size: 12px;
+    }
+    .dn-body table th {
+      padding: 6px 10px; text-align: left; border: 1px solid #d1d5db; background: #f0fdf4;
+    }
+    .dn-body table td { padding: 6px 10px; border: 1px solid #e5e7eb; }
+
+    /* Navigation links */
     .step-nav { display: flex; gap: 10px; margin-top: 24px; flex-wrap: wrap; }
-    .step-nav a { padding: 8px 16px; background: #eee; border-radius: 6px; text-decoration: none; color: #333; font-size: 14px; }
+    .step-nav a {
+      padding: 8px 16px; background: #eee; border-radius: 6px;
+      text-decoration: none; color: #333; font-size: 14px;
+    }
+
+    /* ===== INDIVIDUAL VIEW (hidden by default in group comparison mode) ===== */
+    .view-individual { display: none; }
+    .view-group { display: block; }
+
     .inline-note { font-size: 12px; color: #64748b; margin-bottom: 12px; }
   </style>
 </head>
 <body>
   <div class="layout">
-    <!-- ===== 사이드바 ===== -->
+
+    <!-- ===== SIDEBAR ===== -->
     <div class="sidebar">
-      <div class="logo" style="display: flex; align-items: center; gap: 10px;">
-        <div style="width: 32px; height: 32px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px;">U</div>
+      <div class="logo">
+        <div class="logo-icon">U</div>
         UniQdata
       </div>
+
       <div class="nav-section">
-        <a href="list.html" class="nav-item"><span class="icon">🏠</span> 연구 허브</a>
+        <a href="list.html" class="nav-item"><span class="icon">📋</span> 연구 목록</a>
         <a href="create.html" class="nav-item"><span class="icon">➕</span> 새 연구</a>
+        <a href="irb-submission.html" class="nav-item"><span class="icon">📝</span> IRB 심의</a>
+        <a href="irb-status.html" class="nav-item"><span class="icon">📊</span> IRB 현황</a>
       </div>
+
       <div class="nav-section" style="flex: 1; overflow-y: auto; padding-top: 8px; border-top: 1px solid #2a2a2a;">
-        <div style="font-size: 10px; color: #64748b; padding: 6px 12px; text-transform: uppercase; letter-spacing: 0.5px;">내 연구 <span style="background: #3b82f6; color: white; padding: 1px 6px; border-radius: 8px; font-size: 9px; margin-left: 4px;">3</span></div>
+        <div class="research-list-header">
+          내 연구 <span class="count">3</span>
+        </div>
+
+        <!-- Research 1: Active, expanded -->
         <div class="research-nav-item expanded">
-          <div class="research-nav-header"><span style="font-size:13px">📁</span><span class="research-title">당뇨병 복약 순응도</span><span class="status-dot active"></span></div>
+          <div class="research-nav-header">
+            <span style="font-size:13px">📁</span>
+            <span class="research-title">당뇨 혈당 변동 연구</span>
+            <span class="status-dot active"></span>
+          </div>
           <div class="research-nav-sub">
             <a href="data-overview.html" class="nav-sub-item"><span class="dot"></span> 개요</a>
             <a href="data-table.html" class="nav-sub-item active"><span class="dot"></span> 테이블</a>
             <a href="analysis-discovery.html" class="nav-sub-item" style="color: #a78bfa;"><span class="dot"></span> AI 허브</a>
           </div>
         </div>
+
+        <!-- Research 2: Collapsed -->
         <div class="research-nav-item collapsed">
-          <div class="research-nav-header"><span style="font-size:13px">📁</span><span class="research-title">노인 수면 패턴</span><span class="status-dot recruiting"></span></div>
+          <div class="research-nav-header">
+            <span style="font-size:13px">📁</span>
+            <span class="research-title">노인 수면 패턴</span>
+            <span class="status-dot recruiting"></span>
+          </div>
+          <div class="research-nav-sub">
+            <a href="#" class="nav-sub-item"><span class="dot"></span> 개요</a>
+            <a href="#" class="nav-sub-item"><span class="dot"></span> 테이블</a>
+            <a href="#" class="nav-sub-item"><span class="dot"></span> AI 허브</a>
+          </div>
         </div>
+
+        <!-- Research 3: Collapsed, draft -->
         <div class="research-nav-item collapsed">
-          <div class="research-nav-header"><span style="font-size:13px">📄</span><span class="research-title">ADHD 생활습관</span><span class="status-dot draft"></span></div>
+          <div class="research-nav-header">
+            <span style="font-size:13px">📄</span>
+            <span class="research-title">ADHD 생활습관</span>
+            <span class="draft-badge">draft</span>
+            <span class="status-dot draft"></span>
+          </div>
+          <div class="research-nav-sub">
+            <a href="#" class="nav-sub-item"><span class="dot"></span> 개요</a>
+            <a href="#" class="nav-sub-item"><span class="dot"></span> 테이블</a>
+            <a href="#" class="nav-sub-item"><span class="dot"></span> AI 허브</a>
+          </div>
         </div>
       </div>
+
       <div class="nav-section">
         <a href="../team.html" class="nav-item"><span class="icon">👥</span> 팀</a>
         <a href="../billing.html" class="nav-item"><span class="icon">💳</span> 결제</a>
         <a href="#" class="nav-item"><span class="icon">⚙️</span> 설정</a>
       </div>
-      <div style="padding: 12px; border-top: 1px solid #2a2a2a;">
-        <div style="display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: 8px;">
-          <div style="width: 32px; height: 32px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; color: white;">김</div>
-          <div><div style="font-size: 13px; color: #e2e8f0;">김연구</div><div style="font-size: 11px; color: #64748b;">서울대학교병원</div></div>
+
+      <div class="user-profile">
+        <div class="user-avatar">김</div>
+        <div>
+          <div style="font-size: 13px; color: #e2e8f0;">김연구</div>
+          <div style="font-size: 11px; color: #64748b;">서울대학교병원</div>
         </div>
       </div>
     </div>
 
-    <!-- ===== 메인 영역 ===== -->
+    <!-- ===== MAIN AREA ===== -->
     <div class="main">
-      <div class="header-bar">Enterprise Portal</div>
+      <div class="header-bar">Enterprise Research Portal</div>
 
       <div class="main-grid">
-        <!-- ====== 왼쪽: 메인 콘텐츠 ====== -->
+        <!-- ====== LEFT: Main Content ====== -->
         <div class="main-content">
           <div class="breadcrumb">
-            <a href="list.html">연구 관리</a> / <a href="data-overview.html">당뇨병 복약 순응도</a> / <span>테이블</span>
+            <a href="list.html">연구 관리</a> / <a href="data-overview.html">당뇨 혈당 변동 연구</a> / <span>테이블</span>
           </div>
 
           <div class="page-title">연구 데이터</div>
-          <div class="page-sub">참여자별 일간/주간/월간 데이터를 추적합니다 · 행 클릭 시 오른쪽에 원천 데이터</div>
+          <div class="page-sub">저탄수화물 식단이 제2형 당뇨 혈당 변동성에 미치는 영향 (RCT) · n=100</div>
 
-          <!-- 탭 -->
+          <!-- Tabs -->
           <div class="tabs">
             <a href="data-overview.html" class="tab">개요</a>
             <a href="data-table.html" class="tab active">테이블</a>
             <a href="analysis-discovery.html" class="tab">AI 허브</a>
           </div>
 
-          <!-- ★ 기간 토글: 일간 / 주간 / 월간 / 전체 -->
-          <div class="period-row">
-            <div class="period-toggle" data-spec="기간 토글: 일간(전날대비Δ), 주간(Baseline대비Δ+순응도%), 월간(Baseline대비Δ), 전체(누적)" data-spec-type="nav">
-              <a href="data-table.html" class="period-btn active" style="text-decoration:none;">일간</a>
-              <a href="data-table-weekly.html" class="period-btn" style="text-decoration:none;">주간</a>
-              <a href="data-table-monthly.html" class="period-btn" style="text-decoration:none;">월간</a>
-              <button class="period-btn">전체</button>
+          <!-- VIEW MODE + TIME PERIOD + DATE NAV -->
+          <div class="controls-row">
+            <div class="view-toggle" id="viewToggle">
+              <button class="view-btn" onclick="switchView('individual')">👤 개인</button>
+              <button class="view-btn active" onclick="switchView('group')">⚔ 군 비교</button>
             </div>
+
+            <div class="period-toggle">
+              <button class="period-btn active">일간</button>
+              <button class="period-btn">주간</button>
+              <button class="period-btn">월간</button>
+              <button class="period-btn">시점별</button>
+            </div>
+
             <div class="date-nav">
               <button class="date-nav-btn">◀</button>
-              <div class="date-label">1월 7일 (화)</div>
+              <div class="date-label">2월 12일 (수)</div>
               <button class="date-nav-btn">▶</button>
               <button class="date-nav-btn">📅</button>
             </div>
-            <div class="date-sub">전날: 1월 6일 (월)</div>
+            <div class="date-sub">전날: 2월 11일 (화)</div>
           </div>
 
-          <!-- ★ 임계치 초과 알림 배너 -->
-          <div class="alert-banner" data-spec="임계치 초과 알림: 오늘 기준 임계치 초과자 목록. 혈당>180, 수축기>140 등 연구별 설정." data-spec-type="alert">
-            <span class="icon">🚨</span>
-            <div class="text">
-              <strong>임계치 초과 2명</strong> — P008 혈당 203 mg/dL (기준: 180), P002 혈당 156 mg/dL (기준: 140 주의)
-            </div>
-            <button class="action-btn">알림 설정</button>
+          <!-- COLUMN PRIORITY LEGEND -->
+          <div class="priority-legend">
+            <span class="legend-label">컬럼 우선순위</span>
+            <span class="priority-tag p1"><span class="dot"></span> P1 핵심 — 항상 표시</span>
+            <span class="priority-sep">|</span>
+            <span class="priority-tag p2"><span class="dot"></span> P2 기본 — 기본 표시</span>
+            <span class="priority-sep">|</span>
+            <span class="priority-tag p3" id="p3Toggle" onclick="toggleP3()" title="클릭하여 P3 컬럼 토글">
+              <span class="dot"></span> P3 보조 — 클릭하여 표시
+            </span>
+            <span style="margin-left: auto; font-size: 11px; color: #94a3b8;">
+              P1: ID, MAGE, 순응도, 상태 | P2: CV%, TIR, 복약 | P3: 혈압, 수면, 기분, HbA1c
+            </span>
           </div>
 
-          <!-- 코호트 바 -->
-          <div class="cohort-bar">
-            <span class="label">코호트</span>
-            <button class="cohort-tab active">전체</button>
-            <button class="cohort-tab">A 투약 <span style="font-size:11px; opacity:0.7">(29)</span></button>
-            <button class="cohort-tab">B 위약 <span style="font-size:11px; opacity:0.7">(28)</span></button>
-            <button class="cohort-tab">C 대조 <span style="font-size:11px; opacity:0.7">(27)</span></button>
-            <span class="cohort-info">비교 연구 · 3 코호트</span>
-          </div>
-
-          <!-- 툴바 -->
+          <!-- TOOLBAR -->
           <div class="toolbar">
             <div class="toolbar-left">
               <input type="text" class="search-box" placeholder="참여자 검색...">
               <button class="tool-btn">📊 컬럼 설정</button>
               <button class="tool-btn">🔔 임계치 설정</button>
+              <button class="tool-btn">🏷 필터</button>
             </div>
             <div class="toolbar-right">
               <button class="tool-btn">CSV</button>
               <button class="tool-btn">Excel</button>
             </div>
           </div>
-          <div class="inline-note">일간 뷰: 오늘 수치 + 전날 대비 변화량(Δ) · 임계치 초과 시 🔴 표시 · 복약은 ✓/✗</div>
 
-          <!-- ★ 일간 요약 칩 -->
-          <div class="stats-strip">
-            <div class="stat-chip">제출 <strong>82/87</strong></div>
-            <div class="stat-chip">복약 완료 <strong class="good">68명 (83%)</strong></div>
-            <div class="stat-chip">복약 미복용 <strong class="danger">14명</strong></div>
-            <div class="stat-chip">혈당 초과 <strong class="danger">2명</strong></div>
-            <div class="stat-chip">평균 혈당 <strong>124</strong> <span class="col-unit">mg/dL</span></div>
-            <div class="stat-chip">평균 수면 <strong>6.4</strong> <span class="col-unit">h</span></div>
-          </div>
+          <!-- =========================================================== -->
+          <!-- ===== GROUP COMPARISON VIEW (Default for RCT) ===== -->
+          <!-- =========================================================== -->
+          <div id="groupView" class="view-group">
 
-          <!-- ★★★ 일간 테이블 ★★★ -->
-          <div class="table-container" data-spec="일간 테이블: 오늘 수치 + 전날대비 Δ + 임계치 플래그 + 복약 ✓/✗ + 단위. 모든 컬럼 정렬 가능." data-spec-type="data">
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th class="sortable sorted">참여자 <span class="sort-icon">↓</span></th>
-                  <th class="sortable">
-                    심박수 <span class="col-unit">bpm</span> <span class="sort-icon">↕</span>
-                  </th>
-                  <th class="sortable">
-                    혈당 <span class="col-unit">mg/dL</span> <span class="sort-icon">↕</span>
-                  </th>
-                  <th class="sortable">
-                    혈압 <span class="col-unit">mmHg</span> <span class="sort-icon">↕</span>
-                  </th>
-                  <th class="sortable">
-                    복약 <span class="sort-icon">↕</span>
-                  </th>
-                  <th class="sortable">
-                    수면 <span class="col-unit">h</span> <span class="sort-icon">↕</span>
-                  </th>
-                  <th class="sortable">
-                    기분 <span class="col-unit">1~5</span> <span class="sort-icon">↕</span>
-                  </th>
-                  <th>상태</th>
-                </tr>
-              </thead>
-              <tbody>
+            <!-- ALERT BANNER -->
+            <div class="alert-banner">
+              <span class="a-icon">🚨</span>
+              <div class="text">
+                <strong>임계치 초과 1명</strong> — P007 MAGE 51.2 mg/dL (↑1.2, 기준: 50), 순응도 72% (기준: 80%)
+              </div>
+              <button class="action-btn">알림 설정</button>
+            </div>
 
-                <!-- P001: 정상 (선택됨) -->
-                <tr class="selected">
-                  <td class="col-id">P001 <span class="cohort-badge a">A</span></td>
-                  <td>
-                    <div class="val-cell">
-                      <span class="threshold-flag ok"></span>
-                      <span class="val-main">72</span>
-                      <span class="val-delta down-good">↓3</span>
-                    </div>
-                  </td>
-                  <td>
-                    <div class="val-cell">
-                      <span class="threshold-flag ok"></span>
-                      <span class="val-main">116</span>
-                      <span class="val-delta down-good">↓4</span>
-                    </div>
-                  </td>
-                  <td>
-                    <div class="val-cell">
-                      <span class="threshold-flag ok"></span>
-                      <span class="val-main">124/78</span>
-                      <span class="val-delta down-good">↓2</span>
-                    </div>
-                  </td>
-                  <td>
-                    <div class="med-status taken">✓ 복용 <span class="med-time">08:30</span></div>
-                  </td>
-                  <td>
-                    <div class="val-cell">
-                      <span class="val-main">7.2</span>
-                      <span class="val-delta up-good">↑0.4</span>
-                    </div>
-                  </td>
-                  <td>
-                    <div class="val-cell">
-                      <span class="val-main">4.0</span>
-                      <span class="val-delta flat">→</span>
-                    </div>
-                  </td>
-                  <td><span class="status-badge normal">정상</span></td>
-                </tr>
+            <!-- GROUP SUMMARY BAR -->
+            <div class="group-summary-bar">
+              <!-- Experiment Group Card -->
+              <div class="group-card experiment">
+                <div class="g-header">
+                  <span class="g-badge">실험군</span>
+                  <span class="g-title">저탄수화물</span>
+                  <span class="g-n">n=50</span>
+                </div>
+                <div class="group-stats">
+                  <div class="g-stat">
+                    <div class="g-label">MAGE</div>
+                    <div class="g-val" style="color: #059669;">42.3</div>
+                    <div class="g-sd">± 8.1 mg/dL</div>
+                  </div>
+                  <div class="g-stat">
+                    <div class="g-label">CV%</div>
+                    <div class="g-val" style="color: #059669;">28.1</div>
+                    <div class="g-sd">± 4.2%</div>
+                  </div>
+                  <div class="g-stat">
+                    <div class="g-label">TIR</div>
+                    <div class="g-val" style="color: #059669;">78.3</div>
+                    <div class="g-sd">± 6.1%</div>
+                  </div>
+                  <div class="g-stat">
+                    <div class="g-label">순응도</div>
+                    <div class="g-val">91%</div>
+                    <div class="g-sd">식단 순응</div>
+                  </div>
+                </div>
+              </div>
 
-                <!-- P002: 주의 (혈당 상승) -->
-                <tr class="alert-row">
-                  <td class="col-id">P002 <span class="cohort-badge b">B</span></td>
-                  <td>
-                    <div class="val-cell">
-                      <span class="threshold-flag ok"></span>
-                      <span class="val-main">82</span>
-                      <span class="val-delta up-bad">↑6</span>
-                    </div>
-                  </td>
-                  <td>
-                    <div class="val-cell">
-                      <span class="threshold-flag warn">⚠</span>
-                      <span class="val-main" style="color: #d97706;">156</span>
-                      <span class="val-delta up-bad">↑14</span>
-                    </div>
-                  </td>
-                  <td>
-                    <div class="val-cell">
-                      <span class="threshold-flag warn">⚠</span>
-                      <span class="val-main" style="color: #d97706;">138/88</span>
-                      <span class="val-delta up-bad">↑4</span>
-                    </div>
-                  </td>
-                  <td>
-                    <div class="med-status missed">✗ 미복용</div>
-                  </td>
-                  <td>
-                    <div class="val-cell">
-                      <span class="val-main">5.1</span>
-                      <span class="val-delta down-bad">↓0.8</span>
-                    </div>
-                  </td>
-                  <td>
-                    <div class="val-cell">
-                      <span class="val-main">2.0</span>
-                      <span class="val-delta down-bad">↓1</span>
-                    </div>
-                  </td>
-                  <td><span class="status-badge caution">⚠ 주의</span></td>
-                </tr>
+              <!-- Control Group Card -->
+              <div class="group-card control">
+                <div class="g-header">
+                  <span class="g-badge">대조군</span>
+                  <span class="g-title">일반 식단</span>
+                  <span class="g-n">n=50</span>
+                </div>
+                <div class="group-stats">
+                  <div class="g-stat">
+                    <div class="g-label">MAGE</div>
+                    <div class="g-val" style="color: #dc2626;">58.7</div>
+                    <div class="g-sd">± 12.4 mg/dL</div>
+                  </div>
+                  <div class="g-stat">
+                    <div class="g-label">CV%</div>
+                    <div class="g-val" style="color: #dc2626;">35.2</div>
+                    <div class="g-sd">± 5.8%</div>
+                  </div>
+                  <div class="g-stat">
+                    <div class="g-label">TIR</div>
+                    <div class="g-val" style="color: #dc2626;">62.1</div>
+                    <div class="g-sd">± 8.3%</div>
+                  </div>
+                  <div class="g-stat">
+                    <div class="g-label">순응도</div>
+                    <div class="g-val">87%</div>
+                    <div class="g-sd">식단 순응</div>
+                  </div>
+                </div>
+              </div>
 
-                <!-- P003: 정상 -->
-                <tr>
-                  <td class="col-id">P003 <span class="cohort-badge a">A</span></td>
-                  <td>
-                    <div class="val-cell">
-                      <span class="threshold-flag ok"></span>
-                      <span class="val-main">68</span>
-                      <span class="val-delta down-good">↓2</span>
-                    </div>
-                  </td>
-                  <td>
-                    <div class="val-cell">
-                      <span class="threshold-flag ok"></span>
-                      <span class="val-main">108</span>
-                      <span class="val-delta down-good">↓6</span>
-                    </div>
-                  </td>
-                  <td>
-                    <div class="val-cell">
-                      <span class="threshold-flag ok"></span>
-                      <span class="val-main">118/72</span>
-                      <span class="val-delta flat">→</span>
-                    </div>
-                  </td>
-                  <td>
-                    <div class="med-status taken">✓ 복용 <span class="med-time">07:45</span></div>
-                  </td>
-                  <td>
-                    <div class="val-cell">
-                      <span class="val-main">7.8</span>
-                      <span class="val-delta up-good">↑0.2</span>
-                    </div>
-                  </td>
-                  <td>
-                    <div class="val-cell">
-                      <span class="val-main">4.5</span>
-                      <span class="val-delta up-good">↑0.5</span>
-                    </div>
-                  </td>
-                  <td><span class="status-badge normal">정상</span></td>
-                </tr>
-
-                <!-- P008: 위험 (혈당 초과) -->
-                <tr class="danger-row">
-                  <td class="col-id">P008 <span class="cohort-badge c">C</span></td>
-                  <td>
-                    <div class="val-cell">
-                      <span class="threshold-flag warn">⚠</span>
-                      <span class="val-main" style="color: #d97706;">96</span>
-                      <span class="val-delta up-bad">↑12</span>
-                    </div>
-                  </td>
-                  <td>
-                    <div class="val-cell">
-                      <span class="threshold-flag danger">🔴</span>
-                      <span class="val-main" style="color: #dc2626; font-weight: 800;">203</span>
-                      <span class="val-delta up-bad">↑25</span>
-                    </div>
-                  </td>
-                  <td>
-                    <div class="val-cell">
-                      <span class="threshold-flag danger">🔴</span>
-                      <span class="val-main" style="color: #dc2626;">152/96</span>
-                      <span class="val-delta up-bad">↑8</span>
-                    </div>
-                  </td>
-                  <td>
-                    <div class="med-status missed">✗ 미복용</div>
-                  </td>
-                  <td>
-                    <div class="val-cell">
-                      <span class="val-main" style="color: #dc2626;">3.2</span>
-                      <span class="val-delta down-bad">↓1.5</span>
-                    </div>
-                  </td>
-                  <td>
-                    <div class="val-cell">
-                      <span class="val-main" style="color: #dc2626;">1.0</span>
-                      <span class="val-delta down-bad">↓0.5</span>
-                    </div>
-                  </td>
-                  <td><span class="status-badge danger">🚨 위험</span></td>
-                </tr>
-
-                <!-- P005: 정상 -->
-                <tr>
-                  <td class="col-id">P005 <span class="cohort-badge a">A</span></td>
-                  <td>
-                    <div class="val-cell">
-                      <span class="threshold-flag ok"></span>
-                      <span class="val-main">70</span>
-                      <span class="val-delta flat">→</span>
-                    </div>
-                  </td>
-                  <td>
-                    <div class="val-cell">
-                      <span class="threshold-flag ok"></span>
-                      <span class="val-main">122</span>
-                      <span class="val-delta up-bad">↑3</span>
-                    </div>
-                  </td>
-                  <td>
-                    <div class="val-cell">
-                      <span class="threshold-flag ok"></span>
-                      <span class="val-main">120/76</span>
-                      <span class="val-delta flat">→</span>
-                    </div>
-                  </td>
-                  <td>
-                    <div class="med-status taken">✓ 복용 <span class="med-time">09:10</span></div>
-                  </td>
-                  <td>
-                    <div class="val-cell">
-                      <span class="val-main">6.8</span>
-                      <span class="val-delta down-bad">↓0.2</span>
-                    </div>
-                  </td>
-                  <td>
-                    <div class="val-cell">
-                      <span class="val-main">3.5</span>
-                      <span class="val-delta flat">→</span>
-                    </div>
-                  </td>
-                  <td><span class="status-badge normal">정상</span></td>
-                </tr>
-
-                <!-- P011: 정상 -->
-                <tr>
-                  <td class="col-id">P011 <span class="cohort-badge b">B</span></td>
-                  <td>
-                    <div class="val-cell">
-                      <span class="threshold-flag ok"></span>
-                      <span class="val-main">74</span>
-                      <span class="val-delta down-good">↓1</span>
-                    </div>
-                  </td>
-                  <td>
-                    <div class="val-cell">
-                      <span class="threshold-flag ok"></span>
-                      <span class="val-main">128</span>
-                      <span class="val-delta down-good">↓5</span>
-                    </div>
-                  </td>
-                  <td>
-                    <div class="val-cell">
-                      <span class="threshold-flag ok"></span>
-                      <span class="val-main">126/80</span>
-                      <span class="val-delta down-good">↓2</span>
-                    </div>
-                  </td>
-                  <td>
-                    <div class="med-status taken">✓ 복용 <span class="med-time">08:00</span></div>
-                  </td>
-                  <td>
-                    <div class="val-cell">
-                      <span class="val-main">6.5</span>
-                      <span class="val-delta up-good">↑0.3</span>
-                    </div>
-                  </td>
-                  <td>
-                    <div class="val-cell">
-                      <span class="val-main">3.5</span>
-                      <span class="val-delta up-good">↑0.5</span>
-                    </div>
-                  </td>
-                  <td><span class="status-badge normal">정상</span></td>
-                </tr>
-
-                <!-- P014: 미제출 -->
-                <tr style="opacity: 0.5;">
-                  <td class="col-id">P014 <span class="cohort-badge c">C</span></td>
-                  <td colspan="7" style="text-align: center; color: #94a3b8; font-style: italic;">
-                    오늘 데이터 미제출 · 마지막 활동: 1/5
-                  </td>
-                </tr>
-
-              </tbody>
-            </table>
-
-            <div class="pagination">
-              <div class="pagination-info">오늘 제출 82/87 · 정상 66 · 주의 10 · 위험 2 · 미제출 5</div>
-              <div class="pagination-controls">
-                <button class="page-btn">◀</button>
-                <button class="page-btn active">1</button>
-                <button class="page-btn">2</button>
-                <button class="page-btn">3</button>
-                <button class="page-btn">...</button>
-                <button class="page-btn">9</button>
-                <button class="page-btn">▶</button>
+              <!-- p-value + Effect Size -->
+              <div class="pvalue-card">
+                <div class="pv-title">군간 비교 (t-test)</div>
+                <div class="pv-row">
+                  <span class="pv-metric">MAGE</span>
+                  <span class="pv-val sig2">p=0.003<span class="pv-stars">**</span></span>
+                </div>
+                <div class="pv-row">
+                  <span class="pv-metric">CV%</span>
+                  <span class="pv-val sig1">p=0.012<span class="pv-stars">*</span></span>
+                </div>
+                <div class="pv-row">
+                  <span class="pv-metric">TIR</span>
+                  <span class="pv-val sig3">p=0.001<span class="pv-stars">***</span></span>
+                </div>
+                <div class="pv-row">
+                  <span class="pv-metric">순응도</span>
+                  <span class="pv-val" style="color: #6b7280;">p=0.214</span>
+                </div>
+                <div class="effect-size">
+                  Effect size: <strong>Cohen's d = 1.56</strong> (MAGE)<br>
+                  NNT: <strong>3.2</strong>
+                </div>
               </div>
             </div>
-          </div>
 
-          <!-- 기능 명세 -->
-          <div style="background: linear-gradient(135deg, #ecfdf5, #d1fae5); border: 2px solid #10b981; border-radius: 12px; padding: 20px; margin-top: 24px;">
-            <h3 style="color: #047857; margin-bottom: 12px; font-size: 14px;">⚙️ 기능 명세 (v3 — 일간/주간/월간)</h3>
-            <div style="font-size: 12px; color: #374151; line-height: 1.8;">
-              <strong>기간별 뷰 차이:</strong><br>
-              <table style="width:100%; border-collapse:collapse; margin: 8px 0 12px; font-size: 12px;">
-                <tr style="background:#f0fdf4;"><th style="padding:6px 10px; text-align:left; border:1px solid #d1d5db;">항목</th><th style="padding:6px 10px; border:1px solid #d1d5db;">일간</th><th style="padding:6px 10px; border:1px solid #d1d5db;">주간</th><th style="padding:6px 10px; border:1px solid #d1d5db;">월간</th><th style="padding:6px 10px; border:1px solid #d1d5db;">전체</th></tr>
-                <tr><td style="padding:6px 10px; border:1px solid #e5e7eb; font-weight:600;">비교 기준</td><td style="padding:6px 10px; border:1px solid #e5e7eb;">전날</td><td style="padding:6px 10px; border:1px solid #e5e7eb;">Baseline (연구 설정)</td><td style="padding:6px 10px; border:1px solid #e5e7eb;">Baseline</td><td style="padding:6px 10px; border:1px solid #e5e7eb;">Baseline</td></tr>
-                <tr><td style="padding:6px 10px; border:1px solid #e5e7eb; font-weight:600;">복약</td><td style="padding:6px 10px; border:1px solid #e5e7eb;">✓/✗ (복용여부 + 시간)</td><td style="padding:6px 10px; border:1px solid #e5e7eb;">순응도 % (7일)</td><td style="padding:6px 10px; border:1px solid #e5e7eb;">순응도 % (30일)</td><td style="padding:6px 10px; border:1px solid #e5e7eb;">누적 순응도 %</td></tr>
-                <tr><td style="padding:6px 10px; border:1px solid #e5e7eb; font-weight:600;">Δ 표시</td><td style="padding:6px 10px; border:1px solid #e5e7eb;">↑3 / ↓5 (전날 대비)</td><td style="padding:6px 10px; border:1px solid #e5e7eb;">+12 / −8 (Baseline 대비)</td><td style="padding:6px 10px; border:1px solid #e5e7eb;">+10 / −6 (Baseline 대비)</td><td style="padding:6px 10px; border:1px solid #e5e7eb;">누적 Δ</td></tr>
-                <tr><td style="padding:6px 10px; border:1px solid #e5e7eb; font-weight:600;">임계치 알림</td><td style="padding:6px 10px; border:1px solid #e5e7eb;">실시간 (오늘 초과자)</td><td style="padding:6px 10px; border:1px solid #e5e7eb;">주 평균 초과</td><td style="padding:6px 10px; border:1px solid #e5e7eb;">월 평균 초과</td><td style="padding:6px 10px; border:1px solid #e5e7eb;">—</td></tr>
+            <!-- MINI COMPARISON SPARKLINE CHART -->
+            <div class="mini-chart-container">
+              <div class="mini-chart-title">
+                MAGE 추이 비교 (최근 14일)
+                <div class="chart-legend">
+                  <span><span class="legend-dot exp"></span>실험군</span>
+                  <span><span class="legend-dot ctrl"></span>대조군</span>
+                </div>
+              </div>
+              <div class="sparkline-area">
+                <svg viewBox="0 0 600 80" preserveAspectRatio="none">
+                  <!-- Grid lines -->
+                  <line x1="0" y1="20" x2="600" y2="20" stroke="#e5e7eb" stroke-width="0.5"/>
+                  <line x1="0" y1="40" x2="600" y2="40" stroke="#e5e7eb" stroke-width="0.5"/>
+                  <line x1="0" y1="60" x2="600" y2="60" stroke="#e5e7eb" stroke-width="0.5"/>
+                  <!-- Control group (higher, amber) -->
+                  <polyline fill="none" stroke="#f59e0b" stroke-width="2"
+                    points="0,25 43,22 86,28 129,24 172,20 215,26 258,22 301,25 344,18 387,22 430,20 473,24 516,22 559,20"/>
+                  <polyline fill="rgba(245,158,11,0.1)" stroke="none"
+                    points="0,25 43,22 86,28 129,24 172,20 215,26 258,22 301,25 344,18 387,22 430,20 473,24 516,22 559,20 559,80 0,80"/>
+                  <!-- Experiment group (lower, blue) -->
+                  <polyline fill="none" stroke="#3b82f6" stroke-width="2"
+                    points="0,50 43,52 86,48 129,55 172,50 215,45 258,48 301,42 344,45 387,40 430,42 473,38 516,40 559,35"/>
+                  <polyline fill="rgba(59,130,246,0.1)" stroke="none"
+                    points="0,50 43,52 86,48 129,55 172,50 215,45 258,48 301,42 344,45 387,40 430,42 473,38 516,40 559,35 559,80 0,80"/>
+                  <!-- Labels -->
+                  <text x="10" y="14" fill="#f59e0b" font-size="9" font-weight="600">대조군 58.7</text>
+                  <text x="510" y="32" fill="#3b82f6" font-size="9" font-weight="600">실험군 42.3</text>
+                </svg>
+              </div>
+            </div>
+
+            <!-- STATS STRIP (group view) -->
+            <div class="stats-strip">
+              <div class="stat-chip">전체 제출율 <strong class="good">96%</strong></div>
+              <div class="stat-chip">실험군 MAGE 평균 <strong class="good">42.3</strong></div>
+              <div class="stat-chip">대조군 MAGE 평균 <strong class="warn">58.7</strong></div>
+              <div class="stat-chip">복약 완료 <strong class="good">89명 (89%)</strong></div>
+              <div class="stat-chip">MAGE 초과 <strong class="danger">1명</strong></div>
+              <div class="stat-chip">순응도 미달 <strong class="warn">3명</strong></div>
+            </div>
+
+            <div class="inline-note">
+              군 비교 + 일간: 오늘 Δ(전날 대비)가 주 표시, 괄호 안 원시값 보조 · 그룹별 평균 행 고정 · P1+P2 기본 노출
+            </div>
+
+            <!-- ===== GROUP COMPARISON TABLE ===== -->
+            <div class="table-container">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th class="sortable sorted" style="min-width: 100px;">
+                      참여자 <span class="sort-icon">↓</span>
+                      <br><span style="font-size:10px; font-weight:400; color:#94a3b8;">P1</span>
+                    </th>
+                    <th class="sortable" style="min-width: 110px;">
+                      MAGE <span style="font-size:10px; color:#94a3b8;">mg/dL</span> <span class="sort-icon">↕</span>
+                      <br><span style="font-size:10px; font-weight:400; color:#dc2626;">P1</span>
+                    </th>
+                    <th class="sortable" style="min-width: 90px;">
+                      식단순응도 <span style="font-size:10px; color:#94a3b8;">%</span> <span class="sort-icon">↕</span>
+                      <br><span style="font-size:10px; font-weight:400; color:#dc2626;">P1</span>
+                    </th>
+                    <th class="sortable" style="min-width: 90px;">
+                      CV% <span class="sort-icon">↕</span>
+                      <br><span style="font-size:10px; font-weight:400; color:#d97706;">P2</span>
+                    </th>
+                    <th class="sortable" style="min-width: 80px;">
+                      TIR <span style="font-size:10px; color:#94a3b8;">%</span> <span class="sort-icon">↕</span>
+                      <br><span style="font-size:10px; font-weight:400; color:#d97706;">P2</span>
+                    </th>
+                    <th class="sortable" style="min-width: 70px;">
+                      복약 <span class="sort-icon">↕</span>
+                      <br><span style="font-size:10px; font-weight:400; color:#d97706;">P2</span>
+                    </th>
+                    <th style="min-width: 70px;">
+                      상태
+                      <br><span style="font-size:10px; font-weight:400; color:#dc2626;">P1</span>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+
+                  <!-- ===== EXPERIMENT GROUP HEADER ===== -->
+                  <tr class="group-header-row experiment">
+                    <td colspan="7">
+                      <span style="color: #1d4ed8;">실험군 (저탄수화물)</span>
+                      <span style="font-size: 12px; font-weight: 400; color: #6b7280; margin-left: 8px;">n=50 · 표시: 5/50</span>
+                    </td>
+                  </tr>
+
+                  <!-- Experiment: Group Average (pinned) -->
+                  <tr class="group-avg-row">
+                    <td class="col-id" style="font-weight:700; color:#1d4ed8;">평균 (실험군)</td>
+                    <td>
+                      <div class="delta-cell">
+                        <span class="delta-primary down-good">↓4.2</span>
+                        <span class="raw-secondary">(42.3)</span>
+                      </div>
+                    </td>
+                    <td><span class="val-simple">91%</span></td>
+                    <td>
+                      <div class="delta-cell">
+                        <span class="delta-primary down-good">↓1.8</span>
+                        <span class="raw-secondary">(28.1%)</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="delta-cell">
+                        <span class="delta-primary up-good">↑3.2</span>
+                        <span class="raw-secondary">(78.3%)</span>
+                      </div>
+                    </td>
+                    <td><span class="val-simple" style="color:#059669;">92%</span></td>
+                    <td>—</td>
+                  </tr>
+
+                  <!-- P001 A -->
+                  <tr class="selected">
+                    <td class="col-id">P001 <span class="cohort-badge a">A</span></td>
+                    <td>
+                      <div class="delta-cell">
+                        <span class="delta-primary down-good">↓4.2</span>
+                        <span class="raw-secondary">(42.3)</span>
+                      </div>
+                    </td>
+                    <td><span class="val-simple" style="color:#059669;">94%</span></td>
+                    <td>
+                      <div class="delta-cell">
+                        <span class="delta-primary down-good">↓1.4</span>
+                        <span class="raw-secondary">(28.1%)</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="delta-cell">
+                        <span class="delta-primary up-good">↑2.1</span>
+                        <span class="raw-secondary">(78%)</span>
+                      </div>
+                    </td>
+                    <td><div class="med-status taken">✓</div></td>
+                    <td><span class="status-badge normal">정상</span></td>
+                  </tr>
+
+                  <!-- P003 A -->
+                  <tr>
+                    <td class="col-id">P003 <span class="cohort-badge a">A</span></td>
+                    <td>
+                      <div class="delta-cell">
+                        <span class="delta-primary down-good">↓6.1</span>
+                        <span class="raw-secondary">(38.9)</span>
+                      </div>
+                    </td>
+                    <td><span class="val-simple" style="color:#059669;">91%</span></td>
+                    <td>
+                      <div class="delta-cell">
+                        <span class="delta-primary down-good">↓2.1</span>
+                        <span class="raw-secondary">(25.4%)</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="delta-cell">
+                        <span class="delta-primary up-good">↑3.5</span>
+                        <span class="raw-secondary">(82%)</span>
+                      </div>
+                    </td>
+                    <td><div class="med-status taken">✓</div></td>
+                    <td><span class="status-badge normal">정상</span></td>
+                  </tr>
+
+                  <!-- P005 A -->
+                  <tr>
+                    <td class="col-id">P005 <span class="cohort-badge a">A</span></td>
+                    <td>
+                      <div class="delta-cell">
+                        <span class="delta-primary down-good">↓2.8</span>
+                        <span class="raw-secondary">(45.1)</span>
+                      </div>
+                    </td>
+                    <td><span class="val-simple">88%</span></td>
+                    <td>
+                      <div class="delta-cell">
+                        <span class="delta-primary down-good">↓0.9</span>
+                        <span class="raw-secondary">(30.2%)</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="delta-cell">
+                        <span class="delta-primary up-good">↑1.8</span>
+                        <span class="raw-secondary">(75%)</span>
+                      </div>
+                    </td>
+                    <td><div class="med-status taken">✓</div></td>
+                    <td><span class="status-badge normal">정상</span></td>
+                  </tr>
+
+                  <!-- P007 A — CAUTION -->
+                  <tr class="alert-row">
+                    <td class="col-id">P007 <span class="cohort-badge a">A</span></td>
+                    <td>
+                      <div class="delta-cell">
+                        <span class="delta-primary up-bad">↑1.2</span>
+                        <span class="raw-secondary" style="color:#d97706;">(51.2)</span>
+                      </div>
+                    </td>
+                    <td><span class="val-simple" style="color:#dc2626;">72%</span></td>
+                    <td>
+                      <div class="delta-cell">
+                        <span class="delta-primary up-bad">↑2.3</span>
+                        <span class="raw-secondary">(33.8%)</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="delta-cell">
+                        <span class="delta-primary down-bad">↓2.4</span>
+                        <span class="raw-secondary">(68%)</span>
+                      </div>
+                    </td>
+                    <td><div class="med-status missed">✗</div></td>
+                    <td><span class="status-badge caution">⚠ 주의</span></td>
+                  </tr>
+
+                  <!-- P009 A — IMPROVED -->
+                  <tr>
+                    <td class="col-id">P009 <span class="cohort-badge a">A</span></td>
+                    <td>
+                      <div class="delta-cell">
+                        <span class="delta-primary down-good">↓8.3</span>
+                        <span class="raw-secondary">(36.4)</span>
+                      </div>
+                    </td>
+                    <td><span class="val-simple" style="color:#059669;">96%</span></td>
+                    <td>
+                      <div class="delta-cell">
+                        <span class="delta-primary down-good">↓3.2</span>
+                        <span class="raw-secondary">(23.1%)</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="delta-cell">
+                        <span class="delta-primary up-good">↑5.1</span>
+                        <span class="raw-secondary">(85%)</span>
+                      </div>
+                    </td>
+                    <td><div class="med-status taken">✓</div></td>
+                    <td><span class="status-badge improved">↑ 개선</span></td>
+                  </tr>
+
+                  <!-- ===== CONTROL GROUP HEADER ===== -->
+                  <tr class="group-header-row control">
+                    <td colspan="7">
+                      <span style="color: #92400e;">대조군 (일반 식단)</span>
+                      <span style="font-size: 12px; font-weight: 400; color: #6b7280; margin-left: 8px;">n=50 · 표시: 5/50</span>
+                    </td>
+                  </tr>
+
+                  <!-- Control: Group Average (pinned) -->
+                  <tr class="group-avg-row">
+                    <td class="col-id" style="font-weight:700; color:#92400e;">평균 (대조군)</td>
+                    <td>
+                      <div class="delta-cell">
+                        <span class="delta-primary up-bad">↑1.5</span>
+                        <span class="raw-secondary">(58.7)</span>
+                      </div>
+                    </td>
+                    <td><span class="val-simple">87%</span></td>
+                    <td>
+                      <div class="delta-cell">
+                        <span class="delta-primary up-bad">↑0.8</span>
+                        <span class="raw-secondary">(35.2%)</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="delta-cell">
+                        <span class="delta-primary down-bad">↓1.1</span>
+                        <span class="raw-secondary">(62.1%)</span>
+                      </div>
+                    </td>
+                    <td><span class="val-simple">86%</span></td>
+                    <td>—</td>
+                  </tr>
+
+                  <!-- P002 B -->
+                  <tr>
+                    <td class="col-id">P002 <span class="cohort-badge b">B</span></td>
+                    <td>
+                      <div class="delta-cell">
+                        <span class="delta-primary up-bad">↑2.1</span>
+                        <span class="raw-secondary">(58.7)</span>
+                      </div>
+                    </td>
+                    <td><span class="val-simple">89%</span></td>
+                    <td>
+                      <div class="delta-cell">
+                        <span class="delta-primary up-bad">↑1.0</span>
+                        <span class="raw-secondary">(35.2%)</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="delta-cell">
+                        <span class="delta-primary down-bad">↓1.3</span>
+                        <span class="raw-secondary">(62%)</span>
+                      </div>
+                    </td>
+                    <td><div class="med-status taken">✓</div></td>
+                    <td><span class="status-badge normal">정상</span></td>
+                  </tr>
+
+                  <!-- P004 B -->
+                  <tr>
+                    <td class="col-id">P004 <span class="cohort-badge b">B</span></td>
+                    <td>
+                      <div class="delta-cell">
+                        <span class="delta-primary up-bad">↑0.4</span>
+                        <span class="raw-secondary">(55.3)</span>
+                      </div>
+                    </td>
+                    <td><span class="val-simple">85%</span></td>
+                    <td>
+                      <div class="delta-cell">
+                        <span class="delta-primary flat">→ 0.0</span>
+                        <span class="raw-secondary">(33.8%)</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="delta-cell">
+                        <span class="delta-primary down-bad">↓0.8</span>
+                        <span class="raw-secondary">(65%)</span>
+                      </div>
+                    </td>
+                    <td><div class="med-status taken">✓</div></td>
+                    <td><span class="status-badge normal">정상</span></td>
+                  </tr>
+
+                  <!-- P006 B — CAUTION -->
+                  <tr class="alert-row">
+                    <td class="col-id">P006 <span class="cohort-badge b">B</span></td>
+                    <td>
+                      <div class="delta-cell">
+                        <span class="delta-primary up-bad">↑3.8</span>
+                        <span class="raw-secondary" style="color:#d97706;">(62.1)</span>
+                      </div>
+                    </td>
+                    <td><span class="val-simple" style="color:#d97706;">82%</span></td>
+                    <td>
+                      <div class="delta-cell">
+                        <span class="delta-primary up-bad">↑2.1</span>
+                        <span class="raw-secondary">(38.4%)</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="delta-cell">
+                        <span class="delta-primary down-bad">↓2.8</span>
+                        <span class="raw-secondary">(58%)</span>
+                      </div>
+                    </td>
+                    <td><div class="med-status missed">✗</div></td>
+                    <td><span class="status-badge caution">⚠ 주의</span></td>
+                  </tr>
+
+                  <!-- P008 B -->
+                  <tr>
+                    <td class="col-id">P008 <span class="cohort-badge b">B</span></td>
+                    <td>
+                      <div class="delta-cell">
+                        <span class="delta-primary down-good">↓0.2</span>
+                        <span class="raw-secondary">(54.9)</span>
+                      </div>
+                    </td>
+                    <td><span class="val-simple" style="color:#059669;">91%</span></td>
+                    <td>
+                      <div class="delta-cell">
+                        <span class="delta-primary down-good">↓0.4</span>
+                        <span class="raw-secondary">(34.1%)</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="delta-cell">
+                        <span class="delta-primary up-good">↑0.6</span>
+                        <span class="raw-secondary">(64%)</span>
+                      </div>
+                    </td>
+                    <td><div class="med-status taken">✓</div></td>
+                    <td><span class="status-badge normal">정상</span></td>
+                  </tr>
+
+                  <!-- P010 B -->
+                  <tr>
+                    <td class="col-id">P010 <span class="cohort-badge b">B</span></td>
+                    <td>
+                      <div class="delta-cell">
+                        <span class="delta-primary up-bad">↑1.5</span>
+                        <span class="raw-secondary">(57.2)</span>
+                      </div>
+                    </td>
+                    <td><span class="val-simple">87%</span></td>
+                    <td>
+                      <div class="delta-cell">
+                        <span class="delta-primary up-bad">↑0.6</span>
+                        <span class="raw-secondary">(36.0%)</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="delta-cell">
+                        <span class="delta-primary down-bad">↓0.5</span>
+                        <span class="raw-secondary">(61%)</span>
+                      </div>
+                    </td>
+                    <td><div class="med-status taken">✓</div></td>
+                    <td><span class="status-badge normal">정상</span></td>
+                  </tr>
+
+                </tbody>
               </table>
 
-              <strong>임계치 (Threshold) 설정:</strong><br>
-              • 연구별로 설정 가능 (🔔 임계치 설정 버튼)<br>
-              • 기본값 예시: 혈당 ≥180 🔴위험, ≥140 ⚠주의 / 수축기 ≥140 ⚠, ≥160 🔴 / 심박수 ≥100 ⚠<br>
-              • 초과 시: 셀에 ⚠/🔴 플래그 + 행 배경색 변경 + 상단 알림 배너<br>
-              • 알림 채널: 인앱 + 이메일 + 슬랙 웹훅 (선택)<br><br>
-
-              <strong>정렬:</strong><br>
-              • 모든 수치 컬럼 클릭 → ASC/DESC 토글<br>
-              • 복약: 미복용 우선 / 복용 우선 정렬<br>
-              • 상태: 위험 → 주의 → 정상 순 기본 정렬 옵션<br><br>
-
-              <strong>일간 특화:</strong><br>
-              • 오늘 수치 = 단일 값 (평균 아님)<br>
-              • Δ = 오늘 값 − 어제 값<br>
-              • 복약 = ✓ 복용 (시간) / ✗ 미복용<br>
-              • 미제출자 별도 행 표시 (마지막 활동일 포함)<br><br>
-
-              <strong>코호트 비교 (비교 연구):</strong><br>
-              • 전체/A/B/C 코호트 필터<br>
-              • 관찰 연구 시 코호트 바 숨김<br><br>
-
-              <strong>프라이버시:</strong><br>
-              • P001 형식 익명 ID · k-익명성 · 차등 프라이버시 옵션
+              <div class="pagination">
+                <div class="pagination-info">실험군 50명 · 대조군 50명 · 전체 100명 중 10명 표시</div>
+                <div class="pagination-controls">
+                  <button class="page-btn">◀</button>
+                  <button class="page-btn active">1</button>
+                  <button class="page-btn">2</button>
+                  <button class="page-btn">3</button>
+                  <button class="page-btn">...</button>
+                  <button class="page-btn">10</button>
+                  <button class="page-btn">▶</button>
+                </div>
+              </div>
             </div>
-          </div>
+          </div><!-- /groupView -->
 
-          <!-- 백엔드 호출 -->
-          <div style="background: linear-gradient(135deg, #f5f3ff, #ede9fe); border: 2px solid #8b5cf6; border-radius: 12px; padding: 20px; margin-top: 12px;">
-            <h3 style="color: #6d28d9; margin-bottom: 12px; font-size: 14px;">🔗 백엔드 API (v3)</h3>
-            <div style="font-size: 11px; font-family: 'SF Mono', Monaco, monospace; color: #374151; line-height: 1.8;">
+          <!-- =========================================================== -->
+          <!-- ===== INDIVIDUAL VIEW (toggled via JS) ===== -->
+          <!-- =========================================================== -->
+          <div id="individualView" class="view-individual">
 
-              <strong style="font-family: -apple-system, sans-serif;">1. 일간 테이블 데이터:</strong><br>
-              <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
-GET /api/v2/projects/:id/daily<br>
-  ?date=2026-01-07<br>
-  &cohort=all<br>
-  &sort=glucose&order=desc<br>
-  &page=1&limit=20<br>
-<br>
-→ {<br>
-&nbsp;&nbsp;"date": "2026-01-07",<br>
-&nbsp;&nbsp;"prev_date": "2026-01-06",<br>
-&nbsp;&nbsp;"thresholds": {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;"glucose": { "warn": 140, "danger": 180 },<br>
-&nbsp;&nbsp;&nbsp;&nbsp;"systolic_bp": { "warn": 140, "danger": 160 },<br>
-&nbsp;&nbsp;&nbsp;&nbsp;"heart_rate": { "warn": 100, "danger": 120 }<br>
-&nbsp;&nbsp;},<br>
-&nbsp;&nbsp;"participants": [<br>
-&nbsp;&nbsp;&nbsp;&nbsp;{<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"person_id": "P001", "cohort": "A",<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"today": {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"heart_rate": 72, "glucose": 116,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"bp": { "systolic": 124, "diastolic": 78 },<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"medication": { "taken": true, "time": "08:30" },<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"sleep_hours": 7.2, "mood": 4.0<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;},<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"yesterday": {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"heart_rate": 75, "glucose": 120, ...<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;},<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"delta": {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"heart_rate": -3, "glucose": -4,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"systolic_bp": -2, "sleep_hours": +0.4, "mood": 0<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;},<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"flags": [],  // ["glucose_warn", "bp_danger"] etc.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"status": "normal"  // normal | caution | danger<br>
-&nbsp;&nbsp;&nbsp;&nbsp;}<br>
-&nbsp;&nbsp;],<br>
-&nbsp;&nbsp;"summary": {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;"submitted": 82, "total": 87,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;"med_taken": 68, "med_missed": 14,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;"threshold_exceeded": [<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ "person_id": "P008", "field": "glucose", "value": 203, "threshold": 180, "level": "danger" }<br>
-&nbsp;&nbsp;&nbsp;&nbsp;]<br>
-&nbsp;&nbsp;}<br>
-}
-              </code>
+            <!-- ALERT BANNER -->
+            <div class="alert-banner">
+              <span class="a-icon">🚨</span>
+              <div class="text">
+                <strong>임계치 초과 1명</strong> — P007 MAGE 51.2 mg/dL (기준: 50), 순응도 72% (기준: 80%)
+              </div>
+              <button class="action-btn">알림 설정</button>
+            </div>
 
-              <strong style="font-family: -apple-system, sans-serif;">2. 주간 Δ 데이터 (Baseline 대비):</strong><br>
-              <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
-GET /api/v2/projects/:id/weekly<br>
-  ?week_start=2026-01-01&week_end=2026-01-07<br>
-  &baseline_start=2025-12-25&baseline_end=2025-12-31<br>
-  → 주간 평균 vs Baseline 평균, 복약 순응도 %, Δ 계산
-              </code>
+            <!-- STATS STRIP (individual) -->
+            <div class="stats-strip">
+              <div class="stat-chip">제출율 <strong class="good">96/100 (96%)</strong></div>
+              <div class="stat-chip">복약 완료 <strong class="good">89명 (89%)</strong></div>
+              <div class="stat-chip">복약 미복용 <strong class="danger">11명</strong></div>
+              <div class="stat-chip">MAGE 초과 <strong class="danger">1명</strong></div>
+              <div class="stat-chip">평균 MAGE <strong>50.5</strong> <span style="font-size:11px; color:#94a3b8;">mg/dL</span></div>
+              <div class="stat-chip">평균 순응도 <strong>89%</strong></div>
+            </div>
 
-              <strong style="font-family: -apple-system, sans-serif;">3. 임계치 설정 CRUD:</strong><br>
-              <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
-PUT /api/v2/projects/:id/thresholds<br>
-{<br>
-&nbsp;&nbsp;"glucose": { "warn": 140, "danger": 180 },<br>
-&nbsp;&nbsp;"systolic_bp": { "warn": 140, "danger": 160 },<br>
-&nbsp;&nbsp;"heart_rate": { "warn": 100, "danger": 120 },<br>
-&nbsp;&nbsp;"notifications": {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;"in_app": true, "email": true,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;"slack_webhook": "https://hooks.slack.com/..."<br>
-&nbsp;&nbsp;}<br>
-}
-              </code>
+            <div class="inline-note">
+              개인 뷰 + 일간: 전체 참여자를 단일 테이블로 표시 · Δ(전날 대비) 우선 표시 · P1+P2 컬럼 기본 노출
+            </div>
 
-              <strong style="font-family: -apple-system, sans-serif;">4. 참여자 원천 데이터 (상세 패널):</strong><br>
-              <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
-GET /api/v2/projects/:id/participants/:personId/raw<br>
-  ?date_from=2026-01-01&date_to=2026-01-07<br>
+            <!-- INDIVIDUAL TABLE -->
+            <div class="table-container">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th class="sortable sorted">참여자 <span class="sort-icon">↓</span></th>
+                    <th class="sortable">MAGE <span style="font-size:10px; color:#94a3b8;">mg/dL</span> <span class="sort-icon">↕</span></th>
+                    <th class="sortable">순응도 <span style="font-size:10px; color:#94a3b8;">%</span> <span class="sort-icon">↕</span></th>
+                    <th class="sortable">CV% <span class="sort-icon">↕</span></th>
+                    <th class="sortable">TIR <span style="font-size:10px; color:#94a3b8;">%</span> <span class="sort-icon">↕</span></th>
+                    <th class="sortable">복약 <span class="sort-icon">↕</span></th>
+                    <th>상태</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <!-- P001 -->
+                  <tr>
+                    <td class="col-id">P001 <span class="cohort-badge a">A</span></td>
+                    <td>
+                      <div class="delta-cell">
+                        <span class="delta-primary down-good">↓4.2</span>
+                        <span class="raw-secondary">(42.3)</span>
+                      </div>
+                    </td>
+                    <td><span class="val-simple" style="color:#059669;">94%</span></td>
+                    <td>
+                      <div class="delta-cell">
+                        <span class="delta-primary down-good">↓1.4</span>
+                        <span class="raw-secondary">(28.1%)</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="delta-cell">
+                        <span class="delta-primary up-good">↑2.1</span>
+                        <span class="raw-secondary">(78%)</span>
+                      </div>
+                    </td>
+                    <td><div class="med-status taken">✓</div></td>
+                    <td><span class="status-badge normal">정상</span></td>
+                  </tr>
+                  <!-- P002 -->
+                  <tr>
+                    <td class="col-id">P002 <span class="cohort-badge b">B</span></td>
+                    <td>
+                      <div class="delta-cell">
+                        <span class="delta-primary up-bad">↑2.1</span>
+                        <span class="raw-secondary">(58.7)</span>
+                      </div>
+                    </td>
+                    <td><span class="val-simple">89%</span></td>
+                    <td>
+                      <div class="delta-cell">
+                        <span class="delta-primary up-bad">↑1.0</span>
+                        <span class="raw-secondary">(35.2%)</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="delta-cell">
+                        <span class="delta-primary down-bad">↓1.3</span>
+                        <span class="raw-secondary">(62%)</span>
+                      </div>
+                    </td>
+                    <td><div class="med-status taken">✓</div></td>
+                    <td><span class="status-badge normal">정상</span></td>
+                  </tr>
+                  <!-- P003 -->
+                  <tr>
+                    <td class="col-id">P003 <span class="cohort-badge a">A</span></td>
+                    <td>
+                      <div class="delta-cell">
+                        <span class="delta-primary down-good">↓6.1</span>
+                        <span class="raw-secondary">(38.9)</span>
+                      </div>
+                    </td>
+                    <td><span class="val-simple" style="color:#059669;">91%</span></td>
+                    <td>
+                      <div class="delta-cell">
+                        <span class="delta-primary down-good">↓2.1</span>
+                        <span class="raw-secondary">(25.4%)</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="delta-cell">
+                        <span class="delta-primary up-good">↑3.5</span>
+                        <span class="raw-secondary">(82%)</span>
+                      </div>
+                    </td>
+                    <td><div class="med-status taken">✓</div></td>
+                    <td><span class="status-badge normal">정상</span></td>
+                  </tr>
+                  <!-- P004 -->
+                  <tr>
+                    <td class="col-id">P004 <span class="cohort-badge b">B</span></td>
+                    <td>
+                      <div class="delta-cell">
+                        <span class="delta-primary up-bad">↑0.4</span>
+                        <span class="raw-secondary">(55.3)</span>
+                      </div>
+                    </td>
+                    <td><span class="val-simple">85%</span></td>
+                    <td>
+                      <div class="delta-cell">
+                        <span class="delta-primary flat">→ 0.0</span>
+                        <span class="raw-secondary">(33.8%)</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="delta-cell">
+                        <span class="delta-primary down-bad">↓0.8</span>
+                        <span class="raw-secondary">(65%)</span>
+                      </div>
+                    </td>
+                    <td><div class="med-status taken">✓</div></td>
+                    <td><span class="status-badge normal">정상</span></td>
+                  </tr>
+                  <!-- P005 -->
+                  <tr>
+                    <td class="col-id">P005 <span class="cohort-badge a">A</span></td>
+                    <td>
+                      <div class="delta-cell">
+                        <span class="delta-primary down-good">↓2.8</span>
+                        <span class="raw-secondary">(45.1)</span>
+                      </div>
+                    </td>
+                    <td><span class="val-simple">88%</span></td>
+                    <td>
+                      <div class="delta-cell">
+                        <span class="delta-primary down-good">↓0.9</span>
+                        <span class="raw-secondary">(30.2%)</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="delta-cell">
+                        <span class="delta-primary up-good">↑1.8</span>
+                        <span class="raw-secondary">(75%)</span>
+                      </div>
+                    </td>
+                    <td><div class="med-status taken">✓</div></td>
+                    <td><span class="status-badge normal">정상</span></td>
+                  </tr>
+                  <!-- P006 CAUTION -->
+                  <tr class="alert-row">
+                    <td class="col-id">P006 <span class="cohort-badge b">B</span></td>
+                    <td>
+                      <div class="delta-cell">
+                        <span class="delta-primary up-bad">↑3.8</span>
+                        <span class="raw-secondary" style="color:#d97706;">(62.1)</span>
+                      </div>
+                    </td>
+                    <td><span class="val-simple" style="color:#d97706;">82%</span></td>
+                    <td>
+                      <div class="delta-cell">
+                        <span class="delta-primary up-bad">↑2.1</span>
+                        <span class="raw-secondary">(38.4%)</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="delta-cell">
+                        <span class="delta-primary down-bad">↓2.8</span>
+                        <span class="raw-secondary">(58%)</span>
+                      </div>
+                    </td>
+                    <td><div class="med-status missed">✗</div></td>
+                    <td><span class="status-badge caution">⚠ 주의</span></td>
+                  </tr>
+                  <!-- P007 CAUTION -->
+                  <tr class="alert-row">
+                    <td class="col-id">P007 <span class="cohort-badge a">A</span></td>
+                    <td>
+                      <div class="delta-cell">
+                        <span class="delta-primary up-bad">↑1.2</span>
+                        <span class="raw-secondary" style="color:#d97706;">(51.2)</span>
+                      </div>
+                    </td>
+                    <td><span class="val-simple" style="color:#dc2626;">72%</span></td>
+                    <td>
+                      <div class="delta-cell">
+                        <span class="delta-primary up-bad">↑2.3</span>
+                        <span class="raw-secondary">(33.8%)</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="delta-cell">
+                        <span class="delta-primary down-bad">↓2.4</span>
+                        <span class="raw-secondary">(68%)</span>
+                      </div>
+                    </td>
+                    <td><div class="med-status missed">✗</div></td>
+                    <td><span class="status-badge caution">⚠ 주의</span></td>
+                  </tr>
+                  <!-- P008 -->
+                  <tr>
+                    <td class="col-id">P008 <span class="cohort-badge b">B</span></td>
+                    <td>
+                      <div class="delta-cell">
+                        <span class="delta-primary down-good">↓0.2</span>
+                        <span class="raw-secondary">(54.9)</span>
+                      </div>
+                    </td>
+                    <td><span class="val-simple" style="color:#059669;">91%</span></td>
+                    <td>
+                      <div class="delta-cell">
+                        <span class="delta-primary down-good">↓0.4</span>
+                        <span class="raw-secondary">(34.1%)</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="delta-cell">
+                        <span class="delta-primary up-good">↑0.6</span>
+                        <span class="raw-secondary">(64%)</span>
+                      </div>
+                    </td>
+                    <td><div class="med-status taken">✓</div></td>
+                    <td><span class="status-badge normal">정상</span></td>
+                  </tr>
+                  <!-- P009 IMPROVED -->
+                  <tr>
+                    <td class="col-id">P009 <span class="cohort-badge a">A</span></td>
+                    <td>
+                      <div class="delta-cell">
+                        <span class="delta-primary down-good">↓8.3</span>
+                        <span class="raw-secondary">(36.4)</span>
+                      </div>
+                    </td>
+                    <td><span class="val-simple" style="color:#059669;">96%</span></td>
+                    <td>
+                      <div class="delta-cell">
+                        <span class="delta-primary down-good">↓3.2</span>
+                        <span class="raw-secondary">(23.1%)</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="delta-cell">
+                        <span class="delta-primary up-good">↑5.1</span>
+                        <span class="raw-secondary">(85%)</span>
+                      </div>
+                    </td>
+                    <td><div class="med-status taken">✓</div></td>
+                    <td><span class="status-badge improved">↑ 개선</span></td>
+                  </tr>
+                  <!-- P010 -->
+                  <tr>
+                    <td class="col-id">P010 <span class="cohort-badge b">B</span></td>
+                    <td>
+                      <div class="delta-cell">
+                        <span class="delta-primary up-bad">↑1.5</span>
+                        <span class="raw-secondary">(57.2)</span>
+                      </div>
+                    </td>
+                    <td><span class="val-simple">87%</span></td>
+                    <td>
+                      <div class="delta-cell">
+                        <span class="delta-primary up-bad">↑0.6</span>
+                        <span class="raw-secondary">(36.0%)</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="delta-cell">
+                        <span class="delta-primary down-bad">↓0.5</span>
+                        <span class="raw-secondary">(61%)</span>
+                      </div>
+                    </td>
+                    <td><div class="med-status taken">✓</div></td>
+                    <td><span class="status-badge normal">정상</span></td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <div class="pagination">
+                <div class="pagination-info">전체 100명 중 10명 표시 · 정상 7 · 주의 2 · 개선 1</div>
+                <div class="pagination-controls">
+                  <button class="page-btn">◀</button>
+                  <button class="page-btn active">1</button>
+                  <button class="page-btn">2</button>
+                  <button class="page-btn">3</button>
+                  <button class="page-btn">...</button>
+                  <button class="page-btn">10</button>
+                  <button class="page-btn">▶</button>
+                </div>
+              </div>
+            </div>
+          </div><!-- /individualView -->
+
+          <!-- ===== DESIGNER NOTES ===== -->
+          <div class="designer-notes" id="designerNotes">
+            <div class="dn-header" onclick="toggleDesignerNotes()">
+              <h3>Design Decisions & Spec Notes</h3>
+              <button class="dn-toggle" id="dnToggleBtn">숨기기</button>
+            </div>
+            <div class="dn-body" id="dnBody">
+
+              <h4>1. View Mode Toggle (2 modes)</h4>
+              <p>
+                <strong>Why default to Group Comparison for RCT:</strong> The primary question in an RCT is
+                "Is the intervention working vs control?" Researchers open this page to see between-group differences
+                first. Individual drill-down is secondary. Non-RCT studies (observational, single-arm) would default
+                to Individual mode.
+              </p>
+
+              <h4>2. Time Period Toggle (4 periods)</h4>
+              <table>
+                <tr>
+                  <th>Period</th><th>Value Shown</th><th>Delta Basis</th><th>Special Features</th>
+                </tr>
+                <tr>
+                  <td>일간 (Daily)</td><td>Today's raw value</td><td>vs Yesterday</td><td>Med taken/missed, real-time alerts</td>
+                </tr>
+                <tr>
+                  <td>주간 (Weekly)</td><td>7-day average</td><td>vs Baseline</td><td>Compliance %, weekly trends</td>
+                </tr>
+                <tr>
+                  <td>월간 (Monthly)</td><td>30-day average</td><td>Percentage vs Baseline</td><td>Sparkline trend, monthly summary</td>
+                </tr>
+                <tr>
+                  <td>시점별 (Timepoints)</td><td>BL / W2 / W4 / W8</td><td>Each vs Baseline</td><td>Protocol milestone view, longitudinal</td>
+                </tr>
+              </table>
+
+              <h4>3. Column Priority System (P1/P2/P3)</h4>
+              <p>
+                <strong>P1 (Red, always visible):</strong> Participant ID + cohort badge, MAGE (mg/dL),
+                Diet Compliance (%), Status. These are the minimum columns a researcher needs to see at a glance.<br>
+                <strong>P2 (Yellow, default visible):</strong> CV%, TIR (%), Medication. Important but not critical
+                for the primary research question.<br>
+                <strong>P3 (Gray, toggle to show):</strong> Blood Pressure, Sleep, Mood, HbA1c. Supplementary data
+                that clutters the view for most use cases. Click the P3 tag to toggle visibility.
+              </p>
+
+              <h4>4. Delta-First Display Philosophy</h4>
+              <p>
+                <strong>Why Delta is primary:</strong> In clinical research, change from baseline/yesterday matters
+                more than absolute values. A MAGE of 42.3 means little without context, but "decreased by 4.2" is
+                immediately actionable. The raw value is shown in parentheses as secondary reference.<br>
+                <strong>Cell format:</strong> <code>↓4.2 (42.3)</code> not <code>42.3 ↓4.2</code>.<br>
+                <strong>Delta is 15px bold, raw is 11px gray.</strong> This 36% size difference ensures visual hierarchy.
+              </p>
+
+              <h4>5. Group Comparison Layout</h4>
+              <p>
+                <strong>Group Summary Bar:</strong> 3-column grid showing experiment stats, control stats, and
+                p-values with effect size. This is the first thing a PI looks at when opening the page.<br>
+                <strong>Mini Sparkline:</strong> SVG-based dual-line chart showing MAGE trends. No external library
+                needed. Both groups rendered with distinct colors (blue=experiment, amber=control).<br>
+                <strong>Table Structure:</strong> Group header rows separate experiment/control participants. Pinned
+                average rows at the top of each group for quick reference.<br>
+                <strong>p-value display:</strong> * (p &lt; 0.05), ** (p &lt; 0.01), *** (p &lt; 0.001). Color-coded
+                by significance level.
+              </p>
+
+              <h4>6. Individual Mode Layout</h4>
+              <p>
+                <strong>Flat table:</strong> All participants in a single sortable table (no group headers).
+                Cohort membership shown via badge (A/B) next to participant ID.<br>
+                <strong>Stats strip:</strong> Aggregate metrics (submission rate, medication compliance, threshold
+                breaches) shown as pill-shaped chips above the table.<br>
+                <strong>Alert banner:</strong> Same as group view but without group context.
+              </p>
+
+              <h4>7. Right Detail Panel (400px)</h4>
+              <p>
+                Shows selected participant's detail when a row is clicked. Includes today's summary cards,
+                7-day raw data table, baseline comparison, and participation metadata. This panel eliminates
+                the need to navigate to a separate participant detail page for quick inspection.
+              </p>
+
+              <h4>8. Responsive Considerations</h4>
+              <p>
+                Below 1400px, the detail panel hides and becomes a slide-over.
+                Column priority system ensures P1 columns remain visible even on narrow screens.
+                P3 columns hidden by default to reduce horizontal scrolling.
+              </p>
+
+              <h4>9. Backend API Pattern</h4>
+              <pre style="background: #1f2937; color: #a5b4fc; padding: 10px; border-radius: 8px; font-size: 11px; overflow-x: auto;">
+GET /api/v2/projects/:id/daily
+  ?date=2026-02-12
+  &view=group|individual
+  &group=experiment|control|all
+  &sort=mage_delta&order=desc
+  &columns=p1,p2  (or p1,p2,p3)
+  &page=1&limit=20
+
+GET /api/v2/projects/:id/group-summary
+  ?date=2026-02-12
+  &metrics=mage,cv,tir,compliance
+  → Returns: group means, SD, p-values, effect sizes
+
+GET /api/v2/projects/:id/participants/:personId/raw
+  ?date_from=2026-02-06&date_to=2026-02-12
   &include_baseline=true
-              </code>
+              </pre>
             </div>
           </div>
 
@@ -769,81 +1606,83 @@ GET /api/v2/projects/:id/participants/:personId/raw<br>
           </div>
         </div>
 
-        <!-- ====== 오른쪽: 참여자 상세 패널 ====== -->
+        <!-- ====== RIGHT: Participant Detail Panel ====== -->
         <div class="detail-panel">
           <div class="detail-header">
             <div class="avatar">P1</div>
             <div class="info">
-              <h3>P001 <span style="font-weight: 400; color: #6b7280; font-size: 13px;">김OO</span> <span class="cohort-badge a">A</span></h3>
-              <div class="sub">투약군 · 오늘: 1/7 · 동의 만료: 2026-03-31</div>
+              <h3>P001 <span style="font-weight:400; color:#6b7280; font-size:13px;">김OO</span> <span class="cohort-badge a">A 실험군</span></h3>
+              <div class="sub">저탄수화물 · 오늘: 2/12 · 동의 만료: 2026-06-30</div>
             </div>
             <button class="close-btn">✕</button>
           </div>
           <div class="detail-body">
 
-            <!-- 오늘 요약 카드 -->
+            <!-- Today's summary cards -->
             <div class="detail-cards">
               <div class="d-card">
-                <div class="lbl">혈당</div>
-                <div class="val" style="color: #059669;">116 <span style="font-size:11px; font-weight:400; color:#9ca3af;">mg/dL</span></div>
-                <div class="delta good">전날 120 → 116 (↓4)</div>
+                <div class="lbl">MAGE</div>
+                <div class="val" style="color: #059669;">42.3 <span style="font-size:11px; font-weight:400; color:#9ca3af;">mg/dL</span></div>
+                <div class="delta good">전날 46.5 → 42.3 (↓4.2)</div>
               </div>
               <div class="d-card">
-                <div class="lbl">심박수</div>
-                <div class="val" style="color: #059669;">72 <span style="font-size:11px; font-weight:400; color:#9ca3af;">bpm</span></div>
-                <div class="delta good">전날 75 → 72 (↓3)</div>
+                <div class="lbl">CV%</div>
+                <div class="val" style="color: #059669;">28.1%</div>
+                <div class="delta good">전날 29.5% → 28.1% (↓1.4)</div>
               </div>
               <div class="d-card">
-                <div class="lbl">혈압</div>
-                <div class="val">124/78 <span style="font-size:11px; font-weight:400; color:#9ca3af;">mmHg</span></div>
-                <div class="delta good">전날 126/80 (↓2)</div>
+                <div class="lbl">TIR</div>
+                <div class="val" style="color: #059669;">78% <span style="font-size:11px; font-weight:400; color:#9ca3af;"></span></div>
+                <div class="delta good">전날 75.9% → 78% (↑2.1)</div>
               </div>
               <div class="d-card">
-                <div class="lbl">수면</div>
-                <div class="val" style="color: #059669;">7.2 <span style="font-size:11px; font-weight:400; color:#9ca3af;">h</span></div>
-                <div class="delta good">전날 6.8 → 7.2 (↑0.4)</div>
+                <div class="lbl">식단 순응도</div>
+                <div class="val" style="color: #059669;">94%</div>
+                <div class="delta good">목표: 80% 이상</div>
               </div>
             </div>
 
-            <!-- 최근 7일 원천 데이터 -->
-            <div class="section-title">📋 최근 7일 원천 데이터</div>
+            <!-- Recent 7-day raw data -->
+            <div class="section-title">최근 7일 데이터</div>
             <table class="raw-table">
               <thead>
-                <tr><th>날짜</th><th>심박수</th><th>혈당</th><th>혈압</th><th>복약</th><th>수면</th><th>기분</th></tr>
+                <tr><th>날짜</th><th>MAGE</th><th>CV%</th><th>TIR</th><th>순응도</th><th>복약</th></tr>
               </thead>
               <tbody>
-                <tr class="today-row"><td>1/7 (오늘)</td><td>72</td><td>116</td><td>124/78</td><td>✓ 08:30</td><td>7.2h</td><td>4.0</td></tr>
-                <tr><td>1/6</td><td>75</td><td>120</td><td>126/80</td><td>✓ 08:15</td><td>6.8h</td><td>4.0</td></tr>
-                <tr><td>1/5</td><td>72</td><td>118</td><td>122/76</td><td>✓ 09:00</td><td>7.2h</td><td>4.0</td></tr>
-                <tr><td>1/4</td><td>70</td><td>112</td><td>120/74</td><td>✓ 08:45</td><td>6.5h</td><td>4.2</td></tr>
-                <tr><td>1/3</td><td>73</td><td>122</td><td>128/80</td><td>✓ 08:30</td><td>6.8h</td><td>3.8</td></tr>
-                <tr><td>1/2</td><td>71</td><td>115</td><td>124/78</td><td>✓ 07:50</td><td>7.0h</td><td>4.0</td></tr>
-                <tr><td>1/1</td><td>74</td><td>120</td><td>126/82</td><td>✓ 08:30</td><td>6.5h</td><td>3.8</td></tr>
+                <tr class="today-row"><td>2/12 (오늘)</td><td>42.3</td><td>28.1</td><td>78%</td><td>94%</td><td>✓</td></tr>
+                <tr><td>2/11</td><td>46.5</td><td>29.5</td><td>75.9%</td><td>92%</td><td>✓</td></tr>
+                <tr><td>2/10</td><td>44.1</td><td>28.8</td><td>76.4%</td><td>95%</td><td>✓</td></tr>
+                <tr><td>2/9</td><td>48.2</td><td>30.1</td><td>73.2%</td><td>90%</td><td>✓</td></tr>
+                <tr><td>2/8</td><td>45.8</td><td>29.4</td><td>74.8%</td><td>93%</td><td>✓</td></tr>
+                <tr><td>2/7</td><td>43.9</td><td>28.6</td><td>77.1%</td><td>91%</td><td>✓</td></tr>
+                <tr><td>2/6</td><td>47.0</td><td>30.2</td><td>74.0%</td><td>88%</td><td>✗</td></tr>
               </tbody>
             </table>
 
-            <!-- Baseline 비교 -->
-            <div class="section-title">📐 Baseline 대비 (12/25~31 평균)</div>
+            <!-- Baseline comparison -->
+            <div class="section-title">Baseline 대비 (연구 시작 시점 평균)</div>
             <table class="raw-table">
               <thead>
                 <tr><th>지표</th><th>Baseline</th><th>오늘</th><th>Δ</th></tr>
               </thead>
               <tbody>
-                <tr><td style="font-weight:600;">심박수</td><td>76 bpm</td><td>72 bpm</td><td style="color:#059669; font-weight:600;">−4</td></tr>
-                <tr><td style="font-weight:600;">혈당</td><td>132 mg/dL</td><td>116 mg/dL</td><td style="color:#059669; font-weight:600;">−16</td></tr>
-                <tr><td style="font-weight:600;">수축기 혈압</td><td>130 mmHg</td><td>124 mmHg</td><td style="color:#059669; font-weight:600;">−6</td></tr>
-                <tr><td style="font-weight:600;">수면</td><td>6.2h</td><td>7.2h</td><td style="color:#059669; font-weight:600;">+1.0</td></tr>
-                <tr><td style="font-weight:600;">기분</td><td>3.2</td><td>4.0</td><td style="color:#059669; font-weight:600;">+0.8</td></tr>
+                <tr><td style="font-weight:600;">MAGE</td><td>58.2 mg/dL</td><td>42.3 mg/dL</td><td style="color:#059669; font-weight:600;">-15.9 (↓27.3%)</td></tr>
+                <tr><td style="font-weight:600;">CV%</td><td>34.2%</td><td>28.1%</td><td style="color:#059669; font-weight:600;">-6.1</td></tr>
+                <tr><td style="font-weight:600;">TIR</td><td>62.4%</td><td>78%</td><td style="color:#059669; font-weight:600;">+15.6</td></tr>
+                <tr><td style="font-weight:600;">순응도</td><td>—</td><td>94%</td><td style="color:#059669; font-weight:600;">목표 초과</td></tr>
+                <tr><td style="font-weight:600;">HbA1c</td><td>7.8%</td><td>7.2% (최근)</td><td style="color:#059669; font-weight:600;">-0.6</td></tr>
               </tbody>
             </table>
 
-            <!-- 참여 정보 -->
-            <div class="section-title">ℹ️ 참여 정보</div>
+            <!-- Participation info -->
+            <div class="section-title">참여 정보</div>
             <div style="background: white; border: 1px solid #e5e7eb; border-radius: 8px; padding: 12px; font-size: 12px; line-height: 2; color: #374151;">
-              <div>코호트: <strong>A — 투약군</strong></div>
-              <div>참여 시작: <strong>2026-01-01</strong></div>
+              <div>코호트: <strong>A — 실험군 (저탄수화물)</strong></div>
+              <div>참여 시작: <strong>2026-01-15</strong></div>
+              <div>현재 시점: <strong>Week 4</strong></div>
               <div>동의 상태: <span style="color: #059669; font-weight: 600;">Active</span></div>
-              <div>연속 제출: <strong>7일</strong></div>
+              <div>연속 제출: <strong>28일</strong></div>
+              <div>CGM 기기: <strong>Dexcom G7</strong></div>
               <div>위험 이력: <span style="color: #059669;">없음</span></div>
             </div>
           </div>
@@ -852,8 +1691,77 @@ GET /api/v2/projects/:id/participants/:personId/raw<br>
       </div><!-- /main-grid -->
     </div>
   </div>
-  <script src="page-spec.js"></script>
-  <link rel="stylesheet" href="../tooltip-spec.css">
-  <script src="../tooltip-spec.js"></script>
+
+  <script>
+    // === View Mode Toggle ===
+    function switchView(mode) {
+      var groupView = document.getElementById('groupView');
+      var individualView = document.getElementById('individualView');
+      var buttons = document.querySelectorAll('#viewToggle .view-btn');
+
+      if (mode === 'group') {
+        groupView.style.display = 'block';
+        individualView.style.display = 'none';
+        buttons[0].classList.remove('active');
+        buttons[1].classList.add('active');
+      } else {
+        groupView.style.display = 'none';
+        individualView.style.display = 'block';
+        buttons[0].classList.add('active');
+        buttons[1].classList.remove('active');
+      }
+    }
+
+    // === P3 Column Toggle (placeholder) ===
+    function toggleP3() {
+      var tag = document.getElementById('p3Toggle');
+      tag.classList.toggle('inactive');
+      if (tag.classList.contains('inactive')) {
+        tag.innerHTML = '<span class="dot"></span> P3 보조 — 숨김';
+      } else {
+        tag.innerHTML = '<span class="dot"></span> P3 보조 — 클릭하여 숨기기';
+      }
+      // In production, this would toggle visibility of P3 columns (blood pressure, sleep, mood, HbA1c)
+    }
+
+    // === Designer Notes Toggle ===
+    function toggleDesignerNotes() {
+      var notes = document.getElementById('designerNotes');
+      var body = document.getElementById('dnBody');
+      var btn = document.getElementById('dnToggleBtn');
+      if (body.style.display === 'none') {
+        body.style.display = 'block';
+        btn.textContent = '숨기기';
+      } else {
+        body.style.display = 'none';
+        btn.textContent = '펼치기';
+      }
+    }
+
+    // === Sidebar Research Item Toggle ===
+    document.querySelectorAll('.research-nav-header').forEach(function(header) {
+      header.addEventListener('click', function() {
+        var item = this.closest('.research-nav-item');
+        if (item.classList.contains('expanded')) {
+          item.classList.remove('expanded');
+          item.classList.add('collapsed');
+        } else {
+          item.classList.remove('collapsed');
+          item.classList.add('expanded');
+        }
+      });
+    });
+
+    // === Row selection ===
+    document.querySelectorAll('.data-table tbody tr:not(.group-header-row):not(.group-avg-row)').forEach(function(row) {
+      row.addEventListener('click', function() {
+        document.querySelectorAll('.data-table tr.selected').forEach(function(r) {
+          r.classList.remove('selected');
+        });
+        this.classList.add('selected');
+        // In production, this would update the detail panel with the selected participant's data
+      });
+    });
+  </script>
 </body>
 </html>

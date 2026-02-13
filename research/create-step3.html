@@ -92,30 +92,47 @@
     .context-section { background: #f8fafc; border: 1px dashed #cbd5f5; border-radius: 8px; padding: 12px; margin-top: 12px; }
     .context-section h4 { font-size: 13px; font-weight: 600; margin-bottom: 10px; color: #334155; }
 
-    /* AI 어시스턴트 (우측 도킹) */
-    .ai-panel {
-      width: 320px;
-      background: #0f172a;
-      color: #e5e7eb;
-      border-left: 1px solid #1e293b;
-      padding: 16px 16px 24px;
-      position: sticky;
-      top: 0;
-      height: 100vh;
-      overflow-y: auto;
-      flex-shrink: 0;
-      align-self: stretch;
+    /* 레포트 보기 버튼 (각 섹션 헤더 오른쪽) */
+    .report-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 6px 14px; border-radius: 8px; font-size: 12px; font-weight: 600;
+      cursor: pointer; border: 1px solid #ddd6fe; background: white; color: #7c3aed;
+      transition: all 0.15s;
     }
-    .ai-title { font-size: 14px; font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
-    .ai-sub { font-size: 12px; color: #94a3b8; margin-bottom: 12px; }
-    .ai-card { background: #1e293b; border-radius: 10px; padding: 12px; margin-bottom: 12px; }
-    .ai-card .title { font-size: 12px; color: #93c5fd; margin-bottom: 8px; }
-    .ai-chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 8px; border-radius: 999px; background: #334155; color: #e2e8f0; font-size: 11px; margin: 4px 4px 0 0; }
-    .ai-reason { font-size: 12px; color: #cbd5f5; line-height: 1.5; }
-    .ai-actions { display: flex; gap: 8px; margin-top: 10px; }
-    .ai-btn { flex: 1; padding: 8px 10px; border-radius: 8px; border: none; cursor: pointer; font-size: 12px; }
-    .ai-btn.primary { background: #3b82f6; color: #fff; }
-    .ai-btn.ghost { background: #334155; color: #cbd5f5; }
+    .report-btn:hover { background: #f5f3ff; border-color: #a78bfa; }
+    .report-btn .icon { font-size: 14px; }
+    .header-right { display: flex; align-items: center; gap: 8px; }
+
+    /* ===== 모달 오버레이 ===== */
+    .modal-overlay {
+      display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.4); z-index: 1000; justify-content: center; align-items: center;
+    }
+    .modal-overlay.show { display: flex; }
+    .modal {
+      background: white; border-radius: 16px; width: 640px; max-height: 80vh;
+      overflow: hidden; box-shadow: 0 25px 50px rgba(0,0,0,0.25);
+      display: flex; flex-direction: column;
+    }
+    .modal-header {
+      padding: 16px 24px; border-bottom: 1px solid #e5e7eb;
+      display: flex; align-items: center; justify-content: space-between;
+      background: #f9fafb;
+    }
+    .modal-header h3 { font-size: 16px; font-weight: 600; }
+    .modal-header .badge { font-size: 11px; color: #6b7280; background: #f3f4f6; padding: 3px 10px; border-radius: 8px; }
+    .modal-close { width: 32px; height: 32px; border: 1px solid #e5e7eb; border-radius: 8px; background: white; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; }
+    .modal-body { padding: 24px; overflow-y: auto; flex: 1; }
+
+    /* 모달 내부 콘텐츠 */
+    .rationale-item { display: flex; gap: 12px; padding: 14px; border: 1px solid #e5e7eb; border-radius: 10px; margin-bottom: 10px; }
+    .rationale-item:hover { background: #f9fafb; }
+    .rationale-icon { width: 40px; height: 40px; border-radius: 10px; background: #f3e8ff; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+    .rationale-info { flex: 1; }
+    .rationale-title { font-size: 13px; font-weight: 600; color: #7c3aed; margin-bottom: 4px; }
+    .rationale-desc { font-size: 12px; color: #6b7280; line-height: 1.5; }
+    .rationale-stat { font-size: 11px; color: #059669; font-weight: 600; margin-top: 4px; }
+    .method-note { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 12px 14px; font-size: 12px; color: #1e40af; margin-top: 12px; line-height: 1.6; }
 
 
     /* 요약 박스 */
@@ -141,6 +158,15 @@
     .designer-note { background: linear-gradient(135deg, #fdf4ff, #fae8ff); border: 2px solid #d946ef; border-radius: 12px; padding: 20px; margin-top: 24px; }
     .designer-note h3 { color: #a21caf; margin-bottom: 12px; font-size: 14px; }
     .designer-note .content { font-size: 12px; color: #374151; line-height: 1.7; }
+
+    /* 내 연구 사이드바 */
+    .research-list { margin-top: 8px; }
+    .research-item { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 6px; font-size: 12px; color: #9ca3af; margin-bottom: 2px; cursor: pointer; }
+    .research-item:hover { background: #252525; color: #ccc; }
+    .research-dot { width: 6px; height: 6px; border-radius: 50%; }
+    .research-dot.active { background: #22c55e; }
+    .research-dot.draft { background: #6b7280; }
+    .research-step { font-size: 10px; color: #6b7280; }
   </style>
 </head>
 <body>
@@ -159,31 +185,24 @@
 
       <div style="margin-top: 16px;">
         <div style="font-size: 11px; color: #6b7280; padding: 8px 12px; text-transform: uppercase;">연구</div>
-        <a href="create.html" class="nav-item active">
-          <span>➕</span> 새 연구
-        </a>
-        <a href="irb-submission.html" class="nav-item">
-          <span>📝</span> IRB 심의 신청
-        </a>
-        <a href="irb-status.html" class="nav-item">
-          <span>📊</span> IRB 현황
-        </a>
-        <a href="action-center.html" class="nav-item">
-          <span>🔔</span> 조치 센터
-        </a>
+        <a href="create.html" class="nav-item active"><span>➕</span> 새 연구</a>
       </div>
 
       <div style="margin-top: 16px;">
-        <div style="font-size: 11px; color: #6b7280; padding: 8px 12px; text-transform: uppercase;">관리</div>
-        <a href="../team.html" class="nav-item">
-          <span>👥</span> 팀
-        </a>
-        <a href="../billing.html" class="nav-item">
-          <span>💳</span> 결제
-        </a>
-        <a href="#" class="nav-item">
-          <span>⚙️</span> 설정
-        </a>
+        <div style="font-size: 10px; color: #64748b; padding: 6px 12px; text-transform: uppercase;">임시저장 <span style="background: #f59e0b; color: white; padding: 1px 6px; border-radius: 8px; font-size: 9px; margin-left: 4px;">2</span></div>
+        <div class="research-list">
+          <div class="research-item"><span class="research-dot" style="background: #f59e0b;"></span> 소아 비만 개입 연구 <span class="research-step">Step 3 · 2일 전</span></div>
+          <div class="research-item"><span class="research-dot" style="background: #f59e0b;"></span> 직장인 스트레스 코르티솔 <span class="research-step">Step 1 · 5일 전</span></div>
+        </div>
+      </div>
+
+      <div style="margin-top: 16px;">
+        <div style="font-size: 10px; color: #64748b; padding: 6px 12px; text-transform: uppercase; letter-spacing: 0.5px;">내 연구 <span style="background: #3b82f6; color: white; padding: 1px 6px; border-radius: 8px; font-size: 9px; margin-left: 4px;">3</span></div>
+        <div class="research-list">
+          <div class="research-item"><span class="research-dot active"></span> 당뇨병 복약 순응도</div>
+          <div class="research-item"><span class="research-dot active"></span> 노인 수면 패턴</div>
+          <div class="research-item"><span class="research-dot draft"></span> ADHD 생활습관</div>
+        </div>
       </div>
 
       <div style="margin-top: auto; padding-top: 20px; border-top: 1px solid #374151;">
@@ -221,7 +240,12 @@
       <div class="card">
         <div class="card-header">
           <h3>📱 패시브 데이터 (자동 수집)</h3>
-          <span class="ai-badge">AI 추천</span>
+          <div class="header-right">
+            <span class="ai-badge">AI 추천</span>
+            <button class="report-btn" onclick="openModal('passive-modal')">
+              <span class="icon">🤖</span> AI 추천 근거
+            </button>
+          </div>
         </div>
         <div class="card-body">
           <p class="data-category-desc">앱 백그라운드에서 자동으로 수집되는 데이터입니다. 참여자 부담이 거의 없습니다.</p>
@@ -283,7 +307,12 @@
       <div class="card">
         <div class="card-header">
           <h3>✍️ 능동 데이터 (EMA/설문)</h3>
-          <span class="ai-badge">AI 추천</span>
+          <div class="header-right">
+            <span class="ai-badge">AI 추천</span>
+            <button class="report-btn" onclick="openModal('active-modal')">
+              <span class="icon">🤖</span> AI 추천 근거
+            </button>
+          </div>
         </div>
         <div class="card-body">
           <p class="data-category-desc">참여자가 직접 입력하는 데이터입니다. 빈도를 적절히 설정해 부담을 줄이세요.</p>
@@ -721,50 +750,198 @@ Headers: Authorization: Bearer {jwt}<br><br>
       </div>
     </div>
 
-    <!-- AI 채팅 패널 -->
+    <!-- ===== AI 채팅 패널 ===== -->
     <aside class="ai-chat-panel">
       <div class="ai-chat-header">
         <div class="title">
           <span class="icon">🤖</span>
-          AI 연구 설계 어시스턴트
+          AI 연구 어시스턴트
         </div>
-        <div class="subtitle">자연어로 설정을 변경할 수 있어요</div>
+        <div class="subtitle">데이터 수집 설계를 도와드립니다</div>
       </div>
 
       <!-- 현재 컨텍스트 -->
       <div class="ai-context-card">
         <div class="label">현재 연구</div>
-        <div class="value">당뇨 복약 순응도 연구</div>
+        <div class="value">저탄수화물 식단 혈당 변동 RCT</div>
         <div class="ai-context-chips">
-          <span class="ai-context-chip">설정 없음</span>
+          <span class="ai-context-chip active">RCT</span>
+          <span class="ai-context-chip active">8주</span>
+          <span class="ai-context-chip active">CGM 기반</span>
+          <span class="ai-context-chip active">n=100</span>
         </div>
       </div>
 
       <!-- 채팅 메시지 -->
       <div class="ai-chat-messages" id="ai-chat-messages">
-        <!-- 메시지가 여기에 동적으로 추가됨 -->
+        <!-- AI 메시지: 데이터 수집 분석 -->
+        <div class="ai-message assistant">
+          <div class="sender">🤖 AI 어시스턴트</div>
+          연구 설계를 분석했습니다. CGM 데이터가 핵심이므로, 다음 패시브 데이터를 추천합니다:<br><br>
+          ✓ CGM 연속혈당<br>
+          ✓ 활동량 (만보기)<br>
+          ✓ 수면 패턴<br><br>
+          추가로 식단 기록은 액티브 데이터로 수집하는 것을 권장합니다.
+        </div>
+
+        <!-- 사용자 질문 -->
+        <div class="ai-message user">
+          <div class="sender">김연구</div>
+          식단 기록 빈도는?
+        </div>
+
+        <!-- AI 응답 -->
+        <div class="ai-message assistant">
+          <div class="sender">🤖 AI 어시스턴트</div>
+          RCT 특성상 매 식사(3회/일) 기록을 권장합니다. 사진 촬영 + AI 분석으로 탄수화물 섭취량을 자동 추정하면 참여자 부담을 줄일 수 있습니다.<br><br>
+          <div class="ai-action-card">
+            <div class="action-title">📋 추천 EMA 빈도</div>
+            <div class="ai-action-item"><span class="check">✓</span> <span class="field">식단:</span> <span class="value">매 식사 후 (3회/일)</span></div>
+            <div class="ai-action-item"><span class="check">✓</span> <span class="field">기분:</span> <span class="value">아침/저녁 (2회/일)</span></div>
+            <div class="ai-action-item"><span class="check">✓</span> <span class="field">복약:</span> <span class="value">복용 시마다</span></div>
+          </div>
+        </div>
       </div>
 
       <!-- 빠른 액션 -->
       <div class="ai-quick-actions">
-        <div class="label">빠른 설정</div>
+        <div class="label">빠른 질문</div>
         <div class="ai-quick-chips">
-          <span class="ai-quick-chip" data-action="recommend">🎯 AI 추천 적용</span>
-          <span class="ai-quick-chip" data-action="age40">40대 이상</span>
-          <span class="ai-quick-chip" data-action="diabetes">당뇨 환자</span>
-          <span class="ai-quick-chip" data-action="cgm_diet">CGM+식단</span>
+          <span class="ai-quick-chip" data-action="frequency">📊 수집 빈도 추천</span>
+          <span class="ai-quick-chip" data-action="required">✅ 필수 vs 선택</span>
+          <span class="ai-quick-chip" data-action="burden">⚖️ 참여자 부담 분석</span>
         </div>
       </div>
 
       <!-- 입력 -->
       <div class="ai-chat-input">
         <div class="ai-input-wrapper">
-          <input type="text" id="ai-chat-input" placeholder="예: 40대 이상 당뇨 환자만 모집해줘">
+          <input type="text" id="ai-chat-input" placeholder="예: 수면 데이터도 추가해줘">
           <button class="ai-send-btn" id="ai-send-btn">➤</button>
         </div>
       </div>
     </aside>
   </div>
+  <!-- ========== 모달: 패시브 데이터 AI 추천 근거 ========== -->
+  <div class="modal-overlay" id="passive-modal" onclick="if(event.target===this)closeModal('passive-modal')">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>🤖 패시브 데이터 AI 추천 근거</h3>
+        <div style="display:flex; align-items:center; gap: 8px;">
+          <span class="badge">AI 분석</span>
+          <button class="modal-close" onclick="closeModal('passive-modal')">✕</button>
+        </div>
+      </div>
+      <div class="modal-body">
+        <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; padding: 14px 16px; margin-bottom: 16px; font-size: 13px; color: #166534; line-height: 1.6;">
+          연구 설계(RCT, 저탄수화물 식단, CGM 기반 혈당 변동)를 분석하여 <strong>4개 패시브 데이터 항목</strong>을 추천합니다. 유사 RCT 41건의 데이터 수집 패턴을 참고했습니다.
+        </div>
+
+        <div class="rationale-item">
+          <div class="rationale-icon">📈</div>
+          <div class="rationale-info">
+            <div class="rationale-title">CGM (연속혈당) — 필수</div>
+            <div class="rationale-desc">MAGE 계산에 최소 14일 연속 측정 필요. 5분 간격 데이터로 혈당 변동성(MAGE, CV%, TIR)을 정밀 측정합니다.</div>
+            <div class="rationale-stat">유사 RCT 41건 중 38건(93%)이 CGM을 1차 데이터로 사용</div>
+          </div>
+        </div>
+
+        <div class="rationale-item">
+          <div class="rationale-icon">❤️</div>
+          <div class="rationale-info">
+            <div class="rationale-title">심박수 — 권장</div>
+            <div class="rationale-desc">저혈당 에피소드 시 심박수 변화 감지. 야간 저혈당 탐지 보조 지표로 활용 가능합니다.</div>
+            <div class="rationale-stat">식이 개입 RCT의 67%가 심박수를 보조 지표로 수집</div>
+          </div>
+        </div>
+
+        <div class="rationale-item">
+          <div class="rationale-icon">🚶</div>
+          <div class="rationale-info">
+            <div class="rationale-title">활동량/걸음수 — 권장</div>
+            <div class="rationale-desc">신체 활동은 혈당에 직접 영향. 식단 효과를 분리하기 위한 통제 변수로 필수적입니다.</div>
+            <div class="rationale-stat">운동량 미통제 시 MAGE 효과크기 과대추정 위험 (bias ~15%)</div>
+          </div>
+        </div>
+
+        <div class="rationale-item">
+          <div class="rationale-icon">😴</div>
+          <div class="rationale-info">
+            <div class="rationale-title">수면 — 권장</div>
+            <div class="rationale-desc">수면 품질/시간은 인슐린 저항성과 직결. Dawn phenomenon(새벽 현상) 분석에 수면 데이터가 필요합니다.</div>
+            <div class="rationale-stat">수면-혈당 상관 r=0.42 (Park et al. 2024)</div>
+          </div>
+        </div>
+
+        <div class="method-note">
+          <strong>참고:</strong> 체온, 위치/이동 데이터는 본 연구 설계에서 직접적 분석 가치가 낮아 선택 사항으로 분류했습니다. 필요 시 탐색적 분석용으로 추가 가능합니다.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== 모달: 능동 데이터 AI 추천 근거 ========== -->
+  <div class="modal-overlay" id="active-modal" onclick="if(event.target===this)closeModal('active-modal')">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>🤖 능동 데이터 AI 추천 근거</h3>
+        <div style="display:flex; align-items:center; gap: 8px;">
+          <span class="badge">AI 분석</span>
+          <button class="modal-close" onclick="closeModal('active-modal')">✕</button>
+        </div>
+      </div>
+      <div class="modal-body">
+        <div style="background: #fef3c7; border: 1px solid #fcd34d; border-radius: 10px; padding: 14px 16px; margin-bottom: 16px; font-size: 13px; color: #92400e; line-height: 1.6;">
+          능동 데이터는 참여자 부담과 직결됩니다. <strong>3개 필수 항목</strong>을 추천하며, EMA 빈도는 완료율을 고려하여 최적화했습니다.
+        </div>
+
+        <div class="rationale-item">
+          <div class="rationale-icon">🍽️</div>
+          <div class="rationale-info">
+            <div class="rationale-title">식단 기록 — 필수 (3회/일)</div>
+            <div class="rationale-desc">저탄수화물 식단 순응도를 직접 측정하는 핵심 변수. 매 식사 후 탄수화물 섭취량을 기록합니다. 사진 촬영 + AI 분석으로 자동 추정하면 입력 시간을 70% 단축 가능합니다.</div>
+            <div class="rationale-stat">3회/일 기록 시 순응도 측정 정확도 92% (vs 1회/일 64%)</div>
+          </div>
+        </div>
+
+        <div class="rationale-item">
+          <div class="rationale-icon">💊</div>
+          <div class="rationale-info">
+            <div class="rationale-title">복약 기록 — 필수 (복용 시)</div>
+            <div class="rationale-desc">혈당 강하제/인슐린 사용 여부는 혈당 변동의 주요 교란변수. 복약 시간과 용량을 기록하여 식단 효과를 분리합니다.</div>
+            <div class="rationale-stat">복약 미기록 시 MAGE 효과크기 해석 불가 (교란 위험)</div>
+          </div>
+        </div>
+
+        <div class="rationale-item">
+          <div class="rationale-icon">😊</div>
+          <div class="rationale-info">
+            <div class="rationale-title">기분/컨디션 — 권장 (2회/일)</div>
+            <div class="rationale-desc">식단 개입의 삶의 질 영향을 2차 결과변수로 측정. 저탄수화물 식단 초기 피로감/짜증 등 부작용 모니터링에도 활용됩니다.</div>
+            <div class="rationale-stat">EMA 2회/일(아침/저녁)이 부담 대비 데이터 품질 최적</div>
+          </div>
+        </div>
+
+        <div class="method-note">
+          <strong>참여자 부담 분석:</strong> 현재 설정(식단 3회 + 복약 수시 + 기분 2회)으로 하루 약 9회 입력, 예상 소요 시간 12분/일. 완료율 유지를 위해 운동/수분 기록은 선택 사항으로 분류했습니다.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function openModal(id) {
+      document.getElementById(id).classList.add('show');
+    }
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('show');
+    }
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        document.querySelectorAll('.modal-overlay.show').forEach(m => m.classList.remove('show'));
+      }
+    });
+  </script>
   <script src="page-spec.js"></script>
   <script src="ai-chat-panel.js"></script>
 <script>
