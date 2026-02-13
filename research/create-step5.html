@@ -296,50 +296,62 @@
         <a class="step" href="create-step6.html"><div class="step-num pending">6</div><div class="step-label">에스크로</div></a>
       </div>
 
-      <!-- AI 판정 배너 -->
-      <div style="background: linear-gradient(135deg, #eff6ff, #dbeafe); border: 1px solid #93c5fd; border-radius: 12px; padding: 16px 20px; margin-bottom: 24px; display: flex; align-items: center; gap: 14px;">
-        <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #8b5cf6, #6366f1); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0;">🤖</div>
-        <div style="flex: 1;">
-          <div style="font-size: 13px; font-weight: 600; color: #1e40af;">AI가 연구 설계를 분석하여 IRB 심의 유형을 추천합니다</div>
-          <div style="font-size: 12px; color: #6b7280; margin-top: 2px;">기존에 동의된 데이터만 사용하는 경우 면제 가능, 새로운 데이터 수집 시 심의 필요</div>
-        </div>
-      </div>
-
-      <!-- ===== IRB 유형 선택 ===== -->
-      <div class="card">
-        <div class="card-header">
-          <h3>📋 IRB 심의 유형 선택</h3>
-          <span style="font-size: 11px; color: #7c3aed; background: #f3e8ff; padding: 4px 10px; border-radius: 12px;">AI 추천: 일반 심의</span>
+      <!-- ===== AI IRB 판정 결과 ===== -->
+      <div class="card" style="border: 2px solid #8b5cf6; overflow: visible;">
+        <div class="card-header" style="background: linear-gradient(135deg, #7c3aed, #6366f1); border: none;">
+          <h3 style="color: white; display: flex; align-items: center; gap: 8px;">🤖 AI IRB 유형 판정</h3>
+          <span style="font-size: 11px; color: #c4b5fd; background: rgba(255,255,255,0.15); padding: 4px 10px; border-radius: 12px;">연구 설계 자동 분석</span>
         </div>
         <div class="card-body">
+          <!-- AI 분석 요약 -->
+          <div style="background: #faf5ff; border: 1px solid #ddd6fe; border-radius: 10px; padding: 16px; margin-bottom: 20px;">
+            <div style="display: flex; align-items: flex-start; gap: 12px;">
+              <div style="width: 36px; height: 36px; background: linear-gradient(135deg, #8b5cf6, #6366f1); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;">🤖</div>
+              <div style="flex: 1;">
+                <div style="font-size: 13px; font-weight: 600; color: #7c3aed; margin-bottom: 6px;">AI 분석 결과</div>
+                <div style="font-size: 12px; color: #374151; line-height: 1.7;">
+                  본 연구를 분석한 결과 <strong style="color: #d97706;">일반 심의</strong>가 필요합니다.<br>
+                  • CGM 기기를 통한 <strong>새로운 데이터 수집</strong> 포함<br>
+                  • 식단 개입(저탄수화물 ≤50g/일)이 참여자 건강에 영향<br>
+                  • 대상: 제2형 당뇨 환자 (취약 계층 해당)
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 판정 결과 3개 카드 (읽기 전용, AI가 선택함) -->
           <div class="irb-type-grid">
-            <!-- 면제 -->
-            <div class="irb-type-card" data-type="exempt" onclick="selectIRBType('exempt')">
+            <div class="irb-type-card" data-type="exempt" onclick="selectIRBType('exempt')" style="opacity: 0.5;">
               <div class="type-radio"></div>
               <div class="type-icon">🟢</div>
               <span class="type-tag green">면제</span>
               <div class="type-title">IRB 면제</div>
-              <div class="type-desc">기존 동의 데이터만 사용하거나, 공개 데이터 분석 등 IRB 심의가 불필요한 연구</div>
+              <div class="type-desc">기존 동의 데이터만 사용 · 추가 위험 없음</div>
               <div class="type-fee free">심사비: 없음</div>
+              <div style="font-size: 11px; color: #ef4444; margin-top: 8px; font-weight: 600;">✕ 새 데이터 수집 → 면제 불가</div>
             </div>
-            <!-- 일반 심의 -->
             <div class="irb-type-card selected" data-type="standard" onclick="selectIRBType('standard')">
               <div class="type-radio"></div>
               <div class="type-icon">🟡</div>
               <span class="type-tag amber">일반 심의</span>
-              <div class="type-title">심사비 결제 + 심의</div>
-              <div class="type-desc">새로운 데이터를 수집하는 연구. 심사비 결제 후 IRB 위원회 심의를 거쳐 승인을 받습니다</div>
+              <div style="position: absolute; top: -10px; right: 12px; background: linear-gradient(135deg, #8b5cf6, #6366f1); color: white; font-size: 10px; font-weight: 700; padding: 3px 10px; border-radius: 10px;">AI 판정</div>
+              <div class="type-title">심사비 결제 + 위원회 심의</div>
+              <div class="type-desc">새로운 데이터 수집 연구 · IRB 위원회 심의 후 승인</div>
               <div class="type-fee paid">심사비: 500,000원</div>
             </div>
-            <!-- 자동 승인 -->
-            <div class="irb-type-card" data-type="auto" onclick="selectIRBType('auto')">
+            <div class="irb-type-card" data-type="auto" onclick="selectIRBType('auto')" style="opacity: 0.5;">
               <div class="type-radio"></div>
               <div class="type-icon">🔵</div>
-              <span class="type-tag blue">간이 심의 (자동)</span>
+              <span class="type-tag blue">간이 심의</span>
               <div class="type-title">자동 승인 → 모집</div>
-              <div class="type-desc">최소 위험 연구로 AI 사전 검증 통과 시 자동 승인. 승인 즉시 모집 단계로 진행</div>
+              <div class="type-desc">최소 위험 연구 · AI 사전 검증 통과 시</div>
               <div class="type-fee paid">심사비: 250,000원</div>
+              <div style="font-size: 11px; color: #ef4444; margin-top: 8px; font-weight: 600;">✕ 식단 개입 포함 → 최소 위험 아님</div>
             </div>
+          </div>
+
+          <div style="margin-top: 16px; font-size: 12px; color: #6b7280; display: flex; align-items: center; gap: 6px;">
+            💡 동의하지 않으면 다른 유형을 클릭하여 변경할 수 있습니다
           </div>
         </div>
       </div>
