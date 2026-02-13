@@ -64,14 +64,12 @@
     .form-group { margin-bottom: 16px; }
 
     /* 연구 방법론 그리드 */
-    .methodology-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-    .methodology-item { padding: 14px; border: 2px solid #e5e7eb; border-radius: 10px; cursor: pointer; transition: all 0.2s; }
+    .methodology-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+    .methodology-item { padding: 8px 14px; border: 2px solid #e5e7eb; border-radius: 20px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px; }
     .methodology-item:hover { border-color: #c4b5fd; }
     .methodology-item.selected { border-color: #8b5cf6; background: #faf5ff; }
-    .methodology-item h4 { font-size: 13px; margin-bottom: 4px; }
-    .methodology-item p { font-size: 11px; color: #6b7280; margin-bottom: 6px; }
-    .methodology-item .tags { display: flex; flex-wrap: wrap; gap: 4px; }
-    .methodology-item .tag { font-size: 10px; background: #f3f4f6; padding: 2px 6px; border-radius: 4px; color: #6b7280; }
+    .methodology-item h4 { font-size: 13px; font-weight: 600; }
+    .methodology-item p { font-size: 11px; color: #6b7280; }
 
     /* 참여자 조건 */
     .condition-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
@@ -323,35 +321,17 @@
         </div>
         <div class="card-body">
           <div class="methodology-grid">
-            <div class="methodology-item" data-id="prospective_cohort">
-              <h4>전향적 코호트</h4>
-              <p>시간에 따른 추적 관찰</p>
-              <div class="tags"><span class="tag">시계열 분석</span><span class="tag">트렌드 예측</span></div>
-            </div>
             <div class="methodology-item selected" data-id="rct">
               <h4>RCT</h4>
               <p>무작위 대조 시험</p>
-              <div class="tags"><span class="tag">그룹 비교</span><span class="tag">효과 크기</span></div>
             </div>
-            <div class="methodology-item" data-id="smart">
-              <h4>SMART</h4>
-              <p>적응형 다단계 배정</p>
-              <div class="tags"><span class="tag">적응형 분석</span><span class="tag">최적 경로</span></div>
-            </div>
-            <div class="methodology-item" data-id="mrt">
-              <h4>MRT</h4>
-              <p>마이크로 무작위 시험</p>
-              <div class="tags"><span class="tag">JITAI</span><span class="tag">순간 효과</span></div>
-            </div>
-            <div class="methodology-item" data-id="n_of_1">
-              <h4>N-of-1</h4>
-              <p>단일 피험자 반복 측정</p>
-              <div class="tags"><span class="tag">개인화</span><span class="tag">맞춤 치료</span></div>
+            <div class="methodology-item" data-id="prospective_cohort">
+              <h4>코호트</h4>
+              <p>전향적 추적 관찰</p>
             </div>
             <div class="methodology-item" data-id="cross_sectional">
               <h4>횡단 조사</h4>
               <p>한 시점 스냅샷</p>
-              <div class="tags"><span class="tag">분포 분석</span><span class="tag">세그먼트</span></div>
             </div>
           </div>
         </div>
