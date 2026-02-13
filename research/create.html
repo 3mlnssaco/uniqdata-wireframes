@@ -225,6 +225,28 @@
         <a href="create.html" class="nav-item active">
           <span class="icon">➕</span> 새 연구
         </a>
+
+        <!-- 임시저장 (새 연구 바로 하단) -->
+        <div style="margin-top:8px; padding:8px 0;">
+          <div style="display:flex; align-items:center; justify-content:space-between; padding:0 12px; margin-bottom:8px;">
+            <span style="font-size:11px; font-weight:600; color:#64748b; text-transform:uppercase; letter-spacing:0.5px;">임시저장</span>
+            <span style="background:#334155; color:#94a3b8; font-size:10px; padding:2px 6px; border-radius:8px;">2</span>
+          </div>
+          <a href="#" style="display:flex; align-items:center; gap:10px; padding:8px 12px; border-radius:8px; text-decoration:none; margin-bottom:4px; background:rgba(251,191,36,0.08);">
+            <span style="width:6px; height:6px; background:#fbbf24; border-radius:50%; flex-shrink:0;"></span>
+            <div style="flex:1; min-width:0;">
+              <div style="font-size:12px; color:#e2e8f0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">소아 비만 개입 연구</div>
+              <div style="font-size:10px; color:#64748b; margin-top:2px;">Step 3 · 2일 전</div>
+            </div>
+          </a>
+          <a href="#" style="display:flex; align-items:center; gap:10px; padding:8px 12px; border-radius:8px; text-decoration:none;">
+            <span style="width:6px; height:6px; background:#64748b; border-radius:50%; flex-shrink:0;"></span>
+            <div style="flex:1; min-width:0;">
+              <div style="font-size:12px; color:#94a3b8; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">직장인 스트레스 코르티솔</div>
+              <div style="font-size:10px; color:#64748b; margin-top:2px;">Step 1 · 5일 전</div>
+            </div>
+          </a>
+        </div>
       </div>
 
       <!-- 내 연구 (접힌 상태) -->
@@ -249,27 +271,6 @@
           <span style="width:8px; height:8px; background:#64748b; border-radius:50%;"></span>
         </div>
 
-        <!-- 임시저장 -->
-        <div style="margin-top:16px; padding-top:12px; border-top:1px solid #1e293b;">
-          <div style="display:flex; align-items:center; justify-content:space-between; padding:0 12px; margin-bottom:8px;">
-            <span style="font-size:11px; font-weight:600; color:#64748b; text-transform:uppercase; letter-spacing:0.5px;">임시저장</span>
-            <span style="background:#334155; color:#94a3b8; font-size:10px; padding:2px 6px; border-radius:8px;">2</span>
-          </div>
-          <a href="#" style="display:flex; align-items:center; gap:10px; padding:8px 12px; border-radius:8px; text-decoration:none; margin-bottom:4px; background:rgba(251,191,36,0.08);">
-            <span style="width:6px; height:6px; background:#fbbf24; border-radius:50%; flex-shrink:0;"></span>
-            <div style="flex:1; min-width:0;">
-              <div style="font-size:12px; color:#e2e8f0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">소아 비만 개입 연구</div>
-              <div style="font-size:10px; color:#64748b; margin-top:2px;">Step 3 · 2일 전</div>
-            </div>
-          </a>
-          <a href="#" style="display:flex; align-items:center; gap:10px; padding:8px 12px; border-radius:8px; text-decoration:none;">
-            <span style="width:6px; height:6px; background:#64748b; border-radius:50%; flex-shrink:0;"></span>
-            <div style="flex:1; min-width:0;">
-              <div style="font-size:12px; color:#94a3b8; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">직장인 스트레스 코르티솔</div>
-              <div style="font-size:10px; color:#64748b; margin-top:2px;">Step 1 · 5일 전</div>
-            </div>
-          </a>
-        </div>
       </div>
 
       <div class="sidebar-footer">
@@ -480,6 +481,42 @@
           </div>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- 디자이너 노트 -->
+  <div style="background: linear-gradient(135deg, #fdf4ff, #fae8ff); border: 2px solid #d946ef; border-radius: 12px; padding: 20px; margin: 24px; max-width: 900px;">
+    <h3 style="color: #a21caf; margin-bottom: 16px; font-size: 16px;">📋 디자이너 노트: 연구 생성 Step 1 — AI 인터뷰</h3>
+    <div style="margin-bottom: 14px;">
+      <strong style="color: #86198f; display: block; margin-bottom: 4px;">🟡 우선순위: Phase 1B (3~6개월)</strong>
+      <p style="font-size: 13px; color: #374151; line-height: 1.6;">연구 생성 6단계 중 첫 번째. AI가 대화형으로 연구 아이디어를 구체화하는 인터뷰 화면. 3-panel 레이아웃(사이드바 + 채팅 + 레포트).</p>
+    </div>
+    <div style="margin-bottom: 14px;">
+      <strong style="color: #86198f; display: block; margin-bottom: 4px;">레이아웃 구조</strong>
+      <ul style="font-size: 13px; color: #374151; line-height: 1.8; padding-left: 20px;">
+        <li><strong>사이드바 (240px)</strong>: 로고 + 네비게이션 + 내 연구 목록(활성 상태 dot: 초록=진행중, 파랑=모집중, 회색=초안) + 임시저장 목록(노란 dot=최근, 회색=오래됨) + 사용자 정보</li>
+        <li><strong>Step Bar (상단)</strong>: 6단계 진행 표시. 현재=보라, 완료=초록, 미진행=회색. 1.AI인터뷰 → 2.연구설계 → 3.데이터수집 → 4.타겟설정 → 5.IRB판정 → 6.에스크로</li>
+        <li><strong>채팅 패널 (중앙)</strong>: AI 대화 영역. 아래에 진행 요약 바 + 입력창</li>
+        <li><strong>레포트 패널 (우측 400px)</strong>: 실시간 RAG 검색 결과. PubMed/학술DB에서 관련 논문 자동 표시</li>
+      </ul>
+    </div>
+    <div style="margin-bottom: 14px;">
+      <strong style="color: #86198f; display: block; margin-bottom: 4px;">채팅 패널 구성</strong>
+      <ul style="font-size: 13px; color: #374151; line-height: 1.8; padding-left: 20px;">
+        <li><strong>AI 메시지 (좌측 정렬)</strong>: 흰 배경, 라운드 말풍선. 분석 내용 + 후속 질문 + 제안 칩 포함</li>
+        <li><strong>사용자 메시지 (우측 정렬)</strong>: 보라 배경, 사용자 답변</li>
+        <li><strong>제안 칩</strong>: AI가 연구 주제 예시를 칩 형태로 제공. 클릭 시 입력란에 자동 채움</li>
+        <li><strong>진행 요약 바</strong>: 7개 항목(주제/대상/개입/기간/결과지표/방법론/가설). 채워진 항목은 초록 dot + 굵은 글씨</li>
+      </ul>
+    </div>
+    <div>
+      <strong style="color: #86198f; display: block; margin-bottom: 4px;">레포트 패널 구성</strong>
+      <ul style="font-size: 13px; color: #374151; line-height: 1.8; padding-left: 20px;">
+        <li><strong>연구 동향</strong>: 관련 RCT 수 + RCT 비율 통계 박스. 최근 연구 트렌드 텍스트 요약</li>
+        <li><strong>관련 논문</strong>: 제목 + 저자 + 저널 + DOI + 요약 스니펫. 카드형 리스트</li>
+        <li><strong>샘플사이즈 근거</strong>: 파워 분석 기반 최소 필요 인원 + 탈락률 고려 목표 인원</li>
+        <li><strong>관련 키워드</strong>: 태그 칩으로 표시. 검색에 사용된 키워드들</li>
+      </ul>
     </div>
   </div>
 </body>
