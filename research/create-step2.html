@@ -139,6 +139,10 @@
     .method-stat .info .name { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
     .method-stat .info .desc { font-size: 12px; color: #6b7280; }
     .method-note { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 12px 14px; font-size: 12px; color: #1e40af; margin-top: 12px; line-height: 1.6; }
+    .ref-links { margin-top: 16px; padding-top: 14px; border-top: 1px solid #e5e7eb; }
+    .ref-links .ref-title { font-size: 12px; font-weight: 600; color: #374151; margin-bottom: 8px; }
+    .ref-link { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 8px; font-size: 12px; color: #3b82f6; text-decoration: none; margin-bottom: 4px; }
+    .ref-link:hover { background: #eff6ff; }
 
     /* 디자이너 노트 */
     .designer-note { background: linear-gradient(135deg, #fdf4ff, #fae8ff); border: 2px solid #d946ef; border-radius: 12px; padding: 20px; margin-top: 24px; }
@@ -614,6 +618,13 @@ POST /api/v2/pool/simulate<br>
         <div style="font-size: 11px; color: #94a3b8; margin-top: 12px; text-align: center;">
           PubMed · KoreaMed · Google Scholar 기반 RAG 검색 · 최근 3년 · 키워드: 저탄수화물, 제2형 당뇨, CGM, 혈당 변동성, 한국
         </div>
+
+        <div class="ref-links">
+          <div class="ref-title">관련 참고 링크</div>
+          <a class="ref-link" href="#" onclick="return false">📄 PubMed: "low carbohydrate diet type 2 diabetes CGM" 검색 결과 (41건)</a>
+          <a class="ref-link" href="#" onclick="return false">📊 KoreaMed: 국내 저탄수화물 당뇨 연구 목록 (3건)</a>
+          <a class="ref-link" href="#" onclick="return false">🔗 Cochrane Library: 식이 개입 체계적 문헌고찰</a>
+        </div>
       </div>
     </div>
   </div>
@@ -657,6 +668,13 @@ POST /api/v2/pool/simulate<br>
             ② 한식 기반 저탄수화물 대체 메뉴 프로토콜 개발 및 순응도 검증<br>
             ③ 탄수화물 섭취량 → GV 변화의 매개 경로 분석
           </div>
+        </div>
+
+        <div class="ref-links">
+          <div class="ref-title">관련 참고 링크</div>
+          <a class="ref-link" href="#" onclick="return false">📄 NIH Reporter: CGM + dietary intervention 진행 중 연구 (12건)</a>
+          <a class="ref-link" href="#" onclick="return false">📊 ClinicalTrials.gov: 저탄수화물 당뇨 RCT 등록 현황</a>
+          <a class="ref-link" href="#" onclick="return false">🔗 대한당뇨병학회: 연구 동향 보고서 (2025)</a>
         </div>
       </div>
     </div>
@@ -718,6 +736,13 @@ POST /api/v2/pool/simulate<br>
         <div style="font-size: 11px; color: #94a3b8; margin-top: 12px; text-align: center;">
           PubMed · Google Scholar · Semantic Scholar 기반 RAG 검색 · 최근 3년 · 키워드: low-carb, glycemic variability, CGM, MAGE, RCT
         </div>
+
+        <div class="ref-links">
+          <div class="ref-title">관련 참고 링크</div>
+          <a class="ref-link" href="#" onclick="return false">📈 Semantic Scholar: glycemic variability + dietary intervention 트렌드</a>
+          <a class="ref-link" href="#" onclick="return false">📄 Google Scholar: MAGE reduction low-carb 최신 논문</a>
+          <a class="ref-link" href="#" onclick="return false">🔗 WHO: 제2형 당뇨 관리 가이드라인 (2025 개정)</a>
+        </div>
       </div>
     </div>
   </div>
@@ -759,6 +784,13 @@ POST /api/v2/pool/simulate<br>
 
         <div class="method-note">
           <strong>RCT 추천 근거:</strong> 해당 연구 질문에 가장 적합. 개입 효과를 인과적으로 검증 가능. 유사 연구 중 62%가 RCT를 채택했으며, 최근 CGM 기반 RCT가 급증하는 추세.
+        </div>
+
+        <div class="ref-links">
+          <div class="ref-title">관련 참고 링크</div>
+          <a class="ref-link" href="#" onclick="return false">📋 CONSORT 2010: RCT 보고 가이드라인</a>
+          <a class="ref-link" href="#" onclick="return false">📄 BMJ: 식이 개입 RCT 설계 권고사항</a>
+          <a class="ref-link" href="#" onclick="return false">🔗 Cochrane Handbook: 방법론 선택 의사결정 트리</a>
         </div>
       </div>
     </div>
@@ -823,6 +855,13 @@ POST /api/v2/pool/simulate<br>
 
         <div class="method-note">
           <strong>참고:</strong> 탈락률 19%까지 통계적 유의성 유지. 식이 개입 연구 평균 탈락률(15~25%) 고려 시 100명은 충분한 표본 크기.
+        </div>
+
+        <div class="ref-links">
+          <div class="ref-title">관련 참고 링크</div>
+          <a class="ref-link" href="#" onclick="return false">🧮 G*Power 3.1: 검정력 분석 도구 (다운로드)</a>
+          <a class="ref-link" href="#" onclick="return false">📄 Chow et al. (2018): Sample Size Calculations in Clinical Research</a>
+          <a class="ref-link" href="#" onclick="return false">🔗 FDA: 임상시험 표본 크기 가이던스</a>
         </div>
       </div>
     </div>
