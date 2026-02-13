@@ -203,6 +203,18 @@
     .empty-report .icon { font-size: 48px; margin-bottom: 16px; opacity: 0.5; }
     .empty-report .text { font-size: 14px; }
     .empty-report .hint { font-size: 12px; margin-top: 8px; }
+
+    /* 자동 저장 pulse */
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+    @keyframes saveFade {
+      0% { opacity: 0; transform: translateY(4px); }
+      15% { opacity: 1; transform: translateY(0); }
+      85% { opacity: 1; transform: translateY(0); }
+      100% { opacity: 0; transform: translateY(-4px); }
+    }
   </style>
 </head>
 <body>
@@ -230,8 +242,16 @@
         <div style="margin-top:8px; padding:8px 0;">
           <div style="display:flex; align-items:center; justify-content:space-between; padding:0 12px; margin-bottom:8px;">
             <span style="font-size:11px; font-weight:600; color:#64748b; text-transform:uppercase; letter-spacing:0.5px;">임시저장</span>
-            <span style="background:#334155; color:#94a3b8; font-size:10px; padding:2px 6px; border-radius:8px;">2</span>
+            <span style="background:#334155; color:#94a3b8; font-size:10px; padding:2px 6px; border-radius:8px;">3</span>
           </div>
+          <!-- 현재 세션 (자동 저장됨) -->
+          <a href="#" style="display:flex; align-items:center; gap:10px; padding:8px 12px; border-radius:8px; text-decoration:none; margin-bottom:4px; background:rgba(139,92,246,0.15); border-left:3px solid #8b5cf6;">
+            <span style="width:6px; height:6px; background:#8b5cf6; border-radius:50%; flex-shrink:0; animation: pulse 2s infinite;"></span>
+            <div style="flex:1; min-width:0;">
+              <div style="font-size:12px; color:#e2e8f0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-weight:600;">저탄수화물 식단 혈당 연구</div>
+              <div style="font-size:10px; color:#a78bfa; margin-top:2px;">Step 1 · 방금 전 · <span style="color:#22c55e;">자동 저장됨</span></div>
+            </div>
+          </a>
           <a href="#" style="display:flex; align-items:center; gap:10px; padding:8px 12px; border-radius:8px; text-decoration:none; margin-bottom:4px; background:rgba(251,191,36,0.08);">
             <span style="width:6px; height:6px; background:#fbbf24; border-radius:50%; flex-shrink:0;"></span>
             <div style="flex:1; min-width:0;">
@@ -307,7 +327,13 @@
         <!-- ② AI 채팅 패널 -->
         <div class="chat-panel">
           <div class="chat-header">
-            <h2>AI 연구 인터뷰</h2>
+            <div style="display:flex; align-items:center; justify-content:space-between;">
+              <h2>AI 연구 인터뷰</h2>
+              <div style="display:flex; align-items:center; gap:6px; font-size:11px; color:#22c55e; background:rgba(34,197,94,0.1); padding:4px 10px; border-radius:16px; animation: saveFade 3s ease-in-out infinite;">
+                <span style="width:5px; height:5px; background:#22c55e; border-radius:50;"></span>
+                자동 저장됨
+              </div>
+            </div>
             <p>연구 아이디어를 말씀해주세요. AI가 빠진 부분을 질문하며 함께 설계합니다.</p>
           </div>
 
@@ -509,13 +535,26 @@
         <li><strong>진행 요약 바</strong>: 7개 항목(주제/대상/개입/기간/결과지표/방법론/가설). 채워진 항목은 초록 dot + 굵은 글씨</li>
       </ul>
     </div>
-    <div>
+    <div style="margin-bottom: 14px;">
       <strong style="color: #86198f; display: block; margin-bottom: 4px;">레포트 패널 구성</strong>
       <ul style="font-size: 13px; color: #374151; line-height: 1.8; padding-left: 20px;">
         <li><strong>연구 동향</strong>: 관련 RCT 수 + RCT 비율 통계 박스. 최근 연구 트렌드 텍스트 요약</li>
         <li><strong>관련 논문</strong>: 제목 + 저자 + 저널 + DOI + 요약 스니펫. 카드형 리스트</li>
         <li><strong>샘플사이즈 근거</strong>: 파워 분석 기반 최소 필요 인원 + 탈락률 고려 목표 인원</li>
         <li><strong>관련 키워드</strong>: 태그 칩으로 표시. 검색에 사용된 키워드들</li>
+      </ul>
+    </div>
+    <div>
+      <strong style="color: #86198f; display: block; margin-bottom: 4px;">임시저장 자동 저장 동작</strong>
+      <ul style="font-size: 13px; color: #374151; line-height: 1.8; padding-left: 20px;">
+        <li><strong>트리거</strong>: 사용자가 첫 메시지 전송 시 자동으로 임시저장 생성</li>
+        <li><strong>제목 자동 생성</strong>: AI가 대화 내용에서 연구 주제를 추출하여 임시저장 제목 자동 부여 (예: "저탄수화물 식단 혈당 연구")</li>
+        <li><strong>저장 주기</strong>: 매 메시지 전송 시 + 30초 idle 자동 저장</li>
+        <li><strong>사이드바 반영</strong>: 현재 세션이 임시저장 리스트 최상단에 보라 하이라이트로 표시. pulse dot으로 활성 상태 표현</li>
+        <li><strong>채팅 헤더</strong>: "자동 저장됨" 뱃지가 fade 애니메이션으로 반복 표시</li>
+        <li><strong>Step 진행 시</strong>: 다음 Step으로 넘어가도 임시저장 유지. Step 번호 자동 갱신</li>
+        <li><strong>복원</strong>: 임시저장 항목 클릭 시 해당 Step + 대화 내용 그대로 복원</li>
+        <li>Backend: <code>POST /enterprise/projects/draft/auto-save</code> → { chatHistory, currentStep, extractedTitle }</li>
       </ul>
     </div>
   </div>
