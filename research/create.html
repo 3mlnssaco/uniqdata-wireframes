@@ -399,24 +399,81 @@
                 → 오른쪽 패널에서 관련 최신 연구들을 확인하실 수 있습니다
               </div>
             </div>
+
+            <!-- 사용자 답변 (결과지표 + 방법론) -->
+            <div class="msg user">
+              <div class="sender">김연구</div>
+              <div class="text">MAGE를 1차 지표로 하고, HbA1c랑 TIR도 2차로 볼게요. RCT로 하고 싶고, 군당 50명씩 총 100명이요.</div>
+            </div>
+
+            <!-- AI 가설 제안 -->
+            <div class="msg ai">
+              <div class="sender">AI 연구 어시스턴트</div>
+              <div class="text">
+                거의 다 왔습니다! 마지막으로 <strong>가설</strong>을 정리해볼게요.<br><br>
+                지금까지 내용을 바탕으로 가설을 제안드립니다:<br><br>
+                <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:8px; padding:12px; margin:8px 0;">
+                  <strong style="color:#166534;">제안 가설:</strong><br>
+                  "8주간 저탄수화물 식단(≤50g/일)을 섭취한 제2형 당뇨 환자군은 일반 한식 식단 대조군 대비 CGM 기반 MAGE가 유의하게 감소할 것이다."
+                </div>
+                이 가설로 진행할까요? 수정하고 싶으시면 말씀해주세요.
+              </div>
+            </div>
+
+            <!-- 사용자 가설 확정 -->
+            <div class="msg user">
+              <div class="sender">김연구</div>
+              <div class="text">네 그 가설 좋아요! 그대로 가겠습니다.</div>
+            </div>
+
+            <!-- AI 완료 + Step 2 유도 -->
+            <div class="msg ai">
+              <div class="sender">AI 연구 어시스턴트</div>
+              <div class="text">
+                모든 항목이 채워졌습니다! 연구 설계 초안을 정리해볼게요:<br><br>
+                <div style="background:#f5f3ff; border:1px solid #c4b5fd; border-radius:8px; padding:12px; margin:8px 0;">
+                  <div style="font-size:13px; line-height:1.8; color:#374151;">
+                    <strong style="color:#7c3aed;">연구 설계 요약</strong><br>
+                    · <strong>주제:</strong> 저탄수화물 식단이 혈당 변동에 미치는 영향<br>
+                    · <strong>대상:</strong> 30-65세 제2형 당뇨 환자 100명<br>
+                    · <strong>개입:</strong> 저탄수화물(≤50g/일) vs 일반 한식 식단<br>
+                    · <strong>기간:</strong> 8주<br>
+                    · <strong>결과지표:</strong> 1차 MAGE, 2차 HbA1c·TIR<br>
+                    · <strong>방법론:</strong> RCT (군당 50명)<br>
+                    · <strong>가설:</strong> 저탄수화물군의 MAGE 유의 감소
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
 
-          <!-- 진행 요약 -->
+          <!-- 진행 요약 (모두 완료) -->
           <div class="progress-bar-wrap">
             <div class="progress-items">
               <div class="progress-item"><div class="dot filled"></div><span class="label filled">주제</span></div>
               <div class="progress-item"><div class="dot filled"></div><span class="label filled">대상</span></div>
               <div class="progress-item"><div class="dot filled"></div><span class="label filled">개입</span></div>
               <div class="progress-item"><div class="dot filled"></div><span class="label filled">기간</span></div>
-              <div class="progress-item"><div class="dot empty"></div><span class="label">결과지표</span></div>
-              <div class="progress-item"><div class="dot empty"></div><span class="label">방법론</span></div>
-              <div class="progress-item"><div class="dot empty"></div><span class="label">가설</span></div>
+              <div class="progress-item"><div class="dot filled"></div><span class="label filled">결과지표</span></div>
+              <div class="progress-item"><div class="dot filled"></div><span class="label filled">방법론</span></div>
+              <div class="progress-item"><div class="dot filled"></div><span class="label filled">가설</span></div>
             </div>
+          </div>
+
+          <!-- Step 2 이동 CTA (모든 항목 충족 시 표시) -->
+          <div style="background: linear-gradient(135deg, #7c3aed, #6d28d9); border-radius:12px; padding:16px 20px; margin:0 24px 12px; display:flex; align-items:center; justify-content:space-between; box-shadow: 0 4px 16px rgba(124,58,237,0.3);">
+            <div>
+              <div style="color:white; font-weight:700; font-size:15px;">인터뷰 완료! 연구 설계로 넘어갈 준비가 되었습니다</div>
+              <div style="color:#c4b5fd; font-size:12px; margin-top:4px;">7/7 항목 충족 · AI가 초안 문서를 자동 생성합니다</div>
+            </div>
+            <a href="create-step2.html" style="background:white; color:#7c3aed; font-weight:700; font-size:14px; padding:10px 24px; border-radius:8px; text-decoration:none; white-space:nowrap; display:flex; align-items:center; gap:6px;">
+              Step 2: 연구 설계 →
+            </a>
           </div>
 
           <!-- 입력 -->
           <div class="chat-input">
-            <textarea placeholder="답변을 입력하세요..."></textarea>
+            <textarea placeholder="추가 질문이 있으시면 입력하세요... (또는 Step 2로 이동)"></textarea>
             <button>↑</button>
           </div>
         </div>
