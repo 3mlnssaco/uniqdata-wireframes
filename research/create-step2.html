@@ -245,6 +245,9 @@
           <h3>📖 연구 배경</h3>
           <div class="header-right">
             <span class="ai-badge">AI 생성</span>
+            <button class="report-btn" onclick="openModal('bg-modal')">
+              <span class="icon">📚</span> 선행연구
+            </button>
           </div>
         </div>
         <div class="card-body">
@@ -256,7 +259,12 @@
       <div class="card">
         <div class="card-header">
           <h3>🎯 연구 목적</h3>
-          <span class="ai-badge">AI 생성</span>
+          <div class="header-right">
+            <span class="ai-badge">AI 생성</span>
+            <button class="report-btn" onclick="openModal('obj-modal')">
+              <span class="icon">🔍</span> 연구 갭
+            </button>
+          </div>
         </div>
         <div class="card-body">
           <textarea class="textarea ai-filled" rows="3">제2형 당뇨 환자에서 8주간 저탄수화물 식단 개입(일 탄수화물 50g 이하)이 CGM 기반 혈당 변동성(MAGE, CV%)에 미치는 효과를 일반 식단 대조군과 비교하여 무작위 대조 시험으로 검증한다.</textarea>
@@ -531,6 +539,124 @@ POST /api/v2/pool/simulate<br>
         </div>
       </div>
     </aside>
+  </div>
+
+  <!-- ========== 모달: 선행연구 (연구 배경) ========== -->
+  <div class="modal-overlay" id="bg-modal" onclick="if(event.target===this)closeModal('bg-modal')">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>📚 선행연구 분석</h3>
+        <div style="display:flex; align-items:center; gap: 8px;">
+          <span class="badge">RAG + PubMed</span>
+          <button class="modal-close" onclick="closeModal('bg-modal')">✕</button>
+        </div>
+      </div>
+      <div class="modal-body">
+        <div class="trend-summary">
+          저탄수화물 식단과 제2형 당뇨 혈당 관리에 대한 <strong>핵심 선행연구 5건</strong>을 분석했습니다. 국내 연구는 3건에 불과하며, CGM 기반 측정을 적용한 연구는 1건뿐입니다.
+        </div>
+
+        <div style="font-size: 13px; font-weight: 600; margin-bottom: 12px; color: #374151;">핵심 선행연구</div>
+
+        <div class="paper-item">
+          <div class="paper-icon">📄</div>
+          <div class="paper-info">
+            <div class="paper-title">한국인 제2형 당뇨 환자의 저탄수화물 식단 순응도와 혈당 개선</div>
+            <div class="paper-meta">이영희 외 2025 | <span style="color: #059669; font-weight: 600;">대한당뇨병학회지</span></div>
+            <div class="paper-doi">DOI: 10.4093/dmj.2025.0031</div>
+            <div style="font-size: 11px; color: #6b7280; margin-top: 4px;">→ 국내 유일 CGM+저탄수화물 RCT. 6주, n=60. HbA1c 유의 개선, GV 미측정</div>
+          </div>
+        </div>
+
+        <div class="paper-item">
+          <div class="paper-icon">📄</div>
+          <div class="paper-info">
+            <div class="paper-title">Very low-carbohydrate diet and glycemic variability in T2DM: Systematic review</div>
+            <div class="paper-meta">Sainsbury et al. 2024 | <span style="font-weight: 600;">Diabetes Obes Metab</span></div>
+            <div class="paper-doi">DOI: 10.1111/dom.2024.15432</div>
+            <div style="font-size: 11px; color: #6b7280; margin-top: 4px;">→ 12개 RCT 메타분석. MAGE 평균 15mg/dL 감소 (p<0.01)</div>
+          </div>
+        </div>
+
+        <div class="paper-item">
+          <div class="paper-icon">📄</div>
+          <div class="paper-info">
+            <div class="paper-title">CGM 기반 혈당 변동성 지표의 임상적 의의</div>
+            <div class="paper-meta">박정수 외 2024 | <span style="font-weight: 600;">내분비대사학회지</span></div>
+            <div class="paper-doi">DOI: 10.3803/EnM.2024.0192</div>
+            <div style="font-size: 11px; color: #6b7280; margin-top: 4px;">→ MAGE, CV%, TIR 비교. MAGE가 심혈관 위험 예측에 가장 우수</div>
+          </div>
+        </div>
+
+        <div class="paper-item">
+          <div class="paper-icon">📄</div>
+          <div class="paper-info">
+            <div class="paper-title">한국인 식습관 특성을 고려한 저탄수화물 식단 프로토콜 개발</div>
+            <div class="paper-meta">김민정 외 2023 | <span style="font-weight: 600;">Korean J Nutr</span></div>
+            <div class="paper-doi">DOI: 10.4163/jnh.2023.56.5.412</div>
+            <div style="font-size: 11px; color: #6b7280; margin-top: 4px;">→ 밥 중심 식단에서 탄수화물 50g/일 달성 가능한 대체 메뉴 제시</div>
+          </div>
+        </div>
+
+        <div class="paper-item">
+          <div class="paper-icon">📄</div>
+          <div class="paper-info">
+            <div class="paper-title">Carbohydrate restriction and cardiovascular risk markers in diabetes</div>
+            <div class="paper-meta">Westman et al. 2023 | <span style="font-weight: 600;">Am J Clin Nutr</span></div>
+            <div class="paper-doi">DOI: 10.1016/j.ajcnut.2023.08.019</div>
+            <div style="font-size: 11px; color: #6b7280; margin-top: 4px;">→ 12주 RCT, n=120. LDL 변화 없이 TG 감소 + GV 개선 확인</div>
+          </div>
+        </div>
+
+        <div style="font-size: 11px; color: #94a3b8; margin-top: 12px; text-align: center;">
+          PubMed · KoreaMed · Google Scholar 기반 RAG 검색 · 최근 3년 · 키워드: 저탄수화물, 제2형 당뇨, CGM, 혈당 변동성, 한국
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== 모달: 연구 갭 (연구 목적) ========== -->
+  <div class="modal-overlay" id="obj-modal" onclick="if(event.target===this)closeModal('obj-modal')">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>🔍 연구 갭 분석</h3>
+        <div style="display:flex; align-items:center; gap: 8px;">
+          <span class="badge">AI 분석</span>
+          <button class="modal-close" onclick="closeModal('obj-modal')">✕</button>
+        </div>
+      </div>
+      <div class="modal-body">
+        <div class="trend-summary" style="background: #fef3c7; border-color: #fcd34d; color: #92400e;">
+          현재 연구가 채울 수 있는 <strong>3가지 핵심 연구 갭</strong>을 식별했습니다.
+        </div>
+
+        <div style="font-size: 13px; font-weight: 600; margin-bottom: 12px; color: #374151;">식별된 연구 갭</div>
+
+        <div style="background: #fefce8; border: 1px solid #fde68a; border-radius: 10px; padding: 14px; margin-bottom: 10px;">
+          <div style="font-size: 13px; font-weight: 700; color: #92400e; margin-bottom: 4px;">Gap 1. 국내 CGM 기반 GV 연구 부족</div>
+          <div style="font-size: 12px; color: #78716c; line-height: 1.5;">국내 저탄수화물 RCT 3건 중 CGM 기반 GV(MAGE, CV%)를 1차 결과변수로 사용한 연구는 <strong>0건</strong>. 기존 연구는 HbA1c, 공복혈당 중심.</div>
+        </div>
+
+        <div style="background: #fefce8; border: 1px solid #fde68a; border-radius: 10px; padding: 14px; margin-bottom: 10px;">
+          <div style="font-size: 13px; font-weight: 700; color: #92400e; margin-bottom: 4px;">Gap 2. 한국인 식습관 맞춤 프로토콜 부재</div>
+          <div style="font-size: 12px; color: #78716c; line-height: 1.5;">해외 RCT의 저탄수화물 프로토콜은 서구식 식단 기반. <strong>밥 중심 한식</strong>에서 탄수화물 50g/일을 달성하는 실현 가능한 프로토콜 검증 연구 없음.</div>
+        </div>
+
+        <div style="background: #fefce8; border: 1px solid #fde68a; border-radius: 10px; padding: 14px; margin-bottom: 10px;">
+          <div style="font-size: 13px; font-weight: 700; color: #92400e; margin-bottom: 4px;">Gap 3. GV와 식단 순응도 간 매개 경로 미검증</div>
+          <div style="font-size: 12px; color: #78716c; line-height: 1.5;">탄수화물 섭취량 감소 → MAGE 감소의 <strong>용량-반응 관계</strong>를 매개 분석(mediation analysis)으로 검증한 연구 부재.</div>
+        </div>
+
+        <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; padding: 14px;">
+          <div style="font-size: 13px; font-weight: 700; color: #166534; margin-bottom: 4px;">→ 본 연구의 기여</div>
+          <div style="font-size: 12px; color: #166534; line-height: 1.5;">
+            ① CGM 기반 MAGE/CV%를 1차 결과변수로 사용하는 <strong>국내 최초 RCT</strong><br>
+            ② 한식 기반 저탄수화물 대체 메뉴 프로토콜 개발 및 순응도 검증<br>
+            ③ 탄수화물 섭취량 → GV 변화의 매개 경로 분석
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- ========== 모달: 연구 동향 ========== -->
