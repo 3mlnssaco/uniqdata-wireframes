@@ -190,7 +190,7 @@ Table data_access_logs [headercolor: #7c3aed] {
   data_point_ids text [note: 'UUID[] 배열']
   accessor_type varchar(20) [note: 'SELF|RESEARCHER|SYSTEM|AI']
   accessor_id uuid
-  project_id uuid [note: 'uniqdata_db.projects.id']
+  project_id uuid [note: '⚠️ cross-DB 논리참조 → uniqdata_db.projects.id (API로만 조회)']
   irb_number varchar(50)
   consent_id uuid [ref: > consents.id]
   access_purpose varchar(50)
@@ -211,7 +211,7 @@ Table consents [headercolor: #7c3aed] {
   signature_method varchar(30) [note: 'PASSKEY_PRF|E_SIGNATURE|MANUAL']
   grant_tx_hash varchar(64) [note: 'CONSENT_GRANT XRPL tx']
   revoke_tx_hash varchar(64) [note: 'CONSENT_REVOKE XRPL tx']
-  project_id uuid [note: 'Business에서 전달받은 프로젝트 ID']
+  project_id uuid [note: '⚠️ cross-DB 논리참조 → uniqdata_db.projects.id (API로만 조회)']
   irb_number varchar(50)
   version int [default: 1]
   created_at timestamp [default: `NOW()`]
@@ -283,6 +283,22 @@ Table notification_preferences [headercolor: #7c3aed] {
   quiet_hours_end time
 }
 
+// ╔══════════════════════════════════════════════════════════════════════════════╗
+// ║                                                                            ║
+// ║   ⚠️  여기서부터 별도 DB — 직접 JOIN 불가 — Internal API로만 통신           ║
+// ║                                                                            ║
+// ║   Core (health_db:3000)  ←──  REST API / Webhook  ──→  Business (uniqdata_db:8080)  ║
+// ║                                                                            ║
+// ║   • Business → Core 호출: GET /internal/users/{id}                         ║
+// ║   • Business → Core 호출: POST /internal/consents/verify                   ║
+// ║   • Business → Core 호출: POST /internal/data/query                        ║
+// ║   • Business → Core 호출: POST /internal/xrpl/escrow/*                     ║
+// ║   • Core → Business 웹훅: data.submitted, consent.granted, escrow.*        ║
+// ║                                                                            ║
+// ║   cross-DB FK는 없음. user_id, project_id 등은 값만 저장 (논리적 참조)      ║
+// ║                                                                            ║
+// ╚══════════════════════════════════════════════════════════════════════════════╝
+
 // ═══════════════════════════════════════════════════
 // ░░░ uniqdata_db — Business Server (Spring:8080) ░░░
 // 16 Tables · PostgreSQL 15 · 1GB
@@ -303,7 +319,7 @@ Table enterprises [headercolor: #059669] {
 Table enterprise_members [headercolor: #059669] {
   id uuid [pk]
   enterprise_id uuid [ref: > enterprises.id]
-  user_id uuid [not null, note: 'health_db.users.id']
+  user_id uuid [not null, note: '⚠️ cross-DB 논리참조 → health_db.users.id (API로만 조회)']
   role varchar(20) [note: 'OWNER|PI|IRB_MEMBER|STAFF|VIEWER']
   status varchar(20) [default: 'ACTIVE']
   created_at timestamp [default: `NOW()`]
@@ -321,7 +337,7 @@ Table projects [headercolor: #059669] {
   title varchar(300) [not null]
   project_type varchar(30) [note: 'CLINICAL_TRIAL|OBSERVATIONAL|RETROSPECTIVE|REGISTRY|DATA_ANALYSIS|FL_STUDY|SYNTHETIC_DATA']
   status varchar(30) [default: 'DRAFT', note: 'DRAFT|IRB_PENDING|IRB_APPROVED|RECRUITING|ACTIVE|DATA_LOCKED|ANALYSIS|COMPLETED']
-  pi_user_id uuid [not null, note: '연구책임자 (health_db.users.id)']
+  pi_user_id uuid [not null, note: '⚠️ cross-DB 논리참조 → health_db.users.id (연구책임자)']
   irb_number varchar(50)
   target_participant_count int
   required_data_categories text [note: 'TEXT[] 배열']
@@ -344,8 +360,8 @@ Table project_milestones [headercolor: #059669] {
 Table participants [headercolor: #059669] {
   id uuid [pk]
   project_id uuid [ref: > projects.id]
-  user_id uuid [not null, note: 'health_db.users.id']
-  consent_id uuid [note: 'health_db.consents.id']
+  user_id uuid [not null, note: '⚠️ cross-DB 논리참조 → health_db.users.id']
+  consent_id uuid [note: '⚠️ cross-DB 논리참조 → health_db.consents.id']
   status varchar(20) [default: 'INVITED', note: 'INVITED|CONSENTED|ENROLLED|ACTIVE|COMPLETED|WITHDRAWN|EXCLUDED']
   reward_earned decimal(18,6) [default: 0]
   reward_paid decimal(18,6) [default: 0]
@@ -443,7 +459,7 @@ Table settlement_batches [headercolor: #059669] {
 Table settlement_items [headercolor: #059669] {
   id uuid [pk]
   batch_id uuid [ref: > settlement_batches.id]
-  recipient_user_id uuid [note: 'health_db.users.id']
+  recipient_user_id uuid [note: '⚠️ cross-DB 논리참조 → health_db.users.id']
   recipient_wallet_address varchar(60)
   amount decimal(18,6)
   calculation_basis jsonb [note: '{data_points_count: 150, quality_avg: 0.85, days: 90}']
