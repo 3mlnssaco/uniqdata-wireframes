@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>클린룸 - UniQdata</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f0f0f; color: #e5e5e5; }
+
+    .layout { display: flex; min-height: 100vh; }
+
+    /* ===== SIDEBAR ===== */
+    .sidebar { width: 240px; background: #1a1a1a; border-right: 1px solid #2a2a2a; padding: 16px 12px; flex-shrink: 0; display: flex; flex-direction: column; }
+    .logo { font-size: 17px; font-weight: 700; padding: 8px 12px; margin-bottom: 16px; color: #fff; display: flex; align-items: center; gap: 10px; }
+    .logo-icon { width: 32px; height: 32px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+    .nav-section { margin-bottom: 8px; }
+    .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 8px; margin-bottom: 2px; color: #888; font-size: 13px; cursor: pointer; transition: all 0.15s; text-decoration: none; }
+    .nav-item:hover { background: #252525; color: #ccc; }
+    .nav-item .icon { width: 18px; text-align: center; font-size: 14px; }
+    .research-nav-item { margin-bottom: 2px; }
+    .research-nav-header { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 12px; color: #888; transition: all 0.15s; }
+    .research-nav-header:hover { background: #252525; color: #ccc; }
+    .research-nav-item.expanded .research-nav-header { background: rgba(59, 130, 246, 0.1); color: #60a5fa; }
+    .folder-icon { font-size: 13px; }
+    .research-title { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .status-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+    .status-dot.active { background: #22c55e; }
+    .status-dot.recruiting { background: #3b82f6; }
+    .status-dot.draft { background: #6b7280; }
+    .research-nav-sub { display: none; padding-left: 20px; margin-top: 4px; border-left: 2px solid #333; margin-left: 18px; }
+    .research-nav-item.expanded .research-nav-sub { display: block; }
+    .nav-sub-item { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 6px; color: #777; font-size: 12px; cursor: pointer; transition: all 0.15s; text-decoration: none; margin-bottom: 2px; }
+    .nav-sub-item:hover { background: #252525; color: #ccc; }
+    .nav-sub-item.active { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border-left: 2px solid #3b82f6; margin-left: -2px; padding-left: 14px; }
+    .nav-sub-item .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; opacity: 0.5; }
+    .nav-sub-item.active .dot { background: #3b82f6; opacity: 1; }
+
+    /* ===== MAIN ===== */
+    .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+    .header { padding: 16px 24px; border-bottom: 1px solid #2a2a2a; display: flex; align-items: center; justify-content: space-between; }
+    .header-left h1 { font-size: 18px; font-weight: 600; display: flex; align-items: center; gap: 10px; }
+    .header-left .sub { font-size: 13px; color: #666; margin-top: 4px; }
+    .header-btn { padding: 8px 14px; border-radius: 8px; font-size: 13px; cursor: pointer; border: 1px solid #333; background: #1a1a1a; color: #ccc; }
+    .header-btn:hover { border-color: #3b82f6; }
+    .header-btn.primary { background: linear-gradient(135deg, #3b82f6, #8b5cf6); border-color: transparent; color: white; font-weight: 600; }
+    .header-btn.danger { background: rgba(239,68,68,0.15); border-color: rgba(239,68,68,0.4); color: #ef4444; }
+
+    /* ===== SESSION GATE ===== */
+    .session-gate { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 40px 24px; overflow-y: auto; }
+    .gate-hero { text-align: center; margin-bottom: 32px; }
+    .gate-hero .gate-icon { font-size: 48px; margin-bottom: 12px; }
+    .gate-hero h2 { font-size: 24px; font-weight: 700; color: #e5e5e5; margin-bottom: 8px; }
+    .gate-desc { font-size: 14px; color: #666; }
+    .gate-content { max-width: 720px; width: 100%; display: flex; flex-direction: column; gap: 20px; }
+    .gate-card { background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 12px; overflow: hidden; }
+    .gate-card.security { border-color: rgba(245,158,11,0.3); }
+    .gate-card-header { padding: 14px 20px; border-bottom: 1px solid #2a2a2a; display: flex; align-items: center; gap: 12px; font-size: 14px; font-weight: 600; }
+    .step-badge { width: 26px; height: 26px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: white; flex-shrink: 0; }
+    .irb-badge { margin-left: auto; padding: 4px 10px; background: rgba(34,197,94,0.15); border: 1px solid rgba(34,197,94,0.3); border-radius: 6px; font-size: 11px; color: #22c55e; font-weight: 600; }
+    .gate-card-body { padding: 20px; }
+    .gate-field { margin-bottom: 16px; }
+    .gate-field:last-child { margin-bottom: 0; }
+    .gate-field label { display: block; font-size: 12px; color: #888; margin-bottom: 6px; font-weight: 500; }
+    .gate-field select, .gate-field input[type="date"] { width: 100%; padding: 10px 14px; background: #252525; border: 1px solid #333; border-radius: 8px; color: #e5e5e5; font-size: 13px; }
+    .gate-field-row { display: flex; gap: 12px; margin-bottom: 16px; }
+    .gate-field-row .gate-field { flex: 1; margin-bottom: 0; }
+    .var-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+    .var-chip { padding: 5px 10px; background: #252525; border: 1px solid #333; border-radius: 6px; font-size: 11px; color: #94a3b8; }
+    .var-chip.add { border-style: dashed; color: #3b82f6; cursor: pointer; }
+    .var-chip.add:hover { border-color: #3b82f6; }
+
+    .security-check { display: flex; align-items: flex-start; gap: 12px; padding: 12px; border: 1px solid #2a2a2a; border-radius: 8px; margin-bottom: 8px; cursor: pointer; transition: all 0.15s; }
+    .security-check:last-child { margin-bottom: 0; }
+    .security-check:hover { border-color: rgba(245,158,11,0.4); background: rgba(245,158,11,0.03); }
+    .security-check input[type="checkbox"] { margin-top: 2px; accent-color: #f59e0b; }
+    .check-title { font-size: 13px; color: #e5e5e5; font-weight: 500; }
+    .check-desc { font-size: 11px; color: #64748b; margin-top: 2px; line-height: 1.4; }
+
+    .preview-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 16px; }
+    .preview-stat { text-align: center; padding: 12px 8px; background: #252525; border-radius: 8px; }
+    .preview-stat .stat-value { font-size: 18px; font-weight: 700; color: #e5e5e5; }
+    .preview-stat .stat-label { font-size: 10px; color: #64748b; margin-top: 4px; }
+    .privacy-checks { display: flex; gap: 12px; }
+    .privacy-item { font-size: 11px; color: #94a3b8; display: flex; align-items: center; gap: 4px; }
+    .privacy-item.pass { color: #22c55e; }
+
+    .gate-actions { text-align: center; margin-top: 8px; }
+    .gate-enter-btn { width: 100%; padding: 16px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); border: none; border-radius: 12px; color: white; font-size: 16px; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+    .gate-enter-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 25px rgba(59,130,246,0.3); }
+    .gate-footnote { font-size: 11px; color: #555; margin-top: 10px; }
+
+    /* ===== ACTIVE SESSION ===== */
+    .session-bar { display: flex; align-items: center; padding: 8px 24px; background: linear-gradient(135deg, rgba(34,197,94,0.08), rgba(16,185,129,0.04)); border-bottom: 2px solid rgba(34,197,94,0.25); gap: 20px; font-size: 12px; flex-shrink: 0; }
+    .session-indicator { display: flex; align-items: center; gap: 6px; }
+    .session-live-dot { width: 8px; height: 8px; background: #22c55e; border-radius: 50%; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+    .session-label { color: #22c55e; font-weight: 600; font-size: 12px; }
+    .session-meta { display: flex; gap: 16px; color: #64748b; font-size: 11px; }
+    .session-meta .val { color: #e5e5e5; font-weight: 500; }
+    .session-chips { display: flex; gap: 6px; }
+    .session-chip { padding: 3px 10px; background: #252525; border: 1px solid #333; border-radius: 12px; font-size: 10px; color: #94a3b8; }
+    .session-right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+    .security-badge { display: flex; align-items: center; gap: 4px; font-size: 11px; color: #22c55e; }
+    .session-end-btn { padding: 5px 12px; background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.3); border-radius: 6px; color: #ef4444; font-size: 11px; cursor: pointer; }
+    .session-end-btn:hover { background: rgba(239,68,68,0.25); }
+
+    .active-content { flex: 1; display: flex; overflow: hidden; }
+
+    /* ===== LEFT: CONFIG PANEL ===== */
+    .config-panel { width: 280px; background: #1a1a1a; border-right: 1px solid #2a2a2a; padding: 16px; overflow-y: auto; flex-shrink: 0; }
+    .config-section { margin-bottom: 20px; }
+    .config-section .title { font-size: 11px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+    .scope-summary { background: #252525; border-radius: 10px; padding: 12px; }
+    .scope-row { display: flex; justify-content: space-between; font-size: 12px; padding: 5px 0; }
+    .scope-row .label { color: #888; }
+    .scope-row .value { font-weight: 500; color: #e5e5e5; }
+    .scope-locked { margin-top: 8px; padding: 8px; background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.2); border-radius: 6px; font-size: 10px; color: #f59e0b; text-align: center; }
+
+    .security-meter { margin-bottom: 14px; }
+    .meter-header { display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 6px; }
+    .meter-header .m-label { color: #888; }
+    .meter-header .m-value { font-weight: 600; color: #e5e5e5; }
+    .meter-header .m-value.pass { color: #22c55e; }
+    .meter-bar { height: 4px; background: #333; border-radius: 2px; overflow: hidden; }
+    .meter-fill { height: 100%; border-radius: 2px; transition: width 0.3s; }
+    .meter-fill.pass { background: #22c55e; }
+    .meter-fill.dp { background: #3b82f6; }
+    .meter-fill.query { background: #f59e0b; }
+    .meter-footnote { font-size: 9px; color: #555; margin-top: 4px; }
+
+    .irb-card { background: #252525; border-radius: 10px; padding: 12px; }
+    .irb-row { display: flex; justify-content: space-between; font-size: 11px; padding: 4px 0; }
+    .irb-row .label { color: #888; }
+    .irb-row .value { color: #e5e5e5; font-weight: 500; }
+    .irb-row .value.status-ok { color: #22c55e; }
+
+    /* ===== CENTER: ANALYSIS AREA ===== */
+    .analysis-area { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+    .cr-tabs { display: flex; gap: 4px; padding: 10px 20px; background: #151515; border-bottom: 1px solid #2a2a2a; align-items: center; }
+    .cr-tabs-label { font-size: 10px; color: #555; text-transform: uppercase; letter-spacing: 0.5px; margin-right: 10px; padding-right: 10px; border-right: 1px solid #333; }
+    .cr-tab { padding: 8px 16px; border: 1px solid #333; border-radius: 8px; background: #1a1a1a; color: #888; font-size: 12px; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.15s; }
+    .cr-tab:hover { border-color: #3b82f6; color: #ccc; }
+    .cr-tab.active { background: linear-gradient(135deg, #3b82f6, #8b5cf6); border-color: transparent; color: white; font-weight: 600; }
+    .cr-tabs-note { margin-left: auto; font-size: 10px; color: #444; }
+    .tool-content { display: none; flex: 1; overflow: hidden; }
+    .tool-content.active { display: flex; flex-direction: column; }
+
+    /* ===== DISCOVERY TOOL ===== */
+    .target-bar { padding: 14px 20px; background: linear-gradient(135deg, rgba(59,130,246,0.1), rgba(139,92,246,0.1)); border-bottom: 1px solid #2a2a2a; display: flex; align-items: center; gap: 14px; }
+    .target-bar select { padding: 8px 14px; background: #1a1a1a; border: 2px solid #3b82f6; border-radius: 8px; color: #e5e5e5; font-size: 13px; font-weight: 600; min-width: 260px; }
+    .target-status { display: flex; align-items: center; gap: 6px; padding: 6px 12px; background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3); border-radius: 6px; font-size: 10px; color: #22c55e; }
+    .graph-wrap { flex: 1; display: flex; overflow: hidden; }
+    .graph-canvas { flex: 1; position: relative; background: radial-gradient(circle at center, #1a1a1a 0%, #0f0f0f 100%); overflow: hidden; }
+    .graph-toolbar { padding: 10px 16px; border-bottom: 1px solid #2a2a2a; display: flex; align-items: center; gap: 14px; background: #151515; font-size: 12px; }
+    .view-toggle { display: flex; background: #252525; border-radius: 6px; padding: 2px; }
+    .view-toggle button { padding: 5px 10px; border: none; background: transparent; color: #888; font-size: 11px; border-radius: 4px; cursor: pointer; }
+    .view-toggle button.active { background: #3b82f6; color: white; }
+    .strength-inline { display: flex; align-items: center; gap: 6px; color: #888; font-size: 11px; }
+    .strength-inline input { width: 100px; height: 4px; -webkit-appearance: none; background: #333; border-radius: 2px; }
+    .strength-inline input::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 12px; background: #3b82f6; border-radius: 50%; cursor: pointer; }
+    .graph-stats { display: flex; gap: 14px; margin-left: auto; font-size: 11px; color: #888; }
+    .graph-stats .val { color: #fff; font-weight: 600; }
+    .graph-3d { width: 100%; height: 100%; position: relative; perspective: 1200px; cursor: grab; }
+    .graph-3d:active { cursor: grabbing; }
+    .graph-container { position: absolute; top: 50%; left: 50%; transform-style: preserve-3d; transition: transform 0.1s ease-out; }
+    .node-3d { position: absolute; transform-style: preserve-3d; cursor: pointer; transition: opacity 0.3s, transform 0.3s; user-select: none; }
+    .node-3d .sphere { width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; text-align: center; line-height: 1.2; border: 2px solid; transition: all 0.3s; box-shadow: 0 0 20px rgba(0,0,0,0.5); color: white; }
+    .node-3d .label { position: absolute; top: 100%; left: 50%; transform: translateX(-50%); font-size: 10px; color: #666; white-space: nowrap; margin-top: 8px; transition: all 0.3s; }
+    .node-3d.dim .sphere { opacity: 0.15; border-color: #333 !important; }
+    .node-3d.dim .label { opacity: 0.3; }
+    .node-3d.weak .sphere { opacity: 0.2; }
+    .node-3d.active .sphere { box-shadow: 0 0 30px currentColor, 0 0 60px currentColor; transform: scale(1.1); }
+    .node-3d.active .label { color: #fff; }
+    .node-3d:hover:not(.dim) .sphere { transform: scale(1.15); }
+    .node-3d.outcome .sphere { background: rgba(59,130,246,0.3); border-color: #3b82f6; color: #93c5fd; }
+    .node-3d.treatment .sphere { background: rgba(245,158,11,0.3); border-color: #f59e0b; color: #fcd34d; }
+    .node-3d.mediator .sphere { background: rgba(16,185,129,0.3); border-color: #10b981; color: #6ee7b7; }
+    .node-3d.confounder .sphere { background: rgba(139,92,246,0.3); border-color: #8b5cf6; color: #c4b5fd; }
+    .node-3d.other .sphere { background: rgba(100,100,110,0.2); border-color: #555; color: #999; width: 50px; height: 50px; font-size: 10px; }
+    .selection-info { position: absolute; bottom: 16px; left: 16px; background: rgba(20,20,30,0.95); border: 1px solid #2a2a3a; border-radius: 10px; padding: 14px 18px; backdrop-filter: blur(10px); min-width: 280px; z-index: 5; }
+    .selection-info .si-title { font-size: 11px; color: #666; margin-bottom: 6px; }
+    .selection-info .nodes { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 10px; min-height: 24px; }
+    .node-tag { padding: 3px 8px; border-radius: 5px; font-size: 10px; font-weight: 500; }
+    .node-tag.outcome { background: rgba(59,130,246,0.2); color: #93c5fd; }
+    .node-tag.treatment { background: rgba(245,158,11,0.2); color: #fcd34d; }
+    .node-tag.mediator { background: rgba(16,185,129,0.2); color: #6ee7b7; }
+    .node-tag.confounder { background: rgba(139,92,246,0.2); color: #c4b5fd; }
+    .si-stats { display: flex; gap: 16px; font-size: 11px; color: #888; }
+    .si-stats .val { color: #fff; font-weight: 600; }
+    .graph-legend { position: absolute; bottom: 16px; right: 16px; background: rgba(26,26,26,0.95); border: 1px solid #2a2a2a; border-radius: 8px; padding: 12px 14px; z-index: 5; }
+    .graph-legend .lg-title { font-size: 10px; color: #666; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: #888; margin-bottom: 4px; }
+    .legend-item:last-child { margin-bottom: 0; }
+    .legend-dot { width: 8px; height: 8px; border-radius: 50%; border: 2px solid; }
+    .legend-dot.outcome { border-color: #3b82f6; background: rgba(59,130,246,0.3); }
+    .legend-dot.treatment { border-color: #f59e0b; background: rgba(245,158,11,0.3); }
+    .legend-dot.mediator { border-color: #10b981; background: rgba(16,185,129,0.3); }
+    .legend-dot.confounder { border-color: #8b5cf6; background: rgba(139,92,246,0.3); }
+    .drag-hint { position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%); font-size: 10px; color: #333; z-index: 5; }
+
+    /* ===== RIGHT: AUDIT PANEL ===== */
+    .audit-panel { width: 300px; background: #1a1a1a; border-left: 1px solid #2a2a2a; display: flex; flex-direction: column; flex-shrink: 0; }
+    .audit-tabs { display: flex; border-bottom: 1px solid #2a2a2a; }
+    .audit-tab { flex: 1; padding: 12px; background: transparent; border: none; border-bottom: 2px solid transparent; color: #666; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; }
+    .audit-tab.active { color: #e5e5e5; border-bottom-color: #3b82f6; }
+    .audit-tab .badge { font-size: 10px; padding: 1px 6px; border-radius: 8px; background: #333; color: #888; }
+    .audit-view { display: none; flex: 1; flex-direction: column; overflow: hidden; }
+    .audit-view.active { display: flex; }
+    .audit-log { flex: 1; overflow-y: auto; }
+    .log-entry { display: flex; gap: 10px; padding: 10px 14px; border-bottom: 1px solid #222; font-size: 11px; align-items: flex-start; }
+    .log-time { color: #555; font-family: 'SF Mono', Monaco, monospace; font-size: 10px; min-width: 46px; padding-top: 1px; }
+    .log-body { flex: 1; }
+    .log-action { color: #e5e5e5; font-weight: 500; }
+    .log-detail { color: #555; font-size: 10px; margin-top: 2px; }
+    .log-icon { font-size: 14px; }
+    .log-footer { padding: 10px 14px; border-top: 1px solid #2a2a2a; display: flex; justify-content: space-between; font-size: 10px; color: #555; }
+
+    .export-content { padding: 14px; flex: 1; overflow-y: auto; }
+    .export-rules-header { font-size: 11px; font-weight: 600; color: #64748b; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .export-rule { display: flex; align-items: center; gap: 8px; padding: 6px 0; font-size: 12px; color: #94a3b8; }
+    .export-rule .ri { font-size: 12px; }
+    .export-rule .ri.ok { color: #22c55e; }
+    .export-rule .ri.no { color: #ef4444; }
+    .export-rule.blocked { color: #555; }
+    .export-divider { height: 1px; background: #2a2a2a; margin: 14px 0; }
+    .export-queue-header { font-size: 11px; font-weight: 600; color: #64748b; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .export-empty { font-size: 12px; color: #444; line-height: 1.6; padding: 16px; text-align: center; background: #151515; border-radius: 8px; }
+    .export-request-btn { width: 100%; padding: 12px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); border: none; border-radius: 8px; color: white; font-size: 12px; font-weight: 600; cursor: pointer; margin-top: 14px; }
+    .export-note { font-size: 10px; color: #555; margin-top: 8px; text-align: center; line-height: 1.4; }
+
+    /* ===== BOTTOM STATUS BAR ===== */
+    .bottom-bar { padding: 8px 24px; background: rgba(26,26,26,0.95); border-top: 1px solid #2a2a2a; display: flex; align-items: center; gap: 18px; font-size: 11px; flex-shrink: 0; }
+    .bar-item { display: flex; align-items: center; gap: 5px; color: #64748b; }
+    .bar-dot { width: 6px; height: 6px; border-radius: 50%; }
+    .bar-dot.green { background: #22c55e; }
+    .bar-dot.blue { background: #3b82f6; }
+    .bar-dot.amber { background: #f59e0b; }
+    .bar-dot.purple { background: #8b5cf6; }
+    .bar-item .bv { color: #e5e5e5; font-weight: 500; }
+
+    /* Placeholder tool */
+    .tool-placeholder { flex: 1; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 14px; color: #555; }
+    .tool-placeholder .tp-icon { font-size: 40px; }
+    .tool-placeholder .tp-title { font-size: 16px; font-weight: 600; color: #94a3b8; }
+    .tool-placeholder .tp-desc { font-size: 12px; max-width: 360px; text-align: center; line-height: 1.6; color: #555; }
+
+    /* Nav links */
+    .nav-links { display: flex; gap: 10px; padding: 14px 24px; border-top: 1px solid #2a2a2a; }
+    .nav-links a { padding: 6px 12px; background: #252525; border-radius: 6px; text-decoration: none; color: #888; font-size: 12px; }
+    .nav-links a:hover { background: #333; color: #fff; }
+
+    /* Algo options (for config panel in active session) */
+    .algo-option { padding: 10px; border: 1px solid #2a2a2a; border-radius: 8px; margin-bottom: 6px; cursor: pointer; transition: all 0.15s; }
+    .algo-option:hover { border-color: #444; }
+    .algo-option.selected { border-color: #8b5cf6; background: rgba(139,92,246,0.1); }
+    .algo-option .name { font-size: 12px; font-weight: 500; margin-bottom: 3px; display: flex; align-items: center; gap: 6px; }
+    .algo-option .name .badge { font-size: 9px; padding: 1px 5px; border-radius: 3px; background: #8b5cf6; color: white; }
+    .algo-option .desc { font-size: 10px; color: #666; line-height: 1.3; }
+    .threshold-slider { margin-bottom: 12px; }
+    .threshold-slider .ts-header { display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 6px; }
+    .threshold-slider .ts-label { color: #888; }
+    .threshold-slider .ts-value { color: #3b82f6; font-weight: 600; }
+    .threshold-slider input[type="range"] { width: 100%; height: 4px; -webkit-appearance: none; background: #333; border-radius: 2px; }
+    .threshold-slider input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 12px; background: #3b82f6; border-radius: 50%; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <!-- ===== SIDEBAR ===== -->
+    <div class="sidebar">
+      <div class="logo">
+        <div class="logo-icon">U</div>
+        UniQdata
+      </div>
+
+      <div class="nav-section">
+        <a href="list.html" class="nav-item"><span class="icon">🏠</span> 연구 허브</a>
+        <a href="create.html" class="nav-item"><span class="icon">➕</span> 새 연구</a>
+        <a href="irb-submission.html" class="nav-item"><span class="icon">📝</span> IRB 심의 신청</a>
+        <a href="irb-status.html" class="nav-item"><span class="icon">📊</span> IRB 현황</a>
+        <a href="action-center.html" class="nav-item"><span class="icon">🔔</span> 조치 센터</a>
+      </div>
+
+      <div class="nav-section" style="flex: 1; overflow-y: auto; padding-top: 8px; border-top: 1px solid #2a2a2a;">
+        <div style="font-size: 10px; color: #64748b; padding: 6px 12px; text-transform: uppercase; letter-spacing: 0.5px;">내 연구 <span style="background: #3b82f6; color: white; padding: 1px 6px; border-radius: 8px; font-size: 9px; margin-left: 4px;">3</span></div>
+
+        <div class="research-nav-item expanded">
+          <div class="research-nav-header">
+            <span class="folder-icon">📁</span>
+            <span class="research-title">당뇨병 복약 순응도</span>
+            <span class="status-dot active"></span>
+          </div>
+          <div class="research-nav-sub">
+            <a href="data-overview.html" class="nav-sub-item"><span class="dot"></span> 개요</a>
+            <a href="data-table.html" class="nav-sub-item"><span class="dot"></span> 테이블</a>
+            <a href="clean-room.html" class="nav-sub-item active"><span class="dot"></span> 🔒 클린룸</a>
+          </div>
+        </div>
+
+        <div class="research-nav-item" style="opacity: 0.6;">
+          <div class="research-nav-header">
+            <span class="folder-icon">📁</span>
+            <span class="research-title">노인 수면 패턴</span>
+            <span class="status-dot recruiting"></span>
+          </div>
+        </div>
+        <div class="research-nav-item" style="opacity: 0.6;">
+          <div class="research-nav-header">
+            <span class="folder-icon">📄</span>
+            <span class="research-title">ADHD 생활습관</span>
+            <span class="status-dot draft"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="nav-section">
+        <a href="../team.html" class="nav-item"><span class="icon">👥</span> 팀</a>
+        <a href="../billing.html" class="nav-item"><span class="icon">💳</span> 결제</a>
+        <a href="#" class="nav-item"><span class="icon">⚙️</span> 설정</a>
+      </div>
+
+      <div style="padding: 12px; border-top: 1px solid #2a2a2a;">
+        <div style="display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: 8px; cursor: pointer;" onmouseover="this.style.background='#252525'" onmouseout="this.style.background='transparent'">
+          <div style="width: 32px; height: 32px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; color: white;">김</div>
+          <div>
+            <div style="font-size: 13px; color: #e2e8f0;">김연구</div>
+            <div style="font-size: 11px; color: #64748b;">서울대학교병원</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== MAIN ===== -->
+    <div class="main">
+      <div class="header">
+        <div class="header-left">
+          <h1><span class="icon">🔒</span> 클린룸</h1>
+          <div class="sub">보안 분석 환경 · 당뇨병 복약 순응도 연구</div>
+        </div>
+        <div class="header-actions">
+          <button class="header-btn primary" id="btn-start" onclick="startSession()">🔐 세션 시작</button>
+          <button class="header-btn danger" id="btn-end" onclick="endSession()" style="display:none;">⏹ 세션 종료</button>
+        </div>
+      </div>
+
+      <!-- ========== SESSION GATE ========== -->
+      <div id="session-gate" class="session-gate">
+        <div class="gate-hero">
+          <div class="gate-icon">🔒</div>
+          <h2>클린룸 세션 시작</h2>
+          <p class="gate-desc">보안 분석 환경에 입장합니다. 데이터 범위를 설정하고 보안 동의를 확인하세요.</p>
+        </div>
+
+        <div class="gate-content">
+          <!-- Step 1: Data Scope -->
+          <div class="gate-card">
+            <div class="gate-card-header">
+              <span class="step-badge">1</span>
+              데이터 범위 설정
+            </div>
+            <div class="gate-card-body">
+              <div class="gate-field">
+                <label>코호트</label>
+                <select>
+                  <option selected>당뇨병 2형 — 서울대병원 (n=87)</option>
+                  <option>전체 코호트 (n=342)</option>
+                </select>
+              </div>
+              <div class="gate-field">
+                <label>분석 변수</label>
+                <div class="var-chips">
+                  <span class="var-chip">혈당 변동성</span>
+                  <span class="var-chip">복약 순응도</span>
+                  <span class="var-chip">수면 질</span>
+                  <span class="var-chip">스트레스</span>
+                  <span class="var-chip">체중</span>
+                  <span class="var-chip">HbA1c</span>
+                  <span class="var-chip">혈압</span>
+                  <span class="var-chip">운동량</span>
+                  <span class="var-chip">식이 패턴</span>
+                  <span class="var-chip">인슐린</span>
+                  <span class="var-chip">BMI</span>
+                  <span class="var-chip">유병 기간</span>
+                  <span class="var-chip add">+ 변수 추가</span>
+                </div>
+                <div style="font-size: 10px; color: #64748b; margin-top: 6px;">12개 선택 / 847개 가능</div>
+              </div>
+              <div class="gate-field-row">
+                <div class="gate-field">
+                  <label>시작일</label>
+                  <input type="date" value="2025-06-01">
+                </div>
+                <div class="gate-field">
+                  <label>종료일</label>
+                  <input type="date" value="2026-01-31">
+                </div>
+              </div>
+              <div class="gate-field">
+                <label>개인정보 보호 수준</label>
+                <select>
+                  <option selected>비식별 집계 (Aggregated)</option>
+                  <option>가명처리 (Pseudonymized)</option>
+                  <option>레코드 수준 (IRB 특별 승인 필요)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 2: Security -->
+          <div class="gate-card security">
+            <div class="gate-card-header">
+              <span class="step-badge">2</span>
+              보안 동의
+              <span class="irb-badge">IRB-2025-0847</span>
+            </div>
+            <div class="gate-card-body">
+              <label class="security-check">
+                <input type="checkbox" class="sec-check">
+                <div>
+                  <div class="check-title">원본 데이터 접근 불가</div>
+                  <div class="check-desc">개별 레코드 열람이 불가하며, 집계 결과만 확인할 수 있습니다.</div>
+                </div>
+              </label>
+              <label class="security-check">
+                <input type="checkbox" class="sec-check">
+                <div>
+                  <div class="check-title">감사 로그 기록</div>
+                  <div class="check-desc">모든 쿼리, 분석 실행, 결과 열람이 기록됩니다.</div>
+                </div>
+              </label>
+              <label class="security-check">
+                <input type="checkbox" class="sec-check">
+                <div>
+                  <div class="check-title">내보내기 승인 필수</div>
+                  <div class="check-desc">분석 결과 내보내기는 PI 승인 후에만 가능합니다.</div>
+                </div>
+              </label>
+              <label class="security-check">
+                <input type="checkbox" class="sec-check">
+                <div>
+                  <div class="check-title">세션 종료 시 로컬 데이터 삭제</div>
+                  <div class="check-desc">세션 종료 시 브라우저 캐시의 분석 데이터가 삭제됩니다.</div>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <!-- Step 3: Preview -->
+          <div class="gate-card">
+            <div class="gate-card-header">
+              <span class="step-badge">3</span>
+              데이터 요약 미리보기
+            </div>
+            <div class="gate-card-body">
+              <div class="preview-grid">
+                <div class="preview-stat">
+                  <div class="stat-value">87명</div>
+                  <div class="stat-label">참여자</div>
+                </div>
+                <div class="preview-stat">
+                  <div class="stat-value">12개</div>
+                  <div class="stat-label">변수</div>
+                </div>
+                <div class="preview-stat">
+                  <div class="stat-value">7개월</div>
+                  <div class="stat-label">기간</div>
+                </div>
+                <div class="preview-stat">
+                  <div class="stat-value">94.2%</div>
+                  <div class="stat-label">데이터 품질</div>
+                </div>
+              </div>
+              <div class="privacy-checks">
+                <div class="privacy-item pass">✓ k-anonymity: k=5</div>
+                <div class="privacy-item">ε DP 예산: 1.00</div>
+                <div class="privacy-item">결측치: 5.8%</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Enter -->
+          <div class="gate-actions">
+            <button class="gate-enter-btn" onclick="startSession()">🔐 클린룸 입장</button>
+            <div class="gate-footnote">세션은 최대 4시간 유지됩니다. 이후 자동 종료됩니다.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========== ACTIVE SESSION ========== -->
+      <div id="active-session" style="display:none; flex:1; flex-direction:column; overflow:hidden;">
+
+        <!-- Session Status Bar -->
+        <div class="session-bar">
+          <div class="session-indicator">
+            <span class="session-live-dot"></span>
+            <span class="session-label">세션 활성</span>
+          </div>
+          <div class="session-meta">
+            <span>ID: <span class="val">CR-2026-0214-001</span></span>
+            <span>경과: <span class="val" id="session-elapsed">00:00:00</span></span>
+            <span>만료: <span class="val">3:59:59 남음</span></span>
+          </div>
+          <div class="session-chips">
+            <span class="session-chip">당뇨병 2형</span>
+            <span class="session-chip">87명</span>
+            <span class="session-chip">12변수</span>
+            <span class="session-chip">7개월</span>
+          </div>
+          <div class="session-right">
+            <div class="security-badge">🛡️ 보안: 높음</div>
+            <button class="session-end-btn" onclick="endSession()">⏹ 종료</button>
+          </div>
+        </div>
+
+        <!-- 3-panel content -->
+        <div class="active-content">
+
+          <!-- LEFT: Config Panel -->
+          <div class="config-panel">
+            <div class="config-section">
+              <div class="title">📋 데이터 범위</div>
+              <div class="scope-summary">
+                <div class="scope-row"><span class="label">코호트</span><span class="value">당뇨병 2형</span></div>
+                <div class="scope-row"><span class="label">참여자</span><span class="value">87명</span></div>
+                <div class="scope-row"><span class="label">변수</span><span class="value">12개</span></div>
+                <div class="scope-row"><span class="label">기간</span><span class="value">2025-06 ~ 2026-01</span></div>
+                <div class="scope-row"><span class="label">보호 수준</span><span class="value">비식별 집계</span></div>
+              </div>
+              <div class="scope-locked">🔒 세션 중 데이터 범위 변경 불가</div>
+            </div>
+
+            <div class="config-section">
+              <div class="title">🛡️ 보안 상태</div>
+              <div class="security-meter">
+                <div class="meter-header"><span class="m-label">k-anonymity</span><span class="m-value pass">k=5 ✓</span></div>
+                <div class="meter-bar"><div class="meter-fill pass" style="width:100%"></div></div>
+              </div>
+              <div class="security-meter">
+                <div class="meter-header"><span class="m-label">DP 예산 (ε)</span><span class="m-value">0.15 / 1.00</span></div>
+                <div class="meter-bar"><div class="meter-fill dp" style="width:15%"></div></div>
+                <div class="meter-footnote">쿼리당 ~0.05ε 소모</div>
+              </div>
+              <div class="security-meter">
+                <div class="meter-header"><span class="m-label">쿼리 실행</span><span class="m-value">3 / 50</span></div>
+                <div class="meter-bar"><div class="meter-fill query" style="width:6%"></div></div>
+              </div>
+            </div>
+
+            <div class="config-section">
+              <div class="title">📄 IRB 정보</div>
+              <div class="irb-card">
+                <div class="irb-row"><span class="label">승인번호</span><span class="value">IRB-2025-0847</span></div>
+                <div class="irb-row"><span class="label">PI</span><span class="value">김연구 교수</span></div>
+                <div class="irb-row"><span class="label">만료일</span><span class="value">2026-08-15</span></div>
+                <div class="irb-row"><span class="label">상태</span><span class="value status-ok">승인됨</span></div>
+              </div>
+            </div>
+
+            <div class="config-section" id="tool-config">
+              <div class="title">⚙️ 분석 설정</div>
+              <div class="algo-option selected">
+                <div class="name">PC Algorithm <span class="badge">추천</span></div>
+                <div class="desc">조건부 독립성 테스트 기반. 빠르고 해석 용이.</div>
+              </div>
+              <div class="algo-option">
+                <div class="name">FCI</div>
+                <div class="desc">숨겨진 교란변수 허용. 더 보수적.</div>
+              </div>
+              <div class="algo-option">
+                <div class="name">NOTEARS</div>
+                <div class="desc">딥러닝 기반. 고차원에 적합.</div>
+              </div>
+              <div class="algo-option">
+                <div class="name">GES</div>
+                <div class="desc">스코어 기반 탐색.</div>
+              </div>
+
+              <div class="threshold-slider" style="margin-top: 14px;">
+                <div class="ts-header">
+                  <span class="ts-label">최소 인과 강도</span>
+                  <span class="ts-value" id="threshold-value">0.30</span>
+                </div>
+                <input type="range" id="threshold-range" min="0" max="1" step="0.05" value="0.3">
+              </div>
+              <div class="threshold-slider">
+                <div class="ts-header">
+                  <span class="ts-label">신뢰도 임계값</span>
+                  <span class="ts-value">0.95</span>
+                </div>
+                <input type="range" min="0.5" max="1" step="0.05" value="0.95">
+              </div>
+            </div>
+          </div>
+
+          <!-- CENTER: Analysis Area -->
+          <div class="analysis-area">
+            <div class="cr-tabs">
+              <span class="cr-tabs-label">분석 도구</span>
+              <button class="cr-tab active" onclick="switchTool('discovery')"><span>🔮</span> 인과발견</button>
+              <button class="cr-tab" onclick="switchTool('shap')"><span>📊</span> SHAP</button>
+              <button class="cr-tab" onclick="switchTool('cate')"><span>👤</span> CATE</button>
+              <button class="cr-tab" onclick="switchTool('whatif')"><span>🔄</span> What-If</button>
+              <button class="cr-tab" onclick="switchTool('rootcause')"><span>🔍</span> 이상추적</button>
+              <span class="cr-tabs-note">🔒 클린룸 내 분석만 가능</span>
+            </div>
+
+            <!-- Discovery Tool -->
+            <div class="tool-content active" id="tool-discovery">
+              <div class="target-bar">
+                <span style="font-size: 16px;">🎯</span>
+                <span style="font-size: 12px; color: #94a3b8;">타겟:</span>
+                <select id="target-variable">
+                  <optgroup label="🩸 생체지표">
+                    <option value="glucose" selected>혈당 변동성 (Blood Glucose Variability)</option>
+                    <option>공복 혈당 (Fasting Glucose)</option>
+                    <option>당화혈색소 (HbA1c)</option>
+                    <option>혈압 (Blood Pressure)</option>
+                  </optgroup>
+                  <optgroup label="😴 수면">
+                    <option>수면 질 (Sleep Quality)</option>
+                  </optgroup>
+                  <optgroup label="💊 복약">
+                    <option>복약 순응도 (Medication Adherence)</option>
+                  </optgroup>
+                </select>
+                <div class="target-status">✓ 매트릭스 로드됨 | 42개 직접 연결</div>
+                <div style="margin-left:auto;">
+                  <button style="padding:6px 12px; background:#252525; border:1px solid #333; border-radius:6px; color:#94a3b8; font-size:11px; cursor:pointer;">🔍 경로 탐색</button>
+                </div>
+              </div>
+
+              <div class="graph-wrap">
+                <div class="graph-canvas">
+                  <div class="graph-toolbar">
+                    <div class="view-toggle">
+                      <button class="active" data-layer="short">단기</button>
+                      <button data-layer="long">장기</button>
+                      <button data-layer="cohort">코호트</button>
+                    </div>
+                    <div class="strength-inline">
+                      <span>인과강도 ≥</span>
+                      <span id="strength-value">0.30</span>
+                      <input type="range" id="strength-range" min="0" max="1" step="0.05" value="0.3">
+                    </div>
+                    <div class="graph-stats">
+                      <div>노드 <span class="val">24</span></div>
+                      <div>엣지 <span class="val">38</span></div>
+                      <div>신뢰도 <span class="val">94.2%</span></div>
+                    </div>
+                  </div>
+
+                  <div class="graph-3d" id="graph-3d">
+                    <div class="graph-container" id="graph-container"></div>
+                  </div>
+
+                  <div class="selection-info">
+                    <div class="si-title">활성 노드 (<span id="active-count">0</span>개)</div>
+                    <div class="nodes" id="active-nodes"></div>
+                    <div class="si-stats">
+                      <span>경로: <span class="val" id="active-paths">0</span>개</span>
+                      <span>적합도: <span class="val" id="model-fit">R² = 0.00</span></span>
+                    </div>
+                  </div>
+
+                  <div class="drag-hint">마우스 드래그로 회전 | 노드 클릭으로 on/off</div>
+
+                  <div class="graph-legend">
+                    <div class="lg-title">범례</div>
+                    <div class="legend-item"><span class="legend-dot outcome"></span> 결과 변수</div>
+                    <div class="legend-item"><span class="legend-dot treatment"></span> 치료/원인 변수</div>
+                    <div class="legend-item"><span class="legend-dot mediator"></span> 매개 변수</div>
+                    <div class="legend-item"><span class="legend-dot confounder"></span> 교란 변수</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- SHAP placeholder -->
+            <div class="tool-content" id="tool-shap">
+              <div class="tool-placeholder">
+                <div class="tp-icon">📊</div>
+                <div class="tp-title">SHAP 기여도 분석</div>
+                <div class="tp-desc">각 변수가 예측에 미치는 영향도를 시각화합니다. Waterfall / Beeswarm / Bar 차트 제공.</div>
+              </div>
+            </div>
+
+            <!-- CATE placeholder -->
+            <div class="tool-content" id="tool-cate">
+              <div class="tool-placeholder">
+                <div class="tp-icon">👤</div>
+                <div class="tp-title">CATE 개인화 효과</div>
+                <div class="tp-desc">개인/세그먼트별 처치 효과(Conditional Average Treatment Effect)를 분석합니다.</div>
+              </div>
+            </div>
+
+            <!-- What-If placeholder -->
+            <div class="tool-content" id="tool-whatif">
+              <div class="tool-placeholder">
+                <div class="tp-icon">🔄</div>
+                <div class="tp-title">What-If 시뮬레이션</div>
+                <div class="tp-desc">반사실(Counterfactual) 시나리오를 시뮬레이션합니다. "만약 복약률이 90%였다면?"</div>
+              </div>
+            </div>
+
+            <!-- Root Cause placeholder -->
+            <div class="tool-content" id="tool-rootcause">
+              <div class="tool-placeholder">
+                <div class="tp-icon">🔍</div>
+                <div class="tp-title">이상 원인 추적</div>
+                <div class="tp-desc">비정상 패턴의 Root Cause를 추적합니다. 어떤 변수가 이상의 원인인지 경로 분석.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- RIGHT: Audit Panel -->
+          <div class="audit-panel">
+            <div class="audit-tabs">
+              <button class="audit-tab active" onclick="showAuditView('log')">📋 활동 로그</button>
+              <button class="audit-tab" onclick="showAuditView('export')">📤 내보내기 <span class="badge">0</span></button>
+            </div>
+
+            <!-- Activity Log -->
+            <div class="audit-view active" id="view-log">
+              <div class="audit-log">
+                <div class="log-entry">
+                  <div class="log-time">14:32</div>
+                  <div class="log-body">
+                    <div class="log-action">세션 시작</div>
+                    <div class="log-detail">당뇨병 2형, 87명, 12변수</div>
+                  </div>
+                  <div class="log-icon">🔐</div>
+                </div>
+                <div class="log-entry">
+                  <div class="log-time">14:33</div>
+                  <div class="log-body">
+                    <div class="log-action">인과발견 실행</div>
+                    <div class="log-detail">PC Algorithm, 임계값 0.30</div>
+                  </div>
+                  <div class="log-icon">🔮</div>
+                </div>
+                <div class="log-entry">
+                  <div class="log-time">14:33</div>
+                  <div class="log-body">
+                    <div class="log-action">결과 열람</div>
+                    <div class="log-detail">그래프 노드 24개, 엣지 38개</div>
+                  </div>
+                  <div class="log-icon">👁️</div>
+                </div>
+                <div class="log-entry">
+                  <div class="log-time">14:35</div>
+                  <div class="log-body">
+                    <div class="log-action">필터 변경</div>
+                    <div class="log-detail">인과강도 ≥ 0.30 → 0.50</div>
+                  </div>
+                  <div class="log-icon">🔧</div>
+                </div>
+                <div class="log-entry">
+                  <div class="log-time">14:36</div>
+                  <div class="log-body">
+                    <div class="log-action">SHAP 분석 실행</div>
+                    <div class="log-detail">타겟: 혈당 변동성, 12변수</div>
+                  </div>
+                  <div class="log-icon">📊</div>
+                </div>
+              </div>
+              <div class="log-footer">
+                <span>5개 활동 기록됨</span>
+                <span>ε 사용: 0.15</span>
+              </div>
+            </div>
+
+            <!-- Export View -->
+            <div class="audit-view" id="view-export">
+              <div class="export-content">
+                <div class="export-rules-header">내보내기 규칙</div>
+                <div class="export-rule"><span class="ri ok">✓</span> 집계 통계 (평균, 중위값, 분포)</div>
+                <div class="export-rule"><span class="ri ok">✓</span> 시각화 이미지 (그래프, 차트)</div>
+                <div class="export-rule blocked"><span class="ri no">✕</span> 개별 레코드 데이터</div>
+                <div class="export-rule blocked"><span class="ri no">✕</span> n &lt; 5 그룹의 통계</div>
+
+                <div class="export-divider"></div>
+
+                <div class="export-queue-header">내보내기 대기열</div>
+                <div class="export-empty">아직 내보내기 요청이 없습니다.<br>분석 결과에서 "내보내기 요청" 버튼을 사용하세요.</div>
+
+                <button class="export-request-btn">📤 현재 결과 내보내기 요청</button>
+                <div class="export-note">내보내기는 PI(김연구 교수) 승인 후 다운로드 가능합니다.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom Bar -->
+        <div class="bottom-bar">
+          <div class="bar-item"><span class="bar-dot green"></span> k-check: <span class="bv">pass (k=5)</span></div>
+          <div class="bar-item"><span class="bar-dot blue"></span> DP 예산: <span class="bv">ε=0.15 / 0.85 남음</span></div>
+          <div class="bar-item"><span class="bar-dot amber"></span> 쿼리: <span class="bv">3 / 50</span></div>
+          <div class="bar-item"><span class="bar-dot purple"></span> 내보내기: <span class="bv">0건 대기</span></div>
+          <div style="margin-left:auto; color:#555;">세션 CR-2026-0214-001</div>
+        </div>
+      </div>
+
+      <div class="nav-links">
+        <a href="../index.html">← 와이어프레임 목록</a>
+        <a href="data-table.html">← 테이블</a>
+        <a href="data-overview.html">개요 →</a>
+      </div>
+    </div>
+  </div>
+
+<script>
+  // ===== Session Gate / Active Session Toggle =====
+  function startSession() {
+    var checks = document.querySelectorAll('.sec-check');
+    var allChecked = true;
+    checks.forEach(function(c) { if (!c.checked) allChecked = false; });
+    if (!allChecked) { alert('모든 보안 동의 항목을 확인해주세요.'); return; }
+
+    document.getElementById('session-gate').style.display = 'none';
+    document.getElementById('active-session').style.display = 'flex';
+    document.getElementById('btn-start').style.display = 'none';
+    document.getElementById('btn-end').style.display = 'inline-flex';
+    startTimer();
+    initGraph();
+  }
+
+  function endSession() {
+    if (!confirm('세션을 종료하시겠습니까?\n로컬 캐시가 삭제됩니다.')) return;
+    document.getElementById('active-session').style.display = 'none';
+    document.getElementById('session-gate').style.display = 'flex';
+    document.getElementById('btn-end').style.display = 'none';
+    document.getElementById('btn-start').style.display = 'inline-flex';
+    stopTimer();
+  }
+
+  // ===== Session Timer =====
+  var sessionSec = 0, timerInt;
+  function startTimer() {
+    timerInt = setInterval(function() {
+      sessionSec++;
+      var h = String(Math.floor(sessionSec/3600)).padStart(2,'0');
+      var m = String(Math.floor((sessionSec%3600)/60)).padStart(2,'0');
+      var s = String(sessionSec%60).padStart(2,'0');
+      document.getElementById('session-elapsed').textContent = h+':'+m+':'+s;
+    }, 1000);
+  }
+  function stopTimer() { clearInterval(timerInt); sessionSec = 0; }
+
+  // ===== Tool Tab Switching =====
+  function switchTool(id) {
+    document.querySelectorAll('.cr-tab').forEach(function(t) { t.classList.remove('active'); });
+    document.querySelectorAll('.tool-content').forEach(function(c) { c.classList.remove('active'); });
+    event.target.closest('.cr-tab').classList.add('active');
+    var el = document.getElementById('tool-' + id);
+    if (el) el.classList.add('active');
+  }
+
+  // ===== Audit Panel Tab =====
+  function showAuditView(view) {
+    document.querySelectorAll('.audit-tab').forEach(function(t) { t.classList.remove('active'); });
+    document.querySelectorAll('.audit-view').forEach(function(v) { v.classList.remove('active'); });
+    event.target.closest('.audit-tab').classList.add('active');
+    var el = document.getElementById('view-' + view);
+    if (el) el.classList.add('active');
+  }
+
+  // ===== 3D Graph (from analysis-discovery) =====
+  var variables = [
+    { id:'glucose', name:'혈당 (HbA1c)', type:'outcome', connections:12, x:200, y:0, z:0 },
+    { id:'medication', name:'복약 순응도', type:'treatment', coef:-0.42, connections:5, x:-180, y:-30, z:80 },
+    { id:'diet', name:'식이 패턴', type:'treatment', coef:0.28, connections:4, x:-150, y:120, z:-60 },
+    { id:'insulin', name:'인슐린 민감성', type:'mediator', coef:-0.35, connections:6, x:20, y:20, z:40 },
+    { id:'age', name:'연령', type:'confounder', coef:0.15, connections:8, x:-80, y:-150, z:20 },
+    { id:'exercise', name:'운동량', type:'other', coef:-0.08, connections:3, x:-220, y:80, z:100 },
+    { id:'sleep', name:'수면 시간', type:'other', coef:-0.12, connections:4, x:-100, y:180, z:80 },
+    { id:'stress', name:'스트레스', type:'other', coef:0.19, connections:5, x:80, y:150, z:-80 },
+    { id:'weight', name:'체중', type:'other', coef:0.22, connections:4, x:100, y:-100, z:-100 },
+    { id:'bmi', name:'BMI', type:'confounder', coef:0.18, connections:6, x:-50, y:-180, z:-60 },
+    { id:'gender', name:'성별', type:'confounder', coef:0.05, connections:3, x:150, y:-150, z:60 },
+    { id:'duration', name:'유병 기간', type:'confounder', coef:0.25, connections:5, x:-180, y:-120, z:-100 }
+  ];
+  var paths = [
+    { id:'p1', from:'medication', via:'insulin', to:'glucose', effect:-12.4 },
+    { id:'p2', from:'medication', to:'glucose', effect:-5.9 },
+    { id:'p3', from:'diet', to:'glucose', effect:8.2 },
+    { id:'p4', from:'exercise', via:'weight', to:'glucose', effect:-3.2 },
+    { id:'p5', from:'stress', to:'glucose', effect:4.8 }
+  ];
+  var activeNodes = new Set(['glucose']);
+  var activePaths = new Set(['p1','p2']);
+  var rotX = 15, rotY = -10, dragging = false, lx, ly;
+  var sThreshold = 0.3;
+
+  function renderNodes() {
+    var c = document.getElementById('graph-container');
+    if (!c) return;
+    c.innerHTML = variables.map(function(v) {
+      var strong = v.coef == null || Math.abs(v.coef) >= sThreshold;
+      return '<div class="node-3d '+v.type+(activeNodes.has(v.id)?' active':' dim')+(strong?'':' weak')+'" data-id="'+v.id+'" style="transform:translate3d('+v.x+'px,'+v.y+'px,'+v.z+'px);"><div class="sphere">'+v.name.split(' ')[0]+'</div><div class="label">'+(v.type==='outcome'?'결과':v.type==='treatment'?'치료':v.type==='mediator'?'매개':v.type==='confounder'?'교란':'')+'</div></div>';
+    }).join('');
+    c.querySelectorAll('.node-3d').forEach(function(el) {
+      el.addEventListener('click', function(e) { e.stopPropagation(); toggleNode(el.dataset.id); });
+    });
+    updateRotation();
+  }
+
+  function toggleNode(id) {
+    if (activeNodes.has(id)) activeNodes.delete(id); else activeNodes.add(id);
+    updateUI();
+  }
+
+  function updateUI() {
+    document.querySelectorAll('.node-3d').forEach(function(el) {
+      el.classList.toggle('active', activeNodes.has(el.dataset.id));
+      el.classList.toggle('dim', !activeNodes.has(el.dataset.id));
+    });
+    document.getElementById('active-count').textContent = activeNodes.size;
+    var html = Array.from(activeNodes).map(function(id) {
+      var v = variables.find(function(x){return x.id===id;});
+      return '<span class="node-tag '+v.type+'">'+v.name.split(' ')[0]+'</span>';
+    }).join('');
+    document.getElementById('active-nodes').innerHTML = html || '<span style="color:#666">없음</span>';
+    updateSim();
+  }
+
+  function updateSim() {
+    var total=0, valid=0;
+    paths.forEach(function(p) {
+      if (activePaths.has(p.id) && activeNodes.has(p.from) && activeNodes.has(p.to)) { total+=p.effect; valid++; }
+    });
+    document.getElementById('active-paths').textContent = valid;
+    document.getElementById('model-fit').textContent = 'R² = '+(Math.min(0.95, activeNodes.size*0.08+valid*0.05)).toFixed(2);
+  }
+
+  function updateRotation() {
+    var c = document.getElementById('graph-container');
+    if (c) c.style.transform = 'translate(-50%,-50%) rotateX('+rotX+'deg) rotateY('+rotY+'deg)';
+  }
+
+  function initGraph() {
+    renderNodes();
+    updateUI();
+
+    var g = document.getElementById('graph-3d');
+    if (!g) return;
+    g.addEventListener('mousedown', function(e) {
+      if (e.target.closest('.node-3d')) return;
+      dragging = true; lx = e.clientX; ly = e.clientY; g.style.cursor = 'grabbing';
+    });
+    document.addEventListener('mousemove', function(e) {
+      if (!dragging) return;
+      rotY += (e.clientX - lx) * 0.5;
+      rotX -= (e.clientY - ly) * 0.5;
+      rotX = Math.max(-60, Math.min(60, rotX));
+      lx = e.clientX; ly = e.clientY;
+      updateRotation();
+    });
+    document.addEventListener('mouseup', function() { dragging = false; if (g) g.style.cursor = 'grab'; });
+
+    var tr = document.getElementById('threshold-range');
+    var tv = document.getElementById('threshold-value');
+    var sr = document.getElementById('strength-range');
+    var sv = document.getElementById('strength-value');
+    function applyThreshold(val) {
+      sThreshold = parseFloat(val);
+      if (tv) tv.textContent = sThreshold.toFixed(2);
+      if (sv) sv.textContent = sThreshold.toFixed(2);
+      if (tr && tr.value !== String(val)) tr.value = val;
+      if (sr && sr.value !== String(val)) sr.value = val;
+      renderNodes();
+    }
+    if (tr) tr.addEventListener('input', function(e) { applyThreshold(e.target.value); });
+    if (sr) sr.addEventListener('input', function(e) { applyThreshold(e.target.value); });
+
+    document.querySelectorAll('.view-toggle button').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.view-toggle button').forEach(function(b){b.classList.remove('active');});
+        btn.classList.add('active');
+      });
+    });
+  }
+</script>
+</body>
+</html>
