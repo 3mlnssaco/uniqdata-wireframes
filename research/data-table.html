@@ -449,6 +449,17 @@
     .view-individual { display: none; }
     .view-group { display: block; }
 
+    /* Individual view: split layout for detail panel */
+    .individual-split { display: flex; gap: 16px; }
+    .individual-table-wrap { flex: 1; min-width: 0; transition: flex 0.35s ease; }
+    .individual-detail {
+      flex: 0; min-width: 0; overflow: hidden; opacity: 0;
+      border: 1px solid #e5e7eb; border-radius: 12px; background: #fafbfc;
+      transition: flex 0.35s ease, opacity 0.3s ease 0.1s;
+    }
+    .individual-split.detail-open .individual-table-wrap { flex: 0.55; }
+    .individual-split.detail-open .individual-detail { flex: 0.45; opacity: 1; overflow-y: auto; }
+
     .inline-note { font-size: 12px; color: #64748b; margin-bottom: 12px; }
 
     /* ===== SIDE-BY-SIDE COMPARISON ===== */
@@ -1077,8 +1088,10 @@
             </div>
 
             <!-- 개인 뷰: 군 구분 없이 전체 환자를 한 테이블에. 코호트 배지(A/B)로 소속 표시. -->
+            <div class="individual-split" id="individualSplit">
 
             <!-- INDIVIDUAL TABLE (Composite) -->
+            <div class="individual-table-wrap">
             <div class="table-container">
               <table class="data-table">
                 <thead>
@@ -1181,6 +1194,109 @@
                 </div>
               </div>
             </div>
+            </div><!-- /individual-table-wrap -->
+
+            <!-- INDIVIDUAL DETAIL PANEL (right side on row click) -->
+            <div class="individual-detail detail-inline" id="indDetailPanel">
+              <div class="di-header">
+                <div class="avatar" id="indDiAvatar">P1</div>
+                <div class="info">
+                  <h3 id="indDiName">P001 <span style="font-weight:400; color:#6b7280; font-size:13px;">김OO</span> <span class="cohort-badge a" id="indDiBadge">A 실험군</span></h3>
+                  <div class="sub" id="indDiSub">위고비 2.4mg · Week 12 · BMI 28.1 → 25.8</div>
+                </div>
+                <button class="di-close" onclick="closeIndDetail()">✕</button>
+              </div>
+              <div class="di-body">
+                <div class="di-cards" style="grid-template-columns: 1fr 1fr 1fr;">
+                  <div class="di-card" style="border-left:3px solid #8b5cf6;">
+                    <div class="lbl">체중</div>
+                    <div class="val" style="color:#059669;">81.2 <span style="font-size:11px; font-weight:400; color:#9ca3af;">kg</span></div>
+                    <div class="delta good">↓6.8kg (↓7.7%)</div>
+                  </div>
+                  <div class="di-card" style="border-left:3px solid #3b82f6;">
+                    <div class="lbl">HbA1c</div>
+                    <div class="val" style="color:#059669;">6.1%</div>
+                    <div class="delta good">↓1.1 (BL 7.2%)</div>
+                  </div>
+                  <div class="di-card" style="border-left:3px solid #ef4444;">
+                    <div class="lbl">SBP/DBP</div>
+                    <div class="val" style="color:#059669;">136/82</div>
+                    <div class="delta good">↓12/↓6 mmHg</div>
+                  </div>
+                </div>
+                <div class="di-cards">
+                  <div class="di-card">
+                    <div class="lbl">BMI</div>
+                    <div class="val">25.8</div>
+                    <div class="delta good">↓2.2 (BL 28.0)</div>
+                  </div>
+                  <div class="di-card">
+                    <div class="lbl">공복혈당</div>
+                    <div class="val" style="color:#059669;">108 <span style="font-size:11px; font-weight:400; color:#9ca3af;">mg/dL</span></div>
+                    <div class="delta good">↓24 (BL 132)</div>
+                  </div>
+                  <div class="di-card">
+                    <div class="lbl">활동량</div>
+                    <div class="val" style="color:#059669;">+55m</div>
+                    <div class="delta good">BL 대비 +55분/일</div>
+                  </div>
+                  <div class="di-card">
+                    <div class="lbl">투약순응도</div>
+                    <div class="val" style="color:#059669;">100%</div>
+                    <div class="delta good">12/12회 완료</div>
+                  </div>
+                </div>
+
+                <div style="font-size:13px; font-weight:700; margin:16px 0 8px;">시점별 추이 (Baseline → W4 → W8 → W12)</div>
+                <table class="raw-table" style="width:100%; font-size:12px; border-collapse:collapse;">
+                  <thead>
+                    <tr style="background:#f8fafc;">
+                      <th style="padding:6px 8px; text-align:left; font-weight:600; border-bottom:1px solid #e5e7eb;">시점</th>
+                      <th style="padding:6px 8px; text-align:right; font-weight:600; border-bottom:1px solid #e5e7eb;">체중</th>
+                      <th style="padding:6px 8px; text-align:right; font-weight:600; border-bottom:1px solid #e5e7eb;">HbA1c</th>
+                      <th style="padding:6px 8px; text-align:right; font-weight:600; border-bottom:1px solid #e5e7eb;">SBP</th>
+                      <th style="padding:6px 8px; text-align:right; font-weight:600; border-bottom:1px solid #e5e7eb;">활동</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr><td style="padding:6px 8px;">Baseline</td><td style="padding:6px 8px; text-align:right;">88.0</td><td style="padding:6px 8px; text-align:right;">7.2%</td><td style="padding:6px 8px; text-align:right;">148</td><td style="padding:6px 8px; text-align:right;">—</td></tr>
+                    <tr><td style="padding:6px 8px;">Week 4</td><td style="padding:6px 8px; text-align:right;">86.1</td><td style="padding:6px 8px; text-align:right;">6.9%</td><td style="padding:6px 8px; text-align:right;">145</td><td style="padding:6px 8px; text-align:right;">+22m</td></tr>
+                    <tr><td style="padding:6px 8px;">Week 8</td><td style="padding:6px 8px; text-align:right;">83.8</td><td style="padding:6px 8px; text-align:right;">6.5%</td><td style="padding:6px 8px; text-align:right;">140</td><td style="padding:6px 8px; text-align:right;">+38m</td></tr>
+                    <tr style="background:#f0fdf4; font-weight:600;"><td style="padding:6px 8px;">Week 12</td><td style="padding:6px 8px; text-align:right;">81.2</td><td style="padding:6px 8px; text-align:right;">6.1%</td><td style="padding:6px 8px; text-align:right;">136</td><td style="padding:6px 8px; text-align:right;">+55m</td></tr>
+                  </tbody>
+                </table>
+
+                <div style="font-size:13px; font-weight:700; margin:16px 0 8px;">Baseline 대비 전체 변화</div>
+                <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px;">
+                  <div style="padding:10px; background:white; border:1px solid #e5e7eb; border-radius:8px; text-align:center;">
+                    <div style="font-size:11px; color:#6b7280;">체중</div>
+                    <div style="font-size:16px; font-weight:700; color:#059669;">-6.8kg</div>
+                    <div style="font-size:10px; color:#6b7280;">88.0 → 81.2 (↓7.7%)</div>
+                  </div>
+                  <div style="padding:10px; background:white; border:1px solid #e5e7eb; border-radius:8px; text-align:center;">
+                    <div style="font-size:11px; color:#6b7280;">HbA1c</div>
+                    <div style="font-size:16px; font-weight:700; color:#059669;">-1.1%p</div>
+                    <div style="font-size:10px; color:#6b7280;">7.2% → 6.1%</div>
+                  </div>
+                  <div style="padding:10px; background:white; border:1px solid #e5e7eb; border-radius:8px; text-align:center;">
+                    <div style="font-size:11px; color:#6b7280;">SBP</div>
+                    <div style="font-size:16px; font-weight:700; color:#059669;">-12mmHg</div>
+                    <div style="font-size:10px; color:#6b7280;">148 → 136</div>
+                  </div>
+                </div>
+
+                <div style="font-size:13px; font-weight:700; margin:16px 0 8px;">참여 정보</div>
+                <div style="background:white; border:1px solid #e5e7eb; border-radius:8px; padding:12px; font-size:12px; line-height:2; color:#374151;">
+                  <div>코호트: <strong>A — 실험군 (위고비 2.4mg)</strong></div>
+                  <div>참여 시작: <strong>2025-11-20</strong></div>
+                  <div>현재 시점: <strong>Week 12</strong></div>
+                  <div>동의 상태: <span style="color:#059669; font-weight:600;">Active</span></div>
+                  <div>연속 데이터 제출: <strong>84일 (100%)</strong></div>
+                </div>
+              </div>
+            </div>
+
+            </div><!-- /individual-split -->
           </div><!-- /individualView -->
 
           <!-- ===== DESIGNER NOTES ===== -->
@@ -1653,6 +1769,24 @@ GET /api/v2/projects/:id/wearable-sync
     });
 
     // Row click events are bound via bindRowClicks() called from renderTables()
+
+    // === Individual View: row click → detail panel ===
+    function openIndDetail() {
+      var split = document.getElementById('individualSplit');
+      if (split) split.classList.add('detail-open');
+    }
+    function closeIndDetail() {
+      var split = document.getElementById('individualSplit');
+      if (split) split.classList.remove('detail-open');
+      document.querySelectorAll('#individualView .data-table tr.selected').forEach(function(r) { r.classList.remove('selected'); });
+    }
+    document.querySelectorAll('#individualView .data-table tbody tr').forEach(function(row) {
+      row.addEventListener('click', function() {
+        document.querySelectorAll('#individualView .data-table tr.selected').forEach(function(r) { r.classList.remove('selected'); });
+        this.classList.add('selected');
+        openIndDetail();
+      });
+    });
   </script>
 </body>
 </html>
