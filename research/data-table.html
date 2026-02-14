@@ -983,6 +983,159 @@
                     </div>
                   </div>
 
+                  <!-- ===== 투약 이력 ===== -->
+                  <div style="font-size:13px; font-weight:700; margin:16px 0 8px; display:flex; align-items:center; gap:8px;">
+                    💉 투약 이력
+                    <span style="font-size:10px; font-weight:400; color:#6b7280;">최근 4회</span>
+                  </div>
+                  <table style="width:100%; font-size:11px; border-collapse:collapse; margin-bottom:4px;">
+                    <thead>
+                      <tr style="background:#f8fafc;">
+                        <th style="padding:5px 8px; text-align:left; font-weight:600; border-bottom:1px solid #e5e7eb;">회차</th>
+                        <th style="padding:5px 8px; text-align:left; font-weight:600; border-bottom:1px solid #e5e7eb;">날짜</th>
+                        <th style="padding:5px 8px; text-align:left; font-weight:600; border-bottom:1px solid #e5e7eb;">시간</th>
+                        <th style="padding:5px 8px; text-align:left; font-weight:600; border-bottom:1px solid #e5e7eb;">용량</th>
+                        <th style="padding:5px 8px; text-align:center; font-weight:600; border-bottom:1px solid #e5e7eb;">상태</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr style="background:#f0fdf4;">
+                        <td style="padding:5px 8px; font-weight:600;">12회</td>
+                        <td style="padding:5px 8px;">2/11 (화)</td>
+                        <td style="padding:5px 8px; font-family:'SF Mono',monospace; font-weight:600;">08:32</td>
+                        <td style="padding:5px 8px;">2.4mg</td>
+                        <td style="padding:5px 8px; text-align:center;"><span style="color:#059669; font-weight:600;">✓</span></td>
+                      </tr>
+                      <tr>
+                        <td style="padding:5px 8px;">11회</td>
+                        <td style="padding:5px 8px;">2/4 (화)</td>
+                        <td style="padding:5px 8px; font-family:'SF Mono',monospace;">08:15</td>
+                        <td style="padding:5px 8px;">2.4mg</td>
+                        <td style="padding:5px 8px; text-align:center;"><span style="color:#059669;">✓</span></td>
+                      </tr>
+                      <tr>
+                        <td style="padding:5px 8px;">10회</td>
+                        <td style="padding:5px 8px;">1/28 (화)</td>
+                        <td style="padding:5px 8px; font-family:'SF Mono',monospace;">09:05</td>
+                        <td style="padding:5px 8px;">2.4mg</td>
+                        <td style="padding:5px 8px; text-align:center;"><span style="color:#059669;">✓</span></td>
+                      </tr>
+                      <tr>
+                        <td style="padding:5px 8px;">9회</td>
+                        <td style="padding:5px 8px;">1/21 (화)</td>
+                        <td style="padding:5px 8px; font-family:'SF Mono',monospace;">08:48</td>
+                        <td style="padding:5px 8px;">2.4mg</td>
+                        <td style="padding:5px 8px; text-align:center;"><span style="color:#059669;">✓</span></td>
+                      </tr>
+                    </tbody>
+                  </table>
+
+                  <!-- ===== 72시간 연속혈당 모니터링 (CGM) ===== -->
+                  <div style="font-size:13px; font-weight:700; margin:18px 0 6px; display:flex; align-items:center; justify-content:space-between;">
+                    <span style="display:flex; align-items:center; gap:8px;">
+                      📈 연속혈당 (CGM) — 최근 72시간
+                      <span style="font-size:10px; font-weight:400; color:#6b7280;">FreeStyle Libre 3 · 5분 간격</span>
+                    </span>
+                    <span style="font-size:12px; font-weight:700; color:#059669;">현재 108 mg/dL ↘</span>
+                  </div>
+                  <div style="background:white; border:1px solid #e5e7eb; border-radius:8px; padding:10px; overflow:hidden;">
+                    <!-- CGM 범례 -->
+                    <div style="display:flex; gap:12px; font-size:10px; color:#6b7280; margin-bottom:6px;">
+                      <span style="display:flex; align-items:center; gap:4px;"><span style="width:20px; height:8px; background:rgba(34,197,94,0.15); border:1px solid rgba(34,197,94,0.3); border-radius:2px;"></span>목표 범위 (70-180)</span>
+                      <span style="display:flex; align-items:center; gap:4px;"><span style="width:10px; height:10px; background:#8b5cf6; border-radius:50%;"></span>투약</span>
+                      <span style="display:flex; align-items:center; gap:4px;"><span style="width:10px; height:10px; background:#f59e0b; border-radius:3px;"></span>식사</span>
+                    </div>
+                    <svg viewBox="0 0 720 180" style="width:100%; height:auto;">
+                      <!-- 목표 범위 band (70-180 mg/dL) → y: 180=top(250mg), 0=bottom(50mg) → target 70-180 mapped -->
+                      <rect x="0" y="35" width="720" height="90" rx="2" fill="rgba(34,197,94,0.08)" stroke="rgba(34,197,94,0.2)" stroke-width="0.5"/>
+                      <!-- 경계선 -->
+                      <line x1="0" y1="35" x2="720" y2="35" stroke="rgba(34,197,94,0.3)" stroke-width="0.5" stroke-dasharray="4,4"/>
+                      <text x="722" y="38" fill="#22c55e" font-size="8" font-weight="600">180</text>
+                      <line x1="0" y1="125" x2="720" y2="125" stroke="rgba(34,197,94,0.3)" stroke-width="0.5" stroke-dasharray="4,4"/>
+                      <text x="722" y="128" fill="#22c55e" font-size="8" font-weight="600">70</text>
+                      <!-- 200 기준선 -->
+                      <line x1="0" y1="22" x2="720" y2="22" stroke="rgba(239,68,68,0.2)" stroke-width="0.5" stroke-dasharray="2,4"/>
+                      <text x="722" y="25" fill="#ef4444" font-size="7">200</text>
+
+                      <!-- 날짜 구분선 -->
+                      <line x1="240" y1="0" x2="240" y2="170" stroke="#e5e7eb" stroke-width="0.5"/>
+                      <line x1="480" y1="0" x2="480" y2="170" stroke="#e5e7eb" stroke-width="0.5"/>
+                      <!-- 날짜 라벨 -->
+                      <text x="120" y="175" fill="#9ca3af" font-size="9" text-anchor="middle">2/10 (월)</text>
+                      <text x="360" y="175" fill="#9ca3af" font-size="9" text-anchor="middle">2/11 (화)</text>
+                      <text x="600" y="175" fill="#6b7280" font-size="9" text-anchor="middle" font-weight="600">2/12 (수) 오늘</text>
+
+                      <!-- 야간 음영 (수면 시간대) -->
+                      <rect x="0" y="0" width="70" height="170" fill="rgba(99,102,241,0.04)"/>
+                      <rect x="210" y="0" width="70" height="170" fill="rgba(99,102,241,0.04)"/>
+                      <rect x="450" y="0" width="70" height="170" fill="rgba(99,102,241,0.04)"/>
+                      <text x="35" y="10" fill="#a5b4fc" font-size="7" text-anchor="middle">수면</text>
+                      <text x="245" y="10" fill="#a5b4fc" font-size="7" text-anchor="middle">수면</text>
+                      <text x="485" y="10" fill="#a5b4fc" font-size="7" text-anchor="middle">수면</text>
+
+                      <!-- CGM 혈당 곡선 (Day 1: 2/10) -->
+                      <polyline points="
+                        0,85 10,82 20,78 30,80 40,84 50,88 60,90 70,86
+                        80,72 90,55 100,48 110,52 120,60 130,68 140,72
+                        150,65 160,50 170,42 180,48 190,58 200,68 210,75
+                        220,82 230,88 240,90
+                      " fill="none" stroke="#3b82f6" stroke-width="1.5" stroke-linejoin="round"/>
+
+                      <!-- CGM Day 2: 2/11 (투약일) -->
+                      <polyline points="
+                        240,88 250,84 260,80 270,78 280,82 290,86
+                        300,72 310,58 320,50 330,55 340,62 350,70 360,75
+                        370,68 380,52 390,45 400,50 410,60 420,70 430,76
+                        440,82 450,86 460,88 470,85 480,82
+                      " fill="none" stroke="#3b82f6" stroke-width="1.5" stroke-linejoin="round"/>
+
+                      <!-- CGM Day 3: 2/12 오늘 -->
+                      <polyline points="
+                        480,80 490,78 500,76 510,78 520,82 530,85
+                        540,70 550,55 560,48 570,52 580,62 590,70
+                        600,74 610,68 620,56 630,50 640,58 650,66
+                        660,72 670,78 680,82 690,80 700,76 710,74
+                      " fill="none" stroke="#3b82f6" stroke-width="2" stroke-linejoin="round"/>
+                      <!-- 현재 포인트 -->
+                      <circle cx="710" cy="74" r="4" fill="#3b82f6" stroke="white" stroke-width="1.5"/>
+                      <text x="700" y="68" fill="#3b82f6" font-size="9" font-weight="700" text-anchor="end">108</text>
+
+                      <!-- 투약 마커 (2/11 08:32) -->
+                      <line x1="305" y1="0" x2="305" y2="170" stroke="#8b5cf6" stroke-width="1.5" stroke-dasharray="3,2"/>
+                      <circle cx="305" cy="8" r="5" fill="#8b5cf6"/>
+                      <text x="305" y="11" fill="white" font-size="6" text-anchor="middle" font-weight="700">💉</text>
+                      <text x="312" y="20" fill="#7c3aed" font-size="7" font-weight="600">08:32 투약</text>
+
+                      <!-- 식사 마커들 -->
+                      <rect x="97" y="1" width="8" height="8" rx="2" fill="#f59e0b" opacity="0.8"/>
+                      <rect x="167" y="1" width="8" height="8" rx="2" fill="#f59e0b" opacity="0.8"/>
+                      <rect x="218" y="1" width="8" height="8" rx="2" fill="#f59e0b" opacity="0.6"/>
+                      <rect x="337" y="1" width="8" height="8" rx="2" fill="#f59e0b" opacity="0.8"/>
+                      <rect x="407" y="1" width="8" height="8" rx="2" fill="#f59e0b" opacity="0.8"/>
+                      <rect x="548" y="1" width="8" height="8" rx="2" fill="#f59e0b" opacity="0.8"/>
+                      <rect x="618" y="1" width="8" height="8" rx="2" fill="#f59e0b" opacity="0.8"/>
+                    </svg>
+                    <!-- CGM 통계 -->
+                    <div style="display:flex; gap:12px; margin-top:8px; padding-top:8px; border-top:1px solid #f1f5f9;">
+                      <div style="flex:1; text-align:center;">
+                        <div style="font-size:9px; color:#6b7280;">평균 혈당</div>
+                        <div style="font-size:14px; font-weight:700; color:#059669;">118 <span style="font-size:9px; font-weight:400;">mg/dL</span></div>
+                      </div>
+                      <div style="flex:1; text-align:center;">
+                        <div style="font-size:9px; color:#6b7280;">TIR (목표 내)</div>
+                        <div style="font-size:14px; font-weight:700; color:#059669;">92%</div>
+                      </div>
+                      <div style="flex:1; text-align:center;">
+                        <div style="font-size:9px; color:#6b7280;">변동성 (CV)</div>
+                        <div style="font-size:14px; font-weight:700;">18.2%</div>
+                      </div>
+                      <div style="flex:1; text-align:center;">
+                        <div style="font-size:9px; color:#6b7280;">저혈당</div>
+                        <div style="font-size:14px; font-weight:700; color:#059669;">0회</div>
+                      </div>
+                    </div>
+                  </div>
+
                   <div class="section-title" style="font-size:13px; font-weight:700; margin:16px 0 8px;">시점별 추이 (Baseline → W4 → W8 → W12)</div>
                   <table class="raw-table" style="width:100%; font-size:12px; border-collapse:collapse;">
                     <thead>
@@ -1244,6 +1397,113 @@
                     <div class="lbl">투약순응도</div>
                     <div class="val" style="color:#059669;">100%</div>
                     <div class="delta good">12/12회 완료</div>
+                  </div>
+                </div>
+
+                <!-- 투약 이력 -->
+                <div style="font-size:13px; font-weight:700; margin:16px 0 8px; display:flex; align-items:center; gap:8px;">
+                  💉 투약 이력
+                  <span style="font-size:10px; font-weight:400; color:#6b7280;">최근 4회</span>
+                </div>
+                <table style="width:100%; font-size:11px; border-collapse:collapse; margin-bottom:4px;">
+                  <thead>
+                    <tr style="background:#f8fafc;">
+                      <th style="padding:5px 8px; text-align:left; font-weight:600; border-bottom:1px solid #e5e7eb;">회차</th>
+                      <th style="padding:5px 8px; text-align:left; font-weight:600; border-bottom:1px solid #e5e7eb;">날짜</th>
+                      <th style="padding:5px 8px; text-align:left; font-weight:600; border-bottom:1px solid #e5e7eb;">시간</th>
+                      <th style="padding:5px 8px; text-align:left; font-weight:600; border-bottom:1px solid #e5e7eb;">용량</th>
+                      <th style="padding:5px 8px; text-align:center; font-weight:600; border-bottom:1px solid #e5e7eb;">상태</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr style="background:#f0fdf4;">
+                      <td style="padding:5px 8px; font-weight:600;">12회</td>
+                      <td style="padding:5px 8px;">2/11 (화)</td>
+                      <td style="padding:5px 8px; font-family:'SF Mono',monospace; font-weight:600;">08:32</td>
+                      <td style="padding:5px 8px;">2.4mg</td>
+                      <td style="padding:5px 8px; text-align:center;"><span style="color:#059669; font-weight:600;">✓</span></td>
+                    </tr>
+                    <tr>
+                      <td style="padding:5px 8px;">11회</td>
+                      <td style="padding:5px 8px;">2/4 (화)</td>
+                      <td style="padding:5px 8px; font-family:'SF Mono',monospace;">08:15</td>
+                      <td style="padding:5px 8px;">2.4mg</td>
+                      <td style="padding:5px 8px; text-align:center;"><span style="color:#059669;">✓</span></td>
+                    </tr>
+                    <tr>
+                      <td style="padding:5px 8px;">10회</td>
+                      <td style="padding:5px 8px;">1/28 (화)</td>
+                      <td style="padding:5px 8px; font-family:'SF Mono',monospace;">09:05</td>
+                      <td style="padding:5px 8px;">2.4mg</td>
+                      <td style="padding:5px 8px; text-align:center;"><span style="color:#059669;">✓</span></td>
+                    </tr>
+                    <tr>
+                      <td style="padding:5px 8px;">9회</td>
+                      <td style="padding:5px 8px;">1/21 (화)</td>
+                      <td style="padding:5px 8px; font-family:'SF Mono',monospace;">08:48</td>
+                      <td style="padding:5px 8px;">2.4mg</td>
+                      <td style="padding:5px 8px; text-align:center;"><span style="color:#059669;">✓</span></td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <!-- 72시간 연속혈당 (CGM) -->
+                <div style="font-size:13px; font-weight:700; margin:18px 0 6px; display:flex; align-items:center; justify-content:space-between;">
+                  <span style="display:flex; align-items:center; gap:8px;">
+                    📈 연속혈당 (CGM) — 최근 72시간
+                    <span style="font-size:10px; font-weight:400; color:#6b7280;">5분 간격</span>
+                  </span>
+                  <span style="font-size:12px; font-weight:700; color:#059669;">현재 108 mg/dL ↘</span>
+                </div>
+                <div style="background:white; border:1px solid #e5e7eb; border-radius:8px; padding:10px; overflow:hidden;">
+                  <div style="display:flex; gap:12px; font-size:10px; color:#6b7280; margin-bottom:6px;">
+                    <span style="display:flex; align-items:center; gap:4px;"><span style="width:20px; height:8px; background:rgba(34,197,94,0.15); border:1px solid rgba(34,197,94,0.3); border-radius:2px;"></span>목표 (70-180)</span>
+                    <span style="display:flex; align-items:center; gap:4px;"><span style="width:10px; height:10px; background:#8b5cf6; border-radius:50%;"></span>투약</span>
+                    <span style="display:flex; align-items:center; gap:4px;"><span style="width:10px; height:10px; background:#f59e0b; border-radius:3px;"></span>식사</span>
+                  </div>
+                  <svg viewBox="0 0 720 180" style="width:100%; height:auto;">
+                    <rect x="0" y="35" width="720" height="90" rx="2" fill="rgba(34,197,94,0.08)" stroke="rgba(34,197,94,0.2)" stroke-width="0.5"/>
+                    <line x1="0" y1="35" x2="720" y2="35" stroke="rgba(34,197,94,0.3)" stroke-width="0.5" stroke-dasharray="4,4"/>
+                    <text x="722" y="38" fill="#22c55e" font-size="8" font-weight="600">180</text>
+                    <line x1="0" y1="125" x2="720" y2="125" stroke="rgba(34,197,94,0.3)" stroke-width="0.5" stroke-dasharray="4,4"/>
+                    <text x="722" y="128" fill="#22c55e" font-size="8" font-weight="600">70</text>
+                    <line x1="240" y1="0" x2="240" y2="170" stroke="#e5e7eb" stroke-width="0.5"/>
+                    <line x1="480" y1="0" x2="480" y2="170" stroke="#e5e7eb" stroke-width="0.5"/>
+                    <text x="120" y="175" fill="#9ca3af" font-size="9" text-anchor="middle">2/10 (월)</text>
+                    <text x="360" y="175" fill="#9ca3af" font-size="9" text-anchor="middle">2/11 (화)</text>
+                    <text x="600" y="175" fill="#6b7280" font-size="9" text-anchor="middle" font-weight="600">2/12 오늘</text>
+                    <polyline points="0,85 10,82 20,78 30,80 40,84 50,88 60,90 70,86 80,72 90,55 100,48 110,52 120,60 130,68 140,72 150,65 160,50 170,42 180,48 190,58 200,68 210,75 220,82 230,88 240,90" fill="none" stroke="#3b82f6" stroke-width="1.5" stroke-linejoin="round"/>
+                    <polyline points="240,88 250,84 260,80 270,78 280,82 290,86 300,72 310,58 320,50 330,55 340,62 350,70 360,75 370,68 380,52 390,45 400,50 410,60 420,70 430,76 440,82 450,86 460,88 470,85 480,82" fill="none" stroke="#3b82f6" stroke-width="1.5" stroke-linejoin="round"/>
+                    <polyline points="480,80 490,78 500,76 510,78 520,82 530,85 540,70 550,55 560,48 570,52 580,62 590,70 600,74 610,68 620,56 630,50 640,58 650,66 660,72 670,78 680,82 690,80 700,76 710,74" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linejoin="round"/>
+                    <circle cx="710" cy="74" r="4" fill="#3b82f6" stroke="white" stroke-width="1.5"/>
+                    <text x="700" y="68" fill="#3b82f6" font-size="9" font-weight="700" text-anchor="end">108</text>
+                    <line x1="305" y1="0" x2="305" y2="170" stroke="#8b5cf6" stroke-width="1.5" stroke-dasharray="3,2"/>
+                    <circle cx="305" cy="8" r="5" fill="#8b5cf6"/>
+                    <text x="312" y="20" fill="#7c3aed" font-size="7" font-weight="600">08:32 투약</text>
+                    <rect x="97" y="1" width="8" height="8" rx="2" fill="#f59e0b" opacity="0.8"/>
+                    <rect x="167" y="1" width="8" height="8" rx="2" fill="#f59e0b" opacity="0.8"/>
+                    <rect x="337" y="1" width="8" height="8" rx="2" fill="#f59e0b" opacity="0.8"/>
+                    <rect x="407" y="1" width="8" height="8" rx="2" fill="#f59e0b" opacity="0.8"/>
+                    <rect x="548" y="1" width="8" height="8" rx="2" fill="#f59e0b" opacity="0.8"/>
+                    <rect x="618" y="1" width="8" height="8" rx="2" fill="#f59e0b" opacity="0.8"/>
+                  </svg>
+                  <div style="display:flex; gap:12px; margin-top:8px; padding-top:8px; border-top:1px solid #f1f5f9;">
+                    <div style="flex:1; text-align:center;">
+                      <div style="font-size:9px; color:#6b7280;">평균 혈당</div>
+                      <div style="font-size:14px; font-weight:700; color:#059669;">118</div>
+                    </div>
+                    <div style="flex:1; text-align:center;">
+                      <div style="font-size:9px; color:#6b7280;">TIR</div>
+                      <div style="font-size:14px; font-weight:700; color:#059669;">92%</div>
+                    </div>
+                    <div style="flex:1; text-align:center;">
+                      <div style="font-size:9px; color:#6b7280;">CV</div>
+                      <div style="font-size:14px; font-weight:700;">18.2%</div>
+                    </div>
+                    <div style="flex:1; text-align:center;">
+                      <div style="font-size:9px; color:#6b7280;">저혈당</div>
+                      <div style="font-size:14px; font-weight:700; color:#059669;">0회</div>
+                    </div>
                   </div>
                 </div>
 
