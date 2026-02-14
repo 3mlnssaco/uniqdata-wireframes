@@ -8,11 +8,86 @@
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: -apple-system, sans-serif; background: #f5f5f5; }
     .layout { display: flex; min-height: 100vh; }
-    .sidebar { width: 240px; background: #1a1a1a; color: white; padding: 20px; flex-shrink: 0; }
-    .logo { font-size: 18px; font-weight: bold; margin-bottom: 30px; padding: 10px; }
-    .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 8px; margin-bottom: 4px; color: #9ca3af; text-decoration: none; }
-    .nav-item:hover { background: #252525; }
-    .nav-item.active { background: #3b82f6; color: white; }
+    /* ===== SIDEBAR (240px, gradient dark) ===== */
+    .sidebar {
+      width: 240px;
+      background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+    }
+    .logo {
+      padding: 20px 24px;
+      font-size: 20px;
+      font-weight: 700;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .logo-icon {
+      width: 32px; height: 32px;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; font-weight: bold;
+    }
+    .nav-section { padding: 16px 12px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    .nav-section-title { font-size: 11px; text-transform: uppercase; color: #64748b; padding: 8px 12px; letter-spacing: 0.5px; }
+    .nav-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 12px; border-radius: 8px; color: #94a3b8;
+      cursor: pointer; font-size: 14px; text-decoration: none; transition: all 0.15s;
+    }
+    .nav-item:hover { background: rgba(255,255,255,0.05); color: #e2e8f0; }
+    .nav-item.active { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
+    .nav-item .icon { width: 20px; text-align: center; }
+    .research-nav-item { margin-bottom: 2px; }
+    .research-nav-header {
+      display: flex; align-items: center; gap: 8px;
+      padding: 8px 12px; border-radius: 8px; cursor: pointer;
+      font-size: 13px; color: #94a3b8; transition: all 0.15s;
+    }
+    .research-nav-header:hover { background: rgba(255,255,255,0.05); color: #e2e8f0; }
+    .research-nav-item.expanded .research-nav-header {
+      background: rgba(59, 130, 246, 0.1); color: #60a5fa;
+    }
+    .research-title { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .status-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+    .status-dot.active { background: #22c55e; }
+    .status-dot.recruiting { background: #3b82f6; }
+    .status-dot.draft { background: #6b7280; }
+    .research-nav-sub {
+      display: none; padding-left: 20px; margin-top: 4px;
+      border-left: 2px solid rgba(255,255,255,0.1); margin-left: 18px;
+    }
+    .research-nav-item.expanded .research-nav-sub { display: block; }
+    .nav-sub-item {
+      display: flex; align-items: center; gap: 8px;
+      padding: 8px 12px; border-radius: 6px; color: #94a3b8;
+      font-size: 12px; cursor: pointer; transition: all 0.15s;
+      text-decoration: none; margin-bottom: 2px;
+    }
+    .nav-sub-item:hover { background: rgba(255,255,255,0.05); color: #e2e8f0; }
+    .nav-sub-item.active {
+      background: rgba(59, 130, 246, 0.15); color: #60a5fa;
+      border-left: 2px solid #3b82f6; margin-left: -2px; padding-left: 14px;
+    }
+    .nav-sub-item .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; opacity: 0.5; }
+    .nav-sub-item.active .dot { background: #3b82f6; opacity: 1; }
+    .sidebar-footer {
+      margin-top: auto; padding: 16px; border-top: 1px solid rgba(255,255,255,0.05);
+    }
+    .user-info-sidebar { display: flex; align-items: center; gap: 12px; padding: 8px; }
+    .user-avatar-sidebar {
+      width: 36px; height: 36px;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-size: 14px; color: white;
+    }
+    .user-name-sidebar { font-size: 14px; color: #e2e8f0; }
+    .user-org-sidebar { font-size: 12px; color: #64748b; }
 
     .main { flex: 1; padding: 32px; max-width: 1200px; }
     .main h1 { font-size: 28px; margin-bottom: 8px; }
@@ -85,16 +160,100 @@
   <div class="layout">
     <!-- 사이드바 -->
     <div class="sidebar">
-      <div class="logo">🔬 UniQdata</div>
-      <a href="list.html" class="nav-item">📋 연구 허브</a>
-      <a href="create.html" class="nav-item">➕ 새 연구</a>
-      <a href="irb-submission.html" class="nav-item">📝 IRB 심의 신청</a>
-      <a href="irb-status.html" class="nav-item">📊 IRB 현황</a>
-      <a href="action-center.html" class="nav-item active">🔔 조치 센터</a>
-      <a href="analysis-discovery.html" class="nav-item">🧠 AI 분석</a>
-      <div style="border-top: 1px solid #333; margin: 8px 0;"></div>
-      <a href="../team.html" class="nav-item">👥 팀</a>
-      <a href="../billing.html" class="nav-item">💳 결제</a>
+      <div class="logo">
+        <div class="logo-icon">U</div>
+        UniQdata
+      </div>
+
+      <div class="nav-section">
+        <a href="list.html" class="nav-item">
+          <span class="icon">&#x1F3E0;</span> 연구 허브
+        </a>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-section-title">연구</div>
+        <a href="create.html" class="nav-item">
+          <span class="icon">&#x2795;</span> 새 연구
+        </a>
+      </div>
+
+      <div class="nav-section" style="flex:1; overflow-y:auto;">
+        <div class="nav-section-title" style="display:flex; align-items:center; justify-content:space-between;">
+          내 연구
+          <span style="background:#3b82f6; color:white; font-size:11px; padding:2px 8px; border-radius:10px; font-weight:600;">3</span>
+        </div>
+
+        <div class="research-nav-item expanded">
+          <div class="research-nav-header">
+            <span style="font-size:14px;">&#x1F4C1;</span>
+            <span class="research-title">위고비 대사개선 연구</span>
+            <span class="status-dot active"></span>
+          </div>
+          <div class="research-nav-sub">
+            <a href="data-overview.html" class="nav-sub-item"><span class="dot"></span> 개요</a>
+            <a href="data-table.html" class="nav-sub-item"><span class="dot"></span> 테이블</a>
+            <a href="analysis-discovery.html" class="nav-sub-item"><span class="dot"></span> AI 허브</a>
+          </div>
+        </div>
+
+        <div class="research-nav-item collapsed">
+          <div class="research-nav-header">
+            <span style="font-size:14px;">&#x1F4C1;</span>
+            <span class="research-title">노인 수면 패턴</span>
+            <span class="status-dot recruiting"></span>
+          </div>
+          <div class="research-nav-sub">
+            <a href="#" class="nav-sub-item"><span class="dot"></span> 개요</a>
+            <a href="#" class="nav-sub-item"><span class="dot"></span> 테이블</a>
+            <a href="#" class="nav-sub-item"><span class="dot"></span> AI 허브</a>
+          </div>
+        </div>
+
+        <div class="research-nav-item collapsed">
+          <div class="research-nav-header">
+            <span style="font-size:14px;">&#x1F4C4;</span>
+            <span class="research-title">ADHD 생활습관</span>
+            <span class="status-dot draft"></span>
+          </div>
+          <div class="research-nav-sub">
+            <a href="#" class="nav-sub-item"><span class="dot"></span> 개요</a>
+            <a href="#" class="nav-sub-item"><span class="dot"></span> 테이블</a>
+            <a href="#" class="nav-sub-item"><span class="dot"></span> AI 허브</a>
+          </div>
+        </div>
+
+        <div style="margin-top:16px; padding-top:12px; border-top:1px solid #1e293b;">
+          <div style="display:flex; align-items:center; justify-content:space-between; padding:0 12px; margin-bottom:8px;">
+            <span style="font-size:11px; font-weight:600; color:#64748b; text-transform:uppercase; letter-spacing:0.5px;">임시저장</span>
+            <span style="background:#334155; color:#94a3b8; font-size:10px; padding:2px 6px; border-radius:8px;">2</span>
+          </div>
+          <a href="#" style="display:flex; align-items:center; gap:10px; padding:8px 12px; border-radius:8px; text-decoration:none; margin-bottom:4px; background:rgba(251,191,36,0.08);">
+            <span style="width:6px; height:6px; background:#fbbf24; border-radius:50%; flex-shrink:0;"></span>
+            <div style="flex:1; min-width:0;">
+              <div style="font-size:12px; color:#e2e8f0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">소아 비만 개입 연구</div>
+              <div style="font-size:10px; color:#64748b; margin-top:2px;">Step 3 &middot; 2일 전</div>
+            </div>
+          </a>
+          <a href="#" style="display:flex; align-items:center; gap:10px; padding:8px 12px; border-radius:8px; text-decoration:none;">
+            <span style="width:6px; height:6px; background:#64748b; border-radius:50%; flex-shrink:0;"></span>
+            <div style="flex:1; min-width:0;">
+              <div style="font-size:12px; color:#94a3b8; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">직장인 스트레스 코르티솔</div>
+              <div style="font-size:10px; color:#64748b; margin-top:2px;">Step 1 &middot; 5일 전</div>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <div class="sidebar-footer">
+        <div class="user-info-sidebar">
+          <div class="user-avatar-sidebar">김</div>
+          <div>
+            <div class="user-name-sidebar">김연구</div>
+            <div class="user-org-sidebar">서울대학교병원</div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- 메인 -->

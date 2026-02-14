@@ -9,202 +9,276 @@
     body { font-family: -apple-system, sans-serif; background: #f5f5f5; }
     .layout { display: flex; min-height: 100vh; }
 
-    /* ===== 사이드바 ===== */
-    .sidebar { width: 260px; background: #1a1a1a; color: white; padding: 16px 12px; display: flex; flex-direction: column; flex-shrink: 0; }
-    .logo { font-size: 18px; font-weight: bold; margin-bottom: 20px; padding: 10px; }
-    .nav-section { margin-bottom: 8px; }
-    .nav-item { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 8px; margin-bottom: 4px; color: #9ca3af; text-decoration: none; font-size: 13px; transition: all 0.15s; }
-    .nav-item:hover { background: #252525; color: #ccc; }
-    .nav-item .icon { width: 18px; text-align: center; font-size: 14px; }
+    /* ===== SIDEBAR (240px, gradient dark) ===== */
+    .sidebar {
+      width: 240px;
+      background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+    }
+    .logo {
+      padding: 20px 24px;
+      font-size: 20px;
+      font-weight: 700;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .logo-icon {
+      width: 32px; height: 32px;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; font-weight: bold;
+    }
+    .nav-section { padding: 16px 12px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    .nav-section-title { font-size: 11px; text-transform: uppercase; color: #64748b; padding: 8px 12px; letter-spacing: 0.5px; }
+    .nav-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 12px; border-radius: 8px; color: #94a3b8;
+      cursor: pointer; font-size: 14px; text-decoration: none; transition: all 0.15s;
+    }
+    .nav-item:hover { background: rgba(255,255,255,0.05); color: #e2e8f0; }
+    .nav-item.active { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
+    .nav-item .icon { width: 20px; text-align: center; }
     .research-nav-item { margin-bottom: 2px; }
-    .research-nav-header { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 12px; color: #888; transition: all 0.15s; }
-    .research-nav-header:hover { background: #252525; color: #ccc; }
-    .research-nav-item.expanded .research-nav-header { background: rgba(59, 130, 246, 0.1); color: #60a5fa; }
+    .research-nav-header {
+      display: flex; align-items: center; gap: 8px;
+      padding: 8px 12px; border-radius: 8px; cursor: pointer;
+      font-size: 13px; color: #94a3b8; transition: all 0.15s;
+    }
+    .research-nav-header:hover { background: rgba(255,255,255,0.05); color: #e2e8f0; }
+    .research-nav-item.expanded .research-nav-header {
+      background: rgba(59, 130, 246, 0.1); color: #60a5fa;
+    }
     .research-title { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .status-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
     .status-dot.active { background: #22c55e; }
     .status-dot.recruiting { background: #3b82f6; }
     .status-dot.draft { background: #6b7280; }
-    .research-nav-sub { display: none; padding-left: 20px; margin-top: 4px; border-left: 2px solid #333; margin-left: 18px; }
+    .research-nav-sub {
+      display: none; padding-left: 20px; margin-top: 4px;
+      border-left: 2px solid rgba(255,255,255,0.1); margin-left: 18px;
+    }
     .research-nav-item.expanded .research-nav-sub { display: block; }
-    .research-nav-item.collapsed .research-nav-sub { display: none; }
-    .nav-sub-item { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 6px; color: #777; font-size: 12px; cursor: pointer; transition: all 0.15s; text-decoration: none; margin-bottom: 2px; }
-    .nav-sub-item:hover { background: #252525; color: #ccc; }
-    .nav-sub-item.active { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border-left: 2px solid #3b82f6; margin-left: -2px; padding-left: 14px; }
+    .nav-sub-item {
+      display: flex; align-items: center; gap: 8px;
+      padding: 8px 12px; border-radius: 6px; color: #94a3b8;
+      font-size: 12px; cursor: pointer; transition: all 0.15s;
+      text-decoration: none; margin-bottom: 2px;
+    }
+    .nav-sub-item:hover { background: rgba(255,255,255,0.05); color: #e2e8f0; }
+    .nav-sub-item.active {
+      background: rgba(59, 130, 246, 0.15); color: #60a5fa;
+      border-left: 2px solid #3b82f6; margin-left: -2px; padding-left: 14px;
+    }
     .nav-sub-item .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; opacity: 0.5; }
     .nav-sub-item.active .dot { background: #3b82f6; opacity: 1; }
+    .sidebar-footer {
+      margin-top: auto; padding: 16px; border-top: 1px solid rgba(255,255,255,0.05);
+    }
+    .user-info-sidebar { display: flex; align-items: center; gap: 12px; padding: 8px; }
+    .user-avatar-sidebar {
+      width: 36px; height: 36px;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-size: 14px; color: white;
+    }
+    .user-name-sidebar { font-size: 14px; color: #e2e8f0; }
+    .user-org-sidebar { font-size: 12px; color: #64748b; }
 
-    /* ===== 메인 ===== */
+    /* ===== MAIN ===== */
     .main { flex: 1; overflow-y: auto; }
-    .header-bar { background: white; padding: 16px 24px; border-bottom: 1px solid #e5e7eb; font-size: 14px; color: #6b7280; }
-    .content { padding: 24px; max-width: 1200px; }
+    .content { padding: 24px; max-width: 1100px; }
 
     .breadcrumb { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; font-size: 14px; color: #6b7280; }
     .breadcrumb a { color: #3b82f6; text-decoration: none; }
 
     .title-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 24px; margin-bottom: 20px; }
     .title-block { flex: 1; min-width: 0; }
-    .page-title { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
-    .page-sub { color: #6b7280; font-size: 14px; margin-bottom: 0; }
+    .page-title { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+    .page-sub { color: #6b7280; font-size: 13px; }
 
-    /* 프로젝트 지갑 */
-    .wallet-card { background: linear-gradient(135deg, #0f172a, #1e293b); color: white; border-radius: 12px; padding: 12px 16px; min-width: 280px; }
+    /* 프로젝트 지갑 (compact) */
+    .wallet-card {
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      color: white; border-radius: 12px; padding: 12px 16px; min-width: 260px;
+    }
 
     /* 탭 */
     .tabs { display: flex; gap: 0; border-bottom: 2px solid #e5e7eb; margin-bottom: 20px; }
-    .tab { padding: 12px 24px; font-size: 14px; color: #6b7280; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px; text-decoration: none; font-weight: 500; }
+    .tab {
+      padding: 12px 24px; font-size: 14px; color: #6b7280; cursor: pointer;
+      border-bottom: 2px solid transparent; margin-bottom: -2px;
+      text-decoration: none; font-weight: 500;
+    }
     .tab.active { color: #3b82f6; border-bottom-color: #3b82f6; }
     .tab:hover { color: #374151; }
 
-    /* ===== 뷰 모드 토글 ===== */
-    .view-mode-row { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
-    .view-toggle { display: flex; border: 2px solid #8b5cf6; border-radius: 8px; overflow: hidden; }
-    .view-btn { padding: 10px 22px; font-size: 13px; background: white; border: none; cursor: pointer; font-weight: 600; color: #6b7280; transition: all 0.15s; }
-    .view-btn.active { background: #8b5cf6; color: white; }
-    .view-btn:hover:not(.active) { background: #f5f3ff; }
-    .rct-info { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: #7c3aed; background: #f5f3ff; border: 1px solid #ddd6fe; border-radius: 8px; padding: 8px 14px; }
+    /* ===== Phase 타임라인 ===== */
+    .phase-timeline {
+      background: white; border: 1px solid #e5e7eb; border-radius: 12px;
+      padding: 16px 20px; margin-bottom: 20px;
+    }
+    .phase-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    .phase-label { font-size: 13px; font-weight: 600; color: #374151; }
+    .phase-current { font-size: 12px; color: #8b5cf6; font-weight: 600; }
+    .phase-bar { display: flex; height: 32px; border-radius: 8px; overflow: hidden; background: #f3f4f6; }
+    .phase-segment {
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 600; color: white; position: relative;
+    }
+    .phase-segment.baseline { background: #94a3b8; }
+    .phase-segment.treatment { background: #3b82f6; }
+    .phase-segment.future { background: #e5e7eb; color: #9ca3af; }
+    .phase-marker {
+      position: absolute; top: -6px; right: -1px;
+      width: 3px; height: 44px; background: #8b5cf6; border-radius: 2px;
+    }
+    .phase-labels { display: flex; margin-top: 6px; font-size: 10px; color: #9ca3af; }
+    .phase-labels span { display: flex; align-items: center; gap: 4px; }
+    .phase-labels span::before {
+      content: ''; display: inline-block; width: 8px; height: 8px; border-radius: 2px;
+    }
 
     /* ===== KPI 카드 ===== */
-    .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
-    .kpi-card { background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 20px; }
-    .kpi-card .label { font-size: 13px; color: #6b7280; margin-bottom: 8px; }
-    .kpi-card .value { font-size: 28px; font-weight: 700; margin-bottom: 4px; }
-    .kpi-card .sub { font-size: 12px; color: #9ca3af; }
-    .kpi-card .change { font-size: 12px; }
-    .kpi-card .change.up { color: #22c55e; }
-    .kpi-card .change.down { color: #ef4444; }
+    .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 20px; }
+    .kpi-card {
+      background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 16px 20px;
+    }
+    .kpi-card .kpi-label { font-size: 12px; color: #6b7280; margin-bottom: 6px; }
+    .kpi-card .kpi-value { font-size: 26px; font-weight: 700; margin-bottom: 2px; }
+    .kpi-card .kpi-sub { font-size: 11px; color: #9ca3af; }
+    .kpi-card .kpi-change { font-size: 11px; margin-top: 4px; }
+    .kpi-card .kpi-change.good { color: #16a34a; }
+    .kpi-card .kpi-change.warn { color: #d97706; }
+    .kpi-card .kpi-change.bad { color: #dc2626; }
 
-    /* ===== 군 비교 KPI ===== */
-    .group-compare { display: grid; grid-template-columns: 1fr auto 1fr; gap: 0; margin-bottom: 24px; align-items: stretch; }
-    .group-card { background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 20px; }
-    .group-card.experimental { border-top: 3px solid #3b82f6; }
-    .group-card.control { border-top: 3px solid #f472b6; }
-    .group-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
-    .group-name { font-size: 15px; font-weight: 700; }
-    .group-name.blue { color: #1d4ed8; }
-    .group-name.pink { color: #be185d; }
-    .group-n { font-size: 12px; color: #6b7280; background: #f3f4f6; padding: 2px 10px; border-radius: 12px; }
-    .group-metric { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f1f5f9; }
-    .group-metric:last-child { border-bottom: none; }
-    .group-metric .metric-label { font-size: 13px; color: #6b7280; }
-    .group-metric .metric-value { font-size: 18px; font-weight: 700; font-family: 'SF Mono', Monaco, monospace; }
-    .group-metric .metric-pm { font-size: 12px; color: #9ca3af; font-weight: 400; }
-    .group-metric .metric-delta { font-size: 12px; margin-top: 2px; }
-    .group-metric .metric-delta.good { color: #059669; }
-    .group-metric .metric-delta.bad { color: #dc2626; }
-    .group-metric .metric-delta.flat { color: #6b7280; }
+    /* ===== 군간 변화값 테이블 ===== */
+    .compare-section {
+      background: white; border: 1px solid #e5e7eb; border-radius: 12px;
+      padding: 20px; margin-bottom: 20px;
+    }
+    .compare-section h3 { font-size: 15px; font-weight: 600; margin-bottom: 14px; }
+    .compare-table { width: 100%; border-collapse: collapse; }
+    .compare-table th {
+      text-align: left; font-size: 12px; color: #6b7280; font-weight: 600;
+      padding: 10px 12px; border-bottom: 2px solid #e5e7eb; background: #f9fafb;
+    }
+    .compare-table th:first-child { border-radius: 8px 0 0 0; }
+    .compare-table th:last-child { border-radius: 0 8px 0 0; }
+    .compare-table td {
+      padding: 10px 12px; font-size: 13px; border-bottom: 1px solid #f1f5f9;
+    }
+    .compare-table td:first-child { font-weight: 600; color: #374151; }
+    .compare-table .exp-val { color: #1d4ed8; font-weight: 600; font-family: 'SF Mono', Monaco, monospace; }
+    .compare-table .ctrl-val { color: #be185d; font-weight: 600; font-family: 'SF Mono', Monaco, monospace; }
+    .compare-table .diff-val { font-weight: 700; font-family: 'SF Mono', Monaco, monospace; }
+    .compare-table .diff-val.good { color: #16a34a; }
+    .compare-table .p-badge {
+      display: inline-block; padding: 2px 8px; border-radius: 6px;
+      font-size: 11px; font-weight: 600; font-family: 'SF Mono', Monaco, monospace;
+    }
+    .compare-table .p-badge.sig { background: #dcfce7; color: #166534; }
+    .compare-table .p-badge.high-sig { background: #bbf7d0; color: #14532d; }
+    .compare-table .p-badge.ns { background: #f3f4f6; color: #6b7280; }
 
-    /* p-value 중앙 */
-    .pvalue-column { display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 12px 16px; gap: 6px; min-width: 120px; }
-    .pvalue-badge { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; font-family: 'SF Mono', Monaco, monospace; white-space: nowrap; }
-    .pvalue-badge.sig { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
-    .pvalue-badge.high-sig { background: #dcfce7; color: #14532d; border: 1px solid #86efac; }
-    .pvalue-badge.ns { background: #f3f4f6; color: #6b7280; border: 1px solid #e5e7eb; }
-    .pvalue-label { font-size: 10px; color: #9ca3af; text-align: center; }
-
-    /* ===== 차트 카드 ===== */
-    .chart-card { background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 20px; margin-bottom: 24px; }
-    .chart-tabs { display: flex; gap: 8px; margin-bottom: 16px; border-bottom: 2px solid #e5e7eb; padding-bottom: 12px; }
-    .chart-tab { padding: 10px 20px; border: 1px solid #d1d5db; background: white; color: #6b7280; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s; }
-    .chart-tab.active { background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; border-color: #3b82f6; font-weight: 600; }
-    .chart-tab:hover:not(.active) { background: #f9fafb; border-color: #9ca3af; }
-    .period-filters { display: flex; gap: 6px; align-items: center; margin-left: auto; }
-    .period-filter { padding: 6px 12px; border: 1px solid #d1d5db; background: white; color: #6b7280; border-radius: 6px; font-size: 11px; cursor: pointer; }
-    .period-filter.active { border-color: #3b82f6; background: #3b82f6; color: white; }
-
-    /* ===== SVG 차트 영역 ===== */
-    .chart-area { width: 100%; overflow: hidden; }
-
-    /* ===== 가설 검증 섹션 ===== */
-    .hypothesis-section { background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 20px; margin-bottom: 24px; }
-    .hypothesis-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
-    .hypothesis-text { background: #f5f3ff; border-left: 4px solid #8b5cf6; padding: 10px 14px; font-size: 13px; color: #4c1d95; flex: 1; border-radius: 0 8px 8px 0; }
-    .match-badge { background: linear-gradient(135deg, #22c55e, #16a34a); color: white; padding: 6px 16px; border-radius: 20px; font-size: 12px; font-weight: 700; white-space: nowrap; }
-    .corr-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-    .corr-card { text-align: center; padding: 14px; background: #f8fafc; border-radius: 10px; border: 1px solid #e5e7eb; }
-    .corr-card .corr-value { font-size: 22px; font-weight: 700; font-family: 'SF Mono', Monaco, monospace; }
-    .corr-card .corr-label { font-size: 11px; color: #6b7280; margin-top: 4px; }
-    .corr-card.green { background: #f0fdf4; border-color: #bbf7d0; }
-    .corr-card.green .corr-value { color: #16a34a; }
-    .corr-card.blue { background: #eff6ff; border-color: #bfdbfe; }
-    .corr-card.blue .corr-value { color: #2563eb; }
-    .corr-card.purple { background: #faf5ff; border-color: #e9d5ff; }
-    .corr-card.purple .corr-value { color: #9333ea; }
-
-    /* ===== 참여/예산 그리드 ===== */
-    .bottom-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
-    .bottom-card { background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 20px; }
-    .bottom-card h3 { font-size: 15px; font-weight: 600; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
-
-    /* 참여 프로그레스 */
-    .participation-bar { height: 12px; background: #f3f4f6; border-radius: 6px; overflow: hidden; margin-bottom: 8px; }
-    .participation-fill { height: 100%; border-radius: 6px; transition: width 0.3s; }
-    .participation-labels { display: flex; justify-content: space-between; font-size: 12px; color: #6b7280; }
-
-    /* 예산 아이템 */
-    .budget-items { display: flex; flex-direction: column; gap: 12px; }
-    .budget-item { display: flex; align-items: center; gap: 12px; }
-    .budget-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
-    .budget-label { font-size: 13px; color: #374151; flex: 1; }
-    .budget-value { font-size: 14px; font-weight: 600; font-family: 'SF Mono', Monaco, monospace; }
+    /* ===== 수집·예산 통합 ===== */
+    .ops-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+    .ops-card {
+      background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 20px;
+    }
+    .ops-card h3 { font-size: 14px; font-weight: 600; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+    .ops-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 8px 0; border-bottom: 1px solid #f1f5f9; font-size: 13px;
+    }
+    .ops-row:last-child { border-bottom: none; }
+    .ops-row .ops-label { color: #6b7280; }
+    .ops-row .ops-val { font-weight: 600; font-family: 'SF Mono', Monaco, monospace; }
+    .ops-bar {
+      height: 8px; background: #f3f4f6; border-radius: 4px; overflow: hidden;
+      margin: 8px 0; display: flex;
+    }
+    .ops-bar-fill { height: 100%; transition: width 0.3s; }
+    .ops-summary { display: flex; justify-content: space-between; font-size: 10px; color: #9ca3af; }
 
     /* ===== 디자이너 노트 ===== */
     .designer-notes { margin-top: 32px; }
-    .designer-notes summary { cursor: pointer; font-size: 14px; font-weight: 600; color: #6b7280; padding: 12px 16px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; }
-    .designer-notes summary:hover { background: #f3f4f6; }
-    .notes-content { margin-top: 12px; }
-    .note-card { border-radius: 12px; padding: 20px; margin-bottom: 12px; }
-    .note-card.green { background: linear-gradient(135deg, #ecfdf5, #d1fae5); border: 2px solid #10b981; }
-    .note-card.purple { background: linear-gradient(135deg, #f5f3ff, #ede9fe); border: 2px solid #8b5cf6; }
-    .note-card h3 { margin-bottom: 12px; font-size: 14px; }
-    .note-card .note-text { font-size: 12px; color: #374151; line-height: 1.8; }
-    .note-card code { background: #0f172a; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0; font-size: 11px; font-family: 'SF Mono', Monaco, monospace; }
+    .designer-notes summary {
+      cursor: pointer; font-size: 14px; font-weight: 600; color: #6b7280;
+      padding: 12px 16px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px;
+    }
+    .notes-content { margin-top: 12px; padding: 20px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 12px; font-size: 12px; line-height: 1.8; color: #374151; }
+    .notes-content h4 { font-size: 13px; margin: 16px 0 8px; color: #1f2937; }
+    .notes-content h4:first-child { margin-top: 0; }
+    .notes-content code {
+      background: #0f172a; color: #a5b4fc; padding: 8px 12px; border-radius: 6px;
+      display: block; margin: 8px 0; font-size: 11px; font-family: 'SF Mono', Monaco, monospace;
+      white-space: pre; overflow-x: auto;
+    }
 
-    .step-nav { display: flex; gap: 10px; margin-top: 24px; flex-wrap: wrap; }
+    .step-nav { display: flex; gap: 10px; margin-top: 24px; }
     .step-nav a { padding: 8px 16px; background: #eee; border-radius: 6px; text-decoration: none; color: #333; font-size: 14px; }
     .step-nav a:hover { background: #ddd; }
 
-    /* ===== 반응형 ===== */
-    @media (max-width: 1200px) {
-      .group-compare { grid-template-columns: 1fr; gap: 12px; }
-      .pvalue-column { flex-direction: row; flex-wrap: wrap; justify-content: center; }
-      .bottom-grid { grid-template-columns: 1fr; }
+    @media (max-width: 1000px) {
       .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+      .ops-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
   <div class="layout">
-    <!-- ===== 사이드바 ===== -->
+
+    <!-- ===== SIDEBAR ===== -->
     <div class="sidebar">
-      <div class="logo" style="display: flex; align-items: center; gap: 10px;">
-        <div style="width: 32px; height: 32px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px;">U</div>
+      <div class="logo">
+        <div class="logo-icon">U</div>
         UniQdata
       </div>
+
       <div class="nav-section">
-        <a href="list.html" class="nav-item"><span class="icon">📋</span> 연구 목록</a>
-        <a href="create.html" class="nav-item"><span class="icon">➕</span> 새 연구</a>
-        <a href="irb-submission.html" class="nav-item"><span class="icon">📝</span> IRB 심의</a>
-        <a href="irb-status.html" class="nav-item"><span class="icon">📊</span> IRB 현황</a>
+        <a href="list.html" class="nav-item">
+          <span class="icon">&#x1F3E0;</span> 연구 허브
+        </a>
       </div>
 
-      <!-- 내 연구들 -->
-      <div class="nav-section" style="flex: 1; overflow-y: auto; padding-top: 8px; border-top: 1px solid #2a2a2a;">
-        <div style="font-size: 10px; color: #64748b; padding: 6px 12px; text-transform: uppercase; letter-spacing: 0.5px;">내 연구 <span style="background: #3b82f6; color: white; padding: 1px 6px; border-radius: 8px; font-size: 9px; margin-left: 4px;">3</span></div>
+      <div class="nav-section">
+        <div class="nav-section-title">연구</div>
+        <a href="create.html" class="nav-item">
+          <span class="icon">&#x2795;</span> 새 연구
+        </a>
+      </div>
 
-        <!-- 당뇨 혈당 변동 연구 — expanded, active -->
+      <div class="nav-section" style="flex:1; overflow-y:auto;">
+        <div class="nav-section-title" style="display:flex; align-items:center; justify-content:space-between;">
+          내 연구
+          <span style="background:#3b82f6; color:white; font-size:11px; padding:2px 8px; border-radius:10px; font-weight:600;">3</span>
+        </div>
+
         <div class="research-nav-item expanded">
-          <div class="research-nav-header"><span style="font-size:13px">📁</span><span class="research-title">당뇨 혈당 변동 연구</span><span class="status-dot active"></span></div>
+          <div class="research-nav-header">
+            <span style="font-size:14px;">&#x1F4C1;</span>
+            <span class="research-title">위고비 대사개선 연구</span>
+            <span class="status-dot active"></span>
+          </div>
           <div class="research-nav-sub">
             <a href="data-overview.html" class="nav-sub-item active"><span class="dot"></span> 개요</a>
             <a href="data-table.html" class="nav-sub-item"><span class="dot"></span> 테이블</a>
-            <a href="#" class="nav-sub-item" style="color: #a78bfa;"><span class="dot"></span> AI 허브</a>
+            <a href="analysis-discovery.html" class="nav-sub-item"><span class="dot"></span> AI 허브</a>
           </div>
         </div>
 
-        <!-- 노인 수면 패턴 — collapsed -->
         <div class="research-nav-item collapsed">
-          <div class="research-nav-header"><span style="font-size:13px">📁</span><span class="research-title">노인 수면 패턴</span><span class="status-dot recruiting"></span></div>
+          <div class="research-nav-header">
+            <span style="font-size:14px;">&#x1F4C1;</span>
+            <span class="research-title">노인 수면 패턴</span>
+            <span class="status-dot recruiting"></span>
+          </div>
           <div class="research-nav-sub">
             <a href="#" class="nav-sub-item"><span class="dot"></span> 개요</a>
             <a href="#" class="nav-sub-item"><span class="dot"></span> 테이블</a>
@@ -212,65 +286,84 @@
           </div>
         </div>
 
-        <!-- ADHD 생활습관 — collapsed, draft -->
         <div class="research-nav-item collapsed">
-          <div class="research-nav-header"><span style="font-size:13px">📄</span><span class="research-title">ADHD 생활습관</span><span class="status-dot draft"></span></div>
+          <div class="research-nav-header">
+            <span style="font-size:14px;">&#x1F4C4;</span>
+            <span class="research-title">ADHD 생활습관</span>
+            <span class="status-dot draft"></span>
+          </div>
           <div class="research-nav-sub">
             <a href="#" class="nav-sub-item"><span class="dot"></span> 개요</a>
             <a href="#" class="nav-sub-item"><span class="dot"></span> 테이블</a>
             <a href="#" class="nav-sub-item"><span class="dot"></span> AI 허브</a>
           </div>
         </div>
+
+        <div style="margin-top:16px; padding-top:12px; border-top:1px solid #1e293b;">
+          <div style="display:flex; align-items:center; justify-content:space-between; padding:0 12px; margin-bottom:8px;">
+            <span style="font-size:11px; font-weight:600; color:#64748b; text-transform:uppercase; letter-spacing:0.5px;">임시저장</span>
+            <span style="background:#334155; color:#94a3b8; font-size:10px; padding:2px 6px; border-radius:8px;">2</span>
+          </div>
+          <a href="#" style="display:flex; align-items:center; gap:10px; padding:8px 12px; border-radius:8px; text-decoration:none; margin-bottom:4px; background:rgba(251,191,36,0.08);">
+            <span style="width:6px; height:6px; background:#fbbf24; border-radius:50%; flex-shrink:0;"></span>
+            <div style="flex:1; min-width:0;">
+              <div style="font-size:12px; color:#e2e8f0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">소아 비만 개입 연구</div>
+              <div style="font-size:10px; color:#64748b; margin-top:2px;">Step 3 &middot; 2일 전</div>
+            </div>
+          </a>
+          <a href="#" style="display:flex; align-items:center; gap:10px; padding:8px 12px; border-radius:8px; text-decoration:none;">
+            <span style="width:6px; height:6px; background:#64748b; border-radius:50%; flex-shrink:0;"></span>
+            <div style="flex:1; min-width:0;">
+              <div style="font-size:12px; color:#94a3b8; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">직장인 스트레스 코르티솔</div>
+              <div style="font-size:10px; color:#64748b; margin-top:2px;">Step 1 &middot; 5일 전</div>
+            </div>
+          </a>
+        </div>
       </div>
 
-      <div class="nav-section">
-        <a href="../team.html" class="nav-item"><span class="icon">👥</span> 팀</a>
-        <a href="../billing.html" class="nav-item"><span class="icon">💳</span> 결제</a>
-        <a href="#" class="nav-item"><span class="icon">⚙️</span> 설정</a>
-      </div>
-
-      <!-- 유저 프로필 -->
-      <div style="padding: 12px; border-top: 1px solid #2a2a2a;">
-        <div style="display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: 8px;">
-          <div style="width: 32px; height: 32px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; color: white;">김</div>
-          <div><div style="font-size: 13px; color: #e2e8f0;">김연구</div><div style="font-size: 11px; color: #64748b;">서울대학교병원</div></div>
+      <div class="sidebar-footer">
+        <div class="user-info-sidebar">
+          <div class="user-avatar-sidebar">김</div>
+          <div>
+            <div class="user-name-sidebar">김연구</div>
+            <div class="user-org-sidebar">서울대학교병원</div>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- ===== 메인 영역 ===== -->
+    <!-- ===== MAIN ===== -->
     <div class="main">
-      <div class="header-bar">Enterprise Portal</div>
-
       <div class="content">
-        <!-- 브레드크럼 -->
+
         <div class="breadcrumb">
-          <a href="list.html">연구 관리</a> / <span>당뇨 혈당 변동 연구</span>
+          <a href="list.html">연구 관리</a> / <span>위고비 대사개선 연구</span>
         </div>
 
         <!-- 제목 + 프로젝트 지갑 -->
         <div class="title-row">
           <div class="title-block">
-            <div class="page-title">저탄수화물 식단이 2형 당뇨 혈당 변동성에 미치는 영향</div>
-            <div class="page-sub">RCT · 실험군 50 / 대조군 50 · 8주 진행 · Week 6/8</div>
+            <div class="page-title">위고비(세마글루타이드 2.4mg) 대사개선 연구</div>
+            <div class="page-sub">RCT · 실험군 40 / 대조군 40 · 12주 · 현재 W6 (투약기 4주차)</div>
           </div>
           <div class="wallet-card">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-              <span style="font-size: 12px; color: #94a3b8;">💳 프로젝트 지갑</span>
-              <span style="font-size: 10px; color: #22c55e; display: flex; align-items: center; gap: 4px;"><span style="width: 6px; height: 6px; background: #22c55e; border-radius: 50%;"></span>연결됨</span>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+              <span style="font-size:11px; color:#94a3b8;">프로젝트 지갑</span>
+              <span style="font-size:10px; color:#22c55e; display:flex; align-items:center; gap:4px;">
+                <span style="width:5px; height:5px; background:#22c55e; border-radius:50%;"></span>연결됨
+              </span>
             </div>
-            <div style="display: flex; gap: 16px; align-items: baseline;">
+            <div style="display:flex; gap:14px; align-items:baseline;">
               <div>
-                <div style="font-size: 20px; font-weight: 700;">25,000 XRP</div>
-                <div style="font-size: 10px; color: #64748b;">총 예산 ≈ $12,500</div>
+                <div style="font-size:18px; font-weight:700;">25,000 <span style="font-size:11px; font-weight:400; color:#94a3b8;">XRP</span></div>
               </div>
-              <div style="border-left: 1px solid #334155; padding-left: 12px;">
-                <div style="font-size: 14px; font-weight: 600; color: #22c55e;">6,500</div>
-                <div style="font-size: 10px; color: #64748b;">지급완료</div>
+              <div style="border-left:1px solid #334155; padding-left:12px;">
+                <div style="font-size:13px; font-weight:600; color:#22c55e;">6,500</div>
+                <div style="font-size:9px; color:#64748b;">지급완료</div>
               </div>
               <div>
-                <div style="font-size: 14px; font-weight: 600; color: #f59e0b;">18,500</div>
-                <div style="font-size: 10px; color: #64748b;">잔여</div>
+                <div style="font-size:13px; font-weight:600; color:#f59e0b;">18,500</div>
+                <div style="font-size:9px; color:#64748b;">잔여</div>
               </div>
             </div>
           </div>
@@ -280,830 +373,283 @@
         <div class="tabs">
           <a href="data-overview.html" class="tab active">개요</a>
           <a href="data-table.html" class="tab">테이블</a>
-          <a href="#" class="tab">AI 허브</a>
+          <a href="analysis-discovery.html" class="tab">AI 허브</a>
         </div>
 
-        <!-- ===== 뷰 모드 토글 ===== -->
-        <div class="view-mode-row">
-          <div class="view-toggle">
-            <button class="view-btn" onclick="switchView('individual')">👤 개인</button>
-            <button class="view-btn active" onclick="switchView('group')">⚔ 군 비교</button>
+        <!-- ===== Phase 타임라인 ===== -->
+        <div class="phase-timeline">
+          <div class="phase-header">
+            <span class="phase-label">연구 Phase 진행</span>
+            <span class="phase-current">현재: Phase 2 투약기 · W6/12</span>
           </div>
-          <div class="rct-info">ⓘ RCT 연구 — 군 비교 뷰가 자동 적용됨</div>
+          <div class="phase-bar">
+            <div class="phase-segment baseline" style="width:16.7%;">관찰기 (W0-W2)</div>
+            <div class="phase-segment treatment" style="width:33.3%; position:relative;">
+              투약기 진행중
+              <div class="phase-marker"></div>
+            </div>
+            <div class="phase-segment future" style="width:50%;">W7-W12 (남은 기간)</div>
+          </div>
+          <div class="phase-labels" style="gap:16px; margin-top:8px;">
+            <span style="font-size:11px; color:#94a3b8;">
+              <span style="display:inline-block; width:8px; height:8px; background:#94a3b8; border-radius:2px; margin-right:4px;"></span>
+              Phase 1: 관찰기 (양군 무투약, baseline 수집)
+            </span>
+            <span style="font-size:11px; color:#3b82f6;">
+              <span style="display:inline-block; width:8px; height:8px; background:#3b82f6; border-radius:2px; margin-right:4px;"></span>
+              Phase 2: 투약기 (실험군=위고비, 대조군=위약)
+            </span>
+          </div>
         </div>
 
-        <!-- ============================================================ -->
-        <!-- ===== 군 비교 모드 (DEFAULT) ===== -->
-        <!-- ============================================================ -->
-        <div id="view-group">
+        <!-- ===== KPI 카드 4개 ===== -->
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-label">참여자</div>
+            <div class="kpi-value">74 <span style="font-size:14px; color:#9ca3af; font-weight:400;">/ 80명</span></div>
+            <div class="kpi-sub">실험군 38 · 대조군 36</div>
+            <div class="kpi-change good">탈락 6명 (7.5%)</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">데이터 수집률</div>
+            <div class="kpi-value" style="color:#3b82f6;">94<span style="font-size:14px; color:#9ca3af; font-weight:400;">%</span></div>
+            <div class="kpi-sub">최근 7일 기준</div>
+            <div class="kpi-change good">+2.1% vs 지난주</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">예산 소진</div>
+            <div class="kpi-value">26<span style="font-size:14px; color:#9ca3af; font-weight:400;">%</span></div>
+            <div class="kpi-sub">6,500 / 25,000 XRP</div>
+            <div class="kpi-change good">예산 내 정상 집행</div>
+          </div>
+          <div class="kpi-card" style="border-left:3px solid #f59e0b;">
+            <div class="kpi-label">주의 알림</div>
+            <div class="kpi-value" style="color:#d97706;">3<span style="font-size:14px; color:#9ca3af; font-weight:400;">건</span></div>
+            <div class="kpi-sub">미제출 2 · 이상치 1</div>
+            <div class="kpi-change warn">조치 필요</div>
+          </div>
+        </div>
 
-          <!-- (a) Side-by-side KPI Cards + p-values -->
-          <div class="group-compare">
-            <!-- 실험군 -->
-            <div class="group-card experimental">
-              <div class="group-header">
-                <span class="group-name blue">🔵 실험군 (저탄수화물)</span>
-                <span class="group-n">n=50</span>
-              </div>
-              <div class="group-metric">
-                <span class="metric-label">MAGE</span>
-                <div style="text-align: right;">
-                  <div class="metric-value" style="color: #1d4ed8;">42.3 <span class="metric-pm">±8.1</span></div>
-                  <div class="metric-delta good">Δ −15.9 from BL</div>
-                </div>
-              </div>
-              <div class="group-metric">
-                <span class="metric-label">CV%</span>
-                <div style="text-align: right;">
-                  <div class="metric-value" style="color: #1d4ed8;">28.1%</div>
-                  <div class="metric-delta good">Δ −6.3% from BL</div>
-                </div>
-              </div>
-              <div class="group-metric">
-                <span class="metric-label">TIR (70-180)</span>
-                <div style="text-align: right;">
-                  <div class="metric-value" style="color: #16a34a;">78.3%</div>
-                  <div class="metric-delta good">Δ +12.1% from BL</div>
-                </div>
-              </div>
-              <div class="group-metric">
-                <span class="metric-label">순응도</span>
-                <div style="text-align: right;">
-                  <div class="metric-value">91%</div>
-                  <div class="metric-delta flat">양호</div>
-                </div>
-              </div>
+        <!-- ===== 군간 핵심 변화값 테이블 ===== -->
+        <div class="compare-section">
+          <h3>군간 핵심 변화값 (Baseline 대비, W6 기준)</h3>
+          <table class="compare-table">
+            <thead>
+              <tr>
+                <th style="width:18%;">지표</th>
+                <th style="width:22%;">실험군 (n=38)</th>
+                <th style="width:22%;">대조군 (n=36)</th>
+                <th style="width:18%;">군간 차이</th>
+                <th style="width:20%;">p값</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Δ 체중 (kg)</td>
+                <td class="exp-val">−6.8 ±2.1</td>
+                <td class="ctrl-val">−0.3 ±1.8</td>
+                <td class="diff-val good">6.5</td>
+                <td><span class="p-badge high-sig">p=0.001***</span></td>
+              </tr>
+              <tr>
+                <td>Δ HbA1c (%)</td>
+                <td class="exp-val">−0.9 ±0.4</td>
+                <td class="ctrl-val">−0.1 ±0.3</td>
+                <td class="diff-val good">0.8</td>
+                <td><span class="p-badge high-sig">p=0.003**</span></td>
+              </tr>
+              <tr>
+                <td>Δ SBP (mmHg)</td>
+                <td class="exp-val">−8.2 ±4.3</td>
+                <td class="ctrl-val">+1.1 ±3.9</td>
+                <td class="diff-val good">9.3</td>
+                <td><span class="p-badge sig">p=0.012*</span></td>
+              </tr>
+              <tr>
+                <td>Δ 운동시간 (min/일)</td>
+                <td class="exp-val">+18 ±12</td>
+                <td class="ctrl-val">+2 ±8</td>
+                <td class="diff-val good">16</td>
+                <td><span class="p-badge sig">p=0.024*</span></td>
+              </tr>
+              <tr>
+                <td>Δ BMI</td>
+                <td class="exp-val">−2.3 ±0.9</td>
+                <td class="ctrl-val">−0.1 ±0.6</td>
+                <td class="diff-val good">2.2</td>
+                <td><span class="p-badge high-sig">p=0.002**</span></td>
+              </tr>
+              <tr>
+                <td>투약 순응도 (%)</td>
+                <td class="exp-val">91%</td>
+                <td class="ctrl-val">87%</td>
+                <td class="diff-val" style="color:#6b7280;">4</td>
+                <td><span class="p-badge ns">p=0.342</span></td>
+              </tr>
+            </tbody>
+          </table>
+          <div style="margin-top:10px; font-size:11px; color:#9ca3af;">
+            * p&lt;0.05 · ** p&lt;0.01 · *** p&lt;0.001 · 모든 Δ는 Phase 1 관찰기 종료 시점(W2) 대비
+          </div>
+        </div>
+
+        <!-- ===== 수집·예산 통합 ===== -->
+        <div class="ops-grid">
+          <!-- 데이터 수집 현황 -->
+          <div class="ops-card">
+            <h3>데이터 수집 현황</h3>
+            <div class="ops-bar">
+              <div class="ops-bar-fill" style="width:94%; background:linear-gradient(90deg, #3b82f6, #60a5fa);"></div>
+            </div>
+            <div class="ops-summary">
+              <span>전체 수집률 94%</span>
+              <span>목표 90%</span>
             </div>
 
-            <!-- p-value 중앙 칼럼 -->
-            <div class="pvalue-column">
-              <div><div class="pvalue-label">MAGE</div><div class="pvalue-badge high-sig">p=0.003**</div></div>
-              <div><div class="pvalue-label">CV%</div><div class="pvalue-badge sig">p=0.012*</div></div>
-              <div><div class="pvalue-label">TIR</div><div class="pvalue-badge high-sig">p=0.001***</div></div>
-              <div><div class="pvalue-label">순응도</div><div class="pvalue-badge ns">p=0.342</div></div>
-            </div>
-
-            <!-- 대조군 -->
-            <div class="group-card control">
-              <div class="group-header">
-                <span class="group-name pink">🔴 대조군 (일반식단)</span>
-                <span class="group-n">n=50</span>
+            <div style="margin-top:14px;">
+              <div class="ops-row">
+                <span class="ops-label">실험군 수집률</span>
+                <span class="ops-val" style="color:#3b82f6;">96%</span>
               </div>
-              <div class="group-metric">
-                <span class="metric-label">MAGE</span>
-                <div style="text-align: right;">
-                  <div class="metric-value" style="color: #be185d;">58.7 <span class="metric-pm">±12.4</span></div>
-                  <div class="metric-delta bad">Δ +1.9 from BL</div>
+              <div class="ops-row">
+                <span class="ops-label">대조군 수집률</span>
+                <span class="ops-val" style="color:#be185d;">92%</span>
+              </div>
+              <div style="margin-top:10px; padding-top:10px; border-top:1px solid #e5e7eb;">
+                <div style="font-size:11px; font-weight:600; color:#6b7280; margin-bottom:6px;">디바이스별 수집률</div>
+                <div class="ops-row">
+                  <span class="ops-label">CGM (FreeStyle Libre 3)</span>
+                  <span class="ops-val" style="color:#22c55e;">97%</span>
+                </div>
+                <div class="ops-row">
+                  <span class="ops-label">체중계 (Withings)</span>
+                  <span class="ops-val" style="color:#22c55e;">95%</span>
+                </div>
+                <div class="ops-row">
+                  <span class="ops-label">혈압계 (Withings BPM)</span>
+                  <span class="ops-val" style="color:#d97706;">91%</span>
+                </div>
+                <div class="ops-row">
+                  <span class="ops-label">웨어러블 (Apple Watch)</span>
+                  <span class="ops-val" style="color:#d97706;">88%</span>
                 </div>
               </div>
-              <div class="group-metric">
-                <span class="metric-label">CV%</span>
-                <div style="text-align: right;">
-                  <div class="metric-value" style="color: #be185d;">35.2%</div>
-                  <div class="metric-delta bad">Δ +0.8% from BL</div>
-                </div>
-              </div>
-              <div class="group-metric">
-                <span class="metric-label">TIR (70-180)</span>
-                <div style="text-align: right;">
-                  <div class="metric-value" style="color: #d97706;">62.1%</div>
-                  <div class="metric-delta flat">Δ −0.5% from BL</div>
-                </div>
-              </div>
-              <div class="group-metric">
-                <span class="metric-label">순응도</span>
-                <div style="text-align: right;">
-                  <div class="metric-value">87%</div>
-                  <div class="metric-delta flat">양호</div>
-                </div>
+              <div style="margin-top:10px; padding:8px 10px; background:#fef3c7; border-radius:6px; font-size:11px; color:#92400e;">
+                미제출 알림: P-007 (혈압 3일), P-024 (체중 5일)
               </div>
             </div>
           </div>
 
-          <!-- (b) 탭 차트 -->
-          <div class="chart-card">
-            <div class="chart-tabs">
-              <button class="chart-tab" onclick="switchChart('collect')">📊 데이터 수집</button>
-              <button class="chart-tab active" onclick="switchChart('hypothesis')">🔬 가설 검증</button>
-              <button class="chart-tab" onclick="switchChart('enrollment')">👥 참여자 등록</button>
-              <button class="chart-tab" onclick="switchChart('budget')">💰 예산 사용</button>
-              <div class="period-filters">
-                <span class="period-filter active">8주</span>
-                <span class="period-filter">4주</span>
-                <span class="period-filter">전체</span>
-              </div>
+          <!-- 예산 현황 -->
+          <div class="ops-card">
+            <h3>예산 현황</h3>
+            <div class="ops-bar">
+              <div class="ops-bar-fill" style="width:13%; background:#3b82f6;"></div>
+              <div class="ops-bar-fill" style="width:13%; background:#f472b6;"></div>
+              <div class="ops-bar-fill" style="width:74%; background:#22c55e;"></div>
+            </div>
+            <div class="ops-summary">
+              <span>지급 26%</span>
+              <span>잔여 74%</span>
             </div>
 
-            <!-- 가설 검증 차트 (군 비교 — 기본) -->
-            <div id="chart-hypothesis" class="chart-content">
-              <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 16px;">
-                <div style="display: flex; align-items: center; gap: 8px;">
-                  <span style="width: 12px; height: 3px; background: #3b82f6; border-radius: 2px;"></span>
-                  <span style="font-size: 12px; color: #6b7280;">실험군 MAGE</span>
+            <div style="margin-top:14px;">
+              <div class="ops-row">
+                <span class="ops-label">총 예산</span>
+                <span class="ops-val">25,000 XRP</span>
+              </div>
+              <div class="ops-row">
+                <span class="ops-label">실험군 지급</span>
+                <span class="ops-val" style="color:#3b82f6;">3,400 XRP</span>
+              </div>
+              <div class="ops-row">
+                <span class="ops-label">대조군 지급</span>
+                <span class="ops-val" style="color:#be185d;">3,100 XRP</span>
+              </div>
+              <div class="ops-row" style="border-top:1px solid #e5e7eb; padding-top:10px;">
+                <span class="ops-label">잔여 예산</span>
+                <span class="ops-val" style="color:#22c55e;">18,500 XRP</span>
+              </div>
+              <div style="margin-top:10px; padding-top:10px; border-top:1px solid #e5e7eb;">
+                <div style="font-size:11px; font-weight:600; color:#6b7280; margin-bottom:6px;">소진 예측</div>
+                <div class="ops-row">
+                  <span class="ops-label">주당 평균 소진</span>
+                  <span class="ops-val" style="color:#f59e0b;">~1,083 XRP</span>
                 </div>
-                <div style="display: flex; align-items: center; gap: 8px;">
-                  <span style="width: 12px; height: 3px; background: #f472b6; border-radius: 2px;"></span>
-                  <span style="font-size: 12px; color: #6b7280;">대조군 MAGE</span>
-                </div>
-                <div style="display: flex; align-items: center; gap: 8px;">
-                  <span style="width: 12px; height: 8px; background: rgba(139,92,246,0.15); border-radius: 2px;"></span>
-                  <span style="font-size: 12px; color: #6b7280;">Δ 차이 영역</span>
-                </div>
-              </div>
-
-              <!-- SVG Line Chart: Cohort Comparison -->
-              <div class="chart-area">
-                <svg viewBox="0 0 800 300" style="width: 100%; height: auto;">
-                  <!-- Grid -->
-                  <defs>
-                    <linearGradient id="deltaGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stop-color="#8b5cf6" stop-opacity="0.2"/>
-                      <stop offset="100%" stop-color="#8b5cf6" stop-opacity="0.05"/>
-                    </linearGradient>
-                  </defs>
-
-                  <!-- Y-axis labels -->
-                  <text x="30" y="30" fill="#9ca3af" font-size="11" text-anchor="end">70</text>
-                  <text x="30" y="80" fill="#9ca3af" font-size="11" text-anchor="end">60</text>
-                  <text x="30" y="130" fill="#9ca3af" font-size="11" text-anchor="end">50</text>
-                  <text x="30" y="180" fill="#9ca3af" font-size="11" text-anchor="end">40</text>
-                  <text x="30" y="230" fill="#9ca3af" font-size="11" text-anchor="end">30</text>
-                  <text x="10" y="150" fill="#9ca3af" font-size="10" text-anchor="middle" transform="rotate(-90, 10, 150)">MAGE (mg/dL)</text>
-
-                  <!-- Grid lines -->
-                  <line x1="45" y1="30" x2="780" y2="30" stroke="#f1f5f9" stroke-width="1"/>
-                  <line x1="45" y1="80" x2="780" y2="80" stroke="#f1f5f9" stroke-width="1"/>
-                  <line x1="45" y1="130" x2="780" y2="130" stroke="#f1f5f9" stroke-width="1"/>
-                  <line x1="45" y1="180" x2="780" y2="180" stroke="#f1f5f9" stroke-width="1"/>
-                  <line x1="45" y1="230" x2="780" y2="230" stroke="#f1f5f9" stroke-width="1"/>
-
-                  <!-- X-axis labels -->
-                  <text x="97" y="270" fill="#9ca3af" font-size="11" text-anchor="middle">W1</text>
-                  <text x="202" y="270" fill="#9ca3af" font-size="11" text-anchor="middle">W2</text>
-                  <text x="307" y="270" fill="#9ca3af" font-size="11" text-anchor="middle">W3</text>
-                  <text x="412" y="270" fill="#9ca3af" font-size="11" text-anchor="middle">W4</text>
-                  <text x="517" y="270" fill="#9ca3af" font-size="11" text-anchor="middle">W5</text>
-                  <text x="622" y="270" fill="#9ca3af" font-size="11" text-anchor="middle">W6</text>
-                  <text x="727" y="270" fill="#9ca3af" font-size="11" text-anchor="middle">W7</text>
-                  <text x="780" y="270" fill="#9ca3af" font-size="11" text-anchor="middle">W8</text>
-
-                  <!-- Baseline reference (Week 0 both ~58) → Y: 58 maps to y=80 -->
-                  <!-- Y mapping: 70→30, 60→80, 50→130, 40→180, 30→230 (10 units = 50px) -->
-
-                  <!-- Delta shaded area between lines -->
-                  <polygon points="
-                    97,75  202,85  307,100  412,120  517,140  622,155  727,165  780,170
-                    780,82  727,80  622,78  517,76  412,75  307,76  202,78  97,77
-                  " fill="url(#deltaGrad)"/>
-
-                  <!-- 대조군 line (flat around 57-59) -->
-                  <polyline points="97,77 202,78 307,76 412,75 517,76 622,78 727,80 780,82"
-                    fill="none" stroke="#f472b6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-                  <!-- 대조군 dots -->
-                  <circle cx="97" cy="77" r="4" fill="#f472b6"/>
-                  <circle cx="202" cy="78" r="4" fill="#f472b6"/>
-                  <circle cx="307" cy="76" r="4" fill="#f472b6"/>
-                  <circle cx="412" cy="75" r="4" fill="#f472b6"/>
-                  <circle cx="517" cy="76" r="4" fill="#f472b6"/>
-                  <circle cx="622" cy="78" r="4" fill="#f472b6"/>
-                  <circle cx="727" cy="80" r="4" fill="#f472b6"/>
-                  <circle cx="780" cy="82" r="4" fill="#f472b6"/>
-
-                  <!-- 실험군 line (downward trend: 58→55→51→46→42→39→37→35 → actually mapped to MAGE) -->
-                  <!-- MAGE values: W1=56, W2=53, W3=50, W4=47, W5=45, W6=43, W7=42.5, W8=42.3 -->
-                  <!-- Y map: 56→100, 53→115, 50→130, 47→145, 45→155, 43→165, 42.5→167, 42.3→168 -->
-                  <polyline points="97,75 202,95 307,115 412,135 517,150 622,160 727,167 780,170"
-                    fill="none" stroke="#3b82f6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-                  <!-- 실험군 dots -->
-                  <circle cx="97" cy="75" r="4" fill="#3b82f6"/>
-                  <circle cx="202" cy="95" r="4" fill="#3b82f6"/>
-                  <circle cx="307" cy="115" r="4" fill="#3b82f6"/>
-                  <circle cx="412" cy="135" r="4" fill="#3b82f6"/>
-                  <circle cx="517" cy="150" r="4" fill="#3b82f6"/>
-                  <circle cx="622" cy="160" r="4" fill="#3b82f6"/>
-                  <circle cx="727" cy="167" r="4" fill="#3b82f6"/>
-                  <circle cx="780" cy="170" r="4" fill="#3b82f6"/>
-
-                  <!-- Data labels at W8 -->
-                  <rect x="785" y="162" width="60" height="18" rx="4" fill="#3b82f6"/>
-                  <text x="815" y="175" fill="white" font-size="10" text-anchor="middle" font-weight="600">42.3</text>
-                  <rect x="785" y="74" width="60" height="18" rx="4" fill="#f472b6"/>
-                  <text x="815" y="87" fill="white" font-size="10" text-anchor="middle" font-weight="600">58.7</text>
-
-                  <!-- Baseline marker -->
-                  <line x1="50" y1="77" x2="92" y2="77" stroke="#9ca3af" stroke-width="1" stroke-dasharray="4,3"/>
-                  <text x="50" y="72" fill="#9ca3af" font-size="9">BL ~58</text>
-
-                  <!-- Current week marker -->
-                  <line x1="622" y1="25" x2="622" y2="250" stroke="#8b5cf6" stroke-width="1" stroke-dasharray="4,3"/>
-                  <text x="622" y="20" fill="#8b5cf6" font-size="9" text-anchor="middle">현재 (W6)</text>
-                </svg>
-              </div>
-
-              <!-- Chart summary -->
-              <div style="display: flex; gap: 16px; margin-top: 16px; padding: 12px; background: #f8fafc; border-radius: 8px;">
-                <div style="flex: 1; text-align: center; padding: 8px; background: #eff6ff; border-radius: 8px;">
-                  <div style="font-size: 20px; font-weight: 700; color: #1d4ed8;">−16.4</div>
-                  <div style="font-size: 10px; color: #6b7280;">실험군 Δ MAGE</div>
-                </div>
-                <div style="flex: 1; text-align: center; padding: 8px; background: #fdf2f8; border-radius: 8px;">
-                  <div style="font-size: 20px; font-weight: 700; color: #be185d;">+1.9</div>
-                  <div style="font-size: 10px; color: #6b7280;">대조군 Δ MAGE</div>
-                </div>
-                <div style="flex: 1; text-align: center; padding: 8px; background: #f0fdf4; border-radius: 8px;">
-                  <div style="font-size: 20px; font-weight: 700; color: #16a34a;">18.3</div>
-                  <div style="font-size: 10px; color: #6b7280;">군간 차이 (W6)</div>
-                </div>
-                <div style="flex: 1; text-align: center; padding: 8px; background: #faf5ff; border-radius: 8px;">
-                  <div style="font-size: 20px; font-weight: 700; color: #7c3aed;">0.003</div>
-                  <div style="font-size: 10px; color: #6b7280;">p-value **</div>
-                </div>
-              </div>
-            </div>
-
-            <!-- 데이터 수집 차트 (숨김) -->
-            <div id="chart-collect" class="chart-content" style="display: none;">
-              <div class="chart-area">
-                <svg viewBox="0 0 800 250" style="width: 100%; height: auto;">
-                  <text x="30" y="30" fill="#9ca3af" font-size="11" text-anchor="end">100%</text>
-                  <text x="30" y="90" fill="#9ca3af" font-size="11" text-anchor="end">80%</text>
-                  <text x="30" y="150" fill="#9ca3af" font-size="11" text-anchor="end">60%</text>
-                  <text x="30" y="210" fill="#9ca3af" font-size="11" text-anchor="end">40%</text>
-                  <line x1="45" y1="30" x2="780" y2="30" stroke="#f1f5f9" stroke-width="1"/>
-                  <line x1="45" y1="90" x2="780" y2="90" stroke="#f1f5f9" stroke-width="1"/>
-                  <line x1="45" y1="150" x2="780" y2="150" stroke="#f1f5f9" stroke-width="1"/>
-                  <!-- 실험군 수집률 -->
-                  <polyline points="97,42 202,38 307,36 412,35 517,34 622,33 727,32 780,33"
-                    fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round"/>
-                  <!-- 대조군 수집률 -->
-                  <polyline points="97,45 202,48 307,50 412,52 517,55 622,52 727,50 780,48"
-                    fill="none" stroke="#f472b6" stroke-width="2" stroke-linecap="round"/>
-                  <!-- X labels -->
-                  <text x="97" y="240" fill="#9ca3af" font-size="11" text-anchor="middle">W1</text>
-                  <text x="202" y="240" fill="#9ca3af" font-size="11" text-anchor="middle">W2</text>
-                  <text x="307" y="240" fill="#9ca3af" font-size="11" text-anchor="middle">W3</text>
-                  <text x="412" y="240" fill="#9ca3af" font-size="11" text-anchor="middle">W4</text>
-                  <text x="517" y="240" fill="#9ca3af" font-size="11" text-anchor="middle">W5</text>
-                  <text x="622" y="240" fill="#9ca3af" font-size="11" text-anchor="middle">W6</text>
-                  <text x="727" y="240" fill="#9ca3af" font-size="11" text-anchor="middle">W7</text>
-                  <text x="780" y="240" fill="#9ca3af" font-size="11" text-anchor="middle">W8</text>
-                  <!-- Target -->
-                  <line x1="45" y1="45" x2="780" y2="45" stroke="#22c55e" stroke-width="1" stroke-dasharray="4,3"/>
-                  <text x="780" y="42" fill="#22c55e" font-size="9" text-anchor="end">목표 95%</text>
-                </svg>
-              </div>
-              <div style="margin-top: 12px; font-size: 12px; color: #6b7280;">
-                평균 수집률 — 실험군: <strong style="color: #3b82f6;">96%</strong> · 대조군: <strong style="color: #f472b6;">92%</strong> · 전체: <strong>94%</strong>
-              </div>
-            </div>
-
-            <!-- 참여자 등록 차트 (숨김) -->
-            <div id="chart-enrollment" class="chart-content" style="display: none;">
-              <div class="chart-area">
-                <svg viewBox="0 0 800 250" style="width: 100%; height: auto;">
-                  <text x="30" y="30" fill="#9ca3af" font-size="11" text-anchor="end">100</text>
-                  <text x="30" y="90" fill="#9ca3af" font-size="11" text-anchor="end">75</text>
-                  <text x="30" y="150" fill="#9ca3af" font-size="11" text-anchor="end">50</text>
-                  <text x="30" y="210" fill="#9ca3af" font-size="11" text-anchor="end">25</text>
-                  <line x1="45" y1="30" x2="780" y2="30" stroke="#f1f5f9" stroke-width="1"/>
-                  <line x1="45" y1="90" x2="780" y2="90" stroke="#f1f5f9" stroke-width="1"/>
-                  <line x1="45" y1="150" x2="780" y2="150" stroke="#f1f5f9" stroke-width="1"/>
-                  <!-- Enrollment curve (S-curve) -->
-                  <polyline points="97,195 202,170 307,130 412,80 517,50 622,40 727,38 780,36"
-                    fill="none" stroke="#8b5cf6" stroke-width="2.5" stroke-linecap="round"/>
-                  <!-- Target line -->
-                  <line x1="45" y1="30" x2="780" y2="30" stroke="#22c55e" stroke-width="1" stroke-dasharray="4,3"/>
-                  <text x="780" y="26" fill="#22c55e" font-size="9" text-anchor="end">목표 100명</text>
-                  <!-- Current marker -->
-                  <line x1="622" y1="25" x2="622" y2="220" stroke="#8b5cf6" stroke-width="1" stroke-dasharray="4,3"/>
-                  <text x="622" y="20" fill="#8b5cf6" font-size="9" text-anchor="middle">현재 87명</text>
-                  <!-- X labels -->
-                  <text x="97" y="240" fill="#9ca3af" font-size="11" text-anchor="middle">W1</text>
-                  <text x="202" y="240" fill="#9ca3af" font-size="11" text-anchor="middle">W2</text>
-                  <text x="307" y="240" fill="#9ca3af" font-size="11" text-anchor="middle">W3</text>
-                  <text x="412" y="240" fill="#9ca3af" font-size="11" text-anchor="middle">W4</text>
-                  <text x="517" y="240" fill="#9ca3af" font-size="11" text-anchor="middle">W5</text>
-                  <text x="622" y="240" fill="#9ca3af" font-size="11" text-anchor="middle">W6</text>
-                  <text x="727" y="240" fill="#9ca3af" font-size="11" text-anchor="middle">W7</text>
-                  <text x="780" y="240" fill="#9ca3af" font-size="11" text-anchor="middle">W8</text>
-                </svg>
-              </div>
-              <div style="margin-top: 12px; font-size: 12px; color: #6b7280;">
-                등록 <strong>87/100명</strong> (87%) · 실험군 44명 · 대조군 43명 · 탈락 8명 · 신규 모집 5명 필요
-              </div>
-            </div>
-
-            <!-- 예산 사용 차트 (숨김) -->
-            <div id="chart-budget" class="chart-content" style="display: none;">
-              <div class="chart-area">
-                <svg viewBox="0 0 800 250" style="width: 100%; height: auto;">
-                  <!-- Stacked bar chart -->
-                  <text x="30" y="30" fill="#9ca3af" font-size="11" text-anchor="end">8K</text>
-                  <text x="30" y="90" fill="#9ca3af" font-size="11" text-anchor="end">6K</text>
-                  <text x="30" y="150" fill="#9ca3af" font-size="11" text-anchor="end">4K</text>
-                  <text x="30" y="210" fill="#9ca3af" font-size="11" text-anchor="end">2K</text>
-                  <line x1="45" y1="30" x2="780" y2="30" stroke="#f1f5f9" stroke-width="1"/>
-                  <line x1="45" y1="90" x2="780" y2="90" stroke="#f1f5f9" stroke-width="1"/>
-                  <line x1="45" y1="150" x2="780" y2="150" stroke="#f1f5f9" stroke-width="1"/>
-                  <!-- Bars (실험군: blue, 대조군: pink) -->
-                  <rect x="70" y="190" width="25" height="40" rx="3" fill="#3b82f6"/>
-                  <rect x="100" y="195" width="25" height="35" rx="3" fill="#f472b6"/>
-                  <rect x="175" y="175" width="25" height="55" rx="3" fill="#3b82f6"/>
-                  <rect x="205" y="178" width="25" height="52" rx="3" fill="#f472b6"/>
-                  <rect x="280" y="165" width="25" height="65" rx="3" fill="#3b82f6"/>
-                  <rect x="310" y="168" width="25" height="62" rx="3" fill="#f472b6"/>
-                  <rect x="385" y="155" width="25" height="75" rx="3" fill="#3b82f6"/>
-                  <rect x="415" y="158" width="25" height="72" rx="3" fill="#f472b6"/>
-                  <rect x="490" y="145" width="25" height="85" rx="3" fill="#3b82f6"/>
-                  <rect x="520" y="148" width="25" height="82" rx="3" fill="#f472b6"/>
-                  <rect x="595" y="135" width="25" height="95" rx="3" fill="#3b82f6"/>
-                  <rect x="625" y="138" width="25" height="92" rx="3" fill="#f472b6"/>
-                  <!-- Projected (W7-W8 lighter) -->
-                  <rect x="700" y="125" width="25" height="105" rx="3" fill="#3b82f6" opacity="0.4"/>
-                  <rect x="730" y="128" width="25" height="102" rx="3" fill="#f472b6" opacity="0.4"/>
-                  <rect x="755" y="115" width="25" height="115" rx="3" fill="#3b82f6" opacity="0.3"/>
-                  <!-- X labels -->
-                  <text x="97" y="240" fill="#9ca3af" font-size="11" text-anchor="middle">W1</text>
-                  <text x="202" y="240" fill="#9ca3af" font-size="11" text-anchor="middle">W2</text>
-                  <text x="307" y="240" fill="#9ca3af" font-size="11" text-anchor="middle">W3</text>
-                  <text x="412" y="240" fill="#9ca3af" font-size="11" text-anchor="middle">W4</text>
-                  <text x="517" y="240" fill="#9ca3af" font-size="11" text-anchor="middle">W5</text>
-                  <text x="622" y="240" fill="#9ca3af" font-size="11" text-anchor="middle">W6</text>
-                  <text x="727" y="240" fill="#9ca3af" font-size="11" text-anchor="middle">W7</text>
-                  <text x="770" y="240" fill="#9ca3af" font-size="11" text-anchor="middle">W8</text>
-                </svg>
-              </div>
-              <div style="margin-top: 12px; font-size: 12px; color: #6b7280;">
-                총 지급 <strong>6,500 XRP</strong> · 잔여 <strong style="color: #22c55e;">18,500 XRP</strong> · 주당 평균 ~1,083 XRP
-              </div>
-            </div>
-          </div>
-
-          <!-- (c) 가설 검증 섹션 -->
-          <div class="hypothesis-section">
-            <div class="hypothesis-header">
-              <div class="hypothesis-text">
-                📋 <strong>가설:</strong> 저탄수화물 식단 → MAGE(혈당변동성) 감소
-              </div>
-              <div class="match-badge">일치도 82%</div>
-            </div>
-            <div class="corr-cards">
-              <div class="corr-card green">
-                <div class="corr-value">−0.72</div>
-                <div class="corr-label">식단 순응 → MAGE</div>
-              </div>
-              <div class="corr-card blue">
-                <div class="corr-value">+0.65</div>
-                <div class="corr-label">식단 순응 → TIR</div>
-              </div>
-              <div class="corr-card purple">
-                <div class="corr-value">−0.58</div>
-                <div class="corr-label">탄수화물 섭취량 → CV%</div>
-              </div>
-            </div>
-          </div>
-
-          <!-- (d) 참여 + 예산 -->
-          <div class="bottom-grid">
-            <!-- 참여자 현황 -->
-            <div class="bottom-card">
-              <h3>👥 참여자 현황</h3>
-              <div style="display: flex; align-items: baseline; gap: 8px; margin-bottom: 12px;">
-                <span style="font-size: 32px; font-weight: 700; color: #1e293b;">87</span>
-                <span style="font-size: 16px; color: #9ca3af;">/ 100명</span>
-                <span style="font-size: 14px; font-weight: 600; color: #3b82f6; margin-left: auto;">87%</span>
-              </div>
-              <div class="participation-bar">
-                <div class="participation-fill" style="width: 87%; background: linear-gradient(90deg, #3b82f6, #8b5cf6);"></div>
-              </div>
-              <div class="participation-labels">
-                <span>실험군 44명</span>
-                <span>대조군 43명</span>
-                <span>탈락 8명</span>
-              </div>
-              <div style="margin-top: 16px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px;">
-                <div style="text-align: center; padding: 10px; background: #f0fdf4; border-radius: 8px;">
-                  <div style="font-size: 16px; font-weight: 700; color: #16a34a;">79</div>
-                  <div style="font-size: 10px; color: #6b7280;">활성</div>
-                </div>
-                <div style="text-align: center; padding: 10px; background: #fffbeb; border-radius: 8px;">
-                  <div style="font-size: 16px; font-weight: 700; color: #d97706;">8</div>
-                  <div style="font-size: 10px; color: #6b7280;">탈락</div>
-                </div>
-                <div style="text-align: center; padding: 10px; background: #eff6ff; border-radius: 8px;">
-                  <div style="font-size: 16px; font-weight: 700; color: #3b82f6;">13</div>
-                  <div style="font-size: 10px; color: #6b7280;">모집 필요</div>
-                </div>
-              </div>
-            </div>
-
-            <!-- 예산 현황 -->
-            <div class="bottom-card">
-              <h3>💰 예산 현황</h3>
-              <div style="display: flex; align-items: baseline; gap: 8px; margin-bottom: 16px;">
-                <span style="font-size: 32px; font-weight: 700; color: #1e293b;">6,500</span>
-                <span style="font-size: 14px; color: #9ca3af;">XRP 지급 완료</span>
-              </div>
-              <div class="budget-items">
-                <div class="budget-item">
-                  <span class="budget-dot" style="background: #3b82f6;"></span>
-                  <span class="budget-label">실험군 지급</span>
-                  <span class="budget-value" style="color: #3b82f6;">3,250 XRP</span>
-                </div>
-                <div class="budget-item">
-                  <span class="budget-dot" style="background: #f472b6;"></span>
-                  <span class="budget-label">대조군 지급</span>
-                  <span class="budget-value" style="color: #f472b6;">3,250 XRP</span>
-                </div>
-                <div class="budget-item">
-                  <span class="budget-dot" style="background: #22c55e;"></span>
-                  <span class="budget-label">잔여 예산</span>
-                  <span class="budget-value" style="color: #22c55e;">18,500 XRP</span>
-                </div>
-                <div style="margin-top: 8px; padding-top: 12px; border-top: 1px solid #f1f5f9;">
-                  <div class="budget-item">
-                    <span class="budget-dot" style="background: #f59e0b;"></span>
-                    <span class="budget-label">주당 예상 소진</span>
-                    <span class="budget-value" style="color: #f59e0b;">~1,083 XRP</span>
-                  </div>
-                </div>
-              </div>
-              <!-- Budget bar -->
-              <div style="margin-top: 16px;">
-                <div style="height: 8px; background: #f3f4f6; border-radius: 4px; overflow: hidden; display: flex;">
-                  <div style="width: 13%; background: #3b82f6;"></div>
-                  <div style="width: 13%; background: #f472b6;"></div>
-                  <div style="width: 74%; background: #22c55e;"></div>
-                </div>
-                <div style="display: flex; justify-content: space-between; margin-top: 4px; font-size: 10px; color: #9ca3af;">
-                  <span>지급 26%</span>
-                  <span>잔여 74%</span>
+                <div class="ops-row">
+                  <span class="ops-label">완료 시 예상 잔여</span>
+                  <span class="ops-val" style="color:#22c55e;">~12,000 XRP</span>
                 </div>
               </div>
             </div>
           </div>
+        </div>
 
-        </div><!-- /view-group -->
-
-
-        <!-- ============================================================ -->
-        <!-- ===== 개인 모드 ===== -->
-        <!-- ============================================================ -->
-        <div id="view-individual" style="display: none;">
-
-          <!-- 개인 KPI 카드 -->
-          <div class="kpi-grid">
-            <div class="kpi-card">
-              <div class="label">참여자</div>
-              <div class="value">87<span style="font-size: 16px; color: #9ca3af; font-weight: 400;">명</span></div>
-              <div class="sub">전체 100명 중 활성</div>
-              <div class="change up">+3 이번 주 신규</div>
-            </div>
-            <div class="kpi-card">
-              <div class="label">데이터 품질</div>
-              <div class="value" style="color: #22c55e;">92<span style="font-size: 16px; color: #9ca3af; font-weight: 400;">%</span></div>
-              <div class="sub">완전성 + 적시성</div>
-              <div class="change up">+2.1% vs 지난주</div>
-            </div>
-            <div class="kpi-card">
-              <div class="label">평균 MAGE</div>
-              <div class="value">50.5<span style="font-size: 14px; color: #9ca3af; font-weight: 400;"> mg/dL</span></div>
-              <div class="sub">전체 참여자 기준</div>
-              <div class="change up">−7.1 from BL</div>
-            </div>
-            <div class="kpi-card">
-              <div class="label">복약률</div>
-              <div class="value" style="color: #3b82f6;">85<span style="font-size: 16px; color: #9ca3af; font-weight: 400;">%</span></div>
-              <div class="sub">이번 주 평균</div>
-              <div class="change down">−1.2% vs 지난주</div>
-            </div>
-          </div>
-
-          <!-- 개인 차트 -->
-          <div class="chart-card">
-            <div class="chart-tabs">
-              <button class="chart-tab active" onclick="switchIndChart('ind-collect')">📊 데이터 수집</button>
-              <button class="chart-tab" onclick="switchIndChart('ind-hypothesis')">🔬 가설 검증</button>
-              <button class="chart-tab" onclick="switchIndChart('ind-enrollment')">👥 참여자 등록</button>
-              <button class="chart-tab" onclick="switchIndChart('ind-budget')">💰 예산 사용</button>
-              <div class="period-filters">
-                <span class="period-filter active">30일</span>
-                <span class="period-filter">90일</span>
-                <span class="period-filter">전체</span>
-              </div>
-            </div>
-
-            <!-- 데이터 수집 추이 (기본) -->
-            <div id="chart-ind-collect" class="chart-content">
-              <div class="chart-area">
-                <svg viewBox="0 0 800 250" style="width: 100%; height: auto;">
-                  <text x="30" y="30" fill="#9ca3af" font-size="11" text-anchor="end">100%</text>
-                  <text x="30" y="90" fill="#9ca3af" font-size="11" text-anchor="end">80%</text>
-                  <text x="30" y="150" fill="#9ca3af" font-size="11" text-anchor="end">60%</text>
-                  <text x="30" y="210" fill="#9ca3af" font-size="11" text-anchor="end">40%</text>
-                  <line x1="45" y1="30" x2="780" y2="30" stroke="#f1f5f9" stroke-width="1"/>
-                  <line x1="45" y1="90" x2="780" y2="90" stroke="#f1f5f9" stroke-width="1"/>
-                  <line x1="45" y1="150" x2="780" y2="150" stroke="#f1f5f9" stroke-width="1"/>
-                  <!-- Single data collection trend line -->
-                  <polyline points="60,60 120,52 180,48 240,55 300,45 360,42 420,40 480,38 540,36 600,38 660,35 720,34 780,33"
-                    fill="none" stroke="#3b82f6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-                  <!-- Area fill -->
-                  <polygon points="60,60 120,52 180,48 240,55 300,45 360,42 420,40 480,38 540,36 600,38 660,35 720,34 780,33 780,230 60,230"
-                    fill="url(#collectGrad)" opacity="0.3"/>
-                  <defs>
-                    <linearGradient id="collectGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.3"/>
-                      <stop offset="100%" stop-color="#3b82f6" stop-opacity="0"/>
-                    </linearGradient>
-                  </defs>
-                  <!-- Target line -->
-                  <line x1="45" y1="45" x2="780" y2="45" stroke="#22c55e" stroke-width="1" stroke-dasharray="4,3"/>
-                  <text x="780" y="42" fill="#22c55e" font-size="9" text-anchor="end">목표 92%</text>
-                </svg>
-              </div>
-              <div style="margin-top: 12px; font-size: 12px; color: #6b7280;">
-                전체 수집률 <strong style="color: #3b82f6;">94%</strong> · 30일 평균 <strong>92.3%</strong> · 최근 7일 <strong style="color: #22c55e;">96%</strong>
-              </div>
-            </div>
-
-            <!-- 가설 검증 (숨김) -->
-            <div id="chart-ind-hypothesis" class="chart-content" style="display: none;">
-              <div class="chart-area">
-                <svg viewBox="0 0 800 250" style="width: 100%; height: auto;">
-                  <text x="30" y="30" fill="#9ca3af" font-size="11" text-anchor="end">65</text>
-                  <text x="30" y="130" fill="#9ca3af" font-size="11" text-anchor="end">50</text>
-                  <text x="30" y="230" fill="#9ca3af" font-size="11" text-anchor="end">35</text>
-                  <line x1="45" y1="30" x2="780" y2="30" stroke="#f1f5f9" stroke-width="1"/>
-                  <line x1="45" y1="130" x2="780" y2="130" stroke="#f1f5f9" stroke-width="1"/>
-                  <line x1="45" y1="230" x2="780" y2="230" stroke="#f1f5f9" stroke-width="1"/>
-                  <!-- Overall MAGE trend (single line) -->
-                  <polyline points="97,40 202,60 307,80 412,100 517,115 622,125 727,128 780,130"
-                    fill="none" stroke="#8b5cf6" stroke-width="2.5" stroke-linecap="round"/>
-                  <text x="780" y="126" fill="#8b5cf6" font-size="10" text-anchor="start"> 50.5</text>
-                </svg>
-              </div>
-              <div style="margin-top: 12px; font-size: 12px; color: #6b7280;">
-                전체 평균 MAGE <strong style="color: #8b5cf6;">50.5 mg/dL</strong> · Baseline 대비 <strong style="color: #22c55e;">−7.1</strong>
-              </div>
-            </div>
-
-            <!-- 참여자 등록 (숨김) -->
-            <div id="chart-ind-enrollment" class="chart-content" style="display: none;">
-              <div class="chart-area">
-                <svg viewBox="0 0 800 250" style="width: 100%; height: auto;">
-                  <text x="30" y="30" fill="#9ca3af" font-size="11" text-anchor="end">100</text>
-                  <text x="30" y="130" fill="#9ca3af" font-size="11" text-anchor="end">50</text>
-                  <text x="30" y="230" fill="#9ca3af" font-size="11" text-anchor="end">0</text>
-                  <line x1="45" y1="30" x2="780" y2="30" stroke="#f1f5f9" stroke-width="1"/>
-                  <line x1="45" y1="130" x2="780" y2="130" stroke="#f1f5f9" stroke-width="1"/>
-                  <polyline points="97,200 202,170 307,130 412,85 517,55 622,42 727,40 780,38"
-                    fill="none" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round"/>
-                  <line x1="45" y1="30" x2="780" y2="30" stroke="#22c55e" stroke-width="1" stroke-dasharray="4,3"/>
-                  <text x="780" y="26" fill="#22c55e" font-size="9" text-anchor="end">목표 100명</text>
-                </svg>
-              </div>
-              <div style="margin-top: 12px; font-size: 12px; color: #6b7280;">
-                현재 <strong>87명</strong> 등록 · 목표 대비 <strong style="color: #3b82f6;">87%</strong> 달성
-              </div>
-            </div>
-
-            <!-- 예산 (숨김) -->
-            <div id="chart-ind-budget" class="chart-content" style="display: none;">
-              <div class="chart-area">
-                <svg viewBox="0 0 800 250" style="width: 100%; height: auto;">
-                  <text x="30" y="30" fill="#9ca3af" font-size="11" text-anchor="end">25K</text>
-                  <text x="30" y="130" fill="#9ca3af" font-size="11" text-anchor="end">12.5K</text>
-                  <text x="30" y="230" fill="#9ca3af" font-size="11" text-anchor="end">0</text>
-                  <line x1="45" y1="30" x2="780" y2="30" stroke="#f1f5f9" stroke-width="1"/>
-                  <line x1="45" y1="130" x2="780" y2="130" stroke="#f1f5f9" stroke-width="1"/>
-                  <!-- Cumulative spending line -->
-                  <polyline points="97,218 202,205 307,190 412,172 517,155 622,138 727,120 780,105"
-                    fill="none" stroke="#f59e0b" stroke-width="2.5" stroke-linecap="round"/>
-                  <!-- Budget total line -->
-                  <line x1="45" y1="30" x2="780" y2="30" stroke="#ef4444" stroke-width="1" stroke-dasharray="4,3"/>
-                  <text x="780" y="26" fill="#ef4444" font-size="9" text-anchor="end">총 25,000 XRP</text>
-                </svg>
-              </div>
-              <div style="margin-top: 12px; font-size: 12px; color: #6b7280;">
-                누적 지급 <strong style="color: #f59e0b;">6,500 XRP</strong> · 잔여 <strong style="color: #22c55e;">18,500 XRP (74%)</strong>
-              </div>
-            </div>
-          </div>
-
-          <!-- 참여 + 예산 (개인 뷰) -->
-          <div class="bottom-grid">
-            <div class="bottom-card">
-              <h3>👥 참여자 현황</h3>
-              <div style="display: flex; align-items: baseline; gap: 8px; margin-bottom: 12px;">
-                <span style="font-size: 32px; font-weight: 700;">87</span>
-                <span style="font-size: 16px; color: #9ca3af;">/ 100명</span>
-              </div>
-              <div class="participation-bar">
-                <div class="participation-fill" style="width: 87%; background: linear-gradient(90deg, #22c55e, #16a34a);"></div>
-              </div>
-              <div class="participation-labels">
-                <span>활성 79명</span>
-                <span>탈락 8명</span>
-                <span>모집중 13명</span>
-              </div>
-            </div>
-            <div class="bottom-card">
-              <h3>💰 예산 요약</h3>
-              <div style="display: flex; align-items: baseline; gap: 8px; margin-bottom: 16px;">
-                <span style="font-size: 32px; font-weight: 700;">18,500</span>
-                <span style="font-size: 14px; color: #9ca3af;">XRP 잔여</span>
-              </div>
-              <div class="budget-items">
-                <div class="budget-item">
-                  <span class="budget-dot" style="background: #22c55e;"></span>
-                  <span class="budget-label">총 예산</span>
-                  <span class="budget-value">25,000 XRP</span>
-                </div>
-                <div class="budget-item">
-                  <span class="budget-dot" style="background: #3b82f6;"></span>
-                  <span class="budget-label">지급 완료</span>
-                  <span class="budget-value" style="color: #3b82f6;">6,500 XRP</span>
-                </div>
-                <div class="budget-item">
-                  <span class="budget-dot" style="background: #f59e0b;"></span>
-                  <span class="budget-label">잔여 예산</span>
-                  <span class="budget-value" style="color: #22c55e;">18,500 XRP</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-        </div><!-- /view-individual -->
-
-
-        <!-- ===== 네비게이션 ===== -->
+        <!-- 네비게이션 -->
         <div class="step-nav">
-          <a href="list.html">← 연구 목록</a>
-          <a href="data-table.html">테이블 →</a>
-          <a href="#">AI 허브 →</a>
+          <a href="list.html">&larr; 연구 목록</a>
+          <a href="data-table.html">테이블 &rarr;</a>
+          <a href="analysis-discovery.html">AI 허브 &rarr;</a>
         </div>
-
 
         <!-- ===== 디자이너 노트 ===== -->
         <div class="designer-notes">
           <details>
-            <summary>📐 디자이너 노트 (클릭하여 펼치기)</summary>
+            <summary>디자이너 노트 (클릭하여 펼치기)</summary>
             <div class="notes-content">
 
-              <div class="note-card green">
-                <h3 style="color: #047857;">⚙️ 기능 명세 — 개요 페이지 (v2)</h3>
-                <div class="note-text">
-                  <strong>뷰 모드 토글:</strong><br>
-                  - RCT 연구: 군 비교 뷰가 기본 활성화 (자동 감지)<br>
-                  - 관찰 연구: 개인 뷰만 표시, 군 비교 비활성화<br>
-                  - 뷰 전환 시 KPI + 차트 + 하단 섹션 모두 변경<br><br>
+              <h4>0. 페이지 역할</h4>
+              이 페이지가 답하는 질문: <strong>"이 연구, 지금 잘 되고 있나?"</strong><br>
+              - 참여자 유지율, 수집률, 예산 소진율, 알림 → 연구 운영 건강도 한눈에<br>
+              - 군간 핵심 변화값은 "효과가 나타나고 있는가?"에 대한 빠른 확인<br>
+              - 상세 데이터 분석은 테이블 페이지, AI 인사이트는 AI 허브 페이지에서<br>
+              <br>
+              <strong>페이지 역할 분리 원칙:</strong><br>
+              - <strong>개요 (이 페이지)</strong>: 연구 건강도 — "잘 되고 있나?"<br>
+              - <strong>테이블</strong>: 환자별 상세 추적 — "각 환자 상태는?"<br>
+              - <strong>AI 허브</strong>: AI 발견 인사이트 — "AI가 뭘 찾았나?"<br>
 
-                  <strong>군 비교 모드:</strong><br>
-                  - Side-by-side KPI: 실험군/대조군 주요 지표 병렬 비교<br>
-                  - p-value 뱃지: 군간 유의성 실시간 표시 (* p&lt;0.05, ** p&lt;0.01, *** p&lt;0.001)<br>
-                  - 코호트 비교 차트: SVG 라인차트로 추이 비교<br>
-                  - Δ 차이 영역: 두 군 간 차이를 시각적으로 표현<br>
-                  - 가설 검증: 상관계수 + 일치도 요약<br><br>
+              <h4>1. Phase 기반 연구 설계</h4>
+              - Phase 1 (관찰기, W0-W2): 양군 모두 무투약, baseline 데이터만 수집<br>
+              - Phase 2 (투약기, W3-W12): 실험군=위고비 2.4mg, 대조군=위약<br>
+              - 모든 Δ값은 Phase 1 종료 시점(W2) 대비로 계산<br>
+              - 연구자가 Phase 기간/수를 자유롭게 설정 가능해야 함<br>
+              <br>
+              <strong>Phase 유연성:</strong><br>
+              - 기본: 2-Phase (관찰 → 투약)<br>
+              - 확장: N-Phase (관찰 → 투약A → 워시아웃 → 투약B 등 crossover)<br>
+              - Phase별로 측정 항목과 빈도를 다르게 설정 가능<br>
 
-                  <strong>개인 모드:</strong><br>
-                  - 전체 기준 KPI (참여자, 품질, 평균 MAGE, 복약률)<br>
-                  - 단일 트렌드 라인 차트<br>
-                  - 동일 참여/예산 하단 섹션<br><br>
+              <h4>2. 수집·예산 통합 설계</h4>
+              - 수집 현황과 예산 현황은 같은 높이의 2칼럼으로 배치<br>
+              - 둘 다 "연구 운영"에 속하는 정보이므로 하나의 섹션으로 그룹핑<br>
+              - 디바이스별 수집률로 어떤 장비에서 누락이 많은지 파악<br>
+              - 예산은 군별 분리 표시 + 소진 예측<br>
 
-                  <strong>차트 탭 (공통):</strong><br>
-                  - 데이터 수집: 수집률 추이<br>
-                  - 가설 검증: MAGE 추이 (군 비교 시 양쪽 라인)<br>
-                  - 참여자 등록: S-커브 등록 추이<br>
-                  - 예산 사용: 누적 지급 추이<br><br>
+              <h4>3. 군간 변화값 테이블</h4>
+              - 그래프 대신 숫자 테이블로 핵심 비교<br>
+              - 연구자에게 필요한 정보: Δ값, SD, 군간 차이, p값<br>
+              - 시각적 추이가 필요하면 테이블 페이지에서 개별 환자로 확인<br>
 
-                  <strong>예산 구분 (군 비교 모드):</strong><br>
-                  - 실험군 지급 / 대조군 지급 / 잔여 분리 표시<br>
-                  - XRP 기반 정산 (XRPL 연동)
-                </div>
-              </div>
+              <h4>4. 백엔드 API</h4>
+              <code>GET /api/v2/projects/:id/overview
+  → 반환: phase_info, kpi_summary, group_comparison, collection_stats, budget_status
 
-              <div class="note-card purple">
-                <h3 style="color: #6d28d9;">🔗 백엔드 API</h3>
-                <div class="note-text">
-                  <strong>1. 개요 데이터 (군 비교):</strong><br>
-                  <code>
-GET /api/v2/projects/:id/overview<br>
-&nbsp;&nbsp;?view=group_comparison<br>
-<br>
-→ {<br>
-&nbsp;&nbsp;"study_type": "RCT",<br>
-&nbsp;&nbsp;"groups": {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;"experimental": {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"n": 50, "mage": { "mean": 42.3, "sd": 8.1, "delta_bl": -15.9 },<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"cv_pct": 28.1, "tir": 78.3, "compliance": 91<br>
-&nbsp;&nbsp;&nbsp;&nbsp;},<br>
-&nbsp;&nbsp;&nbsp;&nbsp;"control": {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"n": 50, "mage": { "mean": 58.7, "sd": 12.4, "delta_bl": 1.9 },<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"cv_pct": 35.2, "tir": 62.1, "compliance": 87<br>
-&nbsp;&nbsp;&nbsp;&nbsp;}<br>
-&nbsp;&nbsp;},<br>
-&nbsp;&nbsp;"p_values": {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;"mage": 0.003, "cv": 0.012, "tir": 0.001, "compliance": 0.342<br>
-&nbsp;&nbsp;},<br>
-&nbsp;&nbsp;"hypothesis": {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;"text": "저탄수화물 식단 → MAGE↓",<br>
-&nbsp;&nbsp;&nbsp;&nbsp;"match_pct": 82,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;"correlations": [<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ "from": "diet_compliance", "to": "mage", "r": -0.72 }<br>
-&nbsp;&nbsp;&nbsp;&nbsp;]<br>
-&nbsp;&nbsp;}<br>
-}
-                  </code>
+GET /api/v2/projects/:id/phases
+  → 반환: [{phase: 1, name: "관찰기", start: "W0", end: "W2", treatment: null}, ...]
 
-                  <strong>2. 차트 시계열 데이터:</strong><br>
-                  <code>
-GET /api/v2/projects/:id/timeseries<br>
-&nbsp;&nbsp;?metric=mage<br>
-&nbsp;&nbsp;&view=group_comparison<br>
-&nbsp;&nbsp;&period=8w<br>
-<br>
-→ {<br>
-&nbsp;&nbsp;"experimental": [<br>
-&nbsp;&nbsp;&nbsp;&nbsp;{ "week": 1, "value": 56.2 },<br>
-&nbsp;&nbsp;&nbsp;&nbsp;{ "week": 2, "value": 53.1 }, ...<br>
-&nbsp;&nbsp;],<br>
-&nbsp;&nbsp;"control": [<br>
-&nbsp;&nbsp;&nbsp;&nbsp;{ "week": 1, "value": 57.8 },<br>
-&nbsp;&nbsp;&nbsp;&nbsp;{ "week": 2, "value": 57.2 }, ...<br>
-&nbsp;&nbsp;]<br>
-}
-                  </code>
+GET /api/v2/projects/:id/collection-rate
+  ?by=group|device|participant
+  → 반환: 군별/디바이스별/참여자별 수집률
 
-                  <strong>3. 예산 현황:</strong><br>
-                  <code>
-GET /api/v2/projects/:id/budget<br>
-<br>
-→ {<br>
-&nbsp;&nbsp;"total": 25000,<br>
-&nbsp;&nbsp;"spent": 6500,<br>
-&nbsp;&nbsp;"remaining": 18500,<br>
-&nbsp;&nbsp;"by_group": {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;"experimental": 3250,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;"control": 3250<br>
-&nbsp;&nbsp;},<br>
-&nbsp;&nbsp;"weekly_avg": 1083,<br>
-&nbsp;&nbsp;"currency": "XRP"<br>
-}
-                  </code>
-                </div>
-              </div>
-
+GET /api/v2/projects/:id/budget
+  → 반환: total, spent, remaining, by_group, weekly_avg, projection</code>
             </div>
           </details>
         </div>
 
-      </div><!-- /content -->
-    </div><!-- /main -->
-  </div><!-- /layout -->
-
-  <script>
-    // ===== 뷰 모드 토글 =====
-    function switchView(mode) {
-      const groupView = document.getElementById('view-group');
-      const indView = document.getElementById('view-individual');
-      const btns = document.querySelectorAll('.view-btn');
-
-      if (mode === 'group') {
-        groupView.style.display = 'block';
-        indView.style.display = 'none';
-        btns[0].classList.remove('active');
-        btns[1].classList.add('active');
-      } else {
-        groupView.style.display = 'none';
-        indView.style.display = 'block';
-        btns[0].classList.add('active');
-        btns[1].classList.remove('active');
-      }
-    }
-
-    // ===== 군 비교 차트 탭 전환 =====
-    function switchChart(tabId) {
-      const contents = document.querySelectorAll('#view-group .chart-content');
-      const tabs = document.querySelectorAll('#view-group .chart-tab');
-
-      contents.forEach(c => c.style.display = 'none');
-      tabs.forEach(t => t.classList.remove('active'));
-
-      document.getElementById('chart-' + tabId).style.display = 'block';
-      event.target.classList.add('active');
-    }
-
-    // ===== 개인 차트 탭 전환 =====
-    function switchIndChart(tabId) {
-      const contents = document.querySelectorAll('#view-individual .chart-content');
-      const tabs = document.querySelectorAll('#view-individual .chart-tab');
-
-      contents.forEach(c => c.style.display = 'none');
-      tabs.forEach(t => t.classList.remove('active'));
-
-      document.getElementById('chart-' + tabId).style.display = 'block';
-      event.target.classList.add('active');
-    }
-  </script>
+      </div>
+    </div>
+  </div>
 </body>
 </html>
