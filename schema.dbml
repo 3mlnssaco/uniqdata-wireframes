@@ -1,5 +1,5 @@
-// UniQdata v6 Complete ERD — 31 Tables (2-Server Architecture)
-// health_db (Core, 15 tables) + uniqdata_db (Business, 16 tables)
+// UniQdata v6 Complete ERD — 33 Tables (2-Server Architecture)
+// health_db (Core, 15 tables) + uniqdata_db (Business, 18 tables)
 // 2026-02-12 전면 리뉴얼
 
 // ═══════════════════════════════════════
@@ -57,6 +57,11 @@ TableGroup biz_irb [headercolor: #059669] {
   irb_documents
   irb_review_comments
   irb_workflow_history
+}
+
+TableGroup biz_wallet [headercolor: #059669] {
+  project_wallets
+  project_wallet_transactions
 }
 
 TableGroup biz_settlement [headercolor: #059669] {
@@ -301,7 +306,7 @@ Table notification_preferences [headercolor: #7c3aed] {
 
 // ═══════════════════════════════════════════════════
 // ░░░ uniqdata_db — Business Server (Spring:8080) ░░░
-// 16 Tables · PostgreSQL 15 · 1GB
+// 18 Tables · PostgreSQL 15 · 1GB
 // ═══════════════════════════════════════════════════
 
 // ─── 7. 기관 ───
@@ -442,7 +447,43 @@ Table irb_workflow_history [headercolor: #059669] {
   created_at timestamp [default: `NOW()`]
 }
 
-// ─── 10. 정산 ───
+// ─── 10. 프로젝트 지갑 ───
+
+Table project_wallets [headercolor: #059669] {
+  id uuid [pk]
+  project_id uuid [ref: - projects.id, note: '1:1 — 프로젝트당 지갑 1개']
+  wallet_address varchar(60) [unique, not null, note: 'rPrj... 서버 생성 XRPL 주소']
+  wallet_public_key varchar(130) [note: 'ed25519 공개키 (서버 보유)']
+  budget_total decimal(18,6) [not null, default: 0, note: '설정된 총 예산 (XRP)']
+  budget_deposited decimal(18,6) [default: 0, note: '개인지갑에서 입금된 총액']
+  budget_spent decimal(18,6) [default: 0, note: '참여자 정산 등 지출 총액']
+  status varchar(20) [default: 'CREATED', note: 'CREATED|FUNDED|ACTIVE|DEPLETED|CLOSED']
+  created_at timestamp [default: `NOW()`]
+
+  Note: '서버가 키를 보유하는 프로젝트 전용 지갑. 개인지갑→프로젝트지갑 이체로 충전.'
+}
+
+Table project_wallet_transactions [headercolor: #059669] {
+  id uuid [pk]
+  project_wallet_id uuid [ref: > project_wallets.id, not null]
+  tx_type varchar(30) [not null, note: 'DEPOSIT|WITHDRAWAL|REWARD_PAYOUT|REFUND']
+  from_address varchar(60) [not null]
+  to_address varchar(60) [not null]
+  amount decimal(18,6) [not null]
+  currency varchar(10) [default: 'XRP']
+  xrpl_tx_hash varchar(64) [note: 'XRPL 트랜잭션 해시']
+  memo varchar(200) [note: '이체 사유']
+  status varchar(20) [default: 'PENDING', note: 'PENDING|CONFIRMED|FAILED']
+  created_at timestamp [default: `NOW()`]
+
+  indexes {
+    (project_wallet_id, created_at)
+  }
+
+  Note: '프로젝트 지갑 입출금 내역. DEPOSIT=개인→프로젝트, REWARD_PAYOUT=프로젝트→참여자'
+}
+
+// ─── 11. 정산 ───
 
 Table settlement_batches [headercolor: #059669] {
   id uuid [pk]
@@ -468,7 +509,7 @@ Table settlement_items [headercolor: #059669] {
   paid_at timestamp
 }
 
-// ─── 11. Phase 2 ───
+// ─── 12. Phase 2 ───
 
 Table synthetic_datasets [headercolor: #6b7280] {
   id uuid [pk]
@@ -497,7 +538,7 @@ Table fl_rounds [headercolor: #6b7280] {
   Note: 'Phase 2'
 }
 
-// ─── 12. 시스템 ───
+// ─── 13. 시스템 ───
 
 Table webhook_events [headercolor: #059669] {
   id uuid [pk]

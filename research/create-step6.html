@@ -911,13 +911,15 @@
       &bull; 모집 실행 (에스크로 예치 후 잠금 해제): 사전 초대 + 공개 모집<br><br>
 
       <strong>비즈니스 로직:</strong><br>
-      &bull; IRB 승인 시 프로젝트 지갑이 XRPL에 자동 생성됨<br>
+      &bull; IRB 승인 시 프로젝트 지갑이 XRPL에 자동 생성됨 &#x2192; <code>project_wallets</code> INSERT<br>
+      &bull; 개인지갑(user_wallets) &#x2192; 프로젝트지갑(project_wallets)으로 이체 &#x2192; <code>project_wallet_transactions</code> (tx_type=DEPOSIT)<br>
       &bull; IRB 심사비(1,000 XRP)는 에스크로 예치 시 함께 결제됨<br>
       &bull; 에스크로 예치 = 참여자 보상(6,400) + 플랫폼 수수료(340) = 6,740 XRP<br>
       &bull; 총 합계 7,740 XRP는 IRB 신청비 포함 전체 연구 비용<br>
-      &bull; 에스크로 예치 후 연구 설정 변경 불가 (잠금)<br>
+      &bull; 에스크로 예치 &#x2192; <code>project_wallet_transactions</code> (tx_type=WITHDRAWAL) + <code>xrpl_transactions</code> (tx_type=ESCROW_CREATE)<br>
+      &bull; 에스크로 예치 후 연구 설정 변경 불가 (잠금) — project_wallets.status = ACTIVE<br>
       &bull; 사전 초대 &#x2192; 3일 대기 &#x2192; 미수락분 공개 모집 전환<br>
-      &bull; 목표 100명 달성 시 자동 마감 &#x2192; 연구 일괄 시작
+      &bull; 목표 100명 달성 시 자동 마감 &#x2192; 연구 일괄 시작 — projects.status = RECRUITING &#x2192; ACTIVE
     </div>
   </div>
 
