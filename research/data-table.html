@@ -285,6 +285,10 @@
       font-family: 'SF Mono', Monaco, monospace;
       font-size: 11px; color: #94a3b8; font-weight: 400;
     }
+    .sd-val {
+      font-family: 'SF Mono', Monaco, monospace;
+      font-size: 10px; color: #9ca3af; font-weight: 400; margin-left: 3px;
+    }
 
     /* Simple value (no delta emphasis) */
     .val-simple {
@@ -1427,35 +1431,188 @@ GET /api/v2/projects/:id/wearable-sync
       if (note) note.textContent = def.note;
     }
 
+    // === Cell rendering helpers ===
+    function DC(v,r,d,s){
+      var h='<div class="delta-cell"><span class="delta-primary '+d+'">'+v+'</span>';
+      if(s)h+='<span class="sd-val">'+s+'</span>';
+      if(r)h+='<span class="raw-secondary">('+r+')</span>';
+      return h+'</div>';
+    }
+    function MC(v){return v==='Y'?'<div class="med-status taken">✓</div>':v==='N'?'<div class="med-status missed">✗</div>':'<span class="val-simple">'+v+'</span>';}
+    function SC(v){var m={improved:['improved','↑ 개선'],normal:['normal','정상'],caution:['caution','⚠ 주의'],danger:['danger','⚠ 위험']};if(!v)return'—';var e=m[v];return'<span class="status-badge '+e[0]+'">'+e[1]+'</span>';}
+    function AC(v,c){return'<span class="val-simple"'+(c?' style="color:'+c+';"':'')+'>'+v+'</span>';}
+
+    function buildAvgRow(color, d) {
+      return '<tr class="group-avg-row"><td class="col-id" style="font-weight:700;color:'+color+';">평균</td>'
+        +'<td>'+DC(d[0][0],d[0][1],d[0][2],d[0][3])+'</td>'
+        +'<td>'+DC(d[1][0],d[1][1],d[1][2],d[1][3])+'</td>'
+        +'<td>'+DC(d[2][0],d[2][1],d[2][2],d[2][3])+'</td>'
+        +'<td>'+AC(d[3])+'</td>'
+        +'<td>'+AC(d[4])+'</td>'
+        +'<td>—</td></tr>';
+    }
+    function buildRow(r) {
+      var cls=r[1]?' class="'+r[1]+'"':'';
+      return '<tr'+cls+'>'
+        +'<td class="col-id">'+r[0]+'</td>'
+        +'<td>'+DC(r[2][0],r[2][1],r[2][2])+'</td>'
+        +'<td>'+DC(r[3][0],r[3][1],r[3][2])+'</td>'
+        +'<td>'+DC(r[4][0],r[4][1],r[4][2])+'</td>'
+        +'<td>'+AC(r[5],r[6])+'</td>'
+        +'<td>'+MC(r[7])+'</td>'
+        +'<td>'+SC(r[8])+'</td></tr>';
+    }
+
+    // === Period datasets: [delta, rawVal, dirClass, ±SD(avg only)] ===
+    var PD = {
+      '시점별': {
+        date:'Week 12 (현재)', sub:'BL → W4 → W8 → W12',
+        note:'시점별: Δ(Baseline 대비) 누적 변화값 · 프로토콜 마일스톤',
+        exp: {
+          avg:[['↓5.2','83.1kg','down-good','±2.1'],['↓0.8','6.4%','down-good','±0.4'],['↓8.3','140','down-good','±4.1'],'+42m ±15','92%'],
+          rows:[
+            ['P001','selected',['↓6.8','81.2kg','down-good'],['↓1.1','6.1%','down-good'],['↓12','136','down-good'],'+55m','#059669','Y','improved'],
+            ['P005','',['↓4.3','84.7kg','down-good'],['↓0.6','6.6%','down-good'],['↓6','142','down-good'],'+38m',null,'Y','normal'],
+            ['P011','',['↓7.1','79.9kg','down-good'],['↓1.2','5.9%','down-good'],['↓10','138','down-good'],'+62m','#059669','Y','improved'],
+            ['P018','alert-row',['↓2.1','90.9kg','down-good'],['↑0.3','7.5%','up-bad'],['↑4','152','up-bad'],'+12m','#d97706','N','caution'],
+            ['P023','',['↓5.5','82.5kg','down-good'],['↓0.9','6.3%','down-good'],['↓9','139','down-good'],'+48m','#059669','Y','normal']
+          ]
+        },
+        ctrl: {
+          avg:[['↓1.1','86.8kg','down-good','±1.5'],['↓0.2','6.9%','down-good','±0.3'],['↓2.1','145','down-good','±3.2'],'+18m ±10','89%'],
+          rows:[
+            ['P002','',['↓1.8','86.2kg','down-good'],['↓0.3','6.8%','down-good'],['↓3','144','down-good'],'+22m',null,'Y','normal'],
+            ['P008','',['→ 0.0','87.9kg','flat'],['→ 0.0','7.1%','flat'],['↑2','149','up-bad'],'+8m','#d97706','Y','normal'],
+            ['P014','',['↓2.4','85.6kg','down-good'],['↓0.4','6.7%','down-good'],['↓5','142','down-good'],'+25m',null,'Y','normal'],
+            ['P031','alert-row',['↑0.8','88.8kg','up-bad'],['↑0.2','7.3%','up-bad'],['↑12','158','up-bad'],'-5m','#dc2626','N','danger'],
+            ['P036','',['↓0.6','87.4kg','down-good'],['→ 0.0','7.1%','flat'],['↓1','146','down-good'],'+15m',null,'Y','normal']
+          ]
+        }
+      },
+      '주간': {
+        date:'2월 6일 ~ 2월 12일', sub:'전주: 1월 30일 ~ 2월 5일',
+        note:'주간: Δ(전주 대비) 7일 평균 변화값 · 도메인별 주간 추세',
+        exp: {
+          avg:[['↓0.4','83.1kg','down-good','±0.3'],['—','6.4%','flat',''],['↓1.2','140','down-good','±2.1'],'+3m ±8','94%'],
+          rows:[
+            ['P001','selected',['↓0.5','81.2kg','down-good'],['—','6.1%','flat'],['↓2','136','down-good'],'+5m',null,'Y','normal'],
+            ['P005','',['↓0.3','84.7kg','down-good'],['—','6.6%','flat'],['↓1','142','down-good'],'+2m',null,'Y','normal'],
+            ['P011','',['↓0.6','79.9kg','down-good'],['—','5.9%','flat'],['↓3','138','down-good'],'+8m','#059669','Y','improved'],
+            ['P018','alert-row',['↓0.1','90.9kg','down-good'],['—','7.5%','flat'],['↑2','152','up-bad'],'-3m','#dc2626','N','caution'],
+            ['P023','',['↓0.4','82.5kg','down-good'],['—','6.3%','flat'],['↓2','139','down-good'],'+4m',null,'Y','normal']
+          ]
+        },
+        ctrl: {
+          avg:[['→ 0.0','86.8kg','flat','±0.2'],['—','6.9%','flat',''],['↑0.3','145','up-bad','±1.8'],'+1m ±5','90%'],
+          rows:[
+            ['P002','',['↓0.1','86.2kg','down-good'],['—','6.8%','flat'],['→ 0','144','flat'],'+2m',null,'Y','normal'],
+            ['P008','',['→ 0.0','87.9kg','flat'],['—','7.1%','flat'],['↑1','149','up-bad'],'+1m',null,'Y','normal'],
+            ['P014','',['↓0.2','85.6kg','down-good'],['—','6.7%','flat'],['↓1','142','down-good'],'+3m',null,'Y','normal'],
+            ['P031','alert-row',['↑0.1','88.8kg','up-bad'],['—','7.3%','flat'],['↑3','158','up-bad'],'-2m','#dc2626','N','danger'],
+            ['P036','',['→ 0.0','87.4kg','flat'],['—','7.1%','flat'],['→ 0','146','flat'],'+1m',null,'Y','normal']
+          ]
+        }
+      },
+      '일간': {
+        date:'2월 12일 (수)', sub:'전날: 2월 11일 (화)',
+        note:'일간: Δ(전날 대비) 변화값 · 투약/활동 당일 확인',
+        exp: {
+          avg:[['↓0.08','83.1kg','down-good','±0.15'],['—','','flat',''],['↓0.5','140','down-good','±3.2'],'+2m ±12','—'],
+          rows:[
+            ['P001','selected',['↓0.1','81.2kg','down-good'],['—','','flat'],['↓3','136','down-good'],'+8m',null,'Y','normal'],
+            ['P005','',['→ 0.0','84.7kg','flat'],['—','','flat'],['+1','142','up-bad'],'-5m','#d97706','Y','normal'],
+            ['P011','',['↓0.2','79.9kg','down-good'],['—','','flat'],['↓2','138','down-good'],'+15m','#059669','Y','normal'],
+            ['P018','alert-row',['+0.1','90.9kg','up-bad'],['—','','flat'],['+4','152','up-bad'],'-10m','#dc2626','N','caution'],
+            ['P023','',['↓0.1','82.5kg','down-good'],['—','','flat'],['↓1','139','down-good'],'+5m',null,'Y','normal']
+          ]
+        },
+        ctrl: {
+          avg:[['→ 0.0','86.8kg','flat','±0.1'],['—','','flat',''],['↑0.2','145','up-bad','±2.8'],'→ 0m ±8','—'],
+          rows:[
+            ['P002','',['→ 0.0','86.2kg','flat'],['—','','flat'],['+1','144','up-bad'],'+3m',null,'Y','normal'],
+            ['P008','',['→ 0.0','87.9kg','flat'],['—','','flat'],['↓1','149','down-good'],'→ 0m',null,'Y','normal'],
+            ['P014','',['↓0.1','85.6kg','down-good'],['—','','flat'],['→ 0','142','flat'],'+5m',null,'Y','normal'],
+            ['P031','alert-row',['+0.1','88.8kg','up-bad'],['—','','flat'],['+5','158','up-bad'],'-8m','#dc2626','N','danger'],
+            ['P036','',['→ 0.0','87.4kg','flat'],['—','','flat'],['+2','146','up-bad'],'-2m','#d97706','Y','normal']
+          ]
+        }
+      },
+      '월간': {
+        date:'2026년 2월', sub:'전월: 2026년 1월',
+        note:'월간: Δ(전월 대비) 30일 평균 · Baseline 대비 누적 변화',
+        exp: {
+          avg:[['↓1.8','83.1kg','down-good','±0.9'],['↓0.3','6.4%','down-good','±0.2'],['↓3.1','140','down-good','±2.8'],'+12m ±8','93%'],
+          rows:[
+            ['P001','selected',['↓2.2','81.2kg','down-good'],['↓0.4','6.1%','down-good'],['↓4','136','down-good'],'+18m','#059669','Y','improved'],
+            ['P005','',['↓1.5','84.7kg','down-good'],['↓0.2','6.6%','down-good'],['↓2','142','down-good'],'+10m',null,'Y','normal'],
+            ['P011','',['↓2.5','79.9kg','down-good'],['↓0.4','5.9%','down-good'],['↓3','138','down-good'],'+20m','#059669','Y','improved'],
+            ['P018','alert-row',['↓0.6','90.9kg','down-good'],['↑0.1','7.5%','up-bad'],['+1','152','up-bad'],'+3m',null,'N','caution'],
+            ['P023','',['↓1.8','82.5kg','down-good'],['↓0.3','6.3%','down-good'],['↓3','139','down-good'],'+15m','#059669','Y','normal']
+          ]
+        },
+        ctrl: {
+          avg:[['↓0.3','86.8kg','down-good','±0.5'],['↓0.1','6.9%','down-good','±0.1'],['↓0.5','145','down-good','±2.1'],'+4m ±6','89%'],
+          rows:[
+            ['P002','',['↓0.5','86.2kg','down-good'],['↓0.1','6.8%','down-good'],['↓1','144','down-good'],'+6m',null,'Y','normal'],
+            ['P008','',['→ 0.0','87.9kg','flat'],['→ 0.0','7.1%','flat'],['+1','149','up-bad'],'+2m',null,'Y','normal'],
+            ['P014','',['↓0.7','85.6kg','down-good'],['↓0.1','6.7%','down-good'],['↓2','142','down-good'],'+7m',null,'Y','normal'],
+            ['P031','alert-row',['+0.2','88.8kg','up-bad'],['→ 0.0','7.3%','flat'],['+4','158','up-bad'],'-3m','#dc2626','N','danger'],
+            ['P036','',['↓0.2','87.4kg','down-good'],['→ 0.0','7.1%','flat'],['→ 0','146','flat'],'+3m',null,'Y','normal']
+          ]
+        }
+      }
+    };
+
+    function renderTables(period) {
+      var d = PD[period];
+      if (!d) return;
+      // Update date labels
+      var dateLabel = document.querySelector('.date-label');
+      var dateSub = document.querySelector('.date-sub');
+      var inlineNote = document.getElementById('inlineNote');
+      if (dateLabel) dateLabel.textContent = d.date;
+      if (dateSub) dateSub.textContent = d.sub;
+      if (inlineNote) inlineNote.textContent = d.note;
+      // Build experiment tbody
+      var expHtml = buildAvgRow('#1d4ed8', d.exp.avg);
+      d.exp.rows.forEach(function(r) { expHtml += buildRow(r); });
+      document.querySelector('#expTable tbody').innerHTML = expHtml;
+      // Build control tbody
+      var ctrlHtml = buildAvgRow('#92400e', d.ctrl.avg);
+      d.ctrl.rows.forEach(function(r) { ctrlHtml += buildRow(r); });
+      document.querySelector('#ctrlTable tbody').innerHTML = ctrlHtml;
+      // Re-bind row click events
+      bindRowClicks();
+    }
+
+    function bindRowClicks() {
+      document.querySelectorAll('.side-panel.experiment .data-table tbody tr:not(.group-avg-row)').forEach(function(row) {
+        row.addEventListener('click', function() {
+          document.querySelectorAll('.data-table tr.selected').forEach(function(r) { r.classList.remove('selected'); });
+          this.classList.add('selected');
+          openDetail('left');
+        });
+      });
+      document.querySelectorAll('.side-panel.control .data-table tbody tr:not(.group-avg-row)').forEach(function(row) {
+        row.addEventListener('click', function() {
+          document.querySelectorAll('.data-table tr.selected').forEach(function(r) { r.classList.remove('selected'); });
+          this.classList.add('selected');
+          openDetail('right');
+        });
+      });
+    }
+
     // === Period Toggle (일간/주간/월간/시점별) ===
     document.querySelectorAll('.period-btn').forEach(function(btn) {
       btn.addEventListener('click', function() {
         document.querySelectorAll('.period-btn').forEach(function(b) { b.classList.remove('active'); });
         this.classList.add('active');
-        var period = this.textContent.trim();
-        var dateLabel = document.querySelector('.date-label');
-        var dateSub = document.querySelector('.date-sub');
-        var inlineNote = document.getElementById('inlineNote');
-
-        if (period === '일간') {
-          dateLabel.textContent = '2월 12일 (수)';
-          dateSub.textContent = '전날: 2월 11일 (화)';
-          if (inlineNote) inlineNote.textContent = '일간: Δ(전날 대비) 변화값 중심 · 투약/활동 실시간 확인';
-        } else if (period === '주간') {
-          dateLabel.textContent = '2월 6일 ~ 2월 12일';
-          dateSub.textContent = '전주: 1월 30일 ~ 2월 5일';
-          if (inlineNote) inlineNote.textContent = '주간: Δ(전주 대비) 7일 평균 변화값 · 도메인별 주간 추세';
-        } else if (period === '월간') {
-          dateLabel.textContent = '2026년 2월';
-          dateSub.textContent = '전월: 2026년 1월';
-          if (inlineNote) inlineNote.textContent = '월간: Δ(전월 대비) 30일 평균 · Baseline 대비 누적 변화';
-        } else if (period === '시점별') {
-          dateLabel.textContent = 'Week 12 (현재)';
-          dateSub.textContent = 'BL → W4 → W8 → W12';
-          if (inlineNote) inlineNote.textContent = '시점별: Δ(Baseline 대비) 누적 변화값 · 프로토콜 마일스톤';
-        }
+        renderTables(this.textContent.trim());
       });
     });
+
+    // Initial render with ±SD
+    renderTables('시점별');
 
     // === P3 Column Toggle ===
     function toggleP3() {
@@ -1495,21 +1652,7 @@ GET /api/v2/projects/:id/wearable-sync
       });
     });
 
-    // === Row selection + inline detail ===
-    document.querySelectorAll('.side-panel.experiment .data-table tbody tr:not(.group-avg-row)').forEach(function(row) {
-      row.addEventListener('click', function() {
-        document.querySelectorAll('.data-table tr.selected').forEach(function(r) { r.classList.remove('selected'); });
-        this.classList.add('selected');
-        openDetail('left');
-      });
-    });
-    document.querySelectorAll('.side-panel.control .data-table tbody tr:not(.group-avg-row)').forEach(function(row) {
-      row.addEventListener('click', function() {
-        document.querySelectorAll('.data-table tr.selected').forEach(function(r) { r.classList.remove('selected'); });
-        this.classList.add('selected');
-        openDetail('right');
-      });
-    });
+    // Row click events are bound via bindRowClicks() called from renderTables()
   </script>
 </body>
 </html>
