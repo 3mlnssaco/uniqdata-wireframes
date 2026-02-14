@@ -5,336 +5,155 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>클린룸 - UniQdata</title>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f0f0f; color: #e5e5e5; }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background:#0a0a0a; color:#e5e5e5; }
+    .layout { display:flex; min-height:100vh; }
 
-    .layout { display: flex; min-height: 100vh; }
+    /* Sidebar */
+    .sidebar { width:240px; background:#111; border-right:1px solid #1e1e1e; padding:16px 12px; flex-shrink:0; display:flex; flex-direction:column; }
+    .logo { font-size:17px; font-weight:700; padding:8px 12px; margin-bottom:16px; color:#fff; display:flex; align-items:center; gap:10px; }
+    .logo-icon { width:32px; height:32px; background:linear-gradient(135deg,#3b82f6,#8b5cf6); border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:14px; }
+    .nav-item { display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:8px; margin-bottom:2px; color:#666; font-size:13px; cursor:pointer; text-decoration:none; }
+    .nav-item:hover { background:#1a1a1a; color:#999; }
+    .nav-item .icon { width:18px; text-align:center; font-size:14px; }
+    .research-nav-item { margin-bottom:2px; }
+    .research-nav-header { display:flex; align-items:center; gap:8px; padding:8px 12px; border-radius:8px; cursor:pointer; font-size:12px; color:#666; }
+    .research-nav-header:hover { background:#1a1a1a; color:#999; }
+    .research-nav-item.expanded .research-nav-header { background:rgba(59,130,246,0.1); color:#60a5fa; }
+    .research-title { flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .status-dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+    .status-dot.active { background:#22c55e; }
+    .status-dot.recruiting { background:#3b82f6; }
+    .status-dot.draft { background:#6b7280; }
+    .research-nav-sub { display:none; padding-left:20px; margin-top:4px; border-left:2px solid #222; margin-left:18px; }
+    .research-nav-item.expanded .research-nav-sub { display:block; }
+    .nav-sub-item { display:flex; align-items:center; gap:8px; padding:8px 12px; border-radius:6px; color:#555; font-size:12px; cursor:pointer; text-decoration:none; margin-bottom:2px; }
+    .nav-sub-item:hover { background:#1a1a1a; color:#999; }
+    .nav-sub-item.active { background:rgba(59,130,246,0.15); color:#60a5fa; border-left:2px solid #3b82f6; margin-left:-2px; padding-left:14px; }
+    .nav-sub-item .dot { width:6px; height:6px; border-radius:50%; background:currentColor; opacity:0.5; }
+    .nav-sub-item.active .dot { background:#3b82f6; opacity:1; }
 
-    /* ===== SIDEBAR ===== */
-    .sidebar { width: 240px; background: #1a1a1a; border-right: 1px solid #2a2a2a; padding: 16px 12px; flex-shrink: 0; display: flex; flex-direction: column; }
-    .logo { font-size: 17px; font-weight: 700; padding: 8px 12px; margin-bottom: 16px; color: #fff; display: flex; align-items: center; gap: 10px; }
-    .logo-icon { width: 32px; height: 32px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; }
-    .nav-section { margin-bottom: 8px; }
-    .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 8px; margin-bottom: 2px; color: #888; font-size: 13px; cursor: pointer; transition: all 0.15s; text-decoration: none; }
-    .nav-item:hover { background: #252525; color: #ccc; }
-    .nav-item .icon { width: 18px; text-align: center; font-size: 14px; }
-    .research-nav-item { margin-bottom: 2px; }
-    .research-nav-header { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 12px; color: #888; transition: all 0.15s; }
-    .research-nav-header:hover { background: #252525; color: #ccc; }
-    .research-nav-item.expanded .research-nav-header { background: rgba(59, 130, 246, 0.1); color: #60a5fa; }
-    .folder-icon { font-size: 13px; }
-    .research-title { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .status-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
-    .status-dot.active { background: #22c55e; }
-    .status-dot.recruiting { background: #3b82f6; }
-    .status-dot.draft { background: #6b7280; }
-    .research-nav-sub { display: none; padding-left: 20px; margin-top: 4px; border-left: 2px solid #333; margin-left: 18px; }
-    .research-nav-item.expanded .research-nav-sub { display: block; }
-    .nav-sub-item { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 6px; color: #777; font-size: 12px; cursor: pointer; transition: all 0.15s; text-decoration: none; margin-bottom: 2px; }
-    .nav-sub-item:hover { background: #252525; color: #ccc; }
-    .nav-sub-item.active { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border-left: 2px solid #3b82f6; margin-left: -2px; padding-left: 14px; }
-    .nav-sub-item .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; opacity: 0.5; }
-    .nav-sub-item.active .dot { background: #3b82f6; opacity: 1; }
+    /* Main */
+    .main { flex:1; display:flex; flex-direction:column; overflow:hidden; }
 
-    /* ===== MAIN ===== */
-    .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-    .header { padding: 16px 24px; border-bottom: 1px solid #2a2a2a; display: flex; align-items: center; justify-content: space-between; }
-    .header-left h1 { font-size: 18px; font-weight: 600; display: flex; align-items: center; gap: 10px; }
-    .header-left .sub { font-size: 13px; color: #666; margin-top: 4px; }
-    .header-btn { padding: 8px 14px; border-radius: 8px; font-size: 13px; cursor: pointer; border: 1px solid #333; background: #1a1a1a; color: #ccc; }
-    .header-btn:hover { border-color: #3b82f6; }
-    .header-btn.primary { background: linear-gradient(135deg, #3b82f6, #8b5cf6); border-color: transparent; color: white; font-weight: 600; }
-    .header-btn.danger { background: rgba(239,68,68,0.15); border-color: rgba(239,68,68,0.4); color: #ef4444; }
+    /* Session Bar */
+    .session-bar { display:flex; align-items:center; padding:6px 20px; background:#0f0f0f; border-bottom:1px solid #1e1e1e; gap:16px; font-size:11px; flex-shrink:0; }
+    .sb-live { display:flex; align-items:center; gap:5px; }
+    .sb-dot { width:7px; height:7px; background:#22c55e; border-radius:50%; animation:pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+    .sb-label { color:#22c55e; font-weight:600; }
+    .sb-meta { color:#555; }
+    .sb-meta b { color:#94a3b8; font-weight:500; }
+    .sb-chips { display:flex; gap:4px; }
+    .sb-chip { padding:2px 8px; background:#1a1a1a; border:1px solid #252525; border-radius:10px; font-size:10px; color:#64748b; }
+    .sb-right { margin-left:auto; display:flex; align-items:center; gap:10px; }
+    .sb-security { font-size:10px; color:#22c55e; display:flex; align-items:center; gap:4px; }
+    .sb-end { padding:4px 10px; background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.2); border-radius:5px; color:#ef4444; font-size:10px; cursor:pointer; }
 
-    /* ===== SESSION GATE ===== */
-    .session-gate { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 40px 24px; overflow-y: auto; }
-    .gate-hero { text-align: center; margin-bottom: 32px; }
-    .gate-hero .gate-icon { font-size: 48px; margin-bottom: 12px; }
-    .gate-hero h2 { font-size: 24px; font-weight: 700; color: #e5e5e5; margin-bottom: 8px; }
-    .gate-desc { font-size: 14px; color: #666; }
-    .gate-content { max-width: 720px; width: 100%; display: flex; flex-direction: column; gap: 20px; }
-    .gate-card { background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 12px; overflow: hidden; }
-    .gate-card.security { border-color: rgba(245,158,11,0.3); }
-    .gate-card-header { padding: 14px 20px; border-bottom: 1px solid #2a2a2a; display: flex; align-items: center; gap: 12px; font-size: 14px; font-weight: 600; }
-    .step-badge { width: 26px; height: 26px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: white; flex-shrink: 0; }
-    .irb-badge { margin-left: auto; padding: 4px 10px; background: rgba(34,197,94,0.15); border: 1px solid rgba(34,197,94,0.3); border-radius: 6px; font-size: 11px; color: #22c55e; font-weight: 600; }
-    .gate-card-body { padding: 20px; }
-    .gate-field { margin-bottom: 16px; }
-    .gate-field:last-child { margin-bottom: 0; }
-    .gate-field label { display: block; font-size: 12px; color: #888; margin-bottom: 6px; font-weight: 500; }
-    .gate-field select, .gate-field input[type="date"] { width: 100%; padding: 10px 14px; background: #252525; border: 1px solid #333; border-radius: 8px; color: #e5e5e5; font-size: 13px; }
-    .gate-field-row { display: flex; gap: 12px; margin-bottom: 16px; }
-    .gate-field-row .gate-field { flex: 1; margin-bottom: 0; }
-    .var-chips { display: flex; flex-wrap: wrap; gap: 6px; }
-    .var-chip { padding: 5px 10px; background: #252525; border: 1px solid #333; border-radius: 6px; font-size: 11px; color: #94a3b8; }
-    .var-chip.add { border-style: dashed; color: #3b82f6; cursor: pointer; }
-    .var-chip.add:hover { border-color: #3b82f6; }
+    /* Gate */
+    .gate { flex:1; display:flex; align-items:center; justify-content:center; padding:40px; }
+    .gate-box { max-width:560px; width:100%; text-align:center; }
+    .gate-box h2 { font-size:22px; margin-bottom:8px; display:flex; align-items:center; justify-content:center; gap:8px; }
+    .gate-box p { font-size:13px; color:#555; margin-bottom:28px; line-height:1.6; }
+    .gate-info { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:20px; text-align:left; }
+    .gate-info-item { padding:10px 14px; background:#111; border:1px solid #1e1e1e; border-radius:8px; }
+    .gate-info-item .gi-label { font-size:10px; color:#555; margin-bottom:2px; }
+    .gate-info-item .gi-value { font-size:13px; font-weight:500; }
+    .gate-checks { text-align:left; margin-bottom:24px; padding:14px 16px; background:rgba(245,158,11,0.04); border:1px solid rgba(245,158,11,0.15); border-radius:10px; }
+    .gate-checks label { display:flex; align-items:center; gap:8px; padding:6px 0; font-size:12px; color:#94a3b8; cursor:pointer; }
+    .gate-checks input { accent-color:#f59e0b; }
+    .gate-btn { width:100%; padding:14px; background:linear-gradient(135deg,#3b82f6,#8b5cf6); border:none; border-radius:10px; color:white; font-size:15px; font-weight:700; cursor:pointer; }
+    .gate-btn:hover { opacity:0.9; }
+    .gate-note { font-size:10px; color:#444; margin-top:10px; }
 
-    .security-check { display: flex; align-items: flex-start; gap: 12px; padding: 12px; border: 1px solid #2a2a2a; border-radius: 8px; margin-bottom: 8px; cursor: pointer; transition: all 0.15s; }
-    .security-check:last-child { margin-bottom: 0; }
-    .security-check:hover { border-color: rgba(245,158,11,0.4); background: rgba(245,158,11,0.03); }
-    .security-check input[type="checkbox"] { margin-top: 2px; accent-color: #f59e0b; }
-    .check-title { font-size: 13px; color: #e5e5e5; font-weight: 500; }
-    .check-desc { font-size: 11px; color: #64748b; margin-top: 2px; line-height: 1.4; }
+    /* Terminal Area */
+    .terminal-area { flex:1; display:flex; flex-direction:column; overflow:hidden; }
+    .term-toolbar { display:flex; align-items:center; gap:8px; padding:8px 16px; background:#0f0f0f; border-bottom:1px solid #1e1e1e; }
+    .lang-sel { display:flex; background:#1a1a1a; border-radius:5px; padding:2px; }
+    .lang-btn { padding:4px 10px; border:none; background:transparent; color:#555; font-size:11px; border-radius:3px; cursor:pointer; font-family:'SF Mono',Monaco,monospace; }
+    .lang-btn.active { background:#22c55e; color:#0a0a0a; font-weight:600; }
+    .term-info { margin-left:auto; display:flex; gap:14px; font-size:10px; color:#444; }
+    .term-info .ti-dot { width:5px; height:5px; border-radius:50%; background:#22c55e; display:inline-block; margin-right:3px; }
 
-    .preview-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 16px; }
-    .preview-stat { text-align: center; padding: 12px 8px; background: #252525; border-radius: 8px; }
-    .preview-stat .stat-value { font-size: 18px; font-weight: 700; color: #e5e5e5; }
-    .preview-stat .stat-label { font-size: 10px; color: #64748b; margin-top: 4px; }
-    .privacy-checks { display: flex; gap: 12px; }
-    .privacy-item { font-size: 11px; color: #94a3b8; display: flex; align-items: center; gap: 4px; }
-    .privacy-item.pass { color: #22c55e; }
+    /* Cells */
+    .cells { flex:1; overflow-y:auto; padding:12px 16px; display:flex; flex-direction:column; gap:6px; }
+    .cell { border:1px solid #1a1a1a; border-radius:8px; overflow:hidden; background:#0f0f0f; }
+    .cell:hover { border-color:#252525; }
+    .cell.running { border-color:rgba(59,130,246,0.4); }
+    .cell-head { display:flex; align-items:center; gap:6px; padding:4px 10px; background:#0a0a0a; border-bottom:1px solid #151515; font-size:10px; }
+    .cell-n { color:#333; font-family:'SF Mono',Monaco,monospace; min-width:44px; }
+    .cell-st { font-size:9px; }
+    .cell-st.done { color:#22c55e; }
+    .cell-st.run { color:#3b82f6; }
+    .cell-t { margin-left:auto; color:#333; font-family:'SF Mono',Monaco,monospace; font-size:9px; }
+    .cell-run { padding:2px 8px; background:rgba(34,197,94,0.1); border:none; border-radius:3px; color:#22c55e; font-size:9px; cursor:pointer; }
+    .code { padding:10px 14px; font-family:'SF Mono',Monaco,'Courier New',monospace; font-size:12px; line-height:1.7; color:#e5e5e5; white-space:pre; overflow-x:auto; background:#0d1117; }
+    .code .k { color:#ff7b72; }
+    .code .f { color:#d2a8ff; }
+    .code .s { color:#a5d6ff; }
+    .code .c { color:#484f58; font-style:italic; }
+    .code .n { color:#79c0ff; }
+    .code .v { color:#ffa657; }
+    .out { padding:10px 14px; background:#0a0a0a; border-top:1px solid #151515; font-family:'SF Mono',Monaco,monospace; font-size:11px; line-height:1.6; color:#8b949e; }
+    .out table { border-collapse:collapse; width:100%; margin:4px 0; }
+    .out th { text-align:left; padding:3px 8px; font-size:10px; color:#484f58; border-bottom:1px solid #1e1e1e; font-weight:600; }
+    .out td { padding:3px 8px; font-size:11px; color:#c9d1d9; border-bottom:1px solid #111; }
+    .out .chart { height:100px; display:flex; align-items:flex-end; gap:2px; padding:6px 0; }
+    .out .bar { background:linear-gradient(to top,#3b82f6,#8b5cf6); border-radius:2px 2px 0 0; flex:1; }
+    .out .dp { margin-top:6px; padding:4px 8px; background:rgba(245,158,11,0.06); border:1px solid rgba(245,158,11,0.15); border-radius:4px; font-size:9px; color:#f59e0b; }
+    .out .ok { color:#22c55e; }
+    .out .warn { color:#f59e0b; }
+    .out .graph-out { padding:8px; background:#0d1117; border:1px solid #1e1e1e; border-radius:6px; margin:4px 0; }
+    .out .edge-row { display:flex; align-items:center; gap:8px; padding:3px 0; font-size:10px; }
+    .out .edge-bar { height:4px; border-radius:2px; background:linear-gradient(90deg,#3b82f6,#8b5cf6); }
+    .out .edge-label { color:#64748b; min-width:120px; }
+    .out .edge-val { color:#c9d1d9; font-weight:500; min-width:36px; text-align:right; }
 
-    .gate-actions { text-align: center; margin-top: 8px; }
-    .gate-enter-btn { width: 100%; padding: 16px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); border: none; border-radius: 12px; color: white; font-size: 16px; font-weight: 700; cursor: pointer; transition: all 0.2s; }
-    .gate-enter-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 25px rgba(59,130,246,0.3); }
-    .gate-footnote { font-size: 11px; color: #555; margin-top: 10px; }
+    /* Input bar */
+    .input-bar { padding:10px 16px; border-top:1px solid #1e1e1e; background:#0f0f0f; display:flex; align-items:center; gap:8px; }
+    .prompt { color:#22c55e; font-family:'SF Mono',Monaco,monospace; font-size:14px; font-weight:700; }
+    .input-bar input { flex:1; background:#0d1117; border:1px solid #1e1e1e; border-radius:6px; padding:8px 12px; color:#e5e5e5; font-family:'SF Mono',Monaco,monospace; font-size:12px; outline:none; }
+    .input-bar input:focus { border-color:#22c55e; }
+    .run-btn { padding:8px 16px; background:#22c55e; border:none; border-radius:6px; color:#0a0a0a; font-size:11px; font-weight:700; cursor:pointer; }
 
-    /* ===== ACTIVE SESSION ===== */
-    .session-bar { display: flex; align-items: center; padding: 8px 24px; background: linear-gradient(135deg, rgba(34,197,94,0.08), rgba(16,185,129,0.04)); border-bottom: 2px solid rgba(34,197,94,0.25); gap: 20px; font-size: 12px; flex-shrink: 0; }
-    .session-indicator { display: flex; align-items: center; gap: 6px; }
-    .session-live-dot { width: 8px; height: 8px; background: #22c55e; border-radius: 50%; animation: pulse 2s infinite; }
-    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
-    .session-label { color: #22c55e; font-weight: 600; font-size: 12px; }
-    .session-meta { display: flex; gap: 16px; color: #64748b; font-size: 11px; }
-    .session-meta .val { color: #e5e5e5; font-weight: 500; }
-    .session-chips { display: flex; gap: 6px; }
-    .session-chip { padding: 3px 10px; background: #252525; border: 1px solid #333; border-radius: 12px; font-size: 10px; color: #94a3b8; }
-    .session-right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
-    .security-badge { display: flex; align-items: center; gap: 4px; font-size: 11px; color: #22c55e; }
-    .session-end-btn { padding: 5px 12px; background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.3); border-radius: 6px; color: #ef4444; font-size: 11px; cursor: pointer; }
-    .session-end-btn:hover { background: rgba(239,68,68,0.25); }
+    /* Bottom */
+    .bottom { padding:5px 20px; background:#0a0a0a; border-top:1px solid #1e1e1e; display:flex; align-items:center; gap:16px; font-size:10px; color:#333; flex-shrink:0; }
+    .bottom .bv { color:#64748b; }
+    .bdot { width:5px; height:5px; border-radius:50%; display:inline-block; margin-right:3px; }
+    .bdot.g { background:#22c55e; }
+    .bdot.b { background:#3b82f6; }
+    .bdot.y { background:#f59e0b; }
 
-    .active-content { flex: 1; display: flex; overflow: hidden; }
+    /* Nav */
+    .nav-links { display:flex; gap:8px; padding:10px 16px; border-top:1px solid #1e1e1e; }
+    .nav-links a { padding:5px 10px; background:#151515; border-radius:5px; text-decoration:none; color:#555; font-size:11px; }
+    .nav-links a:hover { color:#999; }
 
-    /* ===== LEFT: CONFIG PANEL ===== */
-    .config-panel { width: 280px; background: #1a1a1a; border-right: 1px solid #2a2a2a; padding: 16px; overflow-y: auto; flex-shrink: 0; }
-    .config-section { margin-bottom: 20px; }
-    .config-section .title { font-size: 11px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
-    .scope-summary { background: #252525; border-radius: 10px; padding: 12px; }
-    .scope-row { display: flex; justify-content: space-between; font-size: 12px; padding: 5px 0; }
-    .scope-row .label { color: #888; }
-    .scope-row .value { font-weight: 500; color: #e5e5e5; }
-    .scope-locked { margin-top: 8px; padding: 8px; background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.2); border-radius: 6px; font-size: 10px; color: #f59e0b; text-align: center; }
-
-    .security-meter { margin-bottom: 14px; }
-    .meter-header { display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 6px; }
-    .meter-header .m-label { color: #888; }
-    .meter-header .m-value { font-weight: 600; color: #e5e5e5; }
-    .meter-header .m-value.pass { color: #22c55e; }
-    .meter-bar { height: 4px; background: #333; border-radius: 2px; overflow: hidden; }
-    .meter-fill { height: 100%; border-radius: 2px; transition: width 0.3s; }
-    .meter-fill.pass { background: #22c55e; }
-    .meter-fill.dp { background: #3b82f6; }
-    .meter-fill.query { background: #f59e0b; }
-    .meter-footnote { font-size: 9px; color: #555; margin-top: 4px; }
-
-    .irb-card { background: #252525; border-radius: 10px; padding: 12px; }
-    .irb-row { display: flex; justify-content: space-between; font-size: 11px; padding: 4px 0; }
-    .irb-row .label { color: #888; }
-    .irb-row .value { color: #e5e5e5; font-weight: 500; }
-    .irb-row .value.status-ok { color: #22c55e; }
-
-    /* ===== CENTER: ANALYSIS AREA ===== */
-    .analysis-area { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-    .cr-tabs { display: flex; gap: 4px; padding: 10px 20px; background: #151515; border-bottom: 1px solid #2a2a2a; align-items: center; }
-    .cr-tabs-label { font-size: 10px; color: #555; text-transform: uppercase; letter-spacing: 0.5px; margin-right: 10px; padding-right: 10px; border-right: 1px solid #333; }
-    .cr-tab { padding: 8px 16px; border: 1px solid #333; border-radius: 8px; background: #1a1a1a; color: #888; font-size: 12px; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.15s; }
-    .cr-tab:hover { border-color: #3b82f6; color: #ccc; }
-    .cr-tab.active { background: linear-gradient(135deg, #3b82f6, #8b5cf6); border-color: transparent; color: white; font-weight: 600; }
-    .cr-tabs-note { margin-left: auto; font-size: 10px; color: #444; }
-    .tool-content { display: none; flex: 1; overflow: hidden; }
-    .tool-content.active { display: flex; flex-direction: column; }
-
-    /* ===== DISCOVERY TOOL ===== */
-    .target-bar { padding: 14px 20px; background: linear-gradient(135deg, rgba(59,130,246,0.1), rgba(139,92,246,0.1)); border-bottom: 1px solid #2a2a2a; display: flex; align-items: center; gap: 14px; }
-    .target-bar select { padding: 8px 14px; background: #1a1a1a; border: 2px solid #3b82f6; border-radius: 8px; color: #e5e5e5; font-size: 13px; font-weight: 600; min-width: 260px; }
-    .target-status { display: flex; align-items: center; gap: 6px; padding: 6px 12px; background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3); border-radius: 6px; font-size: 10px; color: #22c55e; }
-    .graph-wrap { flex: 1; display: flex; overflow: hidden; }
-    .graph-canvas { flex: 1; position: relative; background: radial-gradient(circle at center, #1a1a1a 0%, #0f0f0f 100%); overflow: hidden; }
-    .graph-toolbar { padding: 10px 16px; border-bottom: 1px solid #2a2a2a; display: flex; align-items: center; gap: 14px; background: #151515; font-size: 12px; }
-    .view-toggle { display: flex; background: #252525; border-radius: 6px; padding: 2px; }
-    .view-toggle button { padding: 5px 10px; border: none; background: transparent; color: #888; font-size: 11px; border-radius: 4px; cursor: pointer; }
-    .view-toggle button.active { background: #3b82f6; color: white; }
-    .strength-inline { display: flex; align-items: center; gap: 6px; color: #888; font-size: 11px; }
-    .strength-inline input { width: 100px; height: 4px; -webkit-appearance: none; background: #333; border-radius: 2px; }
-    .strength-inline input::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 12px; background: #3b82f6; border-radius: 50%; cursor: pointer; }
-    .graph-stats { display: flex; gap: 14px; margin-left: auto; font-size: 11px; color: #888; }
-    .graph-stats .val { color: #fff; font-weight: 600; }
-    .graph-3d { width: 100%; height: 100%; position: relative; perspective: 1200px; cursor: grab; }
-    .graph-3d:active { cursor: grabbing; }
-    .graph-container { position: absolute; top: 50%; left: 50%; transform-style: preserve-3d; transition: transform 0.1s ease-out; }
-    .node-3d { position: absolute; transform-style: preserve-3d; cursor: pointer; transition: opacity 0.3s, transform 0.3s; user-select: none; }
-    .node-3d .sphere { width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; text-align: center; line-height: 1.2; border: 2px solid; transition: all 0.3s; box-shadow: 0 0 20px rgba(0,0,0,0.5); color: white; }
-    .node-3d .label { position: absolute; top: 100%; left: 50%; transform: translateX(-50%); font-size: 10px; color: #666; white-space: nowrap; margin-top: 8px; transition: all 0.3s; }
-    .node-3d.dim .sphere { opacity: 0.15; border-color: #333 !important; }
-    .node-3d.dim .label { opacity: 0.3; }
-    .node-3d.weak .sphere { opacity: 0.2; }
-    .node-3d.active .sphere { box-shadow: 0 0 30px currentColor, 0 0 60px currentColor; transform: scale(1.1); }
-    .node-3d.active .label { color: #fff; }
-    .node-3d:hover:not(.dim) .sphere { transform: scale(1.15); }
-    .node-3d.outcome .sphere { background: rgba(59,130,246,0.3); border-color: #3b82f6; color: #93c5fd; }
-    .node-3d.treatment .sphere { background: rgba(245,158,11,0.3); border-color: #f59e0b; color: #fcd34d; }
-    .node-3d.mediator .sphere { background: rgba(16,185,129,0.3); border-color: #10b981; color: #6ee7b7; }
-    .node-3d.confounder .sphere { background: rgba(139,92,246,0.3); border-color: #8b5cf6; color: #c4b5fd; }
-    .node-3d.other .sphere { background: rgba(100,100,110,0.2); border-color: #555; color: #999; width: 50px; height: 50px; font-size: 10px; }
-    .selection-info { position: absolute; bottom: 16px; left: 16px; background: rgba(20,20,30,0.95); border: 1px solid #2a2a3a; border-radius: 10px; padding: 14px 18px; backdrop-filter: blur(10px); min-width: 280px; z-index: 5; }
-    .selection-info .si-title { font-size: 11px; color: #666; margin-bottom: 6px; }
-    .selection-info .nodes { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 10px; min-height: 24px; }
-    .node-tag { padding: 3px 8px; border-radius: 5px; font-size: 10px; font-weight: 500; }
-    .node-tag.outcome { background: rgba(59,130,246,0.2); color: #93c5fd; }
-    .node-tag.treatment { background: rgba(245,158,11,0.2); color: #fcd34d; }
-    .node-tag.mediator { background: rgba(16,185,129,0.2); color: #6ee7b7; }
-    .node-tag.confounder { background: rgba(139,92,246,0.2); color: #c4b5fd; }
-    .si-stats { display: flex; gap: 16px; font-size: 11px; color: #888; }
-    .si-stats .val { color: #fff; font-weight: 600; }
-    .graph-legend { position: absolute; bottom: 16px; right: 16px; background: rgba(26,26,26,0.95); border: 1px solid #2a2a2a; border-radius: 8px; padding: 12px 14px; z-index: 5; }
-    .graph-legend .lg-title { font-size: 10px; color: #666; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
-    .legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: #888; margin-bottom: 4px; }
-    .legend-item:last-child { margin-bottom: 0; }
-    .legend-dot { width: 8px; height: 8px; border-radius: 50%; border: 2px solid; }
-    .legend-dot.outcome { border-color: #3b82f6; background: rgba(59,130,246,0.3); }
-    .legend-dot.treatment { border-color: #f59e0b; background: rgba(245,158,11,0.3); }
-    .legend-dot.mediator { border-color: #10b981; background: rgba(16,185,129,0.3); }
-    .legend-dot.confounder { border-color: #8b5cf6; background: rgba(139,92,246,0.3); }
-    .drag-hint { position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%); font-size: 10px; color: #333; z-index: 5; }
-
-    /* ===== RIGHT: AUDIT PANEL ===== */
-    .audit-panel { width: 300px; background: #1a1a1a; border-left: 1px solid #2a2a2a; display: flex; flex-direction: column; flex-shrink: 0; }
-    .audit-tabs { display: flex; border-bottom: 1px solid #2a2a2a; }
-    .audit-tab { flex: 1; padding: 12px; background: transparent; border: none; border-bottom: 2px solid transparent; color: #666; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; }
-    .audit-tab.active { color: #e5e5e5; border-bottom-color: #3b82f6; }
-    .audit-tab .badge { font-size: 10px; padding: 1px 6px; border-radius: 8px; background: #333; color: #888; }
-    .audit-view { display: none; flex: 1; flex-direction: column; overflow: hidden; }
-    .audit-view.active { display: flex; }
-    .audit-log { flex: 1; overflow-y: auto; }
-    .log-entry { display: flex; gap: 10px; padding: 10px 14px; border-bottom: 1px solid #222; font-size: 11px; align-items: flex-start; }
-    .log-time { color: #555; font-family: 'SF Mono', Monaco, monospace; font-size: 10px; min-width: 46px; padding-top: 1px; }
-    .log-body { flex: 1; }
-    .log-action { color: #e5e5e5; font-weight: 500; }
-    .log-detail { color: #555; font-size: 10px; margin-top: 2px; }
-    .log-icon { font-size: 14px; }
-    .log-footer { padding: 10px 14px; border-top: 1px solid #2a2a2a; display: flex; justify-content: space-between; font-size: 10px; color: #555; }
-
-    .export-content { padding: 14px; flex: 1; overflow-y: auto; }
-    .export-rules-header { font-size: 11px; font-weight: 600; color: #64748b; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
-    .export-rule { display: flex; align-items: center; gap: 8px; padding: 6px 0; font-size: 12px; color: #94a3b8; }
-    .export-rule .ri { font-size: 12px; }
-    .export-rule .ri.ok { color: #22c55e; }
-    .export-rule .ri.no { color: #ef4444; }
-    .export-rule.blocked { color: #555; }
-    .export-divider { height: 1px; background: #2a2a2a; margin: 14px 0; }
-    .export-queue-header { font-size: 11px; font-weight: 600; color: #64748b; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
-    .export-empty { font-size: 12px; color: #444; line-height: 1.6; padding: 16px; text-align: center; background: #151515; border-radius: 8px; }
-    .export-request-btn { width: 100%; padding: 12px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); border: none; border-radius: 8px; color: white; font-size: 12px; font-weight: 600; cursor: pointer; margin-top: 14px; }
-    .export-note { font-size: 10px; color: #555; margin-top: 8px; text-align: center; line-height: 1.4; }
-
-    /* ===== BOTTOM STATUS BAR ===== */
-    .bottom-bar { padding: 8px 24px; background: rgba(26,26,26,0.95); border-top: 1px solid #2a2a2a; display: flex; align-items: center; gap: 18px; font-size: 11px; flex-shrink: 0; }
-    .bar-item { display: flex; align-items: center; gap: 5px; color: #64748b; }
-    .bar-dot { width: 6px; height: 6px; border-radius: 50%; }
-    .bar-dot.green { background: #22c55e; }
-    .bar-dot.blue { background: #3b82f6; }
-    .bar-dot.amber { background: #f59e0b; }
-    .bar-dot.purple { background: #8b5cf6; }
-    .bar-item .bv { color: #e5e5e5; font-weight: 500; }
-
-    /* Placeholder tool */
-    .tool-placeholder { flex: 1; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 14px; color: #555; }
-    .tool-placeholder .tp-icon { font-size: 40px; }
-    .tool-placeholder .tp-title { font-size: 16px; font-weight: 600; color: #94a3b8; }
-    .tool-placeholder .tp-desc { font-size: 12px; max-width: 360px; text-align: center; line-height: 1.6; color: #555; }
-
-    /* ===== TERMINAL ===== */
-    .terminal-wrap { flex:1; display:flex; flex-direction:column; overflow:hidden; }
-    .terminal-toolbar { display:flex; align-items:center; gap:10px; padding:10px 16px; background:#151515; border-bottom:1px solid #2a2a2a; }
-    .lang-selector { display:flex; background:#252525; border-radius:6px; padding:2px; }
-    .lang-btn { padding:5px 12px; border:none; background:transparent; color:#888; font-size:11px; border-radius:4px; cursor:pointer; font-family:'SF Mono',Monaco,monospace; }
-    .lang-btn.active { background:#3b82f6; color:white; }
-    .terminal-env { font-size:10px; color:#555; margin-left:auto; display:flex; align-items:center; gap:12px; }
-    .terminal-env .env-item { display:flex; align-items:center; gap:4px; }
-    .terminal-env .env-dot { width:6px; height:6px; border-radius:50%; background:#22c55e; }
-    .terminal-cells { flex:1; overflow-y:auto; padding:12px 16px; display:flex; flex-direction:column; gap:8px; }
-    .cell { border:1px solid #2a2a2a; border-radius:10px; overflow:hidden; background:#1a1a1a; }
-    .cell:hover { border-color:#333; }
-    .cell.running { border-color:rgba(59,130,246,0.5); }
-    .cell.running .cell-status { color:#3b82f6; }
-    .cell-header { display:flex; align-items:center; gap:8px; padding:6px 12px; background:#151515; border-bottom:1px solid #222; font-size:10px; }
-    .cell-num { color:#555; font-family:'SF Mono',Monaco,monospace; min-width:40px; }
-    .cell-status { color:#22c55e; font-size:9px; }
-    .cell-time { margin-left:auto; color:#444; font-family:'SF Mono',Monaco,monospace; }
-    .cell-run-btn { padding:3px 10px; background:rgba(34,197,94,0.15); border:1px solid rgba(34,197,94,0.3); border-radius:4px; color:#22c55e; font-size:10px; cursor:pointer; border:none; }
-    .cell-run-btn:hover { background:rgba(34,197,94,0.25); }
-    .cell-code { padding:12px 16px; font-family:'SF Mono',Monaco,'Courier New',monospace; font-size:12px; line-height:1.7; color:#e5e5e5; white-space:pre; overflow-x:auto; background:#0d1117; }
-    .cell-code .kw { color:#ff7b72; }
-    .cell-code .fn { color:#d2a8ff; }
-    .cell-code .str { color:#a5d6ff; }
-    .cell-code .cm { color:#8b949e; font-style:italic; }
-    .cell-code .num { color:#79c0ff; }
-    .cell-code .var { color:#ffa657; }
-    .cell-code .op { color:#ff7b72; }
-    .cell-output { padding:12px 16px; background:#111; border-top:1px solid #222; font-family:'SF Mono',Monaco,monospace; font-size:11px; line-height:1.6; color:#94a3b8; overflow-x:auto; }
-    .cell-output .out-label { color:#555; font-size:10px; margin-bottom:4px; }
-    .cell-output table { border-collapse:collapse; width:100%; margin-top:6px; }
-    .cell-output th { text-align:left; padding:4px 10px; font-size:10px; color:#64748b; border-bottom:1px solid #333; font-weight:600; }
-    .cell-output td { padding:4px 10px; font-size:11px; color:#e5e5e5; border-bottom:1px solid #1e1e1e; }
-    .cell-output .out-chart { height:120px; background:rgba(59,130,246,0.05); border:1px solid #2a2a2a; border-radius:6px; margin-top:8px; display:flex; align-items:flex-end; padding:8px 12px; gap:3px; }
-    .cell-output .chart-bar { background:linear-gradient(to top, #3b82f6, #8b5cf6); border-radius:2px 2px 0 0; flex:1; min-width:0; transition:height 0.3s; }
-    .cell-output .dp-warn { margin-top:8px; padding:6px 10px; background:rgba(245,158,11,0.08); border:1px solid rgba(245,158,11,0.2); border-radius:6px; font-size:10px; color:#f59e0b; display:flex; align-items:center; gap:6px; }
-    .terminal-input-area { padding:12px 16px; border-top:1px solid #2a2a2a; background:#151515; display:flex; align-items:center; gap:8px; }
-    .terminal-input-area .prompt-sign { color:#22c55e; font-family:'SF Mono',Monaco,monospace; font-size:13px; font-weight:700; }
-    .terminal-input { flex:1; background:#0d1117; border:1px solid #333; border-radius:8px; padding:10px 14px; color:#e5e5e5; font-family:'SF Mono',Monaco,monospace; font-size:12px; outline:none; }
-    .terminal-input:focus { border-color:#3b82f6; }
-    .terminal-run-btn { padding:10px 20px; background:linear-gradient(135deg, #22c55e, #16a34a); border:none; border-radius:8px; color:white; font-size:12px; font-weight:600; cursor:pointer; }
-    .terminal-run-btn:hover { opacity:0.9; }
-    .terminal-shortcuts { display:flex; gap:6px; }
-    .terminal-shortcut { padding:4px 8px; background:#252525; border:1px solid #333; border-radius:4px; font-size:9px; color:#888; cursor:pointer; font-family:'SF Mono',Monaco,monospace; }
-    .terminal-shortcut:hover { border-color:#3b82f6; color:#ccc; }
-
-    /* Nav links */
-    .nav-links { display: flex; gap: 10px; padding: 14px 24px; border-top: 1px solid #2a2a2a; }
-    .nav-links a { padding: 6px 12px; background: #252525; border-radius: 6px; text-decoration: none; color: #888; font-size: 12px; }
-    .nav-links a:hover { background: #333; color: #fff; }
-
-    /* Algo options (for config panel in active session) */
-    .algo-option { padding: 10px; border: 1px solid #2a2a2a; border-radius: 8px; margin-bottom: 6px; cursor: pointer; transition: all 0.15s; }
-    .algo-option:hover { border-color: #444; }
-    .algo-option.selected { border-color: #8b5cf6; background: rgba(139,92,246,0.1); }
-    .algo-option .name { font-size: 12px; font-weight: 500; margin-bottom: 3px; display: flex; align-items: center; gap: 6px; }
-    .algo-option .name .badge { font-size: 9px; padding: 1px 5px; border-radius: 3px; background: #8b5cf6; color: white; }
-    .algo-option .desc { font-size: 10px; color: #666; line-height: 1.3; }
-    .threshold-slider { margin-bottom: 12px; }
-    .threshold-slider .ts-header { display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 6px; }
-    .threshold-slider .ts-label { color: #888; }
-    .threshold-slider .ts-value { color: #3b82f6; font-weight: 600; }
-    .threshold-slider input[type="range"] { width: 100%; height: 4px; -webkit-appearance: none; background: #333; border-radius: 2px; }
-    .threshold-slider input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 12px; background: #3b82f6; border-radius: 50%; cursor: pointer; }
+    /* Designer Notes */
+    .notes { margin:0 16px 16px; }
+    .notes details { background:#111; border:1px solid #1e1e1e; border-radius:8px; }
+    .notes summary { padding:10px 14px; font-size:12px; color:#555; cursor:pointer; }
+    .notes .nc { padding:14px; font-size:12px; color:#64748b; line-height:1.7; }
+    .notes h4 { color:#94a3b8; margin:12px 0 4px; font-size:12px; }
+    .notes h4:first-child { margin-top:0; }
+    .notes strong { color:#c9d1d9; }
   </style>
 </head>
 <body>
   <div class="layout">
-    <!-- ===== SIDEBAR ===== -->
+    <!-- Sidebar -->
     <div class="sidebar">
-      <div class="logo">
-        <div class="logo-icon">U</div>
-        UniQdata
-      </div>
-
-      <div class="nav-section">
+      <div class="logo"><div class="logo-icon">U</div>UniQdata</div>
+      <div style="margin-bottom:8px;">
         <a href="list.html" class="nav-item"><span class="icon">🏠</span> 연구 허브</a>
-        <a href="create.html" class="nav-item"><span class="icon">➕</span> 새 연구</a>
-        <a href="irb-submission.html" class="nav-item"><span class="icon">📝</span> IRB 심의 신청</a>
-        <a href="irb-status.html" class="nav-item"><span class="icon">📊</span> IRB 현황</a>
         <a href="action-center.html" class="nav-item"><span class="icon">🔔</span> 조치 센터</a>
       </div>
-
-      <div class="nav-section" style="flex: 1; overflow-y: auto; padding-top: 8px; border-top: 1px solid #2a2a2a;">
-        <div style="font-size: 10px; color: #64748b; padding: 6px 12px; text-transform: uppercase; letter-spacing: 0.5px;">내 연구 <span style="background: #3b82f6; color: white; padding: 1px 6px; border-radius: 8px; font-size: 9px; margin-left: 4px;">3</span></div>
-
+      <div style="flex:1; overflow-y:auto; padding-top:8px; border-top:1px solid #1e1e1e;">
+        <div style="font-size:10px; color:#444; padding:6px 12px; text-transform:uppercase; letter-spacing:0.5px;">내 연구</div>
         <div class="research-nav-item expanded">
           <div class="research-nav-header">
-            <span class="folder-icon">📁</span>
-            <span class="research-title">당뇨병 복약 순응도</span>
+            <span style="font-size:13px;">📁</span>
+            <span class="research-title">위고비 대사개선 연구</span>
             <span class="status-dot active"></span>
           </div>
           <div class="research-nav-sub">
@@ -343,927 +162,259 @@
             <a href="clean-room.html" class="nav-sub-item active"><span class="dot"></span> 🔒 클린룸</a>
           </div>
         </div>
-
-        <div class="research-nav-item" style="opacity: 0.6;">
-          <div class="research-nav-header">
-            <span class="folder-icon">📁</span>
-            <span class="research-title">노인 수면 패턴</span>
-            <span class="status-dot recruiting"></span>
-          </div>
+        <div class="research-nav-item" style="opacity:0.5;">
+          <div class="research-nav-header"><span style="font-size:13px;">📁</span><span class="research-title">노인 수면 패턴</span><span class="status-dot recruiting"></span></div>
         </div>
-        <div class="research-nav-item" style="opacity: 0.6;">
-          <div class="research-nav-header">
-            <span class="folder-icon">📄</span>
-            <span class="research-title">ADHD 생활습관</span>
-            <span class="status-dot draft"></span>
-          </div>
+        <div class="research-nav-item" style="opacity:0.5;">
+          <div class="research-nav-header"><span style="font-size:13px;">📄</span><span class="research-title">ADHD 생활습관</span><span class="status-dot draft"></span></div>
         </div>
       </div>
-
-      <div class="nav-section">
-        <a href="../team.html" class="nav-item"><span class="icon">👥</span> 팀</a>
-        <a href="../billing.html" class="nav-item"><span class="icon">💳</span> 결제</a>
-        <a href="#" class="nav-item"><span class="icon">⚙️</span> 설정</a>
-      </div>
-
-      <div style="padding: 12px; border-top: 1px solid #2a2a2a;">
-        <div style="display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: 8px; cursor: pointer;" onmouseover="this.style.background='#252525'" onmouseout="this.style.background='transparent'">
-          <div style="width: 32px; height: 32px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; color: white;">김</div>
-          <div>
-            <div style="font-size: 13px; color: #e2e8f0;">김연구</div>
-            <div style="font-size: 11px; color: #64748b;">서울대학교병원</div>
-          </div>
+      <div style="padding:12px; border-top:1px solid #1e1e1e;">
+        <div style="display:flex; align-items:center; gap:10px; padding:8px;">
+          <div style="width:30px; height:30px; background:linear-gradient(135deg,#3b82f6,#8b5cf6); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:11px; color:white;">김</div>
+          <div><div style="font-size:12px;">김연구</div><div style="font-size:10px; color:#555;">서울대학교병원</div></div>
         </div>
       </div>
     </div>
 
-    <!-- ===== MAIN ===== -->
+    <!-- Main -->
     <div class="main">
-      <div class="header">
-        <div class="header-left">
-          <h1><span class="icon">🔒</span> 클린룸</h1>
-          <div class="sub">보안 분석 환경 · 당뇨병 복약 순응도 연구</div>
-        </div>
-        <div class="header-actions">
-          <button class="header-btn primary" id="btn-start" onclick="startSession()">🔐 세션 시작</button>
-          <button class="header-btn danger" id="btn-end" onclick="endSession()" style="display:none;">⏹ 세션 종료</button>
-        </div>
-      </div>
 
-      <!-- ========== SESSION GATE ========== -->
-      <div id="session-gate" class="session-gate">
-        <div class="gate-hero">
-          <div class="gate-icon">🔒</div>
-          <h2>클린룸 세션 시작</h2>
-          <p class="gate-desc">보안 분석 환경에 입장합니다. 데이터 범위를 설정하고 보안 동의를 확인하세요.</p>
-        </div>
-
-        <div class="gate-content">
-          <!-- Step 1: Data Scope -->
-          <div class="gate-card">
-            <div class="gate-card-header">
-              <span class="step-badge">1</span>
-              데이터 범위 설정
-            </div>
-            <div class="gate-card-body">
-              <div class="gate-field">
-                <label>코호트</label>
-                <select>
-                  <option selected>당뇨병 2형 — 서울대병원 (n=87)</option>
-                  <option>전체 코호트 (n=342)</option>
-                </select>
-              </div>
-              <div class="gate-field">
-                <label>분석 변수</label>
-                <div class="var-chips">
-                  <span class="var-chip">혈당 변동성</span>
-                  <span class="var-chip">복약 순응도</span>
-                  <span class="var-chip">수면 질</span>
-                  <span class="var-chip">스트레스</span>
-                  <span class="var-chip">체중</span>
-                  <span class="var-chip">HbA1c</span>
-                  <span class="var-chip">혈압</span>
-                  <span class="var-chip">운동량</span>
-                  <span class="var-chip">식이 패턴</span>
-                  <span class="var-chip">인슐린</span>
-                  <span class="var-chip">BMI</span>
-                  <span class="var-chip">유병 기간</span>
-                  <span class="var-chip add">+ 변수 추가</span>
-                </div>
-                <div style="font-size: 10px; color: #64748b; margin-top: 6px;">12개 선택 / 847개 가능</div>
-              </div>
-              <div class="gate-field-row">
-                <div class="gate-field">
-                  <label>시작일</label>
-                  <input type="date" value="2025-06-01">
-                </div>
-                <div class="gate-field">
-                  <label>종료일</label>
-                  <input type="date" value="2026-01-31">
-                </div>
-              </div>
-              <div class="gate-field">
-                <label>개인정보 보호 수준</label>
-                <select>
-                  <option selected>비식별 집계 (Aggregated)</option>
-                  <option>가명처리 (Pseudonymized)</option>
-                  <option>레코드 수준 (IRB 특별 승인 필요)</option>
-                </select>
-              </div>
-            </div>
+      <!-- Gate (before session) -->
+      <div class="gate" id="gate">
+        <div class="gate-box">
+          <h2>🔒 클린룸 입장</h2>
+          <p>격리된 가상 환경(VPC)에서 비식별 데이터로 분석을 수행합니다.<br>원본 데이터 접근 불가 · 모든 활동 감사 기록 · 결과 반출 승인 필수</p>
+          <div class="gate-info">
+            <div class="gate-info-item"><div class="gi-label">코호트</div><div class="gi-value">위고비 대사개선 · 87명</div></div>
+            <div class="gate-info-item"><div class="gi-label">변수</div><div class="gi-value">12개 · 비식별 집계</div></div>
+            <div class="gate-info-item"><div class="gi-label">IRB</div><div class="gi-value" style="color:#22c55e;">IRB-2025-0847 승인됨</div></div>
+            <div class="gate-info-item"><div class="gi-label">인프라</div><div class="gi-value">VPC ap-northeast-2 · k≥5</div></div>
           </div>
-
-          <!-- Step 2: Security -->
-          <div class="gate-card security">
-            <div class="gate-card-header">
-              <span class="step-badge">2</span>
-              보안 동의
-              <span class="irb-badge">IRB-2025-0847</span>
-            </div>
-            <div class="gate-card-body">
-              <label class="security-check">
-                <input type="checkbox" class="sec-check">
-                <div>
-                  <div class="check-title">원본 데이터 접근 불가</div>
-                  <div class="check-desc">개별 레코드 열람이 불가하며, 집계 결과만 확인할 수 있습니다.</div>
-                </div>
-              </label>
-              <label class="security-check">
-                <input type="checkbox" class="sec-check">
-                <div>
-                  <div class="check-title">감사 로그 기록</div>
-                  <div class="check-desc">모든 쿼리, 분석 실행, 결과 열람이 기록됩니다.</div>
-                </div>
-              </label>
-              <label class="security-check">
-                <input type="checkbox" class="sec-check">
-                <div>
-                  <div class="check-title">내보내기 승인 필수</div>
-                  <div class="check-desc">분석 결과 내보내기는 PI 승인 후에만 가능합니다.</div>
-                </div>
-              </label>
-              <label class="security-check">
-                <input type="checkbox" class="sec-check">
-                <div>
-                  <div class="check-title">세션 종료 시 로컬 데이터 삭제</div>
-                  <div class="check-desc">세션 종료 시 브라우저 캐시의 분석 데이터가 삭제됩니다.</div>
-                </div>
-              </label>
-            </div>
+          <div class="gate-checks">
+            <label><input type="checkbox" class="gc"> 원본 데이터에 직접 접근할 수 없음을 이해합니다</label>
+            <label><input type="checkbox" class="gc"> 모든 쿼리·열람이 감사 로그에 기록됩니다</label>
+            <label><input type="checkbox" class="gc"> 결과 내보내기는 PI 승인 후 가능합니다</label>
+            <label><input type="checkbox" class="gc"> 세션 종료 시 로컬 캐시가 삭제됩니다</label>
           </div>
-
-          <!-- Step 3: Preview -->
-          <div class="gate-card">
-            <div class="gate-card-header">
-              <span class="step-badge">3</span>
-              데이터 요약 미리보기
-            </div>
-            <div class="gate-card-body">
-              <div class="preview-grid">
-                <div class="preview-stat">
-                  <div class="stat-value">87명</div>
-                  <div class="stat-label">참여자</div>
-                </div>
-                <div class="preview-stat">
-                  <div class="stat-value">12개</div>
-                  <div class="stat-label">변수</div>
-                </div>
-                <div class="preview-stat">
-                  <div class="stat-value">7개월</div>
-                  <div class="stat-label">기간</div>
-                </div>
-                <div class="preview-stat">
-                  <div class="stat-value">94.2%</div>
-                  <div class="stat-label">데이터 품질</div>
-                </div>
-              </div>
-              <div class="privacy-checks">
-                <div class="privacy-item pass">✓ k-anonymity: k=5</div>
-                <div class="privacy-item">ε DP 예산: 1.00</div>
-                <div class="privacy-item">결측치: 5.8%</div>
-              </div>
-            </div>
-          </div>
-
-          <!-- VPC Architecture -->
-          <div class="gate-card">
-            <div class="gate-card-header">
-              <span class="step-badge">4</span>
-              가상 분석 환경 (VPC)
-              <span style="margin-left:auto; font-size:10px; color:#22c55e; background:rgba(34,197,94,0.1); padding:3px 8px; border-radius:4px; border:1px solid rgba(34,197,94,0.2);">준비 완료</span>
-            </div>
-            <div class="gate-card-body" style="padding:16px;">
-              <svg viewBox="0 0 680 320" style="width:100%; height:auto;">
-                <!-- Background -->
-                <rect x="0" y="0" width="680" height="320" rx="12" fill="#111827"/>
-
-                <!-- VPC Boundary -->
-                <rect x="140" y="20" width="400" height="280" rx="10" fill="none" stroke="#22c55e" stroke-width="2" stroke-dasharray="6,3" opacity="0.6"/>
-                <rect x="140" y="20" width="400" height="280" rx="10" fill="rgba(34,197,94,0.03)"/>
-                <text x="160" y="42" fill="#22c55e" font-size="11" font-weight="700" letter-spacing="0.5">🛡️ UniQdata VPC (ap-northeast-2)</text>
-
-                <!-- Subnet: Data Layer -->
-                <rect x="160" y="54" width="180" height="110" rx="8" fill="rgba(59,130,246,0.08)" stroke="rgba(59,130,246,0.3)" stroke-width="1"/>
-                <text x="176" y="72" fill="#60a5fa" font-size="9" font-weight="600">Private Subnet — Data</text>
-
-                <!-- Health DB -->
-                <rect x="176" y="82" width="68" height="36" rx="6" fill="#1e293b" stroke="#334155" stroke-width="1"/>
-                <text x="210" y="98" fill="#94a3b8" font-size="8" text-anchor="middle" font-weight="600">health_db</text>
-                <text x="210" y="110" fill="#64748b" font-size="7" text-anchor="middle">환자 데이터</text>
-
-                <!-- Consent Store -->
-                <rect x="258" y="82" width="68" height="36" rx="6" fill="#1e293b" stroke="#334155" stroke-width="1"/>
-                <text x="292" y="98" fill="#94a3b8" font-size="8" text-anchor="middle" font-weight="600">consent_db</text>
-                <text x="292" y="110" fill="#64748b" font-size="7" text-anchor="middle">동의 관리</text>
-
-                <!-- k-anon engine -->
-                <rect x="176" y="126" width="150" height="28" rx="5" fill="rgba(34,197,94,0.1)" stroke="rgba(34,197,94,0.3)" stroke-width="1"/>
-                <text x="251" y="144" fill="#22c55e" font-size="8" text-anchor="middle" font-weight="600">k-Anonymity + DP Engine</text>
-
-                <!-- Subnet: Compute Layer -->
-                <rect x="360" y="54" width="164" height="110" rx="8" fill="rgba(139,92,246,0.08)" stroke="rgba(139,92,246,0.3)" stroke-width="1"/>
-                <text x="376" y="72" fill="#a78bfa" font-size="9" font-weight="600">Private Subnet — Compute</text>
-
-                <!-- Clean Room Container -->
-                <rect x="376" y="82" width="132" height="72" rx="6" fill="#1e293b" stroke="#8b5cf6" stroke-width="1.5"/>
-                <text x="442" y="98" fill="#c4b5fd" font-size="9" text-anchor="middle" font-weight="700">🔒 클린룸 컨테이너</text>
-                <text x="442" y="112" fill="#64748b" font-size="7" text-anchor="middle">격리된 분석 환경</text>
-
-                <!-- Tools inside container -->
-                <rect x="384" y="120" width="50" height="18" rx="3" fill="rgba(59,130,246,0.15)" stroke="rgba(59,130,246,0.3)" stroke-width="0.5"/>
-                <text x="409" y="132" fill="#93c5fd" font-size="6" text-anchor="middle">인과발견</text>
-                <rect x="440" y="120" width="32" height="18" rx="3" fill="rgba(59,130,246,0.15)" stroke="rgba(59,130,246,0.3)" stroke-width="0.5"/>
-                <text x="456" y="132" fill="#93c5fd" font-size="6" text-anchor="middle">SHAP</text>
-                <rect x="478" y="120" width="26" height="18" rx="3" fill="rgba(59,130,246,0.15)" stroke="rgba(59,130,246,0.3)" stroke-width="0.5"/>
-                <text x="491" y="132" fill="#93c5fd" font-size="6" text-anchor="middle">+3</text>
-
-                <!-- Arrow: data → compute -->
-                <line x1="340" y1="110" x2="374" y2="110" stroke="#4ade80" stroke-width="1.5" marker-end="url(#arrowG)"/>
-                <text x="357" y="104" fill="#4ade80" font-size="6" text-anchor="middle">비식별</text>
-
-                <!-- Audit & Logging -->
-                <rect x="160" y="180" width="360" height="50" rx="8" fill="rgba(245,158,11,0.06)" stroke="rgba(245,158,11,0.25)" stroke-width="1"/>
-                <text x="176" y="198" fill="#fbbf24" font-size="9" font-weight="600">감사 로그 (Audit Trail)</text>
-                <text x="176" y="212" fill="#64748b" font-size="7">모든 쿼리 · 결과 조회 · 내보내기 요청 기록</text>
-                <text x="176" y="222" fill="#64748b" font-size="7">CloudTrail + 커스텀 이벤트 로그 → 변경 불가 저장</text>
-
-                <!-- Export Gateway -->
-                <rect x="160" y="244" width="360" height="44" rx="8" fill="rgba(139,92,246,0.06)" stroke="rgba(139,92,246,0.25)" stroke-width="1"/>
-                <text x="176" y="262" fill="#a78bfa" font-size="9" font-weight="600">내보내기 게이트웨이</text>
-                <text x="176" y="276" fill="#64748b" font-size="7">집계 결과만 통과 · 개별 레코드 차단 · PI 승인 필수</text>
-
-                <!-- Researcher (outside VPC, left) -->
-                <rect x="12" y="80" width="108" height="64" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1"/>
-                <text x="66" y="100" fill="#e5e5e5" font-size="10" text-anchor="middle" font-weight="600">👩‍🔬 연구자</text>
-                <text x="66" y="114" fill="#64748b" font-size="7" text-anchor="middle">브라우저 (HTTPS)</text>
-                <text x="66" y="126" fill="#64748b" font-size="7" text-anchor="middle">김연구 · 서울대병원</text>
-                <!-- Arrow: researcher → VPC -->
-                <line x1="120" y1="112" x2="156" y2="112" stroke="#60a5fa" stroke-width="1.5" marker-end="url(#arrowB)"/>
-                <text x="138" y="106" fill="#60a5fa" font-size="6" text-anchor="middle">TLS</text>
-
-                <!-- Export output (outside VPC, right) -->
-                <rect x="560" y="246" width="108" height="40" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1"/>
-                <text x="614" y="264" fill="#e5e5e5" font-size="9" text-anchor="middle" font-weight="600">📥 승인된 결과</text>
-                <text x="614" y="276" fill="#64748b" font-size="7" text-anchor="middle">집계 통계 · 차트 이미지</text>
-                <!-- Arrow: gateway → export -->
-                <line x1="520" y1="266" x2="558" y2="266" stroke="#a78bfa" stroke-width="1.5" marker-end="url(#arrowP)"/>
-
-                <!-- Blocked indicator -->
-                <rect x="560" y="86" width="108" height="40" rx="8" fill="rgba(239,68,68,0.08)" stroke="rgba(239,68,68,0.3)" stroke-width="1"/>
-                <text x="614" y="104" fill="#ef4444" font-size="9" text-anchor="middle" font-weight="600">🚫 차단됨</text>
-                <text x="614" y="116" fill="#ef4444" font-size="7" text-anchor="middle" opacity="0.7">원본 데이터 반출 불가</text>
-                <line x1="540" y1="106" x2="558" y2="106" stroke="#ef4444" stroke-width="1" stroke-dasharray="3,2"/>
-
-                <!-- Arrow markers -->
-                <defs>
-                  <marker id="arrowG" markerWidth="6" markerHeight="4" refX="5" refY="2" orient="auto"><path d="M0,0 L6,2 L0,4" fill="#4ade80"/></marker>
-                  <marker id="arrowB" markerWidth="6" markerHeight="4" refX="5" refY="2" orient="auto"><path d="M0,0 L6,2 L0,4" fill="#60a5fa"/></marker>
-                  <marker id="arrowP" markerWidth="6" markerHeight="4" refX="5" refY="2" orient="auto"><path d="M0,0 L6,2 L0,4" fill="#a78bfa"/></marker>
-                </defs>
-              </svg>
-
-              <!-- VPC Legend -->
-              <div style="display:flex; gap:16px; margin-top:10px; font-size:10px; color:#64748b; flex-wrap:wrap;">
-                <span style="display:flex; align-items:center; gap:4px;"><span style="width:10px; height:10px; border:1.5px dashed #22c55e; border-radius:2px;"></span> VPC 경계</span>
-                <span style="display:flex; align-items:center; gap:4px;"><span style="width:10px; height:10px; background:rgba(59,130,246,0.15); border:1px solid rgba(59,130,246,0.3); border-radius:2px;"></span> 데이터 서브넷</span>
-                <span style="display:flex; align-items:center; gap:4px;"><span style="width:10px; height:10px; background:rgba(139,92,246,0.15); border:1px solid rgba(139,92,246,0.3); border-radius:2px;"></span> 컴퓨트 서브넷</span>
-                <span style="display:flex; align-items:center; gap:4px;"><span style="width:10px; height:3px; background:#4ade80; border-radius:1px;"></span> 비식별 데이터 흐름</span>
-                <span style="display:flex; align-items:center; gap:4px;"><span style="width:10px; height:3px; background:#ef4444; border-radius:1px; opacity:0.6;"></span> 차단</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Enter -->
-          <div class="gate-actions">
-            <button class="gate-enter-btn" onclick="startSession()">🔐 클린룸 입장</button>
-            <div class="gate-footnote">세션은 최대 4시간 유지됩니다. 이후 자동 종료됩니다.</div>
-          </div>
+          <button class="gate-btn" onclick="enter()">🔐 클린룸 입장</button>
+          <div class="gate-note">세션 최대 4시간 · 자동 종료</div>
         </div>
       </div>
 
-      <!-- ========== ACTIVE SESSION ========== -->
-      <div id="active-session" style="display:none; flex:1; flex-direction:column; overflow:hidden;">
+      <!-- Active Session -->
+      <div id="session" style="display:none; flex:1; display:none; flex-direction:column; overflow:hidden;">
 
-        <!-- Session Status Bar -->
+        <!-- Session bar -->
         <div class="session-bar">
-          <div class="session-indicator">
-            <span class="session-live-dot"></span>
-            <span class="session-label">세션 활성</span>
+          <div class="sb-live"><span class="sb-dot"></span><span class="sb-label">세션</span></div>
+          <span class="sb-meta"><b id="elapsed">00:00</b></span>
+          <div class="sb-chips">
+            <span class="sb-chip">위고비 대사개선</span>
+            <span class="sb-chip">87명 · 12변수</span>
+            <span class="sb-chip">k≥5 · ε 1.00</span>
           </div>
-          <div class="session-meta">
-            <span>ID: <span class="val">CR-2026-0214-001</span></span>
-            <span>경과: <span class="val" id="session-elapsed">00:00:00</span></span>
-            <span>만료: <span class="val">3:59:59 남음</span></span>
-          </div>
-          <div class="session-chips">
-            <span class="session-chip">당뇨병 2형</span>
-            <span class="session-chip">87명</span>
-            <span class="session-chip">12변수</span>
-            <span class="session-chip">7개월</span>
-          </div>
-          <div class="session-right">
-            <div class="security-badge">🛡️ 보안: 높음</div>
-            <button class="session-end-btn" onclick="endSession()">⏹ 종료</button>
+          <div class="sb-right">
+            <span class="sb-security">🛡️ IRB-2025-0847</span>
+            <button class="sb-end" onclick="leave()">⏹ 종료</button>
           </div>
         </div>
 
-        <!-- 3-panel content -->
-        <div class="active-content">
-
-          <!-- LEFT: Config Panel -->
-          <div class="config-panel">
-            <div class="config-section">
-              <div class="title">📋 데이터 범위</div>
-              <div class="scope-summary">
-                <div class="scope-row"><span class="label">코호트</span><span class="value">당뇨병 2형</span></div>
-                <div class="scope-row"><span class="label">참여자</span><span class="value">87명</span></div>
-                <div class="scope-row"><span class="label">변수</span><span class="value">12개</span></div>
-                <div class="scope-row"><span class="label">기간</span><span class="value">2025-06 ~ 2026-01</span></div>
-                <div class="scope-row"><span class="label">보호 수준</span><span class="value">비식별 집계</span></div>
-              </div>
-              <div class="scope-locked">🔒 세션 중 데이터 범위 변경 불가</div>
+        <!-- Terminal -->
+        <div class="terminal-area">
+          <div class="term-toolbar">
+            <div class="lang-sel">
+              <button class="lang-btn active">Python</button>
+              <button class="lang-btn">R</button>
+              <button class="lang-btn">SQL</button>
             </div>
-
-            <div class="config-section">
-              <div class="title">🛡️ 보안 상태</div>
-              <div class="security-meter">
-                <div class="meter-header"><span class="m-label">k-anonymity</span><span class="m-value pass">k=5 ✓</span></div>
-                <div class="meter-bar"><div class="meter-fill pass" style="width:100%"></div></div>
-              </div>
-              <div class="security-meter">
-                <div class="meter-header"><span class="m-label">DP 예산 (ε)</span><span class="m-value">0.15 / 1.00</span></div>
-                <div class="meter-bar"><div class="meter-fill dp" style="width:15%"></div></div>
-                <div class="meter-footnote">쿼리당 ~0.05ε 소모</div>
-              </div>
-              <div class="security-meter">
-                <div class="meter-header"><span class="m-label">쿼리 실행</span><span class="m-value">3 / 50</span></div>
-                <div class="meter-bar"><div class="meter-fill query" style="width:6%"></div></div>
-              </div>
-            </div>
-
-            <div class="config-section">
-              <div class="title">📄 IRB 정보</div>
-              <div class="irb-card">
-                <div class="irb-row"><span class="label">승인번호</span><span class="value">IRB-2025-0847</span></div>
-                <div class="irb-row"><span class="label">PI</span><span class="value">김연구 교수</span></div>
-                <div class="irb-row"><span class="label">만료일</span><span class="value">2026-08-15</span></div>
-                <div class="irb-row"><span class="label">상태</span><span class="value status-ok">승인됨</span></div>
-              </div>
-            </div>
-
-            <div class="config-section" id="tool-config">
-              <div class="title">⚙️ 분석 설정</div>
-              <div class="algo-option selected">
-                <div class="name">PC Algorithm <span class="badge">추천</span></div>
-                <div class="desc">조건부 독립성 테스트 기반. 빠르고 해석 용이.</div>
-              </div>
-              <div class="algo-option">
-                <div class="name">FCI</div>
-                <div class="desc">숨겨진 교란변수 허용. 더 보수적.</div>
-              </div>
-              <div class="algo-option">
-                <div class="name">NOTEARS</div>
-                <div class="desc">딥러닝 기반. 고차원에 적합.</div>
-              </div>
-              <div class="algo-option">
-                <div class="name">GES</div>
-                <div class="desc">스코어 기반 탐색.</div>
-              </div>
-
-              <div class="threshold-slider" style="margin-top: 14px;">
-                <div class="ts-header">
-                  <span class="ts-label">최소 인과 강도</span>
-                  <span class="ts-value" id="threshold-value">0.30</span>
-                </div>
-                <input type="range" id="threshold-range" min="0" max="1" step="0.05" value="0.3">
-              </div>
-              <div class="threshold-slider">
-                <div class="ts-header">
-                  <span class="ts-label">신뢰도 임계값</span>
-                  <span class="ts-value">0.95</span>
-                </div>
-                <input type="range" min="0.5" max="1" step="0.05" value="0.95">
-              </div>
+            <span style="font-size:10px; color:#333; margin-left:8px;">Shift+Enter 실행 · Tab 자동완성</span>
+            <div class="term-info">
+              <span><span class="ti-dot"></span>커널 연결</span>
+              <span>Python 3.11</span>
+              <span>RAM 4.2/16 GB</span>
             </div>
           </div>
 
-          <!-- CENTER: Analysis Area -->
-          <div class="analysis-area">
-            <div class="cr-tabs">
-              <span class="cr-tabs-label">분석 도구</span>
-              <button class="cr-tab active" onclick="switchTool('discovery')"><span>🔮</span> 인과발견</button>
-              <button class="cr-tab" onclick="switchTool('shap')"><span>📊</span> SHAP</button>
-              <button class="cr-tab" onclick="switchTool('cate')"><span>👤</span> CATE</button>
-              <button class="cr-tab" onclick="switchTool('whatif')"><span>🔄</span> What-If</button>
-              <button class="cr-tab" onclick="switchTool('rootcause')"><span>🔍</span> 이상추적</button>
-              <div style="width:1px; height:20px; background:#333; margin:0 4px;"></div>
-              <button class="cr-tab" onclick="switchTool('terminal')" style="border-color:rgba(34,197,94,0.3);"><span>💻</span> 터미널</button>
-              <span class="cr-tabs-note">🔒 클린룸 내 분석만 가능</span>
+          <div class="cells">
+
+            <!-- Cell 1 -->
+            <div class="cell">
+              <div class="cell-head">
+                <span class="cell-n">In [1]:</span>
+                <span class="cell-st done">✓</span>
+                <span class="cell-t">0.4s</span>
+                <button class="cell-run">▶</button>
+              </div>
+              <div class="code"><span class="k">import</span> pandas <span class="k">as</span> pd
+<span class="k">from</span> causallearn.search.ConstraintBased.PC <span class="k">import</span> <span class="f">pc</span>
+<span class="k">from</span> uniqdata.cleanroom <span class="k">import</span> <span class="f">SecureDataFrame</span>
+
+<span class="c"># 클린룸 데이터 로드 (비식별)</span>
+df = SecureDataFrame.<span class="f">load</span>(<span class="s">"cohort://wegovy-metabolism"</span>, k_anon=<span class="n">5</span>)
+<span class="f">print</span>(<span class="s">f"</span>{df.shape[<span class="n">0</span>]} <span class="s">rows × </span>{df.shape[<span class="n">1</span>]} <span class="s">cols"</span>)</div>
+              <div class="out">
+                87 rows × 12 cols
+                <div class="dp">⚠ ε 소모: 0.02 (잔여 0.98)</div>
+              </div>
             </div>
 
-            <!-- Discovery Tool -->
-            <div class="tool-content active" id="tool-discovery">
-              <div class="target-bar">
-                <span style="font-size: 16px;">🎯</span>
-                <span style="font-size: 12px; color: #94a3b8;">타겟:</span>
-                <select id="target-variable">
-                  <optgroup label="🩸 생체지표">
-                    <option value="glucose" selected>혈당 변동성 (Blood Glucose Variability)</option>
-                    <option>공복 혈당 (Fasting Glucose)</option>
-                    <option>당화혈색소 (HbA1c)</option>
-                    <option>혈압 (Blood Pressure)</option>
-                  </optgroup>
-                  <optgroup label="😴 수면">
-                    <option>수면 질 (Sleep Quality)</option>
-                  </optgroup>
-                  <optgroup label="💊 복약">
-                    <option>복약 순응도 (Medication Adherence)</option>
-                  </optgroup>
-                </select>
-                <div class="target-status">✓ 매트릭스 로드됨 | 42개 직접 연결</div>
-                <div style="margin-left:auto;">
-                  <button style="padding:6px 12px; background:#252525; border:1px solid #333; border-radius:6px; color:#94a3b8; font-size:11px; cursor:pointer;">🔍 경로 탐색</button>
+            <!-- Cell 2 -->
+            <div class="cell">
+              <div class="cell-head">
+                <span class="cell-n">In [2]:</span>
+                <span class="cell-st done">✓</span>
+                <span class="cell-t">1.2s</span>
+                <button class="cell-run">▶</button>
+              </div>
+              <div class="code"><span class="c"># 집계 통계 (개별 레코드 접근 차단)</span>
+df.<span class="f">describe_secure</span>()[[<span class="s">"HbA1c"</span>, <span class="s">"체중"</span>, <span class="s">"SBP"</span>, <span class="s">"복약순응도"</span>]]</div>
+              <div class="out">
+                <table>
+                  <tr><th></th><th>HbA1c</th><th>체중</th><th>SBP</th><th>복약순응도</th></tr>
+                  <tr><td style="color:#484f58;">mean</td><td>7.42</td><td>78.3</td><td>132.1</td><td>0.84</td></tr>
+                  <tr><td style="color:#484f58;">std</td><td>1.08</td><td>12.7</td><td>14.8</td><td>0.12</td></tr>
+                  <tr><td style="color:#484f58;">min</td><td>5.80</td><td>54.2</td><td>105</td><td>0.45</td></tr>
+                  <tr><td style="color:#484f58;">50%</td><td>7.30</td><td>76.8</td><td>130</td><td>0.87</td></tr>
+                  <tr><td style="color:#484f58;">max</td><td>11.2</td><td>118.5</td><td>178</td><td>1.00</td></tr>
+                </table>
+              </div>
+            </div>
+
+            <!-- Cell 3 -->
+            <div class="cell running">
+              <div class="cell-head">
+                <span class="cell-n">In [3]:</span>
+                <span class="cell-st run">⟳ 실행중</span>
+                <span class="cell-t">2.7s</span>
+                <button class="cell-run" style="color:#ef4444;">■</button>
+              </div>
+              <div class="code"><span class="c"># PC 알고리즘 — 인과 구조 탐색</span>
+cols = [<span class="s">"HbA1c"</span>, <span class="s">"체중"</span>, <span class="s">"SBP"</span>, <span class="s">"복약순응도"</span>,
+        <span class="s">"운동량"</span>, <span class="s">"식이패턴"</span>, <span class="s">"수면시간"</span>, <span class="s">"스트레스"</span>]
+
+X = df[cols].<span class="f">to_secure_matrix</span>()
+cg = <span class="f">pc</span>(X, alpha=<span class="n">0.05</span>, indep_test=<span class="s">"fisherz"</span>)
+
+<span class="c"># 인과 강도 시각화</span>
+<span class="k">from</span> uniqdata.viz <span class="k">import</span> <span class="f">causal_plot</span>
+<span class="f">causal_plot</span>(cg, labels=cols, target=<span class="s">"HbA1c"</span>)</div>
+              <div class="out">
+                <span class="ok">✓ 인과 엣지 14개 발견</span> · 신뢰도 94.2%
+                <div class="graph-out">
+                  <div style="font-size:9px; color:#484f58; margin-bottom:6px;">→ HbA1c 인과 경로 (강도순)</div>
+                  <div class="edge-row"><span class="edge-label">복약순응도 → HbA1c</span><span class="edge-val">-0.42</span><div class="edge-bar" style="width:84%;"></div></div>
+                  <div class="edge-row"><span class="edge-label">체중 → HbA1c</span><span class="edge-val">0.38</span><div class="edge-bar" style="width:76%;"></div></div>
+                  <div class="edge-row"><span class="edge-label">인슐린민감성 → HbA1c</span><span class="edge-val">-0.35</span><div class="edge-bar" style="width:70%;"></div></div>
+                  <div class="edge-row"><span class="edge-label">식이패턴 → HbA1c</span><span class="edge-val">0.28</span><div class="edge-bar" style="width:56%;"></div></div>
+                  <div class="edge-row"><span class="edge-label">스트레스 → HbA1c</span><span class="edge-val">0.19</span><div class="edge-bar" style="width:38%;"></div></div>
+                  <div class="edge-row"><span class="edge-label">연령 → HbA1c</span><span class="edge-val">0.15</span><div class="edge-bar" style="width:30%; opacity:0.5;"></div></div>
+                  <div class="edge-row"><span class="edge-label">수면시간 → HbA1c</span><span class="edge-val">-0.12</span><div class="edge-bar" style="width:24%; opacity:0.4;"></div></div>
+                  <div class="edge-row"><span class="edge-label">운동량 → HbA1c</span><span class="edge-val">-0.08</span><div class="edge-bar" style="width:16%; opacity:0.3;"></div></div>
                 </div>
-              </div>
-
-              <div class="graph-wrap">
-                <div class="graph-canvas">
-                  <div class="graph-toolbar">
-                    <div class="view-toggle">
-                      <button class="active" data-layer="short">단기</button>
-                      <button data-layer="long">장기</button>
-                      <button data-layer="cohort">코호트</button>
-                    </div>
-                    <div class="strength-inline">
-                      <span>인과강도 ≥</span>
-                      <span id="strength-value">0.30</span>
-                      <input type="range" id="strength-range" min="0" max="1" step="0.05" value="0.3">
-                    </div>
-                    <div class="graph-stats">
-                      <div>노드 <span class="val">24</span></div>
-                      <div>엣지 <span class="val">38</span></div>
-                      <div>신뢰도 <span class="val">94.2%</span></div>
-                    </div>
-                  </div>
-
-                  <div class="graph-3d" id="graph-3d">
-                    <div class="graph-container" id="graph-container"></div>
-                  </div>
-
-                  <div class="selection-info">
-                    <div class="si-title">활성 노드 (<span id="active-count">0</span>개)</div>
-                    <div class="nodes" id="active-nodes"></div>
-                    <div class="si-stats">
-                      <span>경로: <span class="val" id="active-paths">0</span>개</span>
-                      <span>적합도: <span class="val" id="model-fit">R² = 0.00</span></span>
-                    </div>
-                  </div>
-
-                  <div class="drag-hint">마우스 드래그로 회전 | 노드 클릭으로 on/off</div>
-
-                  <div class="graph-legend">
-                    <div class="lg-title">범례</div>
-                    <div class="legend-item"><span class="legend-dot outcome"></span> 결과 변수</div>
-                    <div class="legend-item"><span class="legend-dot treatment"></span> 치료/원인 변수</div>
-                    <div class="legend-item"><span class="legend-dot mediator"></span> 매개 변수</div>
-                    <div class="legend-item"><span class="legend-dot confounder"></span> 교란 변수</div>
-                  </div>
-                </div>
+                <div class="dp">⚠ ε 소모: 0.08 (잔여 0.75) · 쿼리 3/50</div>
               </div>
             </div>
 
-            <!-- SHAP placeholder -->
-            <div class="tool-content" id="tool-shap">
-              <div class="tool-placeholder">
-                <div class="tp-icon">📊</div>
-                <div class="tp-title">SHAP 기여도 분석</div>
-                <div class="tp-desc">각 변수가 예측에 미치는 영향도를 시각화합니다. Waterfall / Beeswarm / Bar 차트 제공.</div>
+            <!-- Cell 4 -->
+            <div class="cell">
+              <div class="cell-head">
+                <span class="cell-n">In [4]:</span>
+                <span class="cell-st" style="color:#333;">_</span>
+                <span class="cell-t"></span>
+                <button class="cell-run">▶</button>
               </div>
+              <div class="code" style="min-height:36px; color:#333;"><span class="c"># SHAP, CATE, What-If 등도 코드로 호출 가능
+# from uniqdata.ai import shap_explain, cate_estimate, whatif_sim</span></div>
             </div>
 
-            <!-- CATE placeholder -->
-            <div class="tool-content" id="tool-cate">
-              <div class="tool-placeholder">
-                <div class="tp-icon">👤</div>
-                <div class="tp-title">CATE 개인화 효과</div>
-                <div class="tp-desc">개인/세그먼트별 처치 효과(Conditional Average Treatment Effect)를 분석합니다.</div>
-              </div>
-            </div>
-
-            <!-- What-If placeholder -->
-            <div class="tool-content" id="tool-whatif">
-              <div class="tool-placeholder">
-                <div class="tp-icon">🔄</div>
-                <div class="tp-title">What-If 시뮬레이션</div>
-                <div class="tp-desc">반사실(Counterfactual) 시나리오를 시뮬레이션합니다. "만약 복약률이 90%였다면?"</div>
-              </div>
-            </div>
-
-            <!-- Root Cause placeholder -->
-            <div class="tool-content" id="tool-rootcause">
-              <div class="tool-placeholder">
-                <div class="tp-icon">🔍</div>
-                <div class="tp-title">이상 원인 추적</div>
-                <div class="tp-desc">비정상 패턴의 Root Cause를 추적합니다. 어떤 변수가 이상의 원인인지 경로 분석.</div>
-              </div>
-            </div>
-
-            <!-- Terminal -->
-            <div class="tool-content" id="tool-terminal">
-              <div class="terminal-wrap">
-                <div class="terminal-toolbar">
-                  <div class="lang-selector">
-                    <button class="lang-btn active">Python</button>
-                    <button class="lang-btn">R</button>
-                    <button class="lang-btn">SQL</button>
-                  </div>
-                  <div class="terminal-shortcuts">
-                    <span class="terminal-shortcut">Shift+Enter 실행</span>
-                    <span class="terminal-shortcut">Tab 자동완성</span>
-                  </div>
-                  <div class="terminal-env">
-                    <span class="env-item"><span class="env-dot"></span> 커널 연결됨</span>
-                    <span class="env-item">Python 3.11</span>
-                    <span class="env-item">RAM 4.2 / 16 GB</span>
-                    <span class="env-item">GPU —</span>
-                  </div>
-                </div>
-
-                <div class="terminal-cells">
-                  <!-- Cell 1: Imports -->
-                  <div class="cell">
-                    <div class="cell-header">
-                      <span class="cell-num">In [1]:</span>
-                      <span class="cell-status">✓ 완료</span>
-                      <span class="cell-time">0.42s</span>
-                      <button class="cell-run-btn">▶ Run</button>
-                    </div>
-                    <div class="cell-code"><span class="kw">import</span> pandas <span class="kw">as</span> pd
-<span class="kw">import</span> numpy <span class="kw">as</span> np
-<span class="kw">from</span> causallearn.search.ConstraintBased.PC <span class="kw">import</span> <span class="fn">pc</span>
-<span class="kw">from</span> uniqdata.cleanroom <span class="kw">import</span> <span class="fn">SecureDataFrame</span>
-
-<span class="cm"># 클린룸 데이터 로드 (비식별 처리된 뷰)</span>
-df = SecureDataFrame.<span class="fn">load</span>(<span class="str">"cohort://diabetes-t2"</span>, k_anon=<span class="num">5</span>)
-<span class="fn">print</span>(<span class="str">f"로드 완료: </span>{df.shape[<span class="num">0</span>]}<span class="str"> rows × </span>{df.shape[<span class="num">1</span>]}<span class="str"> cols"</span>)</div>
-                    <div class="cell-output">
-                      <div class="out-label">Out [1]:</div>
-                      로드 완료: 87 rows × 12 cols
-                      <div class="dp-warn">⚠️ DP 예산 소모: ε=0.02 (잔여: 0.83)</div>
-                    </div>
-                  </div>
-
-                  <!-- Cell 2: EDA -->
-                  <div class="cell">
-                    <div class="cell-header">
-                      <span class="cell-num">In [2]:</span>
-                      <span class="cell-status">✓ 완료</span>
-                      <span class="cell-time">1.18s</span>
-                      <button class="cell-run-btn">▶ Run</button>
-                    </div>
-                    <div class="cell-code"><span class="cm"># 집계 통계 확인 (개별 레코드 접근 불가)</span>
-summary = df.<span class="fn">describe_secure</span>()   <span class="cm"># k-check 자동 적용</span>
-summary[[<span class="str">"HbA1c"</span>, <span class="str">"체중"</span>, <span class="str">"SBP"</span>, <span class="str">"복약순응도"</span>]]</div>
-                    <div class="cell-output">
-                      <div class="out-label">Out [2]:</div>
-                      <table>
-                        <tr><th></th><th>HbA1c</th><th>체중</th><th>SBP</th><th>복약순응도</th></tr>
-                        <tr><td style="color:#64748b;">mean</td><td>7.42</td><td>78.3</td><td>132.1</td><td>0.84</td></tr>
-                        <tr><td style="color:#64748b;">std</td><td>1.08</td><td>12.7</td><td>14.8</td><td>0.12</td></tr>
-                        <tr><td style="color:#64748b;">min</td><td>5.80</td><td>54.2</td><td>105.0</td><td>0.45</td></tr>
-                        <tr><td style="color:#64748b;">50%</td><td>7.30</td><td>76.8</td><td>130.0</td><td>0.87</td></tr>
-                        <tr><td style="color:#64748b;">max</td><td>11.20</td><td>118.5</td><td>178.0</td><td>1.00</td></tr>
-                      </table>
-                    </div>
-                  </div>
-
-                  <!-- Cell 3: Causal Discovery -->
-                  <div class="cell running">
-                    <div class="cell-header">
-                      <span class="cell-num">In [3]:</span>
-                      <span class="cell-status">⟳ 실행 중...</span>
-                      <span class="cell-time">2.7s</span>
-                      <button class="cell-run-btn" style="background:rgba(239,68,68,0.15); color:#ef4444;">■ Stop</button>
-                    </div>
-                    <div class="cell-code"><span class="cm"># PC 알고리즘으로 인과 구조 탐색</span>
-targets = [<span class="str">"HbA1c"</span>, <span class="str">"체중"</span>, <span class="str">"SBP"</span>, <span class="str">"복약순응도"</span>,
-           <span class="str">"운동량"</span>, <span class="str">"식이패턴"</span>, <span class="str">"수면시간"</span>, <span class="str">"스트레스"</span>]
-
-X = df[targets].<span class="fn">to_secure_matrix</span>()  <span class="cm"># 비식별 행렬 변환</span>
-
-cg = <span class="fn">pc</span>(X, alpha=<span class="num">0.05</span>, indep_test=<span class="str">"fisherz"</span>)
-
-<span class="cm"># 결과 시각화</span>
-<span class="kw">from</span> uniqdata.viz <span class="kw">import</span> <span class="fn">causal_graph</span>
-<span class="fn">causal_graph</span>(cg, labels=targets, highlight=<span class="str">"HbA1c"</span>)</div>
-                    <div class="cell-output">
-                      <div class="out-label">Out [3]:</div>
-                      <span style="color:#3b82f6;">발견된 인과 엣지: 14개</span> | 신뢰도: 94.2% | 실행시간: 2.7s
-                      <div class="out-chart">
-                        <div class="chart-bar" style="height:85%; opacity:0.9;" title="복약→HbA1c: -0.42"></div>
-                        <div class="chart-bar" style="height:65%;" title="인슐린민감성→HbA1c: -0.35"></div>
-                        <div class="chart-bar" style="height:52%;" title="식이→HbA1c: 0.28"></div>
-                        <div class="chart-bar" style="height:38%;" title="스트레스→HbA1c: 0.19"></div>
-                        <div class="chart-bar" style="height:28%;" title="연령→HbA1c: 0.15"></div>
-                        <div class="chart-bar" style="height:22%; opacity:0.5;" title="수면→HbA1c: -0.12"></div>
-                        <div class="chart-bar" style="height:18%; opacity:0.4;" title="운동→HbA1c: -0.08"></div>
-                        <div class="chart-bar" style="height:72%;" title="체중→HbA1c: 0.38"></div>
-                      </div>
-                      <div style="display:flex; justify-content:space-between; font-size:9px; color:#555; margin-top:4px; padding:0 2px;">
-                        <span>복약</span><span>인슐린</span><span>식이</span><span>스트레스</span><span>연령</span><span>수면</span><span>운동</span><span>체중</span>
-                      </div>
-                      <div class="dp-warn">⚠️ DP 예산 소모: ε=0.08 (잔여: 0.75) · 쿼리 3/50</div>
-                    </div>
-                  </div>
-
-                  <!-- Cell 4: empty -->
-                  <div class="cell">
-                    <div class="cell-header">
-                      <span class="cell-num">In [4]:</span>
-                      <span class="cell-status" style="color:#555;">대기</span>
-                      <span class="cell-time"></span>
-                      <button class="cell-run-btn">▶ Run</button>
-                    </div>
-                    <div class="cell-code" style="min-height:40px; color:#555;">
-<span class="cm"># 다음 분석을 입력하세요...</span></div>
-                  </div>
-                </div>
-
-                <div class="terminal-input-area">
-                  <span class="prompt-sign">▶</span>
-                  <input class="terminal-input" type="text" placeholder="Python 코드 입력... (Shift+Enter로 실행)" />
-                  <button class="terminal-run-btn">실행</button>
-                </div>
-              </div>
-            </div>
           </div>
 
-          <!-- RIGHT: Audit Panel -->
-          <div class="audit-panel">
-            <div class="audit-tabs">
-              <button class="audit-tab active" onclick="showAuditView('log')">📋 활동 로그</button>
-              <button class="audit-tab" onclick="showAuditView('export')">📤 내보내기 <span class="badge">0</span></button>
-            </div>
-
-            <!-- Activity Log -->
-            <div class="audit-view active" id="view-log">
-              <div class="audit-log">
-                <div class="log-entry">
-                  <div class="log-time">14:32</div>
-                  <div class="log-body">
-                    <div class="log-action">세션 시작</div>
-                    <div class="log-detail">당뇨병 2형, 87명, 12변수</div>
-                  </div>
-                  <div class="log-icon">🔐</div>
-                </div>
-                <div class="log-entry">
-                  <div class="log-time">14:33</div>
-                  <div class="log-body">
-                    <div class="log-action">인과발견 실행</div>
-                    <div class="log-detail">PC Algorithm, 임계값 0.30</div>
-                  </div>
-                  <div class="log-icon">🔮</div>
-                </div>
-                <div class="log-entry">
-                  <div class="log-time">14:33</div>
-                  <div class="log-body">
-                    <div class="log-action">결과 열람</div>
-                    <div class="log-detail">그래프 노드 24개, 엣지 38개</div>
-                  </div>
-                  <div class="log-icon">👁️</div>
-                </div>
-                <div class="log-entry">
-                  <div class="log-time">14:35</div>
-                  <div class="log-body">
-                    <div class="log-action">필터 변경</div>
-                    <div class="log-detail">인과강도 ≥ 0.30 → 0.50</div>
-                  </div>
-                  <div class="log-icon">🔧</div>
-                </div>
-                <div class="log-entry">
-                  <div class="log-time">14:36</div>
-                  <div class="log-body">
-                    <div class="log-action">SHAP 분석 실행</div>
-                    <div class="log-detail">타겟: 혈당 변동성, 12변수</div>
-                  </div>
-                  <div class="log-icon">📊</div>
-                </div>
-              </div>
-              <div class="log-footer">
-                <span>5개 활동 기록됨</span>
-                <span>ε 사용: 0.15</span>
-              </div>
-            </div>
-
-            <!-- Export View -->
-            <div class="audit-view" id="view-export">
-              <div class="export-content">
-                <div class="export-rules-header">내보내기 규칙</div>
-                <div class="export-rule"><span class="ri ok">✓</span> 집계 통계 (평균, 중위값, 분포)</div>
-                <div class="export-rule"><span class="ri ok">✓</span> 시각화 이미지 (그래프, 차트)</div>
-                <div class="export-rule blocked"><span class="ri no">✕</span> 개별 레코드 데이터</div>
-                <div class="export-rule blocked"><span class="ri no">✕</span> n &lt; 5 그룹의 통계</div>
-
-                <div class="export-divider"></div>
-
-                <div class="export-queue-header">내보내기 대기열</div>
-                <div class="export-empty">아직 내보내기 요청이 없습니다.<br>분석 결과에서 "내보내기 요청" 버튼을 사용하세요.</div>
-
-                <button class="export-request-btn">📤 현재 결과 내보내기 요청</button>
-                <div class="export-note">내보내기는 PI(김연구 교수) 승인 후 다운로드 가능합니다.</div>
-              </div>
-            </div>
+          <div class="input-bar">
+            <span class="prompt">▶</span>
+            <input type="text" placeholder="Python 코드 입력..." />
+            <button class="run-btn">실행</button>
           </div>
         </div>
 
-        <!-- Bottom Bar -->
-        <div class="bottom-bar">
-          <div class="bar-item"><span class="bar-dot green"></span> k-check: <span class="bv">pass (k=5)</span></div>
-          <div class="bar-item"><span class="bar-dot blue"></span> DP 예산: <span class="bv">ε=0.15 / 0.85 남음</span></div>
-          <div class="bar-item"><span class="bar-dot amber"></span> 쿼리: <span class="bv">3 / 50</span></div>
-          <div class="bar-item"><span class="bar-dot purple"></span> 내보내기: <span class="bv">0건 대기</span></div>
-          <div style="margin-left:auto; color:#555;">세션 CR-2026-0214-001</div>
+        <!-- Bottom -->
+        <div class="bottom">
+          <span><span class="bdot g"></span>k-check <span class="bv">pass (k=5)</span></span>
+          <span><span class="bdot b"></span>DP <span class="bv">ε 0.25/1.00</span></span>
+          <span><span class="bdot y"></span>쿼리 <span class="bv">3/50</span></span>
+          <span style="margin-left:auto; color:#222;">CR-2026-0214-001</span>
         </div>
       </div>
 
       <div class="nav-links">
-        <a href="../index.html">← 와이어프레임 목록</a>
+        <a href="data-overview.html">← 개요</a>
         <a href="data-table.html">← 테이블</a>
-        <a href="data-overview.html">개요 →</a>
+        <a href="../index.html">← 목록</a>
+      </div>
+
+      <!-- Designer Notes -->
+      <div class="notes">
+        <details>
+          <summary>디자이너 노트</summary>
+          <div class="nc">
+            <h4>페이지 역할</h4>
+            이 페이지가 답하는 질문: <strong>"데이터로 뭘 발견할 수 있나?"</strong><br>
+            터미널(Jupyter 스타일)이 메인 인터페이스. 연구자가 직접 Python/R/SQL로 분석 코드를 작성·실행.<br><br>
+
+            <h4>핵심 설계 원칙</h4>
+            - <strong>터미널 중심:</strong> AI 도구(인과발견, SHAP, CATE, What-If, 이상추적)를 별도 탭이 아닌 코드 API로 호출<br>
+            - <strong>간결한 구조:</strong> 세션 바 + 터미널 + 상태 바. 3패널 레이아웃 제거<br>
+            - <strong>보안 투명성:</strong> 모든 쿼리에 DP 예산(ε) 소모 표시, 상태 바에 실시간 보안 지표<br>
+            - <strong>세션 게이트:</strong> 입장 전 4개 동의 항목 확인 → 보안 의식 강화<br><br>
+
+            <h4>SecureDataFrame API</h4>
+            - <strong>load()</strong>: 비식별 처리된 데이터 뷰 로드 (k-anonymity 자동 적용)<br>
+            - <strong>describe_secure()</strong>: 집계 통계만 반환. 개별 레코드 접근 시 오류<br>
+            - <strong>to_secure_matrix()</strong>: 알고리즘 입력용 비식별 행렬 변환<br>
+            - 모든 API 호출 시 DP 예산 차감 + 감사 로그 자동 기록<br><br>
+
+            <h4>VPC 인프라</h4>
+            - 연구자 브라우저 → TLS → VPC(ap-northeast-2) → Private Subnet<br>
+            - Data Subnet: health_db, consent_db, k-Anonymity+DP Engine<br>
+            - Compute Subnet: 클린룸 컨테이너 (격리된 분석 환경)<br>
+            - Export Gateway: 집계 결과만 통과, 개별 레코드 차단, PI 승인 필수<br><br>
+
+            <h4>이전 버전과 차이</h4>
+            - 기존: 세션 게이트(4 step) + 3패널(설정/탭/감사) + 6개 도구 탭 → 복잡<br>
+            - 현재: 간단한 게이트 + 풀스크린 터미널 → 연구자에게 익숙한 Jupyter 경험<br>
+            - AI 도구는 <code>uniqdata.ai</code> 패키지로 코드에서 호출. UI 탭 불필요
+          </div>
+        </details>
       </div>
     </div>
   </div>
 
 <script>
-  // ===== Session Gate / Active Session Toggle =====
-  function startSession() {
-    var checks = document.querySelectorAll('.sec-check');
-    var allChecked = true;
-    checks.forEach(function(c) { if (!c.checked) allChecked = false; });
-    if (!allChecked) { alert('모든 보안 동의 항목을 확인해주세요.'); return; }
-
-    document.getElementById('session-gate').style.display = 'none';
-    document.getElementById('active-session').style.display = 'flex';
-    document.getElementById('btn-start').style.display = 'none';
-    document.getElementById('btn-end').style.display = 'inline-flex';
-    startTimer();
-    initGraph();
+  function enter() {
+    var checks = document.querySelectorAll('.gc');
+    var ok = true;
+    checks.forEach(function(c){ if(!c.checked) ok = false; });
+    if(!ok){ alert('모든 보안 동의 항목을 체크해주세요.'); return; }
+    document.getElementById('gate').style.display = 'none';
+    var s = document.getElementById('session');
+    s.style.display = 'flex';
+    tick();
   }
-
-  function endSession() {
-    if (!confirm('세션을 종료하시겠습니까?\n로컬 캐시가 삭제됩니다.')) return;
-    document.getElementById('active-session').style.display = 'none';
-    document.getElementById('session-gate').style.display = 'flex';
-    document.getElementById('btn-end').style.display = 'none';
-    document.getElementById('btn-start').style.display = 'inline-flex';
-    stopTimer();
+  function leave() {
+    if(!confirm('세션을 종료하시겠습니까?')) return;
+    document.getElementById('session').style.display = 'none';
+    document.getElementById('gate').style.display = 'flex';
+    clearInterval(timer);
+    sec = 0;
   }
-
-  // ===== Session Timer =====
-  var sessionSec = 0, timerInt;
-  function startTimer() {
-    timerInt = setInterval(function() {
-      sessionSec++;
-      var h = String(Math.floor(sessionSec/3600)).padStart(2,'0');
-      var m = String(Math.floor((sessionSec%3600)/60)).padStart(2,'0');
-      var s = String(sessionSec%60).padStart(2,'0');
-      document.getElementById('session-elapsed').textContent = h+':'+m+':'+s;
+  var sec = 0, timer;
+  function tick() {
+    timer = setInterval(function(){
+      sec++;
+      var m = String(Math.floor(sec/60)).padStart(2,'0');
+      var s = String(sec%60).padStart(2,'0');
+      document.getElementById('elapsed').textContent = m+':'+s;
     }, 1000);
-  }
-  function stopTimer() { clearInterval(timerInt); sessionSec = 0; }
-
-  // ===== Tool Tab Switching =====
-  function switchTool(id) {
-    document.querySelectorAll('.cr-tab').forEach(function(t) { t.classList.remove('active'); });
-    document.querySelectorAll('.tool-content').forEach(function(c) { c.classList.remove('active'); });
-    event.target.closest('.cr-tab').classList.add('active');
-    var el = document.getElementById('tool-' + id);
-    if (el) el.classList.add('active');
-  }
-
-  // ===== Audit Panel Tab =====
-  function showAuditView(view) {
-    document.querySelectorAll('.audit-tab').forEach(function(t) { t.classList.remove('active'); });
-    document.querySelectorAll('.audit-view').forEach(function(v) { v.classList.remove('active'); });
-    event.target.closest('.audit-tab').classList.add('active');
-    var el = document.getElementById('view-' + view);
-    if (el) el.classList.add('active');
-  }
-
-  // ===== 3D Graph (from analysis-discovery) =====
-  var variables = [
-    { id:'glucose', name:'혈당 (HbA1c)', type:'outcome', connections:12, x:200, y:0, z:0 },
-    { id:'medication', name:'복약 순응도', type:'treatment', coef:-0.42, connections:5, x:-180, y:-30, z:80 },
-    { id:'diet', name:'식이 패턴', type:'treatment', coef:0.28, connections:4, x:-150, y:120, z:-60 },
-    { id:'insulin', name:'인슐린 민감성', type:'mediator', coef:-0.35, connections:6, x:20, y:20, z:40 },
-    { id:'age', name:'연령', type:'confounder', coef:0.15, connections:8, x:-80, y:-150, z:20 },
-    { id:'exercise', name:'운동량', type:'other', coef:-0.08, connections:3, x:-220, y:80, z:100 },
-    { id:'sleep', name:'수면 시간', type:'other', coef:-0.12, connections:4, x:-100, y:180, z:80 },
-    { id:'stress', name:'스트레스', type:'other', coef:0.19, connections:5, x:80, y:150, z:-80 },
-    { id:'weight', name:'체중', type:'other', coef:0.22, connections:4, x:100, y:-100, z:-100 },
-    { id:'bmi', name:'BMI', type:'confounder', coef:0.18, connections:6, x:-50, y:-180, z:-60 },
-    { id:'gender', name:'성별', type:'confounder', coef:0.05, connections:3, x:150, y:-150, z:60 },
-    { id:'duration', name:'유병 기간', type:'confounder', coef:0.25, connections:5, x:-180, y:-120, z:-100 }
-  ];
-  var paths = [
-    { id:'p1', from:'medication', via:'insulin', to:'glucose', effect:-12.4 },
-    { id:'p2', from:'medication', to:'glucose', effect:-5.9 },
-    { id:'p3', from:'diet', to:'glucose', effect:8.2 },
-    { id:'p4', from:'exercise', via:'weight', to:'glucose', effect:-3.2 },
-    { id:'p5', from:'stress', to:'glucose', effect:4.8 }
-  ];
-  var activeNodes = new Set(['glucose']);
-  var activePaths = new Set(['p1','p2']);
-  var rotX = 15, rotY = -10, dragging = false, lx, ly;
-  var sThreshold = 0.3;
-
-  function renderNodes() {
-    var c = document.getElementById('graph-container');
-    if (!c) return;
-    c.innerHTML = variables.map(function(v) {
-      var strong = v.coef == null || Math.abs(v.coef) >= sThreshold;
-      return '<div class="node-3d '+v.type+(activeNodes.has(v.id)?' active':' dim')+(strong?'':' weak')+'" data-id="'+v.id+'" style="transform:translate3d('+v.x+'px,'+v.y+'px,'+v.z+'px);"><div class="sphere">'+v.name.split(' ')[0]+'</div><div class="label">'+(v.type==='outcome'?'결과':v.type==='treatment'?'치료':v.type==='mediator'?'매개':v.type==='confounder'?'교란':'')+'</div></div>';
-    }).join('');
-    c.querySelectorAll('.node-3d').forEach(function(el) {
-      el.addEventListener('click', function(e) { e.stopPropagation(); toggleNode(el.dataset.id); });
-    });
-    updateRotation();
-  }
-
-  function toggleNode(id) {
-    if (activeNodes.has(id)) activeNodes.delete(id); else activeNodes.add(id);
-    updateUI();
-  }
-
-  function updateUI() {
-    document.querySelectorAll('.node-3d').forEach(function(el) {
-      el.classList.toggle('active', activeNodes.has(el.dataset.id));
-      el.classList.toggle('dim', !activeNodes.has(el.dataset.id));
-    });
-    document.getElementById('active-count').textContent = activeNodes.size;
-    var html = Array.from(activeNodes).map(function(id) {
-      var v = variables.find(function(x){return x.id===id;});
-      return '<span class="node-tag '+v.type+'">'+v.name.split(' ')[0]+'</span>';
-    }).join('');
-    document.getElementById('active-nodes').innerHTML = html || '<span style="color:#666">없음</span>';
-    updateSim();
-  }
-
-  function updateSim() {
-    var total=0, valid=0;
-    paths.forEach(function(p) {
-      if (activePaths.has(p.id) && activeNodes.has(p.from) && activeNodes.has(p.to)) { total+=p.effect; valid++; }
-    });
-    document.getElementById('active-paths').textContent = valid;
-    document.getElementById('model-fit').textContent = 'R² = '+(Math.min(0.95, activeNodes.size*0.08+valid*0.05)).toFixed(2);
-  }
-
-  function updateRotation() {
-    var c = document.getElementById('graph-container');
-    if (c) c.style.transform = 'translate(-50%,-50%) rotateX('+rotX+'deg) rotateY('+rotY+'deg)';
-  }
-
-  function initGraph() {
-    renderNodes();
-    updateUI();
-
-    var g = document.getElementById('graph-3d');
-    if (!g) return;
-    g.addEventListener('mousedown', function(e) {
-      if (e.target.closest('.node-3d')) return;
-      dragging = true; lx = e.clientX; ly = e.clientY; g.style.cursor = 'grabbing';
-    });
-    document.addEventListener('mousemove', function(e) {
-      if (!dragging) return;
-      rotY += (e.clientX - lx) * 0.5;
-      rotX -= (e.clientY - ly) * 0.5;
-      rotX = Math.max(-60, Math.min(60, rotX));
-      lx = e.clientX; ly = e.clientY;
-      updateRotation();
-    });
-    document.addEventListener('mouseup', function() { dragging = false; if (g) g.style.cursor = 'grab'; });
-
-    var tr = document.getElementById('threshold-range');
-    var tv = document.getElementById('threshold-value');
-    var sr = document.getElementById('strength-range');
-    var sv = document.getElementById('strength-value');
-    function applyThreshold(val) {
-      sThreshold = parseFloat(val);
-      if (tv) tv.textContent = sThreshold.toFixed(2);
-      if (sv) sv.textContent = sThreshold.toFixed(2);
-      if (tr && tr.value !== String(val)) tr.value = val;
-      if (sr && sr.value !== String(val)) sr.value = val;
-      renderNodes();
-    }
-    if (tr) tr.addEventListener('input', function(e) { applyThreshold(e.target.value); });
-    if (sr) sr.addEventListener('input', function(e) { applyThreshold(e.target.value); });
-
-    document.querySelectorAll('.view-toggle button').forEach(function(btn) {
-      btn.addEventListener('click', function() {
-        document.querySelectorAll('.view-toggle button').forEach(function(b){b.classList.remove('active');});
-        btn.classList.add('active');
-      });
-    });
   }
 </script>
 </body>
