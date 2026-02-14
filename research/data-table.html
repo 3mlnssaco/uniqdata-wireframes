@@ -479,20 +479,20 @@
       transition: flex 0.35s ease, opacity 0.3s ease 0.1s;
     }
 
-    /* State: left patient clicked → hide control, show detail right */
-    .side-by-side.detail-left .side-panel.control {
+    /* State: left patient clicked → hide experiment table, detail takes left, control stays right */
+    .side-by-side.detail-left .side-panel.experiment {
       flex: 0; opacity: 0; overflow: hidden; border: none; padding: 0; min-width: 0;
     }
     .side-by-side.detail-left .detail-inline {
-      flex: 0.82; opacity: 1; overflow-y: auto;
+      flex: 0.82; opacity: 1; overflow-y: auto; order: -1;
     }
 
-    /* State: right patient clicked → hide experiment, show detail left */
+    /* State: right patient clicked → hide experiment, control slides left, detail on right */
     .side-by-side.detail-right .side-panel.experiment {
       flex: 0; opacity: 0; overflow: hidden; border: none; padding: 0; min-width: 0;
     }
     .side-by-side.detail-right .detail-inline {
-      flex: 0.82; opacity: 1; overflow-y: auto; order: -1;
+      flex: 0.82; opacity: 1; overflow-y: auto;
     }
 
     /* Detail panel inner styles */
