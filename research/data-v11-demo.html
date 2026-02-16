@@ -364,10 +364,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .tb-mini-tl .mtl-vdot.active{background:#0072B2;border-color:#0072B2;transform:translateX(-50%) scale(1.2);box-shadow:0 0 0 4px rgba(0,114,178,.18);}
 .tb-mini-tl .mtl-vdot.future{opacity:.3;border-color:#9ca3af;}
 /* 방문 라벨 — 점 아래 */
-.tb-mini-tl .mtl-vlabel{position:absolute;top:calc(100% + 4px);left:50%;transform:translateX(-50%);font-size:10px;color:#6b7280;white-space:nowrap;pointer-events:none;font-weight:600;text-align:center;line-height:1.3;}
-.tb-mini-tl .mtl-vlabel .vl-date{display:block;font-size:8px;color:#9ca3af;font-weight:500;}
+.tb-mini-tl .mtl-vlabel{position:absolute;top:calc(100% + 4px);left:50%;transform:translateX(-50%);font-size:10px;color:#6b7280;white-space:nowrap;pointer-events:none;font-weight:600;text-align:center;}
 .tb-mini-tl .mtl-vdot.active .mtl-vlabel{color:#0072B2;font-weight:700;font-size:11px;}
-.tb-mini-tl .mtl-vdot.active .mtl-vlabel .vl-date{color:#0072B2;font-weight:600;font-size:9px;}
 .ctrl-section{background:white;border:1px solid #e5e7eb;border-radius:8px;padding:8px 14px;margin-bottom:6px;flex-shrink:0;}
 .ctrl-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
 .ctrl-group{display:flex;align-items:center;gap:5px;}
@@ -1330,11 +1328,10 @@ function buildTimeline(){
     }
     labels.innerHTML = pts.map(p=>`<span${p.isM0?' style="color:#6366f1;font-weight:600;"':p.isBL?' style="color:#8b5cf6;font-weight:600;"':p.isNow?' style="color:#ea580c;font-weight:600;"':''}>${p.label}</span>`).join('');
   } else {
-    // Visit level — show visits (today_day 기준 past/future) + 캘린더 날짜
+    // Visit level — show visits (today_day 기준 past/future)
     const pts = VISITS.map(v => {
       const isFuture = hasToday && v.target_day > todayDay;
-      const calDate = isStudyDay ? '' : ' ('+dayToDate(v.target_day,true)+')';
-      return {day:v.target_day, label: (isStudyDay ? v.id+' D'+v.target_day : v.id+calDate), isFuture};
+      return {day:v.target_day, label: isStudyDay ? v.id+' D'+v.target_day : v.id+' '+dayToDate(v.target_day), isFuture};
     });
     labels.innerHTML = pts.map(v=>`<span${v.isFuture?' style="opacity:0.4;"':''}>${v.label}</span>`).join('');
   }
@@ -1573,10 +1570,17 @@ function dayToDate(day, forceYear){
 }
 
 document.getElementById('tlCal').addEventListener('click',function(){
-  this.classList.add('active');document.getElementById('tlDay').classList.remove('active');buildTimeline();
+  this.classList.add('active');document.getElementById('tlDay').classList.remove('active');
+  // 미니타임라인도 동기화
+  const mc=document.getElementById('mtlCal'),md=document.getElementById('mtlDay');
+  if(mc&&md){mc.classList.add('active');md.classList.remove('active');}
+  buildTimeline();
 });
 document.getElementById('tlDay').addEventListener('click',function(){
-  this.classList.add('active');document.getElementById('tlCal').classList.remove('active');buildTimeline();
+  this.classList.add('active');document.getElementById('tlCal').classList.remove('active');
+  const mc=document.getElementById('mtlCal'),md=document.getElementById('mtlDay');
+  if(mc&&md){md.classList.add('active');mc.classList.remove('active');}
+  buildTimeline();
 });
 
 // ===============================================
@@ -2398,6 +2402,21 @@ function buildMiniTimeline(){
 }
 buildMiniTimeline();
 
+// 미니타임라인 캘린더/Study Day 토글 (개요 탭과 동기화)
+document.getElementById('mtlCal').addEventListener('click',function(){
+  this.classList.add('active');document.getElementById('mtlDay').classList.remove('active');
+  // 개요 타임라인도 동기화
+  const tc=document.getElementById('tlCal'),td=document.getElementById('tlDay');
+  if(tc&&td){tc.classList.add('active');td.classList.remove('active');}
+  buildMiniTimeline(); buildTimeGrid();
+});
+document.getElementById('mtlDay').addEventListener('click',function(){
+  this.classList.add('active');document.getElementById('mtlCal').classList.remove('active');
+  const tc=document.getElementById('tlCal'),td=document.getElementById('tlDay');
+  if(tc&&td){td.classList.add('active');tc.classList.remove('active');}
+  buildMiniTimeline(); buildTimeGrid();
+});
+
 // ===============================================
 // 집계 단위 시스템 — 시간축 = 시간 단위 그리드
 // 일간 → 365셀, 주간 → ~52셀, 월간 → 12셀, 방문별 → N셀
@@ -2539,8 +2558,9 @@ function buildTimeGrid(){
       else if(c.epoch==='prosp' && c.hasData) style += 'background:#e0f2fe;';
     }
     // 후향적: 모든 셀 활성 (데이터 존재)
-    const dateHtml = c.date ? `<span class="gc-date">${c.date}</span>` : '';
-    return `<div class="${cls}" data-ci="${i}" data-day="${c.day}" style="${style}">${c.label}${dateHtml}</div>`;
+    const isMtlCal = document.getElementById('mtlCal') && document.getElementById('mtlCal').classList.contains('active');
+    const displayLabel = (isMtlCal && c.date) ? c.date : c.label;
+    return `<div class="${cls}" data-ci="${i}" data-day="${c.day}" style="${style}" title="${c.label} (${c.date||''})">${displayLabel}</div>`;
   }).join('');
   // 하이브리드: 경계점 세퍼레이터 표시
   if(isHybrid){
