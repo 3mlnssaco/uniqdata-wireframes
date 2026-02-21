@@ -1,15 +1,29 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>연구 생성 Step 5 - IRB 심의 - Wireframe</title>
+  <title>연구 생성 Step 5 - 에스크로 + 모집 - Wireframe</title>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: -apple-system, sans-serif; background: #f5f5f5; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, sans-serif;
+      background: #f5f5f5;
+    }
 
     /* ===== 레이아웃 ===== */
-    .layout { display: flex; min-height: 100vh; width: 100%; }
+    .layout {
+      display: flex;
+      height: 100vh;
+      width: 100%;
+      overflow: hidden;
+    }
 
     /* Nav (좌측 사이드바) */
     .sidebar {
@@ -20,32 +34,69 @@
       flex-direction: column;
       flex-shrink: 0;
     }
+
     .logo {
       padding: 20px 24px;
       font-size: 20px;
       font-weight: 700;
-      border-bottom: 1px solid rgba(255,255,255,0.1);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
       display: flex;
       align-items: center;
       gap: 10px;
     }
+
     .logo-icon {
-      width: 32px; height: 32px;
+      width: 32px;
+      height: 32px;
       background: linear-gradient(135deg, #3b82f6, #8b5cf6);
       border-radius: 8px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 16px; font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-weight: bold;
     }
-    .nav-section { padding: 16px 12px; border-bottom: 1px solid rgba(255,255,255,0.05); }
-    .nav-section-title { font-size: 11px; text-transform: uppercase; color: #64748b; padding: 8px 12px; letter-spacing: 0.5px; }
+
+    .nav-section {
+      padding: 16px 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .nav-section-title {
+      font-size: 11px;
+      text-transform: uppercase;
+      color: #64748b;
+      padding: 8px 12px;
+      letter-spacing: 0.5px;
+    }
+
     .nav-item {
-      display: flex; align-items: center; gap: 12px;
-      padding: 10px 12px; border-radius: 8px; color: #94a3b8;
-      cursor: pointer; font-size: 14px; text-decoration: none; transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      color: #94a3b8;
+      cursor: pointer;
+      font-size: 14px;
+      text-decoration: none;
+      transition: all 0.15s;
     }
-    .nav-item:hover { background: rgba(255,255,255,0.05); color: #e2e8f0; }
-    .nav-item.active { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
-    .nav-item .icon { width: 20px; text-align: center; }
+
+    .nav-item:hover {
+      background: rgba(255, 255, 255, 0.05);
+      color: #e2e8f0;
+    }
+
+    .nav-item.active {
+      background: rgba(59, 130, 246, 0.2);
+      color: #60a5fa;
+    }
+
+    .nav-item .icon {
+      width: 20px;
+      text-align: center;
+    }
 
     /* Workspace wrapper */
     .workspace-wrap {
@@ -53,11 +104,14 @@
       display: flex;
       flex-direction: column;
       min-width: 0;
+      min-height: 0;
     }
+
     .workspace {
       flex: 1;
       display: flex;
       min-height: 0;
+      min-width: 0;
     }
 
     /* Step Bar */
@@ -67,6 +121,7 @@
       padding: 10px 0;
       flex-shrink: 0;
     }
+
     .step-bar-inner {
       display: flex;
       align-items: center;
@@ -75,12 +130,14 @@
       max-width: 600px;
       margin: 0 auto;
     }
+
     .sb-step {
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 4px;
     }
+
     .sb-num {
       width: 24px;
       height: 24px;
@@ -91,18 +148,47 @@
       font-size: 11px;
       font-weight: 600;
     }
-    .sb-step.done .sb-num { background: #22c55e; color: white; }
-    .sb-step.active .sb-num { background: #8b5cf6; color: white; }
-    .sb-step.pending .sb-num { background: #334155; color: #64748b; }
+
+    .sb-step.done .sb-num {
+      background: #22c55e;
+      color: white;
+    }
+
+    .sb-step.active .sb-num {
+      background: #8b5cf6;
+      color: white;
+    }
+
+    .sb-step.pending .sb-num {
+      background: #334155;
+      color: #64748b;
+    }
+
     .sb-label {
       font-size: 10px;
       color: #64748b;
       white-space: nowrap;
     }
-    .sb-step.active .sb-label { color: #e2e8f0; }
-    a.sb-step { text-decoration: none; color: inherit; cursor: pointer; }
-    a.sb-step:hover .sb-num:not(.active) { transform: scale(1.1); transition: transform 0.15s; }
-    a.sb-step:hover .sb-label { color: #e2e8f0; }
+
+    .sb-step.active .sb-label {
+      color: #e2e8f0;
+    }
+
+    a.sb-step {
+      text-decoration: none;
+      color: inherit;
+      cursor: pointer;
+    }
+
+    a.sb-step:hover .sb-num:not(.active) {
+      transform: scale(1.1);
+      transition: transform 0.15s;
+    }
+
+    a.sb-step:hover .sb-label {
+      color: #e2e8f0;
+    }
+
     .sb-line {
       width: 40px;
       height: 2px;
@@ -110,179 +196,639 @@
       margin: 0 4px;
       margin-bottom: 18px;
     }
-    .sb-line.done { background: #22c55e; }
+
+    .sb-line.done {
+      background: #22c55e;
+    }
 
     .sidebar-footer {
-      margin-top: auto; padding: 16px; border-top: 1px solid rgba(255,255,255,0.05);
+      margin-top: auto;
+      padding: 16px;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
     }
-    .user-info-sidebar { display: flex; align-items: center; gap: 12px; padding: 8px; }
+
+    .user-info-sidebar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px;
+    }
+
     .user-avatar-sidebar {
-      width: 36px; height: 36px;
+      width: 36px;
+      height: 36px;
       background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-      border-radius: 50%; display: flex; align-items: center; justify-content: center;
-      font-size: 14px; color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      color: white;
     }
-    .user-name-sidebar { font-size: 14px; color: #e2e8f0; }
-    .user-org-sidebar { font-size: 12px; color: #64748b; }
+
+    .user-name-sidebar {
+      font-size: 14px;
+      color: #e2e8f0;
+    }
+
+    .user-org-sidebar {
+      font-size: 12px;
+      color: #64748b;
+    }
 
     /* 에디터 패널 (중앙) */
     .editor-panel {
       flex: 1;
+      min-width: 0;
       overflow-y: auto;
       padding: 28px 32px;
       background: white;
     }
 
     /* 카드 */
-    .card { background: white; border: 1px solid #e5e7eb; border-radius: 12px; margin-bottom: 20px; overflow: hidden; }
-    .card-header { background: #f9fafb; padding: 16px 20px; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center; }
-    .card-header h3 { font-size: 16px; font-weight: 600; }
-    .card-body { padding: 20px; }
+    .card {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      overflow: hidden;
+    }
+
+    .card-header {
+      background: #f9fafb;
+      padding: 16px 20px;
+      border-bottom: 1px solid #e5e7eb;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .card-header h3 {
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .card-body {
+      padding: 20px;
+    }
 
     /* 상태 뱃지 */
-    .status-badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 500; }
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 500;
+    }
 
-    /* 체크리스트 */
-    .checklist { margin: 20px 0; }
-    .checklist-item { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid #e5e7eb; }
-    .checklist-item:last-child { border-bottom: none; }
-    .checklist-item .icon { width: 24px; height: 24px; background: #22c55e; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 12px; }
-    .checklist-item .text { flex: 1; font-size: 14px; color: #374151; }
+    /* 지갑 카드 (다크) */
+    .wallet-card {
+      background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+      border-radius: 16px;
+      padding: 24px;
+      color: white;
+      margin-bottom: 20px;
+    }
 
-    /* XRPL 정보 */
-    .xrpl-info { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 12px; padding: 16px; margin: 20px 0; }
-    .xrpl-info h4 { font-size: 14px; color: #1e40af; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
-    .xrpl-info p { font-size: 13px; color: #3b82f6; line-height: 1.5; }
+    .wallet-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .wallet-card-header h3 {
+      font-size: 18px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .badge-green-sm {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+      background: rgba(34, 197, 94, 0.2);
+      color: #4ade80;
+      border: 1px solid rgba(34, 197, 94, 0.3);
+    }
+
+    .wallet-address-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 20px;
+      font-size: 13px;
+      color: #94a3b8;
+    }
+
+    .wallet-address-row .addr {
+      font-family: 'SF Mono', Monaco, monospace;
+      background: rgba(255, 255, 255, 0.08);
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 13px;
+      color: #e2e8f0;
+    }
+
+    .wallet-address-row .copy-btn {
+      padding: 4px 10px;
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      border-radius: 6px;
+      color: #94a3b8;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .wallet-address-row .copy-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+      color: #e2e8f0;
+    }
+
+    .wallet-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .wallet-stat-item .label {
+      font-size: 12px;
+      color: #9ca3af;
+      margin-bottom: 4px;
+    }
+
+    .wallet-stat-item .value {
+      font-size: 24px;
+      font-weight: 700;
+    }
+
+    .wallet-stat-item .value.zero {
+      color: #6b7280;
+    }
+
+    .wallet-stat-item .value.required {
+      color: #fbbf24;
+    }
+
+    .progress-bar-wrapper {
+      margin-top: 4px;
+    }
+
+    .progress-bar-bg {
+      width: 100%;
+      height: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #8b5cf6, #6366f1);
+      border-radius: 4px;
+      transition: width 0.3s;
+    }
+
+    .progress-bar-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: #6b7280;
+      margin-top: 4px;
+    }
+
+    /* 입금 카드 */
+    .deposit-card {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      padding: 24px;
+    }
+
+    .deposit-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .deposit-header h3 {
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .my-wallet-balance {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .my-wallet-balance .label {
+      font-size: 13px;
+      color: #6b7280;
+    }
+
+    .my-wallet-balance .amount {
+      font-size: 22px;
+      font-weight: 700;
+      color: #1f2937;
+    }
+
+    .my-wallet-balance .usd {
+      font-size: 13px;
+      color: #9ca3af;
+    }
+
+    .deposit-input-group {
+      margin-bottom: 16px;
+    }
+
+    .deposit-input-group label {
+      display: block;
+      font-size: 13px;
+      color: #374151;
+      font-weight: 500;
+      margin-bottom: 6px;
+    }
+
+    .deposit-input-wrapper {
+      display: flex;
+      align-items: center;
+      border: 2px solid #e5e7eb;
+      border-radius: 10px;
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+
+    .deposit-input-wrapper:focus-within {
+      border-color: #8b5cf6;
+    }
+
+    .deposit-input-wrapper input {
+      flex: 1;
+      border: none;
+      padding: 14px 16px;
+      font-size: 18px;
+      font-weight: 600;
+      outline: none;
+      background: transparent;
+    }
+
+    .deposit-input-wrapper .unit {
+      padding: 14px 16px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #6b7280;
+      background: #f9fafb;
+      border-left: 1px solid #e5e7eb;
+    }
+
+    .quick-amount-btns {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .quick-amount-btn {
+      padding: 8px 16px;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      background: white;
+      font-size: 13px;
+      color: #374151;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .quick-amount-btn:hover {
+      border-color: #8b5cf6;
+      color: #7c3aed;
+    }
+
+    .quick-amount-btn.active {
+      border-color: #8b5cf6;
+      background: #f5f3ff;
+      color: #7c3aed;
+      font-weight: 500;
+    }
+
+    .deposit-info-text {
+      font-size: 12px;
+      color: #9ca3af;
+      margin-top: 12px;
+      text-align: center;
+    }
+
+    /* 에스크로 금액 카드 (보라 그라디언트) */
+    .escrow-card {
+      background: linear-gradient(135deg, #8b5cf6, #6366f1);
+      border-radius: 16px;
+      padding: 28px;
+      color: white;
+      margin-bottom: 20px;
+    }
+
+    .escrow-card h3 {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .escrow-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+      font-size: 15px;
+    }
+
+    .escrow-row:last-of-type {
+      border-bottom: none;
+    }
+
+    .escrow-row .label {
+      opacity: 0.9;
+    }
+
+    .escrow-row .value {
+      font-weight: 600;
+    }
+
+    .escrow-row .paid-badge {
+      font-size: 10px;
+      background: rgba(255, 255, 255, 0.2);
+      padding: 2px 8px;
+      border-radius: 8px;
+      margin-left: 6px;
+      font-weight: 400;
+    }
+
+    .escrow-total {
+      display: flex;
+      justify-content: space-between;
+      padding: 16px 0 0;
+      margin-top: 8px;
+      border-top: 2px solid rgba(255, 255, 255, 0.4);
+    }
+
+    .escrow-total .label {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .escrow-total .value {
+      font-size: 28px;
+      font-weight: 700;
+    }
+
+    .escrow-usd {
+      text-align: right;
+      font-size: 14px;
+      opacity: 0.8;
+      margin-top: 4px;
+    }
+
+    /* 동의 체크박스 */
+    .consent-box {
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .consent-box h3 {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .consent-item {
+      display: flex;
+      align-items: start;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .consent-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .consent-item input {
+      width: 20px;
+      height: 20px;
+      margin-top: 2px;
+      accent-color: #8b5cf6;
+      cursor: pointer;
+    }
+
+    .consent-item label {
+      font-size: 13px;
+      color: #374151;
+      line-height: 1.5;
+      cursor: pointer;
+    }
+
+    /* 잠금 섹션 */
+    .locked-section {
+      background: #f9fafb;
+      border: 2px dashed #d1d5db;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .locked-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 16px 20px;
+      background: #f3f4f6;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .locked-header .lock-icon {
+      width: 28px;
+      height: 28px;
+      background: #d1d5db;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+    }
+
+    .locked-header h3 {
+      font-size: 16px;
+      font-weight: 600;
+      color: #6b7280;
+    }
+
+    .locked-header .lock-msg {
+      font-size: 12px;
+      color: #9ca3af;
+      margin-left: auto;
+    }
+
+    .locked-body {
+      padding: 20px;
+      opacity: 0.45;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .recruit-summary {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .recruit-summary-item {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 14px;
+    }
+
+    .recruit-summary-item .label {
+      font-size: 11px;
+      color: #6b7280;
+      margin-bottom: 4px;
+    }
+
+    .recruit-summary-item .value {
+      font-size: 15px;
+      font-weight: 600;
+      color: #1f2937;
+    }
+
+    .recruit-btn-group {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .recruit-info-note {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 12px;
+      color: #1e40af;
+      line-height: 1.6;
+    }
 
     /* 버튼 */
-    .btn { padding: 14px 28px; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; border: none; text-align: center; transition: all 0.15s; }
-    .btn-secondary { background: white; border: 1px solid #e5e7eb; color: #374151; }
-    .btn-secondary:hover { background: #f9fafb; }
-    .btn-primary { background: linear-gradient(135deg, #22c55e, #16a34a); border: none; color: white; }
-    .btn-primary:hover { background: linear-gradient(135deg, #16a34a, #15803d); }
-    .btn-row { display: flex; justify-content: space-between; align-items: center; margin-top: 24px; padding-top: 24px; border-top: 1px solid #e5e7eb; }
+    .btn {
+      padding: 14px 28px;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      text-align: center;
+      transition: all 0.15s;
+    }
 
-    /* 스텝 네비게이션 */
-    .step-nav { display: flex; gap: 10px; margin-top: 24px; flex-wrap: wrap; }
-    .step-nav a { padding: 8px 16px; background: #eee; border-radius: 6px; text-decoration: none; color: #333; font-size: 14px; }
+    .btn-secondary {
+      background: white;
+      border: 1px solid #e5e7eb;
+      color: #374151;
+    }
 
-    /* IRB 유형 선택 카드 */
-    .irb-type-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 24px; }
-    .irb-type-card {
-      border: 2px solid #e5e7eb; border-radius: 12px; padding: 20px; cursor: pointer;
-      transition: all 0.2s; position: relative; background: white;
+    .btn-secondary:hover {
+      background: #f9fafb;
     }
-    .irb-type-card:hover { border-color: #c4b5fd; background: #faf5ff; }
-    .irb-type-card.selected { border-color: #8b5cf6; background: #faf5ff; box-shadow: 0 0 0 3px rgba(139,92,246,0.15); }
-    .irb-type-card .type-icon { font-size: 28px; margin-bottom: 10px; }
-    .irb-type-card .type-title { font-size: 15px; font-weight: 700; color: #1f2937; margin-bottom: 4px; }
-    .irb-type-card .type-desc { font-size: 12px; color: #6b7280; line-height: 1.5; margin-bottom: 10px; }
-    .irb-type-card .type-fee { font-size: 13px; font-weight: 600; }
-    .irb-type-card .type-fee.free { color: #22c55e; }
-    .irb-type-card .type-fee.paid { color: #f59e0b; }
-    .irb-type-card .type-radio {
-      position: absolute; top: 12px; right: 12px;
-      width: 20px; height: 20px; border-radius: 50%; border: 2px solid #d1d5db;
-      display: flex; align-items: center; justify-content: center;
-    }
-    .irb-type-card.selected .type-radio { border-color: #8b5cf6; background: #8b5cf6; }
-    .irb-type-card.selected .type-radio::after { content: ""; width: 8px; height: 8px; background: white; border-radius: 50%; }
-    .irb-type-card .type-tag {
-      display: inline-block; font-size: 10px; font-weight: 600; padding: 3px 8px;
-      border-radius: 6px; margin-bottom: 10px;
-    }
-    .irb-type-card .type-tag.green { background: #dcfce7; color: #166534; }
-    .irb-type-card .type-tag.amber { background: #fef3c7; color: #92400e; }
-    .irb-type-card .type-tag.blue { background: #dbeafe; color: #1e40af; }
 
-    /* 조건부 섹션 */
-    .irb-section { display: none; }
-    .irb-section.active { display: block; }
+    .btn-primary {
+      background: #8b5cf6;
+      color: white;
+    }
 
-    /* 심사비 카드 */
-    .fee-card { background: linear-gradient(135deg, #f59e0b, #d97706); border-radius: 12px; padding: 20px; color: white; text-align: center; margin-bottom: 20px; }
-    .fee-card .fee-label { font-size: 13px; opacity: 0.9; margin-bottom: 6px; }
-    .fee-card .fee-value { font-size: 32px; font-weight: 700; }
-    .fee-card .fee-usd { font-size: 14px; opacity: 0.8; margin-top: 4px; }
+    .btn-primary:hover {
+      background: #7c3aed;
+    }
 
-    /* 타임라인 */
-    .timeline { margin: 16px 0; }
-    .timeline-item { display: flex; gap: 14px; padding-bottom: 16px; position: relative; }
-    .timeline-item:not(:last-child)::before {
-      content: ""; position: absolute; left: 15px; top: 36px; bottom: 0; width: 2px; background: #e5e7eb;
+    .btn-amber {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      color: white;
     }
-    .timeline-dot { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
-    .timeline-dot.done { background: #22c55e; color: white; }
-    .timeline-dot.current { background: #8b5cf6; color: white; }
-    .timeline-dot.pending { background: #e5e7eb; color: #9ca3af; }
-    .timeline-content .tl-title { font-size: 14px; font-weight: 600; color: #1f2937; }
-    .timeline-content .tl-desc { font-size: 12px; color: #6b7280; margin-top: 2px; }
 
-    /* 결제 수단 선택 */
-    .pay-method-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 16px 0; }
-    .pay-method-card {
-      border: 2px solid #e5e7eb; border-radius: 12px; padding: 18px; cursor: pointer;
-      transition: all 0.2s; position: relative; text-align: center; background: white;
+    .btn-amber:hover {
+      background: linear-gradient(135deg, #d97706, #b45309);
     }
-    .pay-method-card:hover { border-color: #c4b5fd; }
-    .pay-method-card.selected { border-color: #8b5cf6; background: #faf5ff; box-shadow: 0 0 0 3px rgba(139,92,246,0.12); }
-    .pay-method-card .pm-icon { font-size: 32px; margin-bottom: 8px; }
-    .pay-method-card .pm-title { font-size: 14px; font-weight: 700; color: #1f2937; margin-bottom: 4px; }
-    .pay-method-card .pm-desc { font-size: 11px; color: #6b7280; line-height: 1.4; }
-    .pay-method-card .pm-amount { font-size: 16px; font-weight: 700; color: #8b5cf6; margin-top: 10px; }
-    .pay-method-card .pm-radio {
-      position: absolute; top: 10px; right: 10px;
-      width: 18px; height: 18px; border-radius: 50%; border: 2px solid #d1d5db;
-      display: flex; align-items: center; justify-content: center;
-    }
-    .pay-method-card.selected .pm-radio { border-color: #8b5cf6; background: #8b5cf6; }
-    .pay-method-card.selected .pm-radio::after { content: ""; width: 7px; height: 7px; background: white; border-radius: 50%; }
-    .pay-method-card .pm-badge {
-      display: inline-block; font-size: 10px; font-weight: 600; padding: 2px 8px;
-      border-radius: 6px; margin-top: 8px;
-    }
-    .pay-method-card .pm-badge.discount { background: #fef3c7; color: #92400e; }
 
-    /* 모달 */
-    .modal-overlay {
-      display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.4); z-index: 1000; justify-content: center; align-items: center;
+    .btn-amber-lg {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      color: white;
+      width: 100%;
+      padding: 16px;
+      font-size: 16px;
     }
-    .modal-overlay.show { display: flex; }
-    .modal {
-      background: white; border-radius: 16px; width: 640px; max-height: 80vh;
-      overflow: hidden; box-shadow: 0 25px 50px rgba(0,0,0,0.25);
-      display: flex; flex-direction: column;
-    }
-    .modal-header {
-      padding: 16px 24px; border-bottom: 1px solid #e5e7eb;
-      display: flex; align-items: center; justify-content: space-between; background: #f9fafb;
-    }
-    .modal-header h3 { font-size: 16px; font-weight: 600; }
-    .modal-close { width: 32px; height: 32px; border: 1px solid #e5e7eb; border-radius: 8px; background: white; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; }
-    .modal-body { padding: 24px; overflow-y: auto; flex: 1; }
-    .rationale-item { display: flex; gap: 12px; padding: 14px; border: 1px solid #e5e7eb; border-radius: 10px; margin-bottom: 10px; }
-    .rationale-item:hover { background: #f9fafb; }
-    .rationale-icon { width: 40px; height: 40px; border-radius: 10px; background: #f3e8ff; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
-    .rationale-info { flex: 1; }
-    .rationale-title { font-size: 13px; font-weight: 600; color: #7c3aed; margin-bottom: 4px; }
-    .rationale-desc { font-size: 12px; color: #6b7280; line-height: 1.5; }
-    .rationale-stat { font-size: 11px; color: #059669; font-weight: 600; margin-top: 4px; }
-    .method-note { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 12px 14px; font-size: 12px; color: #1e40af; margin-top: 12px; line-height: 1.6; }
-    .ref-links { margin-top: 16px; padding-top: 14px; border-top: 1px solid #e5e7eb; }
-    .ref-links .ref-title { font-size: 12px; font-weight: 600; color: #374151; margin-bottom: 8px; }
-    .ref-link { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 8px; font-size: 12px; color: #3b82f6; text-decoration: none; margin-bottom: 4px; }
-    .ref-link:hover { background: #eff6ff; }
-    .ref-link .ref-icon { font-size: 14px; }
 
-    /* AI 추천 근거 버튼 (섹션 내) */
-    .ai-reason-btn {
-      display: inline-flex; align-items: center; gap: 6px;
-      padding: 8px 16px; border-radius: 8px; font-size: 12px; font-weight: 600;
-      cursor: pointer; border: 1px solid #ddd6fe; background: white; color: #7c3aed;
-      transition: all 0.15s; margin-bottom: 16px;
+    .btn-amber-lg:hover {
+      background: linear-gradient(135deg, #d97706, #b45309);
     }
-    .ai-reason-btn:hover { background: #f5f3ff; border-color: #a78bfa; }
+
+    .btn-purple {
+      background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+      color: white;
+      flex: 1;
+    }
+
+    .btn-blue {
+      background: linear-gradient(135deg, #3b82f6, #2563eb);
+      color: white;
+      flex: 1;
+    }
+
+    .btn-disabled {
+      background: #e5e7eb;
+      color: #9ca3af;
+      cursor: not-allowed;
+    }
+
+    .btn-deposit {
+      background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+      color: white;
+      width: 100%;
+      padding: 16px;
+      font-size: 16px;
+    }
+
+    .btn-deposit:hover {
+      background: linear-gradient(135deg, #7c3aed, #6d28d9);
+    }
+
+    .btn-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 24px;
+      padding-top: 24px;
+      border-top: 1px solid #e5e7eb;
+    }
 
     /* AI 채팅 패널 (우측) */
     .chat-panel {
@@ -293,6 +839,7 @@
       border-left: 1px solid #e5e7eb;
       background: #fafafa;
     }
+
     .chat-panel-inner {
       flex: 1;
       display: flex;
@@ -300,113 +847,662 @@
       background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
       color: #e5e7eb;
     }
+
     .chat-header {
       padding: 16px 20px;
       border-bottom: 1px solid #334155;
       background: rgba(139, 92, 246, 0.1);
     }
+
     .chat-header .title {
-      font-size: 15px; font-weight: 700;
-      display: flex; align-items: center; gap: 8px;
+      font-size: 15px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
+
     .chat-header .title .icon {
-      width: 28px; height: 28px;
+      width: 28px;
+      height: 28px;
       background: linear-gradient(135deg, #8b5cf6, #6366f1);
       border-radius: 8px;
-      display: flex; align-items: center; justify-content: center; font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
     }
-    .chat-header .sub { font-size: 12px; color: #94a3b8; margin-top: 4px; }
+
+    .chat-header .sub {
+      font-size: 12px;
+      color: #94a3b8;
+      margin-top: 4px;
+    }
 
     .chat-context {
-      margin: 12px; padding: 12px;
-      background: #1e293b; border: 1px solid #334155; border-radius: 10px;
+      margin: 12px;
+      padding: 12px;
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 10px;
     }
-    .chat-context .label { font-size: 11px; color: #64748b; margin-bottom: 6px; }
-    .chat-context .value { font-size: 13px; color: #e2e8f0; line-height: 1.5; }
-    .chat-context-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+
+    .chat-context .label {
+      font-size: 11px;
+      color: #64748b;
+      margin-bottom: 6px;
+    }
+
+    .chat-context .value {
+      font-size: 13px;
+      color: #e2e8f0;
+      line-height: 1.5;
+    }
+
+    .chat-context-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
     .chat-context-chip {
-      padding: 4px 10px; background: #8b5cf6; border-radius: 12px;
-      font-size: 11px; color: white;
+      padding: 4px 10px;
+      background: #8b5cf6;
+      border-radius: 12px;
+      font-size: 11px;
+      color: white;
     }
 
     .chat-messages {
-      flex: 1; overflow-y: auto; padding: 16px;
-      display: flex; flex-direction: column; gap: 12px;
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
     }
+
     .msg {
-      max-width: 90%; padding: 12px 14px; border-radius: 12px;
-      font-size: 13px; line-height: 1.5;
+      max-width: 90%;
+      padding: 12px 14px;
+      border-radius: 12px;
+      font-size: 13px;
+      line-height: 1.5;
     }
+
     .msg.ai {
-      background: #1e293b; border: 1px solid #334155;
-      align-self: flex-start; border-bottom-left-radius: 4px;
+      background: #1e293b;
+      border: 1px solid #334155;
+      align-self: flex-start;
+      border-bottom-left-radius: 4px;
     }
+
     .msg.user {
-      background: #3b82f6; color: white;
-      align-self: flex-end; border-bottom-right-radius: 4px;
+      background: #3b82f6;
+      color: white;
+      align-self: flex-end;
+      border-bottom-right-radius: 4px;
     }
-    .msg .sender { font-size: 11px; color: #64748b; margin-bottom: 4px; }
-    .msg.user .sender { color: rgba(255,255,255,0.7); }
+
+    .msg .sender {
+      font-size: 11px;
+      color: #64748b;
+      margin-bottom: 4px;
+    }
+
+    .msg.user .sender {
+      color: rgba(255, 255, 255, 0.7);
+    }
 
     .chat-quick {
-      padding: 12px; border-top: 1px solid #334155; background: rgba(0,0,0,0.2);
+      padding: 12px;
+      border-top: 1px solid #334155;
+      background: rgba(0, 0, 0, 0.2);
     }
-    .chat-quick .label { font-size: 11px; color: #64748b; margin-bottom: 8px; }
-    .chat-quick-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+
+    .chat-quick .label {
+      font-size: 11px;
+      color: #64748b;
+      margin-bottom: 8px;
+    }
+
+    .chat-quick-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
     .chat-quick-chip {
-      padding: 6px 12px; background: #334155; border: 1px solid #475569;
-      border-radius: 16px; font-size: 12px; color: #cbd5e1; cursor: pointer;
+      padding: 6px 12px;
+      background: #334155;
+      border: 1px solid #475569;
+      border-radius: 16px;
+      font-size: 12px;
+      color: #cbd5e1;
+      cursor: pointer;
     }
-    .chat-quick-chip:hover { background: #475569; border-color: #8b5cf6; }
+
+    .chat-quick-chip:hover {
+      background: #475569;
+      border-color: #8b5cf6;
+    }
 
     .chat-input {
-      padding: 16px; border-top: 1px solid #334155; background: #0f172a;
+      padding: 16px;
+      border-top: 1px solid #334155;
+      background: #0f172a;
     }
+
     .chat-input-wrapper {
-      display: flex; gap: 8px;
-      background: #1e293b; border: 1px solid #334155;
-      border-radius: 12px; padding: 4px;
+      display: flex;
+      gap: 8px;
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 4px;
     }
-    .chat-input-wrapper:focus-within { border-color: #8b5cf6; }
+
+    .chat-input-wrapper:focus-within {
+      border-color: #8b5cf6;
+    }
+
     .chat-input input {
-      flex: 1; background: transparent; border: none;
-      padding: 10px 12px; font-size: 13px; color: #e2e8f0; outline: none;
+      flex: 1;
+      background: transparent;
+      border: none;
+      padding: 10px 12px;
+      font-size: 13px;
+      color: #e2e8f0;
+      outline: none;
     }
-    .chat-input input::placeholder { color: #64748b; }
+
+    .chat-input input::placeholder {
+      color: #64748b;
+    }
+
     .chat-send-btn {
-      width: 40px; height: 40px;
+      width: 40px;
+      height: 40px;
       background: linear-gradient(135deg, #8b5cf6, #6366f1);
-      border: none; border-radius: 8px; color: white; cursor: pointer;
-      display: flex; align-items: center; justify-content: center; font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      color: white;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
     }
 
     /* 디자이너 노트 (하단 오버레이) */
     .designer-notes {
-      position: fixed; bottom: 0; left: 0; right: 0;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
       background: linear-gradient(135deg, #fdf4ff, #fae8ff);
       border-top: 2px solid #d946ef;
       padding: 20px 32px;
-      max-height: 400px; overflow-y: auto;
+      max-height: 400px;
+      overflow-y: auto;
       z-index: 100;
       display: none;
     }
-    .designer-notes.show { display: block; }
-    .designer-notes h3 { color: #a21caf; margin-bottom: 12px; font-size: 14px; }
-    .designer-notes .content { font-size: 12px; color: #374151; line-height: 1.7; columns: 2; column-gap: 32px; }
 
-    .toggle-notes {
-      position: fixed; bottom: 16px; right: 16px;
-      padding: 10px 16px; background: #d946ef; color: white;
-      border: none; border-radius: 8px; font-size: 13px; font-weight: 600;
-      cursor: pointer; z-index: 101; box-shadow: 0 4px 12px rgba(217,70,239,0.3);
+    .designer-notes.show {
+      display: block;
     }
 
+    .designer-notes h3 {
+      color: #a21caf;
+      margin-bottom: 12px;
+      font-size: 14px;
+    }
+
+    .designer-notes .content {
+      font-size: 12px;
+      color: #374151;
+      line-height: 1.7;
+      columns: 2;
+      column-gap: 32px;
+    }
+
+    .toggle-notes {
+      position: fixed;
+      bottom: 16px;
+      right: 16px;
+      padding: 10px 16px;
+      background: #d946ef;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      z-index: 101;
+      box-shadow: 0 4px 12px rgba(217, 70, 239, 0.3);
+    }
+
+    /* ===== SIDEBAR NAVIGATION STYLES ===== */
+    .sidebar-nav-section {
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .sidebar-badge {
+      background: #3b82f6;
+      color: white;
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-weight: 600;
+    }
+
+    .sidebar-research-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-bottom: 4px;
+    }
+
+    .sidebar-research-item:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .sidebar-item-emoji {
+      font-size: 14px;
+    }
+
+    .sidebar-item-name {
+      flex: 1;
+      font-size: 13px;
+      color: #94a3b8;
+    }
+
+    .sidebar-status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    /* Draft section styles */
+    .sidebar-draft-title {
+      font-size: 11px;
+      font-weight: 600;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 12px;
+      margin-bottom: 8px;
+    }
+
+    .sidebar-draft-badge {
+      background: #334155;
+      color: #94a3b8;
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 8px;
+    }
+
+    .sidebar-draft-link {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      border-radius: 8px;
+      text-decoration: none;
+      margin-bottom: 4px;
+      background: rgba(251, 191, 36, 0.08);
+    }
+
+    .sidebar-draft-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .sidebar-draft-meta {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .sidebar-draft-title-text {
+      font-size: 12px;
+      color: #e2e8f0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .sidebar-draft-meta-text {
+      font-size: 10px;
+      color: #64748b;
+      margin-top: 2px;
+    }
+
+    /* ===== PAGE HEADER STYLES ===== */
+    .page-header-container {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 8px;
+    }
+
+    .page-title {
+      font-size: 24px;
+      font-weight: 700;
+    }
+
+    .page-description {
+      color: #6b7280;
+      margin-bottom: 28px;
+      font-size: 14px;
+    }
+
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: auto;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+    }
+
+    .skip-link:focus {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      z-index: 10000;
+      padding: 8px 16px;
+      background: #3b82f6;
+      color: white;
+      border-radius: 4px;
+      width: auto;
+      height: auto;
+    }
+
+    /* ===== 이체 통합 레이아웃 ===== */
+    .transfer-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .transfer-action-card {
+      background: white;
+      border: 2px dashed #d1d5db;
+      border-radius: 16px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      transition: all 0.2s;
+    }
+
+    .transfer-action-card:hover {
+      border-color: #8b5cf6;
+      background: #faf5ff;
+    }
+
+    .transfer-action-icon {
+      width: 56px;
+      height: 56px;
+      background: linear-gradient(135deg, #8b5cf6, #6366f1);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      color: white;
+      margin-bottom: 16px;
+    }
+
+    .transfer-action-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #1f2937;
+      margin-bottom: 6px;
+    }
+
+    .transfer-action-desc {
+      font-size: 13px;
+      color: #6b7280;
+      margin-bottom: 16px;
+      line-height: 1.5;
+    }
+
+    .transfer-auth-badges {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .transfer-auth-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .btn-transfer-open {
+      background: linear-gradient(135deg, #8b5cf6, #6366f1);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 14px 32px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .btn-transfer-open:hover {
+      background: linear-gradient(135deg, #7c3aed, #4f46e5);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+    }
+
+    /* ===== 이체 모달 ===== */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.6);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      z-index: 200;
+    }
+
+    .modal-overlay.show {
+      display: flex;
+    }
+
+    .modal {
+      background: white;
+      border-radius: 16px;
+      width: min(920px, 96vw);
+      max-height: 92vh;
+      overflow: auto;
+      box-shadow: 0 24px 60px rgba(15, 23, 42, 0.3);
+      border: 1px solid #e5e7eb;
+    }
+
+    .modal-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid #e5e7eb;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .modal-title {
+      font-weight: 700;
+      font-size: 16px;
+    }
+
+    .modal-close {
+      font-size: 12px;
+      color: #6b7280;
+      border: 1px solid #e5e7eb;
+      padding: 6px 10px;
+      border-radius: 8px;
+      background: #f8fafc;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .modal-close:hover {
+      background: #f1f5f9;
+    }
+
+    .modal-body {
+      padding: 20px;
+      display: grid;
+      grid-template-columns: 1.3fr 0.9fr;
+      gap: 16px;
+    }
+
+    .modal-section {
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 16px;
+      background: #fff;
+    }
+
+    .step-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      color: #1e40af;
+      background: #dbeafe;
+      padding: 4px 10px;
+      border-radius: 999px;
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 12px;
+      color: #6b7280;
+    }
+
+    .field input,
+    .field select {
+      height: 36px;
+      border-radius: 8px;
+      border: 1px solid #e5e7eb;
+      padding: 0 10px;
+      font-size: 13px;
+    }
+
+    .field.full {
+      grid-column: 1 / -1;
+    }
+
+    .otp {
+      display: flex;
+      gap: 6px;
+    }
+
+    .otp span {
+      width: 32px;
+      height: 36px;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      color: #94a3b8;
+    }
+
+    .modal-summary {
+      font-size: 12px;
+      color: #6b7280;
+      line-height: 1.6;
+    }
+
+    .btn-modal {
+      height: 36px;
+      border-radius: 8px;
+      border: none;
+      padding: 0 16px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-modal-dark {
+      background: #111827;
+      color: white;
+    }
+
+    .btn-modal-secondary {
+      background: #e2e8f0;
+      color: #111827;
+    }
+
+    .auth-level-note {
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 11px;
+      color: #92400e;
+      line-height: 1.5;
+      margin-top: 12px;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0.4;
+      }
+    }
   </style>
 </head>
+
 <body>
+  <a href="#main-content" class="skip-link">본문으로 건너뛰기</a>
   <div class="layout">
     <!-- Nav -->
-    <div class="sidebar">
+    <nav class="sidebar" role="navigation" aria-label="사이드바 내비게이션">
       <div class="logo">
         <div class="logo-icon">U</div>
         UniQdata
@@ -426,45 +1522,45 @@
       </div>
 
       <!-- 내 연구 (접힌 상태) -->
-      <div class="nav-section" style="flex:1; overflow-y:auto;">
+      <div class="nav-section sidebar-nav-section">
         <div class="nav-section-title" style="display:flex; align-items:center; justify-content:space-between;">
           내 연구
-          <span style="background:#3b82f6; color:white; font-size:11px; padding:2px 8px; border-radius:10px; font-weight:600;">3</span>
+          <span class="sidebar-badge">3</span>
         </div>
-        <div style="display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:8px; cursor:pointer; margin-bottom:4px;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
-          <span style="font-size:14px;">&#x1F4C1;</span>
-          <span style="flex:1; font-size:13px; color:#94a3b8;">당뇨병 복약 순응도</span>
-          <span style="width:8px; height:8px; background:#22c55e; border-radius:50%;"></span>
+        <div class="sidebar-research-item">
+          <span class="sidebar-item-emoji">📁</span>
+          <span class="sidebar-item-name">만성질환 약물 순응도</span>
+          <span class="sidebar-status-dot" style="background:#22c55e;"></span>
         </div>
-        <div style="display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:8px; cursor:pointer; margin-bottom:4px;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
-          <span style="font-size:14px;">&#x1F4C1;</span>
-          <span style="flex:1; font-size:13px; color:#94a3b8;">노인 수면 패턴</span>
-          <span style="width:8px; height:8px; background:#3b82f6; border-radius:50%;"></span>
+        <div class="sidebar-research-item">
+          <span class="sidebar-item-emoji">📁</span>
+          <span class="sidebar-item-name">노인 수면 패턴</span>
+          <span class="sidebar-status-dot" style="background:#3b82f6;"></span>
         </div>
-        <div style="display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:8px; cursor:pointer;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
-          <span style="font-size:14px;">&#x1F4C4;</span>
-          <span style="flex:1; font-size:13px; color:#94a3b8;">ADHD 생활습관</span>
-          <span style="width:8px; height:8px; background:#64748b; border-radius:50%;"></span>
+        <div class="sidebar-research-item">
+          <span class="sidebar-item-emoji">📄</span>
+          <span class="sidebar-item-name">ADHD 생활습관</span>
+          <span class="sidebar-status-dot" style="background:#64748b;"></span>
         </div>
 
         <!-- 임시저장 -->
         <div style="margin-top:16px; padding-top:12px; border-top:1px solid #1e293b;">
-          <div style="display:flex; align-items:center; justify-content:space-between; padding:0 12px; margin-bottom:8px;">
-            <span style="font-size:11px; font-weight:600; color:#64748b; text-transform:uppercase; letter-spacing:0.5px;">임시저장</span>
-            <span style="background:#334155; color:#94a3b8; font-size:10px; padding:2px 6px; border-radius:8px;">2</span>
+          <div class="sidebar-draft-title">
+            <span>임시저장</span>
+            <span class="sidebar-draft-badge">2</span>
           </div>
-          <a href="#" style="display:flex; align-items:center; gap:10px; padding:8px 12px; border-radius:8px; text-decoration:none; margin-bottom:4px; background:rgba(251,191,36,0.08);">
-            <span style="width:6px; height:6px; background:#fbbf24; border-radius:50%; flex-shrink:0;"></span>
-            <div style="flex:1; min-width:0;">
-              <div style="font-size:12px; color:#e2e8f0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">소아 비만 개입 연구</div>
-              <div style="font-size:10px; color:#64748b; margin-top:2px;">Step 3 &middot; 2일 전</div>
+          <a href="#" class="sidebar-draft-link" style="background:rgba(251,191,36,0.08);">
+            <span class="sidebar-draft-dot" style="background:#fbbf24;"></span>
+            <div class="sidebar-draft-meta">
+              <div class="sidebar-draft-title-text">소아 비만 개입 연구</div>
+              <div class="sidebar-draft-meta-text">Step 3 · 2일 전</div>
             </div>
           </a>
-          <a href="#" style="display:flex; align-items:center; gap:10px; padding:8px 12px; border-radius:8px; text-decoration:none;">
-            <span style="width:6px; height:6px; background:#64748b; border-radius:50%; flex-shrink:0;"></span>
-            <div style="flex:1; min-width:0;">
-              <div style="font-size:12px; color:#94a3b8; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">직장인 스트레스 코르티솔</div>
-              <div style="font-size:10px; color:#64748b; margin-top:2px;">Step 1 &middot; 5일 전</div>
+          <a href="#" class="sidebar-draft-link">
+            <span class="sidebar-draft-dot" style="background:#64748b;"></span>
+            <div class="sidebar-draft-meta">
+              <div class="sidebar-draft-title-text">직장인 스트레스 코르티솔</div>
+              <div class="sidebar-draft-meta-text">Step 1 · 5일 전</div>
             </div>
           </a>
         </div>
@@ -479,24 +1575,37 @@
           </div>
         </div>
       </div>
-    </div>
+    </nav>
 
     <!-- Workspace Wrap -->
     <div class="workspace-wrap">
       <!-- Step Bar -->
       <div class="step-bar">
         <div class="step-bar-inner">
-          <a class="sb-step done" href="create.html"><div class="sb-num">&#x2713;</div><div class="sb-label">AI 인터뷰</div></a>
+          <a class="sb-step done" href="create.html">
+            <div class="sb-num">&#x2713;</div>
+            <div class="sb-label">AI 인터뷰</div>
+          </a>
           <div class="sb-line done"></div>
-          <a class="sb-step done" href="create-step2.html"><div class="sb-num">&#x2713;</div><div class="sb-label">연구 설계</div></a>
+          <a class="sb-step done" href="create-step2.html">
+            <div class="sb-num">&#x2713;</div>
+            <div class="sb-label">연구 설계</div>
+          </a>
           <div class="sb-line done"></div>
-          <a class="sb-step done" href="create-step3.html"><div class="sb-num">&#x2713;</div><div class="sb-label">데이터 수집</div></a>
+          <a class="sb-step done" href="create-step3.html">
+            <div class="sb-num">&#x2713;</div>
+            <div class="sb-label">타겟 설정</div>
+          </a>
           <div class="sb-line done"></div>
-          <a class="sb-step done" href="create-step4.html"><div class="sb-num">&#x2713;</div><div class="sb-label">타겟 설정</div></a>
+          <a class="sb-step done" href="create-step4.html">
+            <div class="sb-num">&#x2713;</div>
+            <div class="sb-label">데이터 수집</div>
+          </a>
           <div class="sb-line done"></div>
-          <a class="sb-step active" href="create-step5.html"><div class="sb-num">5</div><div class="sb-label">IRB 심의</div></a>
-          <div class="sb-line"></div>
-          <a class="sb-step pending" href="create-step6.html"><div class="sb-num">6</div><div class="sb-label">에스크로</div></a>
+          <a class="sb-step active" href="create-step5.html">
+            <div class="sb-num">5</div>
+            <div class="sb-label">에스크로</div>
+          </a>
         </div>
       </div>
 
@@ -504,272 +1613,511 @@
       <div class="workspace">
 
         <!-- 에디터 패널 -->
-        <div class="editor-panel">
+        <div class="editor-panel" id="main-content">
 
           <!-- 페이지 헤더 -->
-          <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 8px;">
-            <h1 style="font-size: 24px; font-weight: 700;">IRB 심의</h1>
+          <div class="page-header-container">
+            <h1 class="page-title">에스크로 + 모집</h1>
             <span class="status-badge" style="background:#ede9fe; color:#7c3aed;">Step 5</span>
           </div>
-          <p style="color: #6b7280; margin-bottom: 28px; font-size: 14px;">연구의 IRB 심의 유형을 선택하고 진행하세요</p>
+          <p class="page-description">연구 예산을 예치하고 모집을 시작합니다 (IRB 필요시 인증 선행)</p>
+          <!-- Section 0: IRB — AI가 판단하는 3가지 케이스 (한눈에 비교) -->
+          <div style="margin-bottom: 20px;" data-spec="IRB: AI가 판단. 3가지 케이스를 카드로 나란히 표시. 실제 UI에서는 해당하는 1개만 보임."
+            data-spec-type="irb">
+            <div style="font-size: 16px; font-weight: 700; color: #1f2937; margin-bottom: 4px;">&#x1F3E5; IRB 심의</div>
+            <div style="font-size: 13px; color: #6b7280; margin-bottom: 16px;">AI가 연구 설계를 분석하여 아래 3가지 중 하나를 판단합니다. 실제
+              UI에서는 해당하는 케이스 1개만 표시됩니다.</div>
 
-          <!-- ===== AI IRB 판정 결과 ===== -->
-          <div class="card" style="border: 2px solid #8b5cf6; overflow: visible;">
-            <div class="card-header" style="background: linear-gradient(135deg, #7c3aed, #6366f1); border: none;">
-              <h3 style="color: white; display: flex; align-items: center; gap: 8px;">🤖 AI IRB 유형 판정</h3>
-              <span style="font-size: 11px; color: #c4b5fd; background: rgba(255,255,255,0.15); padding: 4px 10px; border-radius: 12px;">연구 설계 자동 분석</span>
-            </div>
-            <div class="card-body">
-              <!-- AI 분석 요약 -->
-              <div style="background: #faf5ff; border: 1px solid #ddd6fe; border-radius: 10px; padding: 16px; margin-bottom: 20px;">
-                <div style="display: flex; align-items: flex-start; gap: 12px;">
-                  <div style="width: 36px; height: 36px; background: linear-gradient(135deg, #8b5cf6, #6366f1); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;">🤖</div>
-                  <div style="flex: 1;">
-                    <div style="font-size: 13px; font-weight: 600; color: #7c3aed; margin-bottom: 6px;">AI 분석 결과</div>
-                    <div style="font-size: 12px; color: #374151; line-height: 1.7;">
-                      본 연구를 분석한 결과 <strong style="color: #d97706;">일반 심의</strong>가 필요합니다.<br>
-                      • CGM 기기를 통한 <strong>새로운 데이터 수집</strong> 포함<br>
-                      • 식단 개입(저탄수화물 ≤50g/일)이 참여자 건강에 영향<br>
-                      • 대상: 제2형 당뇨 환자 (취약 계층 해당)
-                    </div>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;">
+              <!-- 케이스 1: 해당 없음 -->
+              <div style="border: 2px solid #22c55e; border-radius: 12px; overflow: hidden;">
+                <div style="background: #f0fdf4; padding: 14px 16px; border-bottom: 1px solid #bbf7d0;">
+                  <div style="font-size: 14px; font-weight: 700; color: #166534;">&#x2705; 해당 없음</div>
+                </div>
+                <div style="padding: 16px;">
+                  <div style="font-size: 12px; color: #15803d; line-height: 1.6; margin-bottom: 12px;">
+                    IRB 심의 대상이 아닌 연구.<br>
+                    기존 동의 데이터만 사용.
+                  </div>
+                  <div
+                    style="background: #f0fdf4; border-radius: 6px; padding: 10px; text-align: center; font-size: 12px; color: #166534; font-weight: 600;">
+                    &#x2192; 바로 에스크로 진행
                   </div>
                 </div>
               </div>
 
-              <!-- 판정 결과 3개 카드 (읽기 전용, AI가 선택함) -->
-              <div class="irb-type-grid">
-                <div class="irb-type-card" data-type="exempt" onclick="selectIRBType('exempt')" style="opacity: 0.5;">
-                  <div class="type-radio"></div>
-                  <div class="type-icon">🟢</div>
-                  <span class="type-tag green">면제</span>
-                  <div class="type-title">IRB 면제</div>
-                  <div class="type-desc">기존 동의 데이터만 사용 · 추가 위험 없음</div>
-                  <div class="type-fee free">심사비: 없음</div>
-                  <div style="font-size: 11px; color: #ef4444; margin-top: 8px; font-weight: 600;">✕ 새 데이터 수집 → 면제 불가</div>
+              <!-- 케이스 2: 면제 (신고 필수) -->
+              <div style="border: 2px solid #3b82f6; border-radius: 12px; overflow: hidden;">
+                <div style="background: #eff6ff; padding: 14px 16px; border-bottom: 1px solid #bfdbfe;">
+                  <div style="font-size: 14px; font-weight: 700; color: #1e40af;">&#x1F4CB; 면제 (신고 필수)</div>
                 </div>
-                <div class="irb-type-card selected" data-type="standard" onclick="selectIRBType('standard')">
-                  <div class="type-radio"></div>
-                  <div class="type-icon">🟡</div>
-                  <span class="type-tag amber">일반 심의</span>
-                  <div style="position: absolute; top: -10px; right: 12px; background: linear-gradient(135deg, #8b5cf6, #6366f1); color: white; font-size: 10px; font-weight: 700; padding: 3px 10px; border-radius: 10px;">AI 판정</div>
-                  <div class="type-title">심사비 결제 + 위원회 심의</div>
-                  <div class="type-desc">새로운 데이터 수집 연구 · IRB 위원회 심의 후 승인</div>
-                  <div class="type-fee paid">심사비: 500,000원</div>
-                </div>
-                <div class="irb-type-card" data-type="auto" onclick="selectIRBType('auto')" style="opacity: 0.5;">
-                  <div class="type-radio"></div>
-                  <div class="type-icon">🔵</div>
-                  <span class="type-tag blue">간이 심의</span>
-                  <div class="type-title">자동 승인 → 모집</div>
-                  <div class="type-desc">최소 위험 연구 · AI 사전 검증 통과 시</div>
-                  <div class="type-fee paid">심사비: 250,000원</div>
-                  <div style="font-size: 11px; color: #ef4444; margin-top: 8px; font-weight: 600;">✕ 식단 개입 포함 → 최소 위험 아님</div>
+                <div style="padding: 16px;">
+                  <div style="font-size: 12px; color: #1d4ed8; line-height: 1.6; margin-bottom: 12px;">
+                    심의는 면제되지만 기관 신고 필수.<br>
+                    최소 위험 + 비침습 연구.
+                  </div>
+                  <div style="font-size: 12px; color: #374151; margin-bottom: 8px; font-weight: 600;">필요 입력:</div>
+                  <div style="font-size: 11px; color: #6b7280; line-height: 1.6;">
+                    &#x2022; 신고 접수번호<br>
+                    &#x2022; 신고 확인서 업로드
+                  </div>
+                  <button onclick="openIRBModal('filing')"
+                    style="width: 100%; padding: 10px; background: #3b82f6; color: white; border: none; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; margin-top: 12px; transition: all 0.15s;"
+                    onmouseover="this.style.background='#2563eb'" onmouseout="this.style.background='#3b82f6'">
+                    &#x1F4CB; 신고하기
+                  </button>
+                  <div style="font-size: 10px; color: #6b7280; text-align: center; margin-top: 6px;">팝업에서 신고 정보 입력</div>
                 </div>
               </div>
 
-              <div style="margin-top: 16px; font-size: 12px; color: #6b7280; display: flex; align-items: center; gap: 6px;">
-                💡 동의하지 않으면 다른 유형을 클릭하여 변경할 수 있습니다
+              <!-- 케이스 3: 인증 필요 (외부 IRB 심사) -->
+              <div style="border: 2px solid #f59e0b; border-radius: 12px; overflow: hidden;">
+                <div style="background: #fffbeb; padding: 14px 16px; border-bottom: 1px solid #fde68a;">
+                  <div style="font-size: 14px; font-weight: 700; color: #92400e;">&#x23F3; 인증 필요</div>
+                </div>
+                <div style="padding: 16px;">
+                  <div style="font-size: 12px; color: #78350f; line-height: 1.6; margin-bottom: 12px;">
+                    외부 IRB 심사 필수.<br>
+                    신규 데이터 수집 포함 연구.
+                  </div>
+                  <div style="font-size: 12px; color: #374151; margin-bottom: 8px; font-weight: 600;">필요 입력:</div>
+                  <div style="font-size: 11px; color: #6b7280; line-height: 1.6;">
+                    &#x2022; IRB 승인번호<br>
+                    &#x2022; 승인서 업로드<br>
+                    &#x2022; 승인일 / 만료일
+                  </div>
+                  <button onclick="openIRBModal('certification')"
+                    style="width: 100%; padding: 10px; background: #f59e0b; color: white; border: none; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; margin-top: 12px; transition: all 0.15s;"
+                    onmouseover="this.style.background='#d97706'" onmouseout="this.style.background='#f59e0b'">
+                    &#x1F3E5; 인증하기
+                  </button>
+                  <div style="font-size: 10px; color: #6b7280; text-align: center; margin-top: 6px;">팝업에서 IRB 인증 진행
+                  </div>
+                </div>
               </div>
             </div>
           </div>
 
-          <!-- ===== 면제 섹션 ===== -->
-          <div class="irb-section" id="section-exempt">
-            <button class="ai-reason-btn" onclick="openModal('modal-exempt')">🤖 AI 면제 판정 근거 보기</button>
+          <!-- Section 0.5: IRB 고려 사유 & 서류 준비 (버튼 → 팝업) -->
+          <div style="display: flex; gap: 12px; margin-bottom: 20px;">
+            <button onclick="openIRBReasonModal()"
+              style="flex: 1; padding: 14px 20px; background: white; border: 2px solid #f59e0b; border-radius: 12px; font-size: 13px; font-weight: 600; color: #92400e; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.15s;"
+              onmouseover="this.style.background='#fffbeb'; this.style.borderColor='#d97706'"
+              onmouseout="this.style.background='white'; this.style.borderColor='#f59e0b'">
+              <span style="font-size: 18px;">&#x1F4CB;</span>
+              IRB 고려 사유 & 서류 준비
+              <span
+                style="font-size: 10px; background: linear-gradient(135deg, #f59e0b, #d97706); color: white; padding: 2px 8px; border-radius: 8px;">AI</span>
+            </button>
+          </div>
 
-            <div style="background: linear-gradient(135deg, #f0fdf4, #dcfce7); border: 2px solid #22c55e; border-radius: 12px; padding: 24px; margin-bottom: 20px; text-align: center;">
-              <div style="font-size: 48px; margin-bottom: 12px;">✅</div>
-              <div style="font-size: 18px; font-weight: 700; color: #166534; margin-bottom: 8px;">IRB 심의 면제</div>
-              <div style="font-size: 13px; color: #6b7280; line-height: 1.6;">
-                이 연구는 기존 동의 데이터만 활용하므로 IRB 심의가 면제됩니다.<br>
-                심사비 없이 바로 에스크로 예치 단계로 진행할 수 있습니다.
+          <!-- Section 0.7: IRB 인증 상태 (간소화 - 팝업으로 이동) -->
+          <div id="irbStatusBar"
+            style="background: white; border: 2px solid #e5e7eb; border-radius: 12px; padding: 16px 20px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between;"
+            data-spec="IRB 인증 상태 바: 인증 진행 전 대기 상태, 인증 완료 시 성공 상태로 전환. 인증은 팝업에서 진행." data-spec-type="irb">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <span style="font-size: 20px;">&#x1F512;</span>
+              <div>
+                <div id="irbStatusTitle" style="font-size: 13px; font-weight: 600; color: #92400e;">에스크로 잠금</div>
+                <div id="irbStatusDesc" style="font-size: 11px; color: #78350f;">위 케이스에 해당하는 인증을 완료하면 에스크로가 해제됩니다</div>
               </div>
             </div>
+            <div id="irbStatusBadge"
+              style="display: flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 10px; font-size: 12px; font-weight: 600; background: #fef3c7; color: #92400e; border: 1px solid #fde68a;">
+              <span
+                style="width: 8px; height: 8px; background: #f59e0b; border-radius: 50%; display: inline-block; animation: pulse 2s infinite;"></span>
+              &#x23F3; 인증 대기
+            </div>
+          </div>
 
-            <div class="card">
-              <div class="card-header"><h3>📝 면제 사유 확인</h3></div>
-              <div class="card-body">
-                <div class="checklist">
-                  <div class="checklist-item">
-                    <div class="icon">✓</div>
-                    <div class="text">기존에 수집·동의된 데이터만 사용</div>
-                  </div>
-                  <div class="checklist-item">
-                    <div class="icon">✓</div>
-                    <div class="text">참여자에게 추가 위험이 없는 연구</div>
-                  </div>
-                  <div class="checklist-item">
-                    <div class="icon">✓</div>
-                    <div class="text">개인식별 불가능한 비식별 데이터 활용</div>
-                  </div>
+          <!-- Section 1: 연구 비용 견적서 -->
+          <div
+            style="background: white; border: 2px solid #e5e7eb; border-radius: 12px; padding: 24px; margin-bottom: 20px;"
+            data-spec="연구 비용 견적서: Step 1-4 연구 설계를 기반으로 AI가 자동 산출. 에스크로 예치금(참여자 보상) + AI 서비스 + 데이터 인프라 + 플랫폼 수수료. 에스크로 예치금은 XRPL에 잠기고, 나머지는 플랫폼 매출."
+            data-spec-type="billing">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <div
+                  style="width: 36px; height: 36px; background: linear-gradient(135deg, #8b5cf6, #6d28d9); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; color: white;">
+                  &#x1F9FE;</div>
+                <div>
+                  <div style="font-size: 16px; font-weight: 700; color: #1f2937;">연구 비용 견적서</div>
+                  <div style="font-size: 12px; color: #6b7280;">Step 1~4 설계 기반 자동 산출 · 만성질환 약물 순응도 연구</div>
+                </div>
+              </div>
+              <span
+                style="font-size: 11px; background: #ede9fe; color: #7c3aed; padding: 4px 12px; border-radius: 12px; font-weight: 600;">AI
+                자동 산출</span>
+            </div>
+
+            <!-- ① 에스크로 예치금 (참여자 보상) -->
+            <div style="margin-bottom: 16px;">
+              <div
+                style="font-size: 13px; font-weight: 700; color: #7c3aed; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+                <span>&#x1F512;</span> 에스크로 예치금
+                <span
+                  style="font-size: 9px; background: #ede9fe; color: #7c3aed; padding: 2px 6px; border-radius: 4px;">XRPL
+                  에스크로 잠금</span>
+              </div>
+              <div style="border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden;">
+                <div
+                  style="display: grid; grid-template-columns: 2.5fr 1fr 0.6fr 1fr; padding: 8px 12px; background: #f9fafb; font-size: 11px; font-weight: 600; color: #6b7280; border-bottom: 1px solid #e5e7eb;">
+                  <span>항목</span><span>단가</span><span>수량</span><span style="text-align: right;">소계</span>
+                </div>
+                <div
+                  style="display: grid; grid-template-columns: 2.5fr 1fr 0.6fr 1fr; padding: 10px 12px; font-size: 12px; color: #374151; border-bottom: 1px solid #f3f4f6;">
+                  <span>참여 완료 보상 <span style="font-size: 9px; color: #9ca3af;">Step4</span></span><span>50
+                    XRP</span><span>100명</span><span style="text-align: right; font-weight: 600;">5,000 XRP</span>
+                </div>
+                <div
+                  style="display: grid; grid-template-columns: 2.5fr 1fr 0.6fr 1fr; padding: 10px 12px; font-size: 12px; color: #374151; border-bottom: 1px solid #f3f4f6;">
+                  <span>데이터 품질 보너스 <span style="font-size: 9px; color: #9ca3af;">Step4</span></span><span>10
+                    XRP</span><span>100명</span><span style="text-align: right; font-weight: 600;">1,000 XRP</span>
+                </div>
+                <div
+                  style="display: grid; grid-template-columns: 2.5fr 1fr 0.6fr 1fr; padding: 10px 12px; font-size: 12px; color: #374151;">
+                  <span>조기 참여 인센티브 <span style="font-size: 9px; color: #9ca3af;">Step3</span></span><span>20
+                    XRP</span><span>20명</span><span style="text-align: right; font-weight: 600;">400 XRP</span>
+                </div>
+                <div
+                  style="display: grid; grid-template-columns: 2.5fr 1fr 0.6fr 1fr; padding: 8px 12px; background: #faf5ff; font-size: 12px; font-weight: 600; color: #7c3aed; border-top: 1px solid #e5e7eb;">
+                  <span>소계</span><span></span><span></span><span style="text-align: right;">6,400 XRP</span>
+                </div>
+              </div>
+              <div style="font-size: 10px; color: #9ca3af; margin-top: 4px;">⤷ XRPL 에스크로에 잠김 · 참여 조건 충족 시 자동 지급 · 미사용분
+                환불</div>
+            </div>
+
+            <!-- ② AI 서비스 이용료 -->
+            <div style="margin-bottom: 16px;">
+              <div
+                style="font-size: 13px; font-weight: 700; color: #f59e0b; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+                <span>&#x1F916;</span> AI 서비스
+                <span
+                  style="font-size: 9px; background: #fef3c7; color: #92400e; padding: 2px 6px; border-radius: 4px;">플랫폼
+                  매출</span>
+              </div>
+              <div style="border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden;">
+                <div
+                  style="display: grid; grid-template-columns: 2.5fr 1fr 0.6fr 1fr; padding: 8px 12px; background: #f9fafb; font-size: 11px; font-weight: 600; color: #6b7280; border-bottom: 1px solid #e5e7eb;">
+                  <span>항목</span><span>단가</span><span>수량</span><span style="text-align: right;">소계</span>
+                </div>
+                <div
+                  style="display: grid; grid-template-columns: 2.5fr 1fr 0.6fr 1fr; padding: 10px 12px; font-size: 12px; color: #374151; border-bottom: 1px solid #f3f4f6;">
+                  <span>AI 연구 설계 에이전트 <span style="font-size: 9px; color: #9ca3af;">Step1-2</span></span><span>50
+                    XRP</span><span>1건</span><span style="text-align: right; font-weight: 600;">50 XRP</span>
+                </div>
+                <div
+                  style="display: grid; grid-template-columns: 2.5fr 1fr 0.6fr 1fr; padding: 10px 12px; font-size: 12px; color: #374151; border-bottom: 1px solid #f3f4f6;">
+                  <span>IRB 서류 AI 생성 (4종) <span style="font-size: 9px; color: #9ca3af;">Step5</span></span><span>30
+                    XRP</span><span>4종</span><span style="text-align: right; font-weight: 600;">120 XRP</span>
+                </div>
+                <div
+                  style="display: grid; grid-template-columns: 2.5fr 1fr 0.6fr 1fr; padding: 10px 12px; font-size: 12px; color: #374151;">
+                  <span>IRB 판정 + 계획 일치 검증 <span style="font-size: 9px; color: #9ca3af;">Step5</span></span><span>20
+                    XRP</span><span>1건</span><span style="text-align: right; font-weight: 600;">20 XRP</span>
+                </div>
+                <div
+                  style="display: grid; grid-template-columns: 2.5fr 1fr 0.6fr 1fr; padding: 8px 12px; background: #fffbeb; font-size: 12px; font-weight: 600; color: #f59e0b; border-top: 1px solid #e5e7eb;">
+                  <span>소계</span><span></span><span></span><span style="text-align: right;">190 XRP</span>
                 </div>
               </div>
             </div>
 
-            <div class="btn-row">
-              <a href="create-step4.html" class="btn btn-secondary">← 이전</a>
-              <a href="create-step6.html" class="btn btn-primary">에스크로 예치로 →</a>
-            </div>
-          </div>
-
-          <!-- ===== 일반 심의 섹션 ===== -->
-          <div class="irb-section active" id="section-standard">
-            <button class="ai-reason-btn" onclick="openModal('modal-standard')">🤖 AI 일반 심의 추천 근거 보기</button>
-
-            <!-- 심의 프로세스 타임라인 -->
-            <div class="card">
-              <div class="card-header"><h3>📊 심의 진행 프로세스</h3></div>
-              <div class="card-body">
-                <div class="timeline">
-                  <div class="timeline-item">
-                    <div class="timeline-dot current">1</div>
-                    <div class="timeline-content">
-                      <div class="tl-title">IRB 심의 접수</div>
-                      <div class="tl-desc">접수 완료 → 에스크로(Step 6)에서 심사비 함께 결제</div>
-                    </div>
-                  </div>
-                  <div class="timeline-item">
-                    <div class="timeline-dot pending">2</div>
-                    <div class="timeline-content">
-                      <div class="tl-title">IRB 서류 자동 생성</div>
-                      <div class="tl-desc">AI가 연구 설계 기반으로 IRB 제출 서류를 자동 생성합니다</div>
-                    </div>
-                  </div>
-                  <div class="timeline-item">
-                    <div class="timeline-dot pending">3</div>
-                    <div class="timeline-content">
-                      <div class="tl-title">위원회 심의 (5~14일)</div>
-                      <div class="tl-desc">기관생명윤리위원회에서 심의 진행. 수정 요청이 올 수 있습니다</div>
-                    </div>
-                  </div>
-                  <div class="timeline-item">
-                    <div class="timeline-dot pending">4</div>
-                    <div class="timeline-content">
-                      <div class="tl-title">승인 완료 → 에스크로 예치</div>
-                      <div class="tl-desc">승인 후 에스크로 예치(Step 6) 단계가 활성화됩니다</div>
-                    </div>
-                  </div>
+            <!-- ③ 데이터 인프라 -->
+            <div style="margin-bottom: 16px;">
+              <div
+                style="font-size: 13px; font-weight: 700; color: #10b981; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+                <span>&#x1F4BE;</span> 데이터 인프라
+                <span
+                  style="font-size: 9px; background: #d1fae5; color: #065f46; padding: 2px 6px; border-radius: 4px;">플랫폼
+                  매출</span>
+              </div>
+              <div style="border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden;">
+                <div
+                  style="display: grid; grid-template-columns: 2.5fr 1fr 0.6fr 1fr; padding: 8px 12px; background: #f9fafb; font-size: 11px; font-weight: 600; color: #6b7280; border-bottom: 1px solid #e5e7eb;">
+                  <span>항목</span><span>단가</span><span>수량</span><span style="text-align: right;">소계</span>
+                </div>
+                <div
+                  style="display: grid; grid-template-columns: 2.5fr 1fr 0.6fr 1fr; padding: 10px 12px; font-size: 12px; color: #374151; border-bottom: 1px solid #f3f4f6;">
+                  <span>데이터 수집/저장 <span style="font-size: 9px; color: #9ca3af;">참여자당</span></span><span>2
+                    XRP</span><span>100명</span><span style="text-align: right; font-weight: 600;">200 XRP</span>
+                </div>
+                <div
+                  style="display: grid; grid-template-columns: 2.5fr 1fr 0.6fr 1fr; padding: 10px 12px; font-size: 12px; color: #374151;">
+                  <span>XRPL 네트워크 수수료 <span style="font-size: 9px; color: #9ca3af;">에스크로 TX</span></span><span>0.01
+                    XRP</span><span>~200건</span><span style="text-align: right; font-weight: 600;">~2 XRP</span>
+                </div>
+                <div
+                  style="display: grid; grid-template-columns: 2.5fr 1fr 0.6fr 1fr; padding: 8px 12px; background: #ecfdf5; font-size: 12px; font-weight: 600; color: #10b981; border-top: 1px solid #e5e7eb;">
+                  <span>소계</span><span></span><span></span><span style="text-align: right;">~202 XRP</span>
                 </div>
               </div>
             </div>
 
-            <div class="xrpl-info">
-              <h4>💡 심사비 안내</h4>
-              <p>IRB 심사비(500,000원 ≈ 1,000 XRP)는 다음 단계 에스크로 예치에서 연구 비용과 함께 결제됩니다.</p>
-            </div>
-
-            <div class="btn-row">
-              <a href="create-step4.html" class="btn btn-secondary">← 이전</a>
-              <a href="create-step6.html" class="btn btn-primary">에스크로 + 결제로 →</a>
-            </div>
-          </div>
-
-          <!-- ===== 자동 승인 섹션 ===== -->
-          <div class="irb-section" id="section-auto">
-            <button class="ai-reason-btn" onclick="openModal('modal-auto')">🤖 AI 간이 심의 판정 근거 보기</button>
-
-            <!-- AI 사전 검증 -->
-            <div class="card">
-              <div class="card-header">
-                <h3>🤖 AI 사전 검증 결과</h3>
-                <span style="font-size: 11px; color: #22c55e; background: #f0fdf4; padding: 4px 10px; border-radius: 12px; font-weight: 600;">통과</span>
+            <!-- ④ 플랫폼 수수료 -->
+            <div style="margin-bottom: 16px;">
+              <div
+                style="font-size: 13px; font-weight: 700; color: #3b82f6; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+                <span>&#x1F3E2;</span> 플랫폼 수수료
+                <span
+                  style="font-size: 9px; background: #dbeafe; color: #1e40af; padding: 2px 6px; border-radius: 4px;">플랫폼
+                  매출</span>
               </div>
-              <div class="card-body">
-                <div class="checklist">
-                  <div class="checklist-item">
-                    <div class="icon">✓</div>
-                    <div class="text"><strong>최소 위험 연구</strong> — 일상적 의료 행위 수준의 위험</div>
-                  </div>
-                  <div class="checklist-item">
-                    <div class="icon">✓</div>
-                    <div class="text"><strong>취약 대상자 미포함</strong> — 소아, 임산부, 수감자 등 미포함</div>
-                  </div>
-                  <div class="checklist-item">
-                    <div class="icon">✓</div>
-                    <div class="text"><strong>비침습적 데이터 수집</strong> — 웨어러블/설문 기반</div>
-                  </div>
-                  <div class="checklist-item">
-                    <div class="icon">✓</div>
-                    <div class="text"><strong>표준 동의서 적용 가능</strong> — 별도 심의 불필요</div>
-                  </div>
+              <div style="border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden;">
+                <div
+                  style="display: grid; grid-template-columns: 2.5fr 1fr 0.6fr 1fr; padding: 8px 12px; background: #f9fafb; font-size: 11px; font-weight: 600; color: #6b7280; border-bottom: 1px solid #e5e7eb;">
+                  <span>항목</span><span>요율</span><span>기준</span><span style="text-align: right;">소계</span>
+                </div>
+                <div
+                  style="display: grid; grid-template-columns: 2.5fr 1fr 0.6fr 1fr; padding: 10px 12px; font-size: 12px; color: #374151; border-bottom: 1px solid #f3f4f6;">
+                  <span>연구 운영 수수료</span><span>5%</span><span>에스크로</span><span
+                    style="text-align: right; font-weight: 600;">320
+                    XRP</span>
+                </div>
+                <div
+                  style="display: grid; grid-template-columns: 2.5fr 1fr 0.6fr 1fr; padding: 10px 12px; font-size: 12px; color: #374151;">
+                  <span>에스크로 관리 수수료</span><span>고정</span><span>1건</span><span
+                    style="text-align: right; font-weight: 600;">20
+                    XRP</span>
+                </div>
+                <div
+                  style="display: grid; grid-template-columns: 2.5fr 1fr 0.6fr 1fr; padding: 8px 12px; background: #eff6ff; font-size: 12px; font-weight: 600; color: #3b82f6; border-top: 1px solid #e5e7eb;">
+                  <span>소계</span><span></span><span></span><span style="text-align: right;">340 XRP</span>
                 </div>
               </div>
             </div>
 
-            <div style="background: linear-gradient(135deg, #eff6ff, #dbeafe); border: 1px solid #93c5fd; border-radius: 12px; padding: 16px 20px; margin-bottom: 20px;">
-              <div style="font-size: 14px; font-weight: 600; color: #1e40af; margin-bottom: 6px;">⚡ 자동 승인 플로우</div>
-              <div style="font-size: 13px; color: #3b82f6; line-height: 1.6;">
-                접수 → AI 검증 자동 완료 → <strong>즉시 승인</strong> → 에스크로 예치(Step 6)에서 심사비 함께 결제<br>
-                별도 대기 시간 없이 모집 준비를 시작할 수 있습니다.
+            <!-- 합계 -->
+            <div style="border: 1px solid #e5e7eb; border-radius: 10px; overflow: hidden; margin-bottom: 12px;">
+              <div
+                style="display: grid; grid-template-columns: 1fr 1fr; padding: 12px 16px; background: #f9fafb; font-size: 12px; border-bottom: 1px solid #e5e7eb;">
+                <div>
+                  <div style="font-weight: 600; color: #7c3aed;">&#x1F512; 에스크로 예치금</div>
+                  <div style="font-size: 10px; color: #9ca3af;">XRPL 에스크로 잠금 · 참여자에게 지급</div>
+                </div>
+                <div style="text-align: right; font-size: 16px; font-weight: 700; color: #7c3aed;">6,400 XRP</div>
+              </div>
+              <div
+                style="display: grid; grid-template-columns: 1fr 1fr; padding: 12px 16px; background: #f9fafb; font-size: 12px;">
+                <div>
+                  <div style="font-weight: 600; color: #3b82f6;">&#x1F3E2; 플랫폼 이용료</div>
+                  <div style="font-size: 10px; color: #9ca3af;">AI + 인프라 + 수수료</div>
+                </div>
+                <div style="text-align: right; font-size: 16px; font-weight: 700; color: #3b82f6;">732 XRP</div>
               </div>
             </div>
 
-            <div class="xrpl-info">
-              <h4>💡 심사비 안내</h4>
-              <p>간이 심사비(250,000원 ≈ 500 XRP)는 다음 단계 에스크로 예치에서 연구 비용과 함께 결제됩니다.</p>
+            <div
+              style="background: linear-gradient(135deg, #8b5cf6, #6d28d9); border-radius: 10px; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <div style="font-size: 14px; font-weight: 700; color: white;">총 견적 금액</div>
+                <div style="font-size: 11px; color: rgba(255,255,255,0.7); margin-top: 2px;">에스크로 6,400 + 플랫폼
+                  732</div>
+              </div>
+              <div style="text-align: right;">
+                <div style="font-size: 22px; font-weight: 800; color: white;">7,132 XRP</div>
+                <div style="font-size: 11px; color: rgba(255,255,255,0.7);">&#x2248; $3,566 USD</div>
+              </div>
             </div>
 
-            <div class="btn-row">
-              <a href="create-step4.html" class="btn btn-secondary">← 이전</a>
-              <a href="create-step6.html" class="btn btn-primary" style="background: linear-gradient(135deg, #3b82f6, #2563eb);">에스크로 + 결제로 →</a>
+            <div style="margin-top: 12px; font-size: 10px; color: #9ca3af; text-align: center;">
+              &#x2139;&#xFE0F; 에스크로 예치금은 참여 완료 시 자동 지급, 미사용분 환불. 플랫폼 이용료는 연구 개시 시 즉시 청구.
             </div>
           </div>
 
-          <!-- 스텝 네비게이션 -->
-          <div class="step-nav">
-            <a href="create-step4.html">← Step 4</a>
-            <a href="create-step6.html">Step 6 →</a>
+          <!-- Section 1+2 통합: 프로젝트 지갑 (좌) + 이체 (우) -->
+          <div class="transfer-grid">
+            <!-- 좌: 프로젝트 지갑 (축소) -->
+            <div class="wallet-card" style="margin-bottom: 0;">
+              <div class="wallet-card-header">
+                <h3>&#x1F4B3; 프로젝트 지갑</h3>
+                <span class="badge-green-sm" style="background: #fef3c7; color: #92400e;">&#x23F3; IRB 인증 대기</span>
+              </div>
+              <div class="wallet-address-row">
+                <span class="label">지갑 주소:</span>
+                <span class="addr">rProjWallet3x7K...9mQ</span>
+                <button class="copy-btn"
+                  onclick="navigator.clipboard.writeText('rProjWallet3x7K9mQ'); this.textContent='복사됨!'; setTimeout(()=>this.textContent='복사', 1500);">복사</button>
+              </div>
+              <div class="wallet-stats">
+                <div class="wallet-stat-item">
+                  <div class="label">현재 잔액</div>
+                  <div class="value zero">0 XRP</div>
+                </div>
+                <div class="wallet-stat-item">
+                  <div class="label">필요 금액</div>
+                  <div class="value required">6,740 XRP</div>
+                </div>
+              </div>
+              <div class="progress-bar-wrapper">
+                <div class="progress-bar-bg">
+                  <div class="progress-bar-fill" style="width: 0%;"></div>
+                </div>
+                <div class="progress-bar-label">
+                  <span>0%</span>
+                  <span>6,740 XRP 필요</span>
+                </div>
+              </div>
+              <!-- 내 지갑 잔액 표시 -->
+              <div
+                style="margin-top: 16px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: baseline;">
+                <span style="font-size: 12px; color: #9ca3af;">내 지갑 잔액</span>
+                <span style="font-size: 16px; font-weight: 700; color: #4ade80;">45,000 XRP</span>
+              </div>
+              <div style="font-size: 11px; color: #64748b; text-align: right;">&#x2248; $22,500 USD</div>
+            </div>
+
+            <!-- 우: 이체 액션 카드 -->
+            <div class="transfer-action-card">
+              <div class="transfer-action-icon">&#x1F4B8;</div>
+              <div class="transfer-action-title">이체</div>
+              <div class="transfer-action-desc">
+                내 지갑에서 XRPL 주소로<br>XRP를 전송합니다
+              </div>
+              <div class="transfer-auth-badges">
+                <span class="transfer-auth-badge" style="background: #fee2e2; color: #991b1b;">&#x1F512; OTP +
+                  Passkey 이중 인증</span>
+              </div>
+              <button class="btn-transfer-open" onclick="openTransferModal()">&#x1F4E4; 이체하기</button>
+              <div style="font-size: 11px; color: #9ca3af; margin-top: 10px;">💡 프로젝트 지갑 주소는 왼쪽에서 복사</div>
+            </div>
+          </div>
+
+
+
+          <!-- Section 4: 에스크로 예치 동의 -->
+          <div class="consent-box">
+            <h3>&#x2705; 에스크로 예치 동의</h3>
+            <div class="consent-item">
+              <input type="checkbox" id="consent1" onchange="updateEscrowBtn()">
+              <label for="consent1">에스크로 예치 후 연구 설정 변경 불가에 동의합니다</label>
+            </div>
+            <div class="consent-item">
+              <input type="checkbox" id="consent2" onchange="updateEscrowBtn()">
+              <label for="consent2">참여자 보상은 조건 충족 시 자동 지급됨을 이해합니다</label>
+            </div>
+            <div class="consent-item">
+              <input type="checkbox" id="consent3" onchange="updateEscrowBtn()">
+              <label for="consent3">XRPL 에스크로 정책 및 UniQdata 이용약관에 동의합니다</label>
+            </div>
+            <div style="margin-top: 16px;">
+              <button id="escrowBtn" class="btn btn-disabled" style="width: 100%; padding: 16px; font-size: 16px;"
+                disabled
+                onclick="alert('에스크로 예치 처리 중...\n\n1. 참여자 보상 에스크로 생성 (6,400 XRP)\n2. 플랫폼 수수료 전송 (340 XRP)\n3. 에스크로 완료 → 모집 실행 섹션 활성화')">&#x1F512;
+                에스크로 예치하기</button>
+            </div>
+          </div>
+
+          <!-- Section 5: 모집 실행 (잠금 상태) -->
+          <div class="locked-section">
+            <div class="locked-header">
+              <span class="lock-icon">&#x1F512;</span>
+              <h3>모집 실행</h3>
+              <span class="lock-msg">에스크로 예치 완료 후 활성화됩니다</span>
+            </div>
+            <div class="locked-body">
+              <!-- 모집 요약 -->
+              <div style="font-size: 14px; font-weight: 600; color: #374151; margin-bottom: 12px;">&#x1F4CB; Step 4 모집
+                요약</div>
+              <div class="recruit-summary">
+                <div class="recruit-summary-item">
+                  <div class="label">타겟 대상자</div>
+                  <div class="value">4명 (사전 초대)</div>
+                </div>
+                <div class="recruit-summary-item">
+                  <div class="label">공개 모집</div>
+                  <div class="value">60명</div>
+                </div>
+                <div class="recruit-summary-item">
+                  <div class="label">목표 인원</div>
+                  <div class="value">100명 (선착순)</div>
+                </div>
+                <div class="recruit-summary-item">
+                  <div class="label">초대 수락 대기</div>
+                  <div class="value">3일</div>
+                </div>
+              </div>
+
+              <!-- 모집 버튼 -->
+              <div class="recruit-btn-group">
+                <button class="btn btn-purple btn-disabled" disabled>&#x1F4E8; 사전 초대 발송 시작</button>
+                <button class="btn btn-blue btn-disabled" disabled>&#x1F310; 공개 모집 시작</button>
+              </div>
+
+              <!-- 안내 노트 -->
+              <div class="recruit-info-note">
+                &#x2139;&#xFE0F; 사전 초대 &#x2192; 수락 대기(3일) &#x2192; 미수락 분은 공개 모집으로 전환. 목표 인원 도달 시 자동 마감 &#x2192; 연구 일괄
+                시작.
+              </div>
+            </div>
+          </div>
+
+          <!-- 네비게이션 버튼 -->
+          <div class="btn-row">
+            <a href="create-step4.html" class="btn btn-secondary">&#x2190; 이전</a>
+            <button id="navEscrowBtn" class="btn btn-amber" onclick="alert('에스크로 예치 프로세스를 시작합니다.')">에스크로 예치하기
+              &#x2192;</button>
           </div>
 
         </div><!-- /.editor-panel -->
 
-        <!-- AI IRB 어시스턴트 -->
+        <!-- AI 에스크로 어시스턴트 -->
         <div class="chat-panel">
           <div class="chat-panel-inner">
             <div class="chat-header">
               <div class="title">
                 <span class="icon">&#x1F916;</span>
-                AI IRB 어시스턴트
+                AI 에스크로 어시스턴트
               </div>
-              <div class="sub">IRB 심의 유형을 분석합니다</div>
+              <div class="sub">예치와 모집 실행을 안내합니다</div>
             </div>
 
             <div class="chat-context">
               <div class="label">현재 연구</div>
-              <div class="value">저탄수화물 식단 혈당 변동 RCT</div>
+              <div class="value">만성질환 약물 순응도 연구 &#x2014; 에스크로 예치 중</div>
               <div class="chat-context-chips">
-                <span class="chat-context-chip">RCT</span>
-                <span class="chat-context-chip">100명</span>
-                <span class="chat-context-chip">8주</span>
-                <span class="chat-context-chip">CGM</span>
+                <span class="chat-context-chip">IRB 인증 대기</span>
+                <span class="chat-context-chip">6,740 XRP</span>
+                <span class="chat-context-chip">100명 목표</span>
+                <span class="chat-context-chip">선착순</span>
               </div>
             </div>
 
             <div class="chat-messages">
               <div class="msg ai">
                 <div class="sender">AI 어시스턴트</div>
-                본 연구는 <strong>일반 심의</strong>에 해당할 가능성이 높습니다.<br><br>
-                이유:<br>
-                1. CGM 기기를 통한 침습적 데이터 수집 포함<br>
-                2. 식단 개입(저탄수화물 ≤50g/일)이 참여자 건강에 영향<br>
-                3. 대상이 제2형 당뇨 환자(취약 계층)<br><br>
-                다만 식단 조절은 최소 위험으로 볼 수 있어 <strong>신속 심의</strong> 가능성도 있습니다.
+                이 연구는 신규 데이터 수집이 포함되어 <strong>IRB 인증이 필요</strong>합니다.<br><br>
+                Step 1~4에서 입력하신 데이터로 <strong>IRB 제출 서류 4종</strong>(연구계획서, 동의서, 수집도구 설명서, 모집 문건)을 자동 생성할 수 있습니다. 생성 후
+                검토·수정하여 IRB에 제출하세요.<br><br>
+                승인 완료 후 에스크로 예치를 진행할 수 있습니다. 필요 금액은 <strong>6,740 XRP</strong>입니다.
+              </div>
+
+              <div class="msg user">
+                <div class="sender">김연구</div>
+                에스크로 예치하면 바로 모집이 시작돼?
+              </div>
+
+              <div class="msg ai">
+                <div class="sender">AI 어시스턴트</div>
+                아닙니다. 에스크로 예치 완료 후 <strong>'모집 실행' 섹션이 활성화</strong>됩니다. 사전 초대 발송과 공개 모집 시작을 직접 클릭해야 합니다.<br><br>
+                목표 <strong>100명</strong>이 선착순으로 채워지면 자동 마감 &#x2192; 연구가 일괄 시작됩니다.
               </div>
             </div>
 
             <div class="chat-quick">
-              <div class="label">빠른 질문</div>
+              <div class="label">빠른 액션</div>
               <div class="chat-quick-chips">
-                <span class="chat-quick-chip">면제 가능?</span>
-                <span class="chat-quick-chip">심의 기간은?</span>
-                <span class="chat-quick-chip">필요 서류</span>
-                <span class="chat-quick-chip">비용 절감</span>
+                <span class="chat-quick-chip">IRB 서류 생성</span>
+                <span class="chat-quick-chip">필요 금액 입금</span>
+                <span class="chat-quick-chip">에스크로 상세 보기</span>
+                <span class="chat-quick-chip">모집 미리보기</span>
               </div>
             </div>
 
             <div class="chat-input">
               <div class="chat-input-wrapper">
-                <input type="text" placeholder="IRB 관련 질문을 입력하세요">
+                <input type="text" placeholder="예: 에스크로 예치 후 환불 가능해?">
                 <button class="chat-send-btn">&#x27A4;</button>
               </div>
             </div>
@@ -780,184 +2128,255 @@
     </div><!-- /.workspace-wrap -->
   </div><!-- /.layout -->
 
-  <!-- ========== 모달: 면제 판정 근거 ========== -->
-  <div class="modal-overlay" id="modal-exempt" onclick="if(event.target===this)closeModal('modal-exempt')">
-    <div class="modal">
+  <!-- ===== IRB 고려 사유 & 서류 준비 팝업 ===== -->
+  <div id="irb-reason-modal" class="modal-overlay" onclick="if(event.target===this)closeIRBReasonModal()">
+    <div class="modal" style="width: min(820px, 96vw);">
       <div class="modal-header">
-        <h3>🤖 AI 면제 판정 근거</h3>
-        <button class="modal-close" onclick="closeModal('modal-exempt')">✕</button>
+        <div>
+          <div class="modal-title">&#x1F4CB; IRB 고려 사유 & 서류 준비</div>
+          <div style="font-size: 12px; color: var(--muted);">AI가 Step 1~4 데이터를 분석한 결과</div>
+        </div>
+        <a href="#" class="modal-close" onclick="event.preventDefault();closeIRBReasonModal()">닫기</a>
       </div>
       <div class="modal-body">
-        <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; padding: 14px 16px; margin-bottom: 16px; font-size: 13px; color: #166534; line-height: 1.6;">
-          연구 설계를 분석한 결과, 이 연구는 <strong>IRB 심의 면제</strong> 요건을 충족합니다. 생명윤리법 제15조 및 시행규칙 제13조 기준으로 판정했습니다.
-        </div>
+        <!-- 좌: AI 판단 근거 -->
+        <div class="modal-section">
+          <div class="step-pill">AI 판단 근거</div>
+          <div style="font-size: 12px; color: #374151; line-height: 1.7;">
+            <div style="background: #fef3c7; border-radius: 8px; padding: 12px; margin-bottom: 12px;">
+              <div style="font-weight: 600; color: #92400e; margin-bottom: 6px;">&#x26A0;&#xFE0F; 판정: 인증 필요 (외부 IRB 심사)
+              </div>
+              <div style="font-size: 11px; color: #78350f;">
+                신규 데이터 수집이 포함되어 있어 IRB 심사가 필요합니다.
+              </div>
+            </div>
 
-        <div class="rationale-item">
-          <div class="rationale-icon">📂</div>
-          <div class="rationale-info">
-            <div class="rationale-title">기존 동의 데이터 활용</div>
-            <div class="rationale-desc">이미 참여자 동의를 받은 데이터만 사용합니다. 추가적인 데이터 수집이나 참여자 접촉이 없어 새로운 동의가 불필요합니다.</div>
-            <div class="rationale-stat">동의 스코프 확인: 기존 consent_scope와 100% 일치</div>
+            <div style="font-weight: 600; margin-bottom: 8px;">근거 항목:</div>
+            <div style="display: flex; flex-direction: column; gap: 6px;">
+              <div
+                style="display: flex; align-items: flex-start; gap: 8px; padding: 8px 10px; background: #fef2f2; border: 1px solid #fecaca; border-radius: 6px;">
+                <span style="font-size: 14px; margin-top: 1px;">&#x1F534;</span>
+                <div>
+                  <div style="font-size: 12px; font-weight: 600; color: #991b1b;">신규 개인 데이터 수집</div>
+                  <div style="font-size: 11px; color: #6b7280;">Step 4에서 건강 설문 + 약물 복용 기록 수집 설정됨</div>
+                </div>
+              </div>
+              <div
+                style="display: flex; align-items: flex-start; gap: 8px; padding: 8px 10px; background: #fef2f2; border: 1px solid #fecaca; border-radius: 6px;">
+                <span style="font-size: 14px; margin-top: 1px;">&#x1F534;</span>
+                <div>
+                  <div style="font-size: 12px; font-weight: 600; color: #991b1b;">민감 정보 포함</div>
+                  <div style="font-size: 11px; color: #6b7280;">건강 데이터 (의약품 복용 이력)는 민감 정보에 해당</div>
+                </div>
+              </div>
+              <div
+                style="display: flex; align-items: flex-start; gap: 8px; padding: 8px 10px; background: #fffbeb; border: 1px solid #fde68a; border-radius: 6px;">
+                <span style="font-size: 14px; margin-top: 1px;">&#x1F7E1;</span>
+                <div>
+                  <div style="font-size: 12px; font-weight: 600; color: #92400e;">연구 대상 100명 이상</div>
+                  <div style="font-size: 11px; color: #6b7280;">Step 3에서 목표 참여자 100명으로 설정</div>
+                </div>
+              </div>
+              <div
+                style="display: flex; align-items: flex-start; gap: 8px; padding: 8px 10px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px;">
+                <span style="font-size: 14px; margin-top: 1px;">&#x1F7E2;</span>
+                <div>
+                  <div style="font-size: 12px; font-weight: 600; color: #166534;">비침습 연구 (긍정)</div>
+                  <div style="font-size: 11px; color: #6b7280;">설문 기반으로 신체 침습 없음</div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div class="rationale-item">
-          <div class="rationale-icon">🔒</div>
-          <div class="rationale-info">
-            <div class="rationale-title">비식별 데이터 처리</div>
-            <div class="rationale-desc">데이터 민감도 L1~L2 수준으로, 개인식별이 불가능한 형태로 처리됩니다. L3 이상 데이터가 포함되지 않습니다.</div>
-            <div class="rationale-stat">민감도 분석: L1(40%) + L2(60%), L3~L4 없음</div>
+        <!-- 우: 서류 생성 -->
+        <div class="modal-section">
+          <div class="step-pill" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: white;">
+            &#x1F916; IRB 서류 AI 생성</div>
+          <div style="font-size: 11px; color: #6b7280; margin-bottom: 12px;">Step 1~4 데이터를 조합하여 서류 초안을 생성합니다.</div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px;">
+            <div
+              style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 10px; text-align: center; cursor: pointer; transition: all 0.15s;"
+              onmouseover="this.style.borderColor='#f59e0b'" onmouseout="this.style.borderColor='#fde68a'">
+              <div style="font-size: 18px; margin-bottom: 4px;">&#x1F4D1;</div>
+              <div style="font-size: 12px; font-weight: 600;">연구계획서</div>
+              <div style="font-size: 9px; color: #92400e;">Step 1~4 종합</div>
+            </div>
+            <div
+              style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 10px; text-align: center; cursor: pointer; transition: all 0.15s;"
+              onmouseover="this.style.borderColor='#f59e0b'" onmouseout="this.style.borderColor='#fde68a'">
+              <div style="font-size: 18px; margin-bottom: 4px;">&#x1F4DD;</div>
+              <div style="font-size: 12px; font-weight: 600;">동의서 (ICF)</div>
+              <div style="font-size: 9px; color: #92400e;">Step 3+4 기반</div>
+            </div>
+            <div
+              style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 10px; text-align: center; cursor: pointer; transition: all 0.15s;"
+              onmouseover="this.style.borderColor='#f59e0b'" onmouseout="this.style.borderColor='#fde68a'">
+              <div style="font-size: 18px; margin-bottom: 4px;">&#x1F4CB;</div>
+              <div style="font-size: 12px; font-weight: 600;">수집도구 설명서</div>
+              <div style="font-size: 9px; color: #92400e;">Step 4 도출</div>
+            </div>
+            <div
+              style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 10px; text-align: center; cursor: pointer; transition: all 0.15s;"
+              onmouseover="this.style.borderColor='#f59e0b'" onmouseout="this.style.borderColor='#fde68a'">
+              <div style="font-size: 18px; margin-bottom: 4px;">&#x1F4E2;</div>
+              <div style="font-size: 12px; font-weight: 600;">모집 문건</div>
+              <div style="font-size: 9px; color: #92400e;">Step 3+5 기반</div>
+            </div>
           </div>
-        </div>
 
-        <div class="rationale-item">
-          <div class="rationale-icon">⚖️</div>
-          <div class="rationale-info">
-            <div class="rationale-title">최소 위험 이하</div>
-            <div class="rationale-desc">참여자에게 일상생활 수준 이상의 위험이 발생하지 않습니다. 취약 대상자(소아, 임산부 등)가 포함되지 않습니다.</div>
-            <div class="rationale-stat">위험도 점수: 0.8/10 (면제 기준: 2.0 이하)</div>
+          <button
+            style="width: 100%; padding: 12px; background: linear-gradient(135deg, #f59e0b, #d97706); color: white; border: none; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; margin-bottom: 10px;"
+            onclick="alert('AI가 4종 서류를 생성합니다.\n\n1. 연구계획서\n2. 동의서 (ICF)\n3. 수집도구 설명서\n4. 모집 문건\n\n생성 후 검토·수정·다운로드 가능')">
+            &#x1F916; 서류 4종 일괄 생성
+          </button>
+          <div style="font-size: 10px; color: #6b7280; text-align: center;">생성 후 검토 · 수정 · 다운로드 · 기관별 양식 지원</div>
+
+          <div class="modal-summary" style="margin-top: 14px;">
+            &#x1F4CC; 서류 생성 → IRB 제출 → 승인 후 인증하기 버튼으로 에스크로 해제
           </div>
-        </div>
-
-        <div class="method-note">
-          <strong>참고:</strong> 면제 판정은 AI 사전 분석 결과이며, 연구자가 면제 요건을 최종 확인해야 합니다. 면제 요건에 해당하지 않을 경우 일반 심의를 선택하세요.
-        </div>
-
-        <div class="ref-links">
-          <div class="ref-title">📎 관련 자료</div>
-          <a class="ref-link" href="#"><span class="ref-icon">📄</span> 생명윤리법 제15조 — IRB 심의 면제 대상</a>
-          <a class="ref-link" href="#"><span class="ref-icon">📄</span> 시행규칙 제13조 — 면제 판정 기준 세부</a>
-          <a class="ref-link" href="#"><span class="ref-icon">📊</span> 이 연구의 데이터 민감도 분석 리포트</a>
-          <a class="ref-link" href="#"><span class="ref-icon">🔗</span> 국가생명윤리정책원 — IRB 면제 가이드라인</a>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- ========== 모달: 일반 심의 추천 근거 ========== -->
-  <div class="modal-overlay" id="modal-standard" onclick="if(event.target===this)closeModal('modal-standard')">
-    <div class="modal">
+  <!-- ===== IRB 인증/신고 팝업 모달 ===== -->
+  <div id="irb-modal" class="modal-overlay" onclick="if(event.target===this)closeIRBModal()">
+    <div class="modal" style="width: min(720px, 96vw);">
       <div class="modal-header">
-        <h3>🤖 AI 일반 심의 추천 근거</h3>
-        <button class="modal-close" onclick="closeModal('modal-standard')">✕</button>
+        <div>
+          <div class="modal-title" id="irbModalTitle">&#x1F3E5; IRB 인증</div>
+          <div style="font-size: 12px; color: var(--muted);" id="irbModalSubtitle">승인 정보 입력 &#x2192; 연구계획 일치 검증</div>
+        </div>
+        <a href="#" class="modal-close" onclick="event.preventDefault();closeIRBModal()">닫기</a>
       </div>
       <div class="modal-body">
-        <div style="background: #fef3c7; border: 1px solid #fcd34d; border-radius: 10px; padding: 14px 16px; margin-bottom: 16px; font-size: 13px; color: #92400e; line-height: 1.6;">
-          연구 설계를 분석한 결과, <strong>일반 심의(정규 심사)</strong>를 추천합니다. L4 민감 데이터(CGM)를 새로 수집하므로 IRB 위원회의 정규 심의가 필요합니다.
-        </div>
+        <!-- 좌: 승인/신고 정보 입력 -->
+        <div class="modal-section">
+          <div class="step-pill">Step 1 &#xB7; <span id="irbStep1Label">승인 정보</span></div>
 
-        <div class="rationale-item">
-          <div class="rationale-icon">📈</div>
-          <div class="rationale-info">
-            <div class="rationale-title">L4 민감 데이터 수집 — CGM (연속혈당)</div>
-            <div class="rationale-desc">CGM 데이터는 민감도 L4(Restricted)로 분류됩니다. 혈당 패턴은 당뇨 진단과 직결되므로 높은 수준의 동의 및 보호가 필요합니다.</div>
-            <div class="rationale-stat">L4 데이터 포함 시 100% 정규 심의 대상 (생명윤리법 시행규칙)</div>
+          <!-- 인증 모드: IRB 승인 -->
+          <div id="irbCertFields" style="display: flex; flex-direction: column; gap: 10px;">
+            <div class="field full">
+              <label>IRB 승인번호</label>
+              <input type="text" id="irbApprovalNo" placeholder="IRB-2026-XXXX">
+            </div>
+            <div style="display: flex; gap: 8px;">
+              <div class="field" style="flex: 1;">
+                <label>승인일</label>
+                <input type="date">
+              </div>
+              <div class="field" style="flex: 1;">
+                <label>만료일</label>
+                <input type="date">
+              </div>
+            </div>
+            <div class="field full">
+              <label>승인서 업로드</label>
+              <div
+                style="border: 2px dashed #d1d5db; border-radius: 8px; padding: 20px; text-align: center; cursor: pointer; transition: all 0.15s;"
+                onmouseover="this.style.borderColor='#6366f1'" onmouseout="this.style.borderColor='#d1d5db'">
+                <div style="font-size: 24px; margin-bottom: 4px;">&#x1F4C4;</div>
+                <div style="font-size: 12px; color: #6b7280;">파일 드래그 또는 클릭</div>
+                <div style="font-size: 10px; color: #9ca3af; margin-top: 2px;">PDF, DOCX (최대 10MB)</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 신고 모드: 면제 신고 -->
+          <div id="irbFilingFields" style="display: none; flex-direction: column; gap: 10px;">
+            <div class="field full">
+              <label>신고 접수번호</label>
+              <input type="text" placeholder="FILING-2026-XXXX">
+            </div>
+            <div class="field full">
+              <label>신고 확인서 업로드</label>
+              <div
+                style="border: 2px dashed #d1d5db; border-radius: 8px; padding: 20px; text-align: center; cursor: pointer; transition: all 0.15s;"
+                onmouseover="this.style.borderColor='#3b82f6'" onmouseout="this.style.borderColor='#d1d5db'">
+                <div style="font-size: 24px; margin-bottom: 4px;">&#x1F4CB;</div>
+                <div style="font-size: 12px; color: #6b7280;">확인서 파일 드래그 또는 클릭</div>
+                <div style="font-size: 10px; color: #9ca3af; margin-top: 2px;">PDF, DOCX (최대 10MB)</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="field full" style="margin-top: 6px;">
+            <button class="btn-modal btn-modal-dark" style="width: 100%;" onclick="simulateIRBApproval()">&#x1F50D; 확인
+              요청</button>
           </div>
         </div>
 
-        <div class="rationale-item">
-          <div class="rationale-icon">💊</div>
-          <div class="rationale-info">
-            <div class="rationale-title">복약 기록 수집 — 민감도 L4</div>
-            <div class="rationale-desc">혈당 강하제/인슐린 복약 기록은 처방 정보에 해당하며 L4(Restricted)로 분류됩니다. 개인 건강 상태를 직접적으로 노출할 수 있습니다.</div>
-            <div class="rationale-stat">유사 RCT의 95%가 복약 기록 포함 시 정규 심의 진행</div>
+        <!-- 우: 연구계획 일치 검증 -->
+        <div class="modal-section">
+          <div class="step-pill">Step 2 &#xB7; 연구계획 일치 검증</div>
+          <div style="font-size: 11px; color: #6b7280; margin-bottom: 14px; line-height: 1.5;">
+            IRB에 제출한 연구계획서와 Step 1~4에서 작성한<br>연구 설계가 일치하는지 자동 검증합니다.
           </div>
-        </div>
 
-        <div class="rationale-item">
-          <div class="rationale-icon">🔬</div>
-          <div class="rationale-info">
-            <div class="rationale-title">RCT 연구 설계 — 개입 연구</div>
-            <div class="rationale-desc">무작위 대조 시험(RCT)은 참여자에게 식단 개입을 시행하므로, 관찰 연구보다 높은 수준의 윤리적 검토가 요구됩니다.</div>
-            <div class="rationale-stat">식이 개입 RCT: 위험도 점수 5.2/10 (일반 심의 기준: 3.0 이상)</div>
+          <div style="display: flex; flex-direction: column; gap: 8px;" id="planMatchList">
+            <div
+              style="display: flex; align-items: center; gap: 8px; padding: 8px 10px; background: white; border: 1px solid #e5e7eb; border-radius: 6px;">
+              <span style="font-size: 14px;">&#x23F3;</span>
+              <span style="flex: 1; font-size: 12px; color: #374151;">연구 목적</span>
+              <span
+                style="font-size: 10px; color: #9ca3af; padding: 2px 8px; background: #f3f4f6; border-radius: 4px;">대기</span>
+            </div>
+            <div
+              style="display: flex; align-items: center; gap: 8px; padding: 8px 10px; background: white; border: 1px solid #e5e7eb; border-radius: 6px;">
+              <span style="font-size: 14px;">&#x23F3;</span>
+              <span style="flex: 1; font-size: 12px; color: #374151;">연구 방법론</span>
+              <span
+                style="font-size: 10px; color: #9ca3af; padding: 2px 8px; background: #f3f4f6; border-radius: 4px;">대기</span>
+            </div>
+            <div
+              style="display: flex; align-items: center; gap: 8px; padding: 8px 10px; background: white; border: 1px solid #e5e7eb; border-radius: 6px;">
+              <span style="font-size: 14px;">&#x23F3;</span>
+              <span style="flex: 1; font-size: 12px; color: #374151;">대상자 기준</span>
+              <span
+                style="font-size: 10px; color: #9ca3af; padding: 2px 8px; background: #f3f4f6; border-radius: 4px;">대기</span>
+            </div>
+            <div
+              style="display: flex; align-items: center; gap: 8px; padding: 8px 10px; background: white; border: 1px solid #e5e7eb; border-radius: 6px;">
+              <span style="font-size: 14px;">&#x23F3;</span>
+              <span style="flex: 1; font-size: 12px; color: #374151;">데이터 수집 항목</span>
+              <span
+                style="font-size: 10px; color: #9ca3af; padding: 2px 8px; background: #f3f4f6; border-radius: 4px;">대기</span>
+            </div>
+            <div
+              style="display: flex; align-items: center; gap: 8px; padding: 8px 10px; background: white; border: 1px solid #e5e7eb; border-radius: 6px;">
+              <span style="font-size: 14px;">&#x23F3;</span>
+              <span style="flex: 1; font-size: 12px; color: #374151;">보상 구조</span>
+              <span
+                style="font-size: 10px; color: #9ca3af; padding: 2px 8px; background: #f3f4f6; border-radius: 4px;">대기</span>
+            </div>
           </div>
-        </div>
 
-        <div class="rationale-item">
-          <div class="rationale-icon">⏱️</div>
-          <div class="rationale-info">
-            <div class="rationale-title">예상 심의 기간: 7~14일</div>
-            <div class="rationale-desc">유사한 식이 개입 RCT 41건의 IRB 심의 기록을 분석한 결과, 평균 심의 기간은 9.3일입니다. AI가 자동 생성한 서류로 1차 수정 요청 확률을 30% 이하로 줄였습니다.</div>
-            <div class="rationale-stat">AI 서류 생성 시 수정 요청률 28% vs 수동 작성 67%</div>
+          <!-- 불일치 경고 -->
+          <div id="planMismatchAlert"
+            style="display: none; margin-top: 12px; background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 12px;">
+            <div style="font-size: 12px; font-weight: 600; color: #991b1b; margin-bottom: 6px;">&#x26A0;&#xFE0F; 불일치 항목
+              발견</div>
+            <div style="font-size: 11px; color: #991b1b; line-height: 1.5;">IRB 승인 계획과 플랫폼 연구 설계가 일치하지 않습니다.<br>Step
+              1~4를 수정하거나 IRB에 변경 신청 후 재제출하세요.</div>
+            <button
+              style="margin-top: 8px; width: 100%; padding: 8px; background: #dc2626; color: white; border: none; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer;">
+              &#x1F504; 연구 설계 재검토
+            </button>
           </div>
-        </div>
 
-        <div class="method-note">
-          <strong>간이 심의 불가 사유:</strong> L4 데이터(CGM, 복약)를 새로 수집하는 개입 연구이므로, 간이 심의(자동 승인) 대상이 아닙니다. 위원회 정규 심의가 필요합니다.
-        </div>
-
-        <div class="ref-links">
-          <div class="ref-title">📎 관련 자료</div>
-          <a class="ref-link" href="#"><span class="ref-icon">📄</span> 생명윤리법 제10조 — IRB 심의 대상 연구</a>
-          <a class="ref-link" href="#"><span class="ref-icon">📄</span> 데이터 민감도 L1~L4 분류 기준표</a>
-          <a class="ref-link" href="#"><span class="ref-icon">📊</span> 유사 RCT 41건 IRB 심의 기간 분석</a>
-          <a class="ref-link" href="#"><span class="ref-icon">🤖</span> AI 자동 생성 IRB 서류 미리보기</a>
-          <a class="ref-link" href="irb-submission.html"><span class="ref-icon">🔗</span> IRB 제출 절차 안내</a>
-          <a class="ref-link" href="irb-status.html"><span class="ref-icon">🔗</span> IRB 심의 현황 대시보드</a>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ========== 모달: 자동 승인 판정 근거 ========== -->
-  <div class="modal-overlay" id="modal-auto" onclick="if(event.target===this)closeModal('modal-auto')">
-    <div class="modal">
-      <div class="modal-header">
-        <h3>🤖 AI 간이 심의 판정 근거</h3>
-        <button class="modal-close" onclick="closeModal('modal-auto')">✕</button>
-      </div>
-      <div class="modal-body">
-        <div style="background: #dbeafe; border: 1px solid #93c5fd; border-radius: 10px; padding: 14px 16px; margin-bottom: 16px; font-size: 13px; color: #1e40af; line-height: 1.6;">
-          연구 설계를 분석한 결과, 이 연구는 <strong>간이 심의(자동 승인)</strong> 요건을 충족합니다. AI 사전 검증 4개 항목 모두 통과했습니다.
-        </div>
-
-        <div class="rationale-item">
-          <div class="rationale-icon">✅</div>
-          <div class="rationale-info">
-            <div class="rationale-title">최소 위험 연구 — 통과</div>
-            <div class="rationale-desc">웨어러블 기기와 설문 기반 데이터 수집만 포함되어 있어, 일상적 의료 행위 수준의 위험을 초과하지 않습니다. 침습적 처치가 없습니다.</div>
-            <div class="rationale-stat">위험도 점수: 1.8/10 (간이 심의 기준: 3.0 미만)</div>
+          <!-- 일치 성공 -->
+          <div id="planMatchSuccess"
+            style="display: none; margin-top: 12px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 12px;">
+            <div style="font-size: 12px; font-weight: 600; color: #166534;">&#x2705; 모든 항목 일치</div>
+            <div style="font-size: 11px; color: #15803d; line-height: 1.5;">IRB 승인 계획과 플랫폼 연구 설계가 일치합니다.<br>에스크로 진행이
+              가능합니다.</div>
           </div>
-        </div>
 
-        <div class="rationale-item">
-          <div class="rationale-icon">✅</div>
-          <div class="rationale-info">
-            <div class="rationale-title">취약 대상자 미포함 — 통과</div>
-            <div class="rationale-desc">대상자 기준에 소아(18세 미만), 임산부, 수감자, 인지 장애자 등 취약 집단이 포함되지 않습니다.</div>
-            <div class="rationale-stat">Step 4 타겟 설정: 성인(19~65세) 건강 자원자</div>
+          <div class="modal-summary" style="margin-top: 14px;">
+            &#x1F512; 인증 + 검증 완료 시 에스크로 잠금이 해제됩니다.
           </div>
-        </div>
-
-        <div class="rationale-item">
-          <div class="rationale-icon">✅</div>
-          <div class="rationale-info">
-            <div class="rationale-title">비침습적 데이터 수집 — 통과</div>
-            <div class="rationale-desc">수집 데이터가 모두 웨어러블(심박수, 활동량, 수면) 또는 자가보고(설문) 방식입니다. 채혈, 조직 검사 등 침습적 절차가 없습니다.</div>
-            <div class="rationale-stat">데이터 민감도: L1(30%) + L2(70%), L3~L4 없음</div>
-          </div>
-        </div>
-
-        <div class="rationale-item">
-          <div class="rationale-icon">✅</div>
-          <div class="rationale-info">
-            <div class="rationale-title">표준 동의서 적용 가능 — 통과</div>
-            <div class="rationale-desc">수집 항목과 연구 설계가 플랫폼의 표준 동의서 템플릿으로 커버 가능합니다. 별도 맞춤 동의서 심의가 불필요합니다.</div>
-            <div class="rationale-stat">표준 동의서 커버리지: 100% (8개 수집 항목 전체 포함)</div>
-          </div>
-        </div>
-
-        <div class="method-note">
-          <strong>자동 승인 절차:</strong> 심사비 결제 즉시 AI 검증이 완료되며, 위원회 심의 대기 없이 바로 승인됩니다. 승인 후 에스크로 예치(Step 6)로 자동 이동합니다.
-        </div>
-
-        <div class="ref-links">
-          <div class="ref-title">📎 관련 자료</div>
-          <a class="ref-link" href="#"><span class="ref-icon">📄</span> 생명윤리법 시행규칙 — 간이 심의 대상 연구</a>
-          <a class="ref-link" href="#"><span class="ref-icon">📄</span> AI 사전 검증 4개 항목 상세 기준</a>
-          <a class="ref-link" href="#"><span class="ref-icon">📊</span> 이 연구의 위험도 분석 리포트</a>
-          <a class="ref-link" href="#"><span class="ref-icon">📝</span> 표준 동의서 템플릿 미리보기</a>
-          <a class="ref-link" href="irb-status.html"><span class="ref-icon">🔗</span> IRB 심의 현황 대시보드</a>
         </div>
       </div>
     </div>
@@ -967,136 +2386,241 @@
   <button class="toggle-notes" onclick="toggleNotes()">&#x1F4CB; 디자이너 노트</button>
 
   <!-- 디자이너 노트 -->
-  <div class="designer-notes" id="designer-note">
-    <h3>&#x1F4CB; 디자이너 노트: Step 5 - IRB 심의</h3>
-    <div class="content">
-      <strong>레이아웃:</strong><br>
-      &#x2460; Nav (240px) | &#x2461; IRB 심의 에디터 (flex:1) | &#x2462; AI IRB 어시스턴트 (360px)<br>
-      Step 4/6와 동일한 workspace-wrap 패턴 (step-bar &#x2192; workspace &#x2192; editor + chat)<br><br>
-
-      <strong>IRB 심의 유형 3가지:</strong><br>
-      &bull; <strong>면제</strong>: 기존 동의 데이터만 사용 &#x2192; 심사비 없음 &#x2192; 에스크로(Step 6)로 바로 이동<br>
-      &bull; <strong>일반 심의</strong>: 새 데이터 수집 &#x2192; 심사비 500,000원 결제 &#x2192; 위원회 심의(5~14일) &#x2192; 승인 후 에스크로<br>
-      &bull; <strong>자동 승인</strong>: 최소 위험 연구 &#x2192; 심사비 250,000원 &#x2192; AI 사전 검증 통과 시 즉시 승인 &#x2192; 에스크로로 바로<br><br>
-
-      <strong>AI 추천 로직:</strong><br>
-      &bull; Step 1~4의 연구 설계 분석 &#x2192; 수집 데이터 유형, 대상자 위험도, 데이터 민감도(L1~L4) 기반 추천<br>
-      &bull; L4(Restricted) 데이터 포함 시 &#x2192; 일반 심의 추천<br>
-      &bull; L1~L2 + 비침습 + 성인 대상 &#x2192; 자동 승인 가능<br>
-      &bull; 기존 동의 데이터만 사용 &#x2192; 면제 추천<br><br>
-
-      <strong>플로우 분기:</strong><br>
-      &bull; 면제: Step 5 &#x2192; Step 6 (에스크로)<br>
-      &bull; 일반: Step 5 &#x2192; 심사비 결제 &#x2192; 심의 대기 &#x2192; 승인 &#x2192; Step 6<br>
-      &bull; 자동: Step 5 &#x2192; 심사비 결제 &#x2192; 즉시 승인 &#x2192; Step 6
-    </div>
+  <!-- 디자이너 노트: docs/create-step6-notes.md 참조 -->
   </div>
 
   <!-- 기능 명세 -->
-  <div class="designer-notes" id="func-spec">
-    <h3 style="color: #047857;">&#x2699;&#xFE0F; 기능 명세: Step 5 - IRB 심의</h3>
-    <div class="content" style="columns: 1;">
-      <strong>핵심 기능:</strong><br>
-      &bull; IRB 심의 유형 선택 (면제 / 일반 심의 / 자동 승인)<br>
-      &bull; AI 기반 유형 추천 (연구 설계 분석)<br>
-      &bull; 심사비 결제 (XRPL 결제)<br>
-      &bull; 유형별 조건부 UI 표시<br><br>
-
-      <strong>비즈니스 로직:</strong><br>
-      &bull; 면제: irb_type = 'EXEMPT', fee = 0, status = 'APPROVED' 즉시<br>
-      &bull; 일반: irb_type = 'STANDARD', fee = 400 XRP, status = 'SUBMITTED' &#x2192; 'UNDER_REVIEW' &#x2192; 'APPROVED'<br>
-      &bull; 자동: irb_type = 'EXPEDITED', fee = 200 XRP, AI 검증 통과 시 status = 'APPROVED' 즉시
-    </div>
+  <!-- 디자이너 노트: docs/create-step6-notes.md 참조 -->
   </div>
 
   <!-- 백엔드 호출 -->
-  <div class="designer-notes" id="backend-spec">
-    <h3 style="color: #6d28d9;">&#x1F517; 백엔드 호출: Step 5</h3>
-    <div class="content" style="columns: 1;">
-      <strong>1. IRB 유형 판정 (AI):</strong><br>
-      <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0; font-size: 11px; font-family: 'SF Mono', Monaco, monospace;">
-POST /api/v2/ai/irb-type-recommend<br>
-{ "project_id": "uuid" }<br>
-&#x2192; { "recommended_type": "STANDARD", "reason": "L4 데이터(CGM) 포함", "eligible_types": ["STANDARD", "EXPEDITED"] }
-      </code><br>
-
-      <strong>2. IRB 심의 접수 + 심사비 결제:</strong><br>
-      <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0; font-size: 11px; font-family: 'SF Mono', Monaco, monospace;">
-POST /enterprise/irb/submit<br>
-{ "project_id": "uuid", "irb_type": "STANDARD|EXPEDITED|EXEMPT", "fee_xrp": 400 }<br>
-&#x2192; { "irb_id": "IRB-2026-xxx", "status": "SUBMITTED", "tx_hash": "..." }
-      </code><br>
-
-      <strong>3. 자동 승인 (간이 심의):</strong><br>
-      <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0; font-size: 11px; font-family: 'SF Mono', Monaco, monospace;">
-POST /enterprise/irb/expedited-approve<br>
-{ "irb_id": "IRB-2026-xxx" }<br>
-&#x2192; { "status": "APPROVED", "approved_at": "2026-02-13T...", "next_step": "escrow" }
-      </code>
-    </div>
+  <!-- 디자이너 노트: docs/create-step6-notes.md 참조 -->
   </div>
 
+  <script src="js/common.js"></script>
   <script>
-    function openModal(id) { document.getElementById(id).classList.add('show'); }
-    function closeModal(id) { document.getElementById(id).classList.remove('show'); }
-    document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape') document.querySelectorAll('.modal-overlay.show').forEach(function(m) { m.classList.remove('show'); });
-    });
+    // IRB 상태 — 탭 없이 3개 카드 동시 표시 (아래 참고)
 
-    function selectPayMethod(section, el) {
-      var parent = el.closest('.card-body');
-      parent.querySelectorAll('.pay-method-card').forEach(function(c) { c.classList.remove('selected'); });
-      el.classList.add('selected');
-      var method = el.getAttribute('data-method');
-      var prefix = section === 'standard' ? 'std' : 'auto';
-      document.getElementById(prefix + '-xrp-detail').style.display = method === 'xrp' ? 'block' : 'none';
-      document.getElementById(prefix + '-card-detail').style.display = method === 'card' ? 'block' : 'none';
-      // 버튼 텍스트 변경
-      var btn = document.getElementById(prefix + '-pay-btn');
-      if (section === 'standard') {
-        btn.innerHTML = method === 'xrp' ? '⛓️ 심사비 결제 (≈1,000 XRP)' : '💳 심사비 결제 (500,000원)';
+    // Page-specific: Escrow button enable/disable based on consent checkboxes
+    function updateEscrowBtn() {
+      var c1 = document.getElementById('consent1').checked;
+      var c2 = document.getElementById('consent2').checked;
+      var c3 = document.getElementById('consent3').checked;
+      var btn = document.getElementById('escrowBtn');
+      if (c1 && c2 && c3) {
+        btn.disabled = false;
+        btn.className = 'btn btn-amber-lg';
+        btn.innerHTML = '&#x1F4B0; 에스크로 예치하기';
       } else {
-        btn.innerHTML = method === 'xrp' ? '⚡ 결제 + 자동 승인 (≈500 XRP)' : '⚡ 결제 + 자동 승인 (250,000원)';
+        btn.disabled = true;
+        btn.className = 'btn btn-disabled';
+        btn.style.width = '100%';
+        btn.style.padding = '16px';
+        btn.style.fontSize = '16px';
+        btn.innerHTML = '&#x1F512; 에스크로 예치하기';
       }
     }
 
-    function selectIRBType(type) {
-      // 카드 선택
-      document.querySelectorAll('.irb-type-card').forEach(c => c.classList.remove('selected'));
-      document.querySelector('.irb-type-card[data-type="' + type + '"]').classList.add('selected');
-      // 섹션 표시
-      document.querySelectorAll('.irb-section').forEach(s => s.classList.remove('active'));
-      document.getElementById('section-' + type).classList.add('active');
+    // IRB 승인 시뮬레이션
+    function simulateIRBApproval() {
+      var badge = document.getElementById('irbStatusBadge');
+      var items = document.querySelectorAll('#planMatchList > div');
+      var successBox = document.getElementById('planMatchSuccess');
+      var mismatchBox = document.getElementById('planMismatchAlert');
+      var statusBar = document.getElementById('irbStatusBar');
+      var statusTitle = document.getElementById('irbStatusTitle');
+      var statusDesc = document.getElementById('irbStatusDesc');
+
+      // Phase 1: 확인 중
+      setTimeout(function () {
+        // Phase 2: 승인 완료
+        badge.innerHTML = '&#x2705; 인증 완료';
+        badge.style.background = '#dcfce7';
+        badge.style.color = '#166534';
+        badge.style.borderColor = '#86efac';
+
+        // Phase 3: 계획 일치 검증 시작
+        items.forEach(function (item, i) {
+          setTimeout(function () {
+            item.querySelector('span:first-child').innerHTML = '&#x2705;';
+            item.querySelector('span:last-child').innerHTML = '일치';
+            item.querySelector('span:last-child').style.background = '#dcfce7';
+            item.querySelector('span:last-child').style.color = '#166534';
+            item.style.borderColor = '#86efac';
+
+            // 마지막 항목 → 성공 + 상태바 업데이트
+            if (i === items.length - 1) {
+              setTimeout(function () {
+                successBox.style.display = 'block';
+                mismatchBox.style.display = 'none';
+                // 메인 페이지 상태바 업데이트
+                if (statusBar) {
+                  statusBar.style.borderColor = '#86efac';
+                  statusBar.querySelector('span:first-child').innerHTML = '&#x1F513;';
+                  statusTitle.textContent = '에스크로 진행 가능';
+                  statusTitle.style.color = '#166534';
+                  statusDesc.textContent = 'IRB 인증 완료 ✓ · 연구계획 일치 검증 ✓';
+                  statusDesc.style.color = '#15803d';
+                }
+              }, 400);
+            }
+          }, 400 * (i + 1));
+        });
+      }, 800);
     }
 
-    // 디자이너 노트 토글 (3개 패널 순환)
-    var notesPanels = ['designer-note', 'func-spec', 'backend-spec'];
-    var notesIndex = -1;
-    function toggleNotes() {
-      // 현재 표시된 패널 찾기
-      var currentShown = -1;
-      for (var i = 0; i < notesPanels.length; i++) {
-        if (document.getElementById(notesPanels[i]).classList.contains('show')) {
-          currentShown = i;
-          break;
-        }
+    // IRB 모달 열기/닫기
+    function openIRBModal(mode) {
+      var modal = document.getElementById('irb-modal');
+      var title = document.getElementById('irbModalTitle');
+      var subtitle = document.getElementById('irbModalSubtitle');
+      var step1Label = document.getElementById('irbStep1Label');
+      var certFields = document.getElementById('irbCertFields');
+      var filingFields = document.getElementById('irbFilingFields');
+
+      if (mode === 'filing') {
+        title.innerHTML = '&#x1F4CB; 면제 신고';
+        subtitle.textContent = '신고 정보 입력 → 연구계획 일치 검증';
+        step1Label.textContent = '신고 정보';
+        certFields.style.display = 'none';
+        filingFields.style.display = 'flex';
+      } else {
+        title.innerHTML = '&#x1F3E5; IRB 인증';
+        subtitle.textContent = '승인 정보 입력 → 연구계획 일치 검증';
+        step1Label.textContent = '승인 정보';
+        certFields.style.display = 'flex';
+        filingFields.style.display = 'none';
       }
-      // 모두 닫기
-      for (var i = 0; i < notesPanels.length; i++) {
-        document.getElementById(notesPanels[i]).classList.remove('show');
-      }
-      // 다음 패널 열기 (없으면 첫 번째, 마지막이면 닫기)
-      if (currentShown === -1) {
-        document.getElementById(notesPanels[0]).classList.add('show');
-      } else if (currentShown < notesPanels.length - 1) {
-        document.getElementById(notesPanels[currentShown + 1]).classList.add('show');
-      }
-      // 마지막이면 모두 닫힌 상태 유지
+      modal.classList.add('show');
     }
+    function closeIRBModal() {
+      document.getElementById('irb-modal').classList.remove('show');
+    }
+
+    // IRB 고려 사유 모달 열기/닫기
+    function openIRBReasonModal() {
+      document.getElementById('irb-reason-modal').classList.add('show');
+    }
+    function closeIRBReasonModal() {
+      document.getElementById('irb-reason-modal').classList.remove('show');
+    }
+
+    // Designer notes panel cycling
+    var toggleNotes = createNotesCycler(['designer-note', 'func-spec', 'backend-spec']);
   </script>
 
   <script src="page-spec.js"></script>
   <link rel="stylesheet" href="../tooltip-spec.css">
   <script src="../tooltip-spec.js"></script>
+
+  <!-- ===== 이체 팝업 모달 ===== -->
+  <div class="modal-overlay" id="transferModal">
+    <div class="modal">
+      <div class="modal-header">
+        <div>
+          <div class="modal-title">&#x1F4E4; 이체 요청</div>
+          <div style="font-size: 12px; color: #6b7280;">XRPL 주소로 직접 이체 · OTP + Passkey 인증</div>
+        </div>
+        <button class="modal-close" onclick="closeTransferModal()">닫기</button>
+      </div>
+      <div class="modal-body" style="display: block;">
+        <!-- 이체 주소 (full width) -->
+        <div style="margin-bottom: 16px;">
+          <div style="font-size: 12px; color: #6b7280; margin-bottom: 6px; font-weight: 600;">이체 주소</div>
+          <input placeholder="rXXX...XRPL 주소 입력 (예: rProjWallet3x7K9mQaBcD1234567890abcdef)"
+            style="width: 100%; padding: 10px 14px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; font-family: 'SF Mono', 'Menlo', monospace; letter-spacing: 0.5px;">
+          <div style="font-size: 10px; color: #9ca3af; margin-top: 4px;">💡 프로젝트 지갑은 왼쪽 카드에서 주소 복사 후 붙여넣기</div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1.3fr 0.9fr; gap: 16px;">
+          <!-- 좌측: 이체 정보 입력 -->
+          <div class="modal-section">
+            <div class="step-pill">Step 1 · 이체 정보</div>
+            <div class="form-grid">
+              <div class="field">
+                <label>금액 (XRP)</label>
+                <input placeholder="6740" value="6740">
+              </div>
+              <div class="field">
+                <label>수수료</label>
+                <input placeholder="~0.00001 XRP" value="~0.00001 XRP" readonly
+                  style="color: #6b7280; background: #f9fafb;">
+              </div>
+              <div class="field full">
+                <label>메모/목적</label>
+                <input placeholder="연구 예산 예치 / 외부 정산">
+              </div>
+              <div class="field">
+                <label>출금 방식</label>
+                <select>
+                  <option>즉시 이체</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>출금 계정</label>
+                <select>
+                  <option>운영 지갑 (45,000 XRP)</option>
+                </select>
+              </div>
+              <div class="field full">
+                <button class="btn-modal btn-modal-dark" style="width: 100%;">요약 확인</button>
+              </div>
+            </div>
+            <div class="auth-level-note" id="authLevelNote">
+              &#x2705; <strong>프로젝트 지갑 이체:</strong> Passkey 서명만으로 완료됩니다. (이메일 OTP 불필요)
+            </div>
+          </div>
+
+          <!-- 우측: 인증 -->
+          <div class="modal-section">
+            <!-- Step 2: 이메일 OTP -->
+            <div id="otpSection">
+              <div class="step-pill">Step 2 · 이메일 OTP <span
+                  style="font-size: 9px; background: #fee2e2; color: #991b1b; padding: 2px 6px; border-radius: 4px; margin-left: 4px;">필수</span>
+              </div>
+              <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 12px;" id="otpControls">
+                <button class="btn-modal btn-modal-secondary">인증 메일 보내기</button>
+                <span style="font-size: 12px; color: #6b7280;">admin@uniqdata.ai</span>
+              </div>
+              <div class="otp" style="margin-bottom: 14px;" id="otpInputs">
+                <span>•</span><span>•</span><span>•</span><span>•</span><span>•</span><span>•</span>
+              </div>
+            </div>
+
+            <!-- Step 3: Passkey -->
+            <div class="step-pill">Step 3 · Passkey 서명</div>
+            <button class="btn-modal btn-modal-dark" style="width: 100%; margin-bottom: 10px;">&#x1F511; Passkey로
+              서명</button>
+            <div class="modal-summary">
+              이체 요약: 입력한 금액 (수수료 ~0.00001 XRP)<br>
+              대상: 입력한 XRPL 주소<br>
+              이메일 OTP + Passkey 인증 완료 후 즉시 전송됩니다.
+            </div>
+
+            <div class="auth-level-note">
+              &#x1F512; <strong>모든 이체:</strong> 이메일 OTP + Passkey 이중 인증이 필요합니다.
+            </div>
+          </div>
+        </div><!-- /grid -->
+      </div><!-- /modal-body -->
+    </div>
+  </div>
+
+  <script>
+    // 이체 모달 열기/닫기
+    function openTransferModal() {
+      document.getElementById('transferModal').classList.add('show');
+    }
+    function closeTransferModal() {
+      document.getElementById('transferModal').classList.remove('show');
+    }
+    // 모달 외부 클릭 시 닫기
+    document.getElementById('transferModal').addEventListener('click', function (e) {
+      if (e.target === this) closeTransferModal();
+    });
+
+
+  </script>
 </body>
+
 </html>

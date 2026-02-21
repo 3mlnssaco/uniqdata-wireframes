@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UniQdata — v5 시간 윈도우 테스트</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f5;color:#1f2937;}
+    .layout{display:flex;height:100vh;overflow:hidden;}
+    .sidebar{width:220px;background:linear-gradient(180deg,#0f172a,#1e293b);color:white;display:flex;flex-direction:column;flex-shrink:0;}
+    .logo{padding:16px 20px;font-size:18px;font-weight:700;border-bottom:1px solid rgba(255,255,255,.1);display:flex;align-items:center;gap:8px;}
+    .logo-icon{width:28px;height:28px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px;}
+    .nav-section{padding:12px;border-bottom:1px solid rgba(255,255,255,.05);}
+    .nav-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:6px;color:#94a3b8;cursor:pointer;font-size:13px;}
+    .rn-header{display:flex;align-items:center;gap:6px;padding:6px 10px;border-radius:6px;font-size:12px;color:#60a5fa;background:rgba(59,130,246,.1);cursor:pointer;}
+    .rn-sub{padding-left:16px;margin-top:3px;border-left:2px solid rgba(255,255,255,.1);margin-left:14px;}
+    .ns-item{display:flex;align-items:center;gap:6px;padding:6px 10px;border-radius:5px;color:#94a3b8;font-size:11px;cursor:pointer;margin-bottom:1px;}
+    .ns-item:hover{background:rgba(255,255,255,.05);}
+    .ns-item.active{background:rgba(59,130,246,.15);color:#60a5fa;}
+    .status-dot{width:6px;height:6px;border-radius:50%;background:#22c55e;flex-shrink:0;}
+    .sidebar-footer{margin-top:auto;padding:12px;border-top:1px solid rgba(255,255,255,.05);}
+    .u-info{display:flex;align-items:center;gap:10px;padding:6px;}
+    .u-av{width:32px;height:32px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;}
+
+    .main{flex:1;overflow:hidden;display:flex;flex-direction:column;}
+    .content{padding:20px;flex:1;display:flex;flex-direction:column;overflow:hidden;min-height:0;}
+    .breadcrumb{display:flex;align-items:center;gap:6px;margin-bottom:8px;font-size:13px;color:#6b7280;}
+    .breadcrumb a{color:#3b82f6;text-decoration:none;}
+    .page-title{font-size:18px;font-weight:700;margin-bottom:2px;}
+    .page-sub{color:#6b7280;font-size:12px;margin-bottom:12px;}
+
+    .tabs{display:flex;border-bottom:2px solid #e5e7eb;margin-bottom:12px;flex-shrink:0;}
+    .tab{padding:8px 20px;font-size:13px;color:#6b7280;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;font-weight:500;user-select:none;}
+    .tab.active{color:#3b82f6;border-bottom-color:#3b82f6;}
+    .tab:hover{color:#374151;}
+
+    .tab-content{display:none;flex:1;min-height:0;overflow:hidden;}
+    .tab-content.active{display:flex;flex-direction:column;flex:1;min-height:0;}
+
+    /* KPI */
+    .kpi-strip{display:flex;gap:10px;margin-bottom:10px;flex-shrink:0;}
+    .kpi-chip{background:white;border:1px solid #e5e7eb;border-radius:8px;padding:8px 14px;display:flex;align-items:center;gap:8px;flex:1;min-width:0;}
+    .kpi-chip .kv{font-size:18px;font-weight:700;white-space:nowrap;}
+    .kpi-chip .kl{font-size:10px;color:#6b7280;}
+    .kpi-chip .kc{font-size:9px;margin-top:1px;}
+    .kc.good{color:#16a34a;}.kc.warn{color:#d97706;}
+
+    /* 개요 차트 */
+    .chart-section{background:white;border:1px solid #e5e7eb;border-radius:10px;flex:1;display:flex;flex-direction:column;min-height:0;overflow:hidden;}
+    .chart-toolbar{display:flex;justify-content:space-between;align-items:center;padding:10px 16px;border-bottom:1px solid #f1f5f9;flex-wrap:wrap;gap:6px;flex-shrink:0;}
+    .ct-left{display:flex;align-items:center;gap:10px;}
+    .ct-right{display:flex;align-items:center;gap:8px;}
+    .metric-sel{padding:4px 8px;border:1px solid #d1d5db;border-radius:5px;font-size:11px;background:white;cursor:pointer;}
+    .tw-sel{display:flex;gap:2px;background:#f3f4f6;border-radius:6px;padding:2px;}
+    .tw-btn2{padding:4px 10px;border:none;border-radius:4px;background:transparent;color:#6b7280;cursor:pointer;font-size:11px;font-weight:500;transition:all .15s;}
+    .tw-btn2.active{background:white;color:#3b82f6;box-shadow:0 1px 3px rgba(0,0,0,.1);}
+    .custom-iv2{display:none;align-items:center;gap:4px;padding:2px 6px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:5px;font-size:10px;}
+    .custom-iv2.show{display:flex;}
+    .custom-iv2 input{width:30px;padding:1px 3px;border:1px solid #d1d5db;border-radius:3px;font-size:10px;text-align:center;}
+    .custom-iv2 select{padding:1px 3px;border:1px solid #d1d5db;border-radius:3px;font-size:10px;background:white;}
+    .custom-iv2 .ci-l{color:#1d4ed8;font-weight:600;}
+    .legend-item{display:flex;align-items:center;gap:3px;font-size:10px;color:#6b7280;}
+    .legend-line{width:16px;height:2.5px;border-radius:2px;}
+    .legend-line.thin{height:1px;opacity:.4;}
+
+    .chart-body{flex:1;position:relative;padding:6px 12px 2px;min-height:200px;}
+    .chart-canvas{width:100%;height:100%;}
+
+    /* 차트 내 인포 */
+    .tw-info{position:absolute;top:8px;left:12px;font-size:10px;color:#9ca3af;background:rgba(255,255,255,.9);padding:2px 6px;border-radius:4px;z-index:5;}
+
+    .collection-bar{display:flex;align-items:center;gap:6px;padding:6px 16px;border-top:1px solid #f1f5f9;font-size:9px;color:#6b7280;flex-shrink:0;}
+    .cb-segments{display:flex;flex:1;height:5px;background:#f3f4f6;border-radius:3px;overflow:hidden;}
+    .cb-seg{height:100%;}
+
+    /* 테이블 탭 */
+    .table-area-wrap{display:flex;flex:1;min-height:0;overflow:hidden;}
+    .table-area{flex:1;min-width:0;overflow-y:auto;overflow-x:auto;display:flex;flex-direction:column;transition:flex .3s ease;}
+    .table-area.shrunk{flex:0 0 50%;}
+    .ctrl-section{background:white;border:1px solid #e5e7eb;border-radius:10px;padding:10px 16px;margin-bottom:8px;flex-shrink:0;}
+    .ctrl-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;}
+    .ctrl-group{display:flex;align-items:center;gap:6px;}
+    .ctrl-group label{font-size:11px;color:#6b7280;font-weight:600;}
+    .t-btn{padding:4px 8px;border:1px solid #e5e7eb;border-radius:5px;background:white;color:#6b7280;cursor:pointer;font-size:11px;}
+    .t-btn.active{background:#3b82f6;color:white;border-color:#3b82f6;}
+    .sel-sm{padding:4px 6px;border:1px solid #e5e7eb;border-radius:5px;font-size:11px;color:#374151;background:white;}
+    .dn-ctrl{display:flex;align-items:center;gap:4px;padding:4px 8px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:5px;font-size:11px;}
+    .dn-ctrl button{background:none;border:none;cursor:pointer;font-size:12px;color:#3b82f6;padding:0 2px;}
+    .search-in{padding:4px 6px;border:1px solid #e5e7eb;border-radius:5px;font-size:11px;width:120px;}
+
+    .src-legend{display:flex;gap:10px;align-items:center;margin-bottom:4px;font-size:10px;color:#6b7280;flex-shrink:0;}
+    .sd{width:7px;height:7px;border-radius:2px;display:inline-block;}
+    .sd.emr{background:#3b82f6;}.sd.wear{background:#22c55e;}.sd.ema{background:#a855f7;}.sd.ext{background:#f97316;}
+
+    .tbl-section{background:white;border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;flex:1;display:flex;flex-direction:column;margin-bottom:8px;min-height:0;}
+    .tbl-wrap{overflow-y:auto;overflow-x:auto;flex:1;min-height:0;}
+    table.pt-tbl{width:100%;border-collapse:collapse;font-size:12px;}
+    table.pt-tbl thead th{text-align:left;font-size:10px;color:#6b7280;font-weight:600;padding:7px 6px;border-bottom:2px solid #e5e7eb;background:#f9fafb;position:sticky;top:0;z-index:10;white-space:nowrap;cursor:pointer;}
+    table.pt-tbl thead th .cs{display:inline-block;width:5px;height:5px;border-radius:2px;margin-right:2px;vertical-align:middle;}
+    table.pt-tbl tbody td{padding:7px 6px;border-bottom:1px solid #f1f5f9;font-size:11px;}
+    table.pt-tbl tbody tr{cursor:pointer;transition:background .1s;}
+    table.pt-tbl tbody tr:hover{background:#f8fafc;}
+    table.pt-tbl tbody tr.selected{background:#eff6ff;}
+    table.pt-tbl tbody tr.alert-row{background:#fffbeb;}
+    .pid{font-weight:600;color:#374151;white-space:nowrap;}
+    .gb{display:inline-block;padding:1px 4px;border-radius:3px;font-size:9px;font-weight:600;margin-left:4px;}
+    .gb.exp{background:#dbeafe;color:#1d4ed8;}.gb.ctrl{background:#fce7f3;color:#be185d;}
+    .sv{display:inline-block;width:5px;height:5px;border-radius:50%;margin-right:4px;}
+    .sv.good{background:#22c55e;}.sv.warn{background:#f59e0b;}.sv.bad{background:#ef4444;}
+    .cd{font-weight:700;font-family:'SF Mono',Monaco,monospace;font-size:11px;}
+    .cd.good{color:#16a34a;}.cd.bad{color:#dc2626;}.cd.neutral{color:#6b7280;}
+    .cr{font-size:10px;color:#9ca3af;display:block;margin-top:1px;}
+    .ce{color:#d1d5db;font-style:italic;}
+
+    .pag-row{display:flex;align-items:center;justify-content:space-between;padding:8px 16px;background:white;border:1px solid #e5e7eb;border-radius:10px;font-size:11px;color:#6b7280;margin-bottom:8px;flex-shrink:0;}
+    .pag-btns{display:flex;gap:2px;}
+    .pg-btn{padding:3px 6px;border:1px solid #e5e7eb;border-radius:3px;background:white;color:#6b7280;cursor:pointer;font-size:10px;}
+    .pg-btn.active{background:#3b82f6;color:white;border-color:#3b82f6;}
+
+    /* 디테일 패널 */
+    .detail-panel{width:0;overflow:hidden;border-left:1px solid #e5e7eb;background:white;transition:width .3s ease;flex-shrink:0;display:flex;flex-direction:column;max-height:100%;}
+    .detail-panel.open{width:50%;overflow-y:hidden;}
+    .dp-header{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid #e5e7eb;background:#f9fafb;flex-shrink:0;}
+    .dp-title{font-size:14px;font-weight:700;color:#374151;display:flex;align-items:center;gap:5px;}
+    .dp-close{padding:4px 8px;border:1px solid #e5e7eb;border-radius:5px;background:white;cursor:pointer;font-size:12px;color:#6b7280;}
+    .dp-nav{display:flex;gap:4px;}
+    .dp-nav button{padding:2px 6px;border:1px solid #e5e7eb;border-radius:5px;background:white;cursor:pointer;font-size:11px;color:#374151;}
+    .dp-body{flex:1;overflow-y:auto;padding:14px;}
+    .chart-card{background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:12px;margin-bottom:12px;}
+    .chart-card-title{font-size:11px;font-weight:600;color:#374151;margin-bottom:6px;display:flex;align-items:center;gap:4px;}
+    .chart-card-title .cs{display:inline-block;width:5px;height:5px;border-radius:2px;}
+    .mini-chart{height:80px;}
+    .mini-chart svg{width:100%;height:100%;}
+    .chart-x{display:flex;justify-content:space-between;font-size:8px;color:#9ca3af;margin-top:2px;}
+    .chart-sum{display:flex;gap:10px;margin-top:4px;font-size:10px;color:#6b7280;}
+    .chart-sum strong{color:#374151;}
+    .fs-title{font-size:11px;font-weight:600;color:#374151;margin-bottom:6px;}
+    .fs-table{width:100%;border-collapse:collapse;font-size:10px;}
+    .fs-table th{font-size:9px;color:#9ca3af;font-weight:600;padding:3px 4px;border-bottom:1px solid #e5e7eb;text-align:center;}
+    .fs-table th:first-child{text-align:left;}
+    .fs-table td{padding:3px 4px;text-align:center;border-bottom:1px solid #f1f5f9;font-family:'SF Mono',Monaco,monospace;font-size:9px;}
+    .fs-table td:first-child{text-align:left;font-weight:600;color:#374151;font-family:-apple-system,sans-serif;}
+    .fg{color:#16a34a;background:rgba(34,197,94,.05);}.fb{color:#dc2626;background:rgba(239,68,68,.05);}.fc{font-weight:700;outline:1.5px solid #3b82f6;border-radius:2px;}
+
+    /* 분석 패널 */
+    .analysis-panel{position:fixed;bottom:0;right:0;width:420px;max-height:60vh;background:white;border:1px solid #e5e7eb;border-radius:12px 12px 0 0;box-shadow:0 -4px 20px rgba(0,0,0,.1);z-index:100;display:flex;flex-direction:column;transition:transform .3s ease;}
+    .analysis-panel.hidden{transform:translateY(calc(100% - 36px));}
+    .ap-header{display:flex;justify-content:space-between;align-items:center;padding:8px 16px;background:#f9fafb;border-bottom:1px solid #e5e7eb;cursor:pointer;border-radius:12px 12px 0 0;flex-shrink:0;}
+    .ap-header h3{font-size:13px;font-weight:600;color:#374151;}
+    .ap-toggle{background:none;border:none;cursor:pointer;font-size:14px;color:#6b7280;}
+    .ap-body{flex:1;overflow-y:auto;padding:14px;font-size:12px;line-height:1.7;color:#374151;}
+    .ap-body h4{font-size:12px;font-weight:700;color:#1f2937;margin:12px 0 4px;border-bottom:1px solid #f1f5f9;padding-bottom:3px;}
+    .ap-body h4:first-child{margin-top:0;}
+    .ap-body .finding{background:#f0fdf4;border-left:3px solid #22c55e;padding:6px 10px;margin:6px 0;border-radius:0 6px 6px 0;font-size:11px;}
+    .ap-body .problem{background:#fef2f2;border-left:3px solid #ef4444;padding:6px 10px;margin:6px 0;border-radius:0 6px 6px 0;font-size:11px;}
+    .ap-body .insight{background:#eff6ff;border-left:3px solid #3b82f6;padding:6px 10px;margin:6px 0;border-radius:0 6px 6px 0;font-size:11px;}
+    .ap-body .tw-tag{display:inline-block;padding:1px 5px;border-radius:3px;font-size:9px;font-weight:600;margin-right:3px;}
+    .tw-tag.d{background:#dbeafe;color:#1d4ed8;}.tw-tag.w{background:#dcfce7;color:#166534;}.tw-tag.m{background:#fce7f3;color:#be185d;}.tw-tag.c3{background:#e9d5ff;color:#581c87;}
+  </style>
+</head>
+<body>
+<div class="layout">
+  <nav class="sidebar">
+    <div class="logo"><div class="logo-icon">U</div> UniQdata</div>
+    <div class="nav-section"><a class="nav-item"><span>🏠</span> 연구 허브</a></div>
+    <div class="nav-section" style="flex:1;overflow-y:auto;">
+      <div style="font-size:10px;text-transform:uppercase;color:#64748b;padding:6px 10px;">내 연구</div>
+      <div>
+        <div class="rn-header"><span style="font-size:12px;">📁</span><span style="flex:1;">대사개선 약물 연구</span><span class="status-dot"></span></div>
+        <div class="rn-sub">
+          <a class="ns-item active" id="nav-ov">개요</a>
+          <a class="ns-item" id="nav-tb">테이블</a>
+          <a class="ns-item">🔒 클린룸</a>
+        </div>
+      </div>
+    </div>
+    <div class="sidebar-footer"><div class="u-info"><div class="u-av">김</div><div><div style="font-size:13px;color:#e2e8f0;">김연구</div><div style="font-size:11px;color:#64748b;">서울대학교병원</div></div></div></div>
+  </nav>
+
+  <main class="main">
+    <div class="content">
+      <div class="breadcrumb"><a href="#">연구 관리</a> / <span>대사개선 약물 연구</span></div>
+      <div class="page-title">연구 데이터</div>
+      <div class="page-sub">처방 약물(2.4mg) 대사개선 연구 · RCT · 실험 40 / 대조 40 · 12주(84일)</div>
+
+      <div class="tabs">
+        <div class="tab active" data-tab="overview" id="tab-ov">개요</div>
+        <div class="tab" data-tab="table" id="tab-tb">테이블</div>
+        <div class="tab">🔒 클린룸</div>
+      </div>
+
+      <!-- ===== 개요 탭 ===== -->
+      <div class="tab-content active" id="tc-ov">
+        <div class="kpi-strip">
+          <div class="kpi-chip"><div><div class="kv">1.89<span style="font-size:11px;">M</span></div><div class="kl">총 레코드</div></div></div>
+          <div class="kpi-chip"><div><div class="kv">94<span style="font-size:11px;">%</span></div><div class="kl">커버리지</div><div class="kc good">+2.1%</div></div></div>
+          <div class="kpi-chip"><div><div class="kv">6.2<span style="font-size:11px;">%</span></div><div class="kl">결측률</div><div class="kc good">−0.8%</div></div></div>
+          <div class="kpi-chip"><div><div class="kv">76<span style="font-size:11px;">/80</span></div><div class="kl">참여자</div></div></div>
+        </div>
+
+        <div class="chart-section">
+          <div class="chart-toolbar">
+            <div class="ct-left">
+              <select class="metric-sel" id="metricSel">
+                <option value="wt">체중 (kg)</option>
+                <option value="sbp">SBP (mmHg)</option>
+                <option value="hr">심박수 (bpm)</option>
+                <option value="steps">걸음수</option>
+                <option value="comp">순응도 (%)</option>
+              </select>
+              <div class="tw-sel">
+                <button class="tw-btn2" data-tw="d">일간</button>
+                <button class="tw-btn2 active" data-tw="w">주간</button>
+                <button class="tw-btn2" data-tw="m">월간</button>
+                <button class="tw-btn2" data-tw="c3">3일</button>
+              </div>
+              <div class="custom-iv2" id="cIv2">
+                <span class="ci-l">매</span>
+                <input type="number" value="3" min="1" max="90" id="cNum">
+                <select id="cUnit"><option value="d">일</option><option value="w">주</option><option value="m">월</option></select>
+                <button style="background:#3b82f6;color:white;border:none;border-radius:3px;padding:2px 6px;font-size:9px;cursor:pointer;" id="cApply">적용</button>
+              </div>
+            </div>
+            <div class="ct-right">
+              <div class="legend-item"><div class="legend-line" style="background:#3b82f6;"></div>실험군</div>
+              <div class="legend-item"><div class="legend-line" style="background:#e11d48;"></div>대조군</div>
+              <div class="legend-item"><div class="legend-line thin" style="background:#93c5fd;"></div>개별</div>
+            </div>
+          </div>
+
+          <div class="chart-body">
+            <div class="tw-info" id="twInfo">주간 · 12포인트 · W1~W12</div>
+            <canvas class="chart-canvas" id="overviewChart"></canvas>
+          </div>
+
+          <div class="collection-bar">
+            <span>수집률</span>
+            <div class="cb-segments">
+              <div class="cb-seg" style="width:47%;background:#3b82f6;" title="EMR"></div>
+              <div class="cb-seg" style="width:42%;background:#22c55e;" title="웨어러블"></div>
+              <div class="cb-seg" style="width:7%;background:#a855f7;" title="EMA"></div>
+              <div class="cb-seg" style="width:1%;background:#f97316;" title="외부"></div>
+              <div class="cb-seg" style="width:3%;background:#e5e7eb;" title="미수집"></div>
+            </div>
+            <span>94%</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== 테이블 탭 ===== -->
+      <div class="tab-content" id="tc-tb">
+        <div class="ctrl-section">
+          <div class="ctrl-row">
+            <div class="ctrl-group">
+              <label>시간</label>
+              <div style="display:flex;gap:2px;">
+                <button class="t-btn tw-tbl" data-tw="d">일간</button>
+                <button class="t-btn tw-tbl active" data-tw="w">주간</button>
+                <button class="t-btn tw-tbl" data-tw="m">월간</button>
+                <button class="t-btn tw-tbl" data-tw="c3">3일</button>
+              </div>
+            </div>
+            <div class="ctrl-group">
+              <label>소스</label>
+              <select class="sel-sm"><option>전체</option><option>[EMR]</option><option>[웨어러블]</option><option>[EMA]</option></select>
+            </div>
+            <div class="ctrl-group">
+              <div class="dn-ctrl"><button id="dnPrev">◀</button><span id="dnLabel">W6</span><button id="dnNext">▶</button></div>
+            </div>
+            <div class="ctrl-group" style="margin-left:auto;">
+              <input type="text" class="search-in" placeholder="환자 검색...">
+            </div>
+          </div>
+        </div>
+        <div class="src-legend">
+          <span><span class="sd emr"></span> EMR</span>
+          <span><span class="sd wear"></span> 웨어러블</span>
+          <span><span class="sd ema"></span> EMA</span>
+          <span><span class="sd ext"></span> 외부</span>
+          <span style="margin-left:auto;color:#9ca3af;">행 클릭 → 우측 상세</span>
+        </div>
+        <div class="table-area-wrap">
+          <div class="table-area" id="tableArea">
+            <div class="tbl-section">
+              <div class="tbl-wrap">
+                <table class="pt-tbl">
+                  <thead><tr>
+                    <th style="width:13%;">환자</th>
+                    <th><span class="cs" style="background:#3b82f6;"></span>체중</th>
+                    <th><span class="cs" style="background:#3b82f6;"></span>SBP</th>
+                    <th><span class="cs" style="background:#22c55e;"></span>심박수</th>
+                    <th><span class="cs" style="background:#22c55e;"></span>걸음수</th>
+                    <th><span class="cs" style="background:#22c55e;"></span>수면</th>
+                    <th><span class="cs" style="background:#a855f7;"></span>순응도</th>
+                    <th><span class="cs" style="background:#f97316;"></span>앱사용</th>
+                  </tr></thead>
+                  <tbody id="tBody"></tbody>
+                </table>
+              </div>
+            </div>
+            <div class="pag-row">
+              <span>1-10 / 80명</span>
+              <div class="pag-btns"><button class="pg-btn">◀</button><button class="pg-btn active">1</button><button class="pg-btn">2</button><button class="pg-btn">…</button><button class="pg-btn">8</button><button class="pg-btn">▶</button></div>
+            </div>
+          </div>
+          <div class="detail-panel" id="detailPanel">
+            <div class="dp-header">
+              <div class="dp-title" id="dpTitle"></div>
+              <div style="display:flex;gap:4px;align-items:center;">
+                <div class="dp-nav"><button id="dpPrev">▲</button><button id="dpNext">▼</button></div>
+                <button class="dp-close" id="dpClose">✕</button>
+              </div>
+            </div>
+            <div class="dp-body" id="dpBody"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- 분석 패널 -->
+<div class="analysis-panel hidden" id="analysisPanel">
+  <div class="ap-header" id="apToggle">
+    <h3>🔬 연구자 관점 분석</h3>
+    <button class="ap-toggle" id="apBtn">▲</button>
+  </div>
+  <div class="ap-body" id="apBody"></div>
+</div>
+
+<script>
+// ==================== 데이터 생성 엔진 ====================
+// 12주(84일) 일간 raw 데이터를 생성하고, 시간 윈도우별로 집계
+
+function seededRandom(seed){let s=seed;return function(){s=(s*16807)%2147483647;return(s-1)/2147483646;};}
+
+function generateDailyData(patientSeed, group, profile){
+  const rng = seededRandom(patientSeed);
+  const days = 84;
+  const data = {wt:[],sbp:[],hr:[],steps:[],comp:[]};
+
+  // 체중: 실험군은 지속 감소, 대조군은 유지/미세 증가
+  const wtStart = 86 + rng()*4; // 86~90
+  const wtTrend = group==='exp' ? -(0.08+rng()*0.04) : (rng()*0.02-0.005); // 실험:-0.08~-0.12/일, 대조:±0.01
+
+  // SBP: 실험군 감소, 대조군 유지
+  const sbpStart = 130 + rng()*10;
+  const sbpTrend = group==='exp' ? -(0.12+rng()*0.06) : (rng()*0.04-0.01);
+
+  // 심박수
+  const hrStart = 70 + rng()*6;
+  const hrTrend = group==='exp' ? -(0.04+rng()*0.02) : (rng()*0.01-0.005);
+
+  // 걸음수
+  const stepsStart = group==='exp' ? 6000+rng()*2000 : 4000+rng()*1500;
+  const stepsTrend = group==='exp' ? (20+rng()*15) : (rng()*5-2);
+
+  // 순응도
+  const compStart = 82+rng()*6;
+  const compTrend = group==='exp' ? (0.08+rng()*0.04) : (rng()*0.02-0.01);
+
+  for(let d=0;d<days;d++){
+    // P018(인덱스3, 실험군)은 W5~W6 SBP 반등 + HR 결측
+    const isAnomaly = profile==='anomaly';
+    const isDropout = profile==='dropout';
+
+    // 주말 효과 (걸음수, 순응도 하락)
+    const dow = d % 7; // 0=월 ... 6=일
+    const isWeekend = dow>=5;
+    const weekendFactor = isWeekend ? 0.85 : 1.0;
+
+    // 체중: 주 단위 측정이 현실적이나, 일간도 웨어러블 체중계로 가능
+    const wtNoise = (rng()-0.5)*0.6; // ±0.3kg 일간 변동
+    let wt = wtStart + wtTrend*d + wtNoise;
+    if(isDropout && d>60) wt = wtStart + wtTrend*60 + (d-60)*0.05 + wtNoise; // 드롭아웃 반등
+    data.wt.push(Math.round(wt*10)/10);
+
+    // SBP
+    const sbpNoise = (rng()-0.5)*8; // ±4mmHg
+    let sbp = sbpStart + sbpTrend*d + sbpNoise;
+    if(isAnomaly && d>49) sbp = sbpStart - 5 + (d-49)*0.3 + sbpNoise; // W7+ 반등
+    data.sbp.push(Math.round(sbp*10)/10);
+
+    // HR — anomaly patient has gaps
+    if(isAnomaly && d>=14 && d<=21){
+      data.hr.push(null); // 디바이스 끊김
+    } else {
+      const hrNoise = (rng()-0.5)*4;
+      data.hr.push(Math.round(hrStart + hrTrend*d + hrNoise));
+    }
+
+    // 걸음수 — 주말 패턴 강함
+    const stepsNoise = (rng()-0.5)*1500;
+    let steps = (stepsStart + stepsTrend*d + stepsNoise) * weekendFactor;
+    if(isDropout && d>60) steps *= 0.7;
+    data.steps.push(Math.max(0,Math.round(steps)));
+
+    // 순응도 — EMA 응답률
+    let comp = compStart + compTrend*d + (rng()-0.5)*6;
+    if(isWeekend) comp -= 3;
+    if(isDropout && d>50) comp -= (d-50)*0.4;
+    data.comp.push(Math.min(100,Math.max(0,Math.round(comp))));
+  }
+  return data;
+}
+
+// 환자 프로파일 정의
+const PATIENTS = [
+  {id:'P001',nm:'김민수',g:'exp',profile:'normal',seed:1001},
+  {id:'P005',nm:'이수진',g:'exp',profile:'normal',seed:1005},
+  {id:'P011',nm:'박지훈',g:'exp',profile:'normal',seed:1011},
+  {id:'P018',nm:'최예린',g:'exp',profile:'anomaly',seed:1018}, // SBP반등 + HR결측
+  {id:'P023',nm:'정하늘',g:'exp',profile:'normal',seed:1023},
+  {id:'P002',nm:'윤서연',g:'ctrl',profile:'normal',seed:2002},
+  {id:'P008',nm:'한도윤',g:'ctrl',profile:'normal',seed:2008},
+  {id:'P014',nm:'송지아',g:'ctrl',profile:'normal',seed:2014},
+  {id:'P031',nm:'임채원',g:'ctrl',profile:'dropout',seed:2031}, // 드롭아웃 패턴
+  {id:'P036',nm:'강시우',g:'ctrl',profile:'normal',seed:2036},
+];
+
+// 일간 raw 데이터 생성
+PATIENTS.forEach(p=>{
+  p.daily = generateDailyData(p.seed, p.g, p.profile);
+});
+
+// ==================== 시간 윈도우 집계 ====================
+function aggregateToWindow(dailyArr, windowDays){
+  const result = [];
+  for(let i=0;i<84;i+=windowDays){
+    const chunk = dailyArr.slice(i, Math.min(i+windowDays, 84));
+    const valid = chunk.filter(v=>v!=null);
+    if(valid.length===0) result.push(null);
+    else result.push(Math.round(valid.reduce((a,b)=>a+b,0)/valid.length*10)/10);
+  }
+  return result;
+}
+
+function getWindowData(windowDays){
+  return PATIENTS.map(p=>{
+    const d = {};
+    ['wt','sbp','hr','steps','comp'].forEach(k=>{
+      d[k] = aggregateToWindow(p.daily[k], windowDays);
+    });
+    return {...p, agg:d};
+  });
+}
+
+function getLabels(windowDays){
+  const n = Math.ceil(84/windowDays);
+  if(windowDays===1) return Array.from({length:n},(_,i)=>`D${i+1}`);
+  if(windowDays===7) return Array.from({length:n},(_,i)=>`W${i+1}`);
+  if(windowDays===28) return Array.from({length:n},(_,i)=>`M${i+1}`);
+  return Array.from({length:n},(_,i)=>`${windowDays}d-${i+1}`);
+}
+
+const WINDOWS = {d:1, w:7, m:28, c3:3};
+let currentTW = 'w';
+let currentMetric = 'wt';
+
+// ==================== 개요 차트 ====================
+const canvas = document.getElementById('overviewChart');
+const ctx = canvas.getContext('2d');
+
+function drawChart(){
+  const windowDays = WINDOWS[currentTW];
+  const metric = currentMetric;
+  const patients = getWindowData(windowDays);
+  const labels = getLabels(windowDays);
+  const exp = patients.filter(p=>p.g==='exp');
+  const ctrl = patients.filter(p=>p.g==='ctrl');
+
+  // 인포 업데이트
+  const twNames = {d:'일간',w:'주간',m:'월간',c3:'3일'};
+  document.getElementById('twInfo').textContent =
+    `${twNames[currentTW]} · ${labels.length}포인트 · ${labels[0]}~${labels[labels.length-1]}`;
+
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.parentElement.getBoundingClientRect();
+  canvas.width = rect.width * dpr;
+  canvas.height = rect.height * dpr;
+  canvas.style.width = rect.width + 'px';
+  canvas.style.height = rect.height + 'px';
+  ctx.setTransform(1,0,0,1,0,0);
+  ctx.scale(dpr, dpr);
+  const W = rect.width, H = rect.height;
+  ctx.clearRect(0,0,W,H);
+
+  const pad = {t:28,b:36,l:48,r:100};
+  const cw = W-pad.l-pad.r, ch = H-pad.t-pad.b;
+
+  // 값 범위
+  let allVals = [];
+  patients.forEach(p=>{const a=p.agg[metric];if(a)a.forEach(v=>{if(v!=null)allVals.push(v);});});
+  if(allVals.length===0)return;
+  let mn = Math.min(...allVals), mx = Math.max(...allVals);
+  const margin = (mx-mn)*0.1||5;
+  mn -= margin; mx += margin;
+
+  function xPos(i){return pad.l + (labels.length>1 ? (i/(labels.length-1))*cw : cw/2);}
+  function yPos(v){return pad.t + (1-(v-mn)/(mx-mn))*ch;}
+
+  // 그리드
+  ctx.strokeStyle='#f1f5f9';ctx.lineWidth=1;
+  for(let i=0;i<5;i++){
+    const y=pad.t+i*(ch/4);
+    ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(pad.l+cw,y);ctx.stroke();
+    const val = mx - i*((mx-mn)/4);
+    ctx.fillStyle='#9ca3af';ctx.font='9px -apple-system,sans-serif';ctx.textAlign='right';
+    ctx.fillText(metric==='steps'?Math.round(val).toLocaleString():val.toFixed(1), pad.l-6, y+3);
+  }
+
+  // X labels — 일간(84개)이면 간격 두고 표시
+  ctx.textAlign='center';ctx.fillStyle='#9ca3af';ctx.font='9px -apple-system,sans-serif';
+  const step = labels.length > 30 ? 7 : labels.length > 14 ? 2 : 1;
+  labels.forEach((w,i)=>{if(i%step===0||i===labels.length-1)ctx.fillText(w,xPos(i),H-pad.b+16);});
+
+  // 스파게티 라인
+  function drawLines(pts, thinColor, boldColor){
+    pts.forEach(p=>{
+      const a=p.agg[metric];if(!a)return;
+      ctx.beginPath();ctx.strokeStyle=thinColor;ctx.lineWidth=labels.length>30?0.8:1.2;ctx.globalAlpha=labels.length>30?0.15:0.25;
+      let started=false;
+      a.forEach((v,i)=>{if(v==null)return;if(!started){ctx.moveTo(xPos(i),yPos(v));started=true;}else ctx.lineTo(xPos(i),yPos(v));});
+      ctx.stroke();ctx.globalAlpha=1;
+    });
+    const avgLine=labels.map((_,i)=>{
+      const vals=pts.map(p=>p.agg[metric]?p.agg[metric][i]:null).filter(v=>v!=null);
+      return vals.length?vals.reduce((a,b)=>a+b,0)/vals.length:null;
+    });
+    ctx.beginPath();ctx.strokeStyle=boldColor;ctx.lineWidth=2.5;ctx.lineJoin='round';ctx.lineCap='round';
+    let started=false;
+    avgLine.forEach((v,i)=>{if(v==null)return;if(!started){ctx.moveTo(xPos(i),yPos(v));started=true;}else ctx.lineTo(xPos(i),yPos(v));});
+    ctx.stroke();
+    const last=avgLine[avgLine.length-1];
+    if(last!=null){
+      ctx.beginPath();ctx.arc(xPos(labels.length-1),yPos(last),3,0,Math.PI*2);ctx.fillStyle=boldColor;ctx.fill();
+      ctx.fillStyle=boldColor;ctx.font='bold 10px SF Mono,Monaco,monospace';ctx.textAlign='left';
+      ctx.fillText(metric==='steps'?Math.round(last).toLocaleString():last.toFixed(1),xPos(labels.length-1)+6,yPos(last)+3);
+    }
+    return avgLine;
+  }
+
+  const expAvg = drawLines(exp, '#93c5fd', '#3b82f6');
+  const ctrlAvg = drawLines(ctrl, '#fda4af', '#e11d48');
+
+  // gap fill
+  ctx.globalAlpha=0.05;ctx.fillStyle='#3b82f6';ctx.beginPath();
+  for(let i=0;i<labels.length;i++){if(expAvg[i]!=null)ctx.lineTo(xPos(i),yPos(expAvg[i]));}
+  for(let i=labels.length-1;i>=0;i--){if(ctrlAvg[i]!=null)ctx.lineTo(xPos(i),yPos(ctrlAvg[i]));}
+  ctx.closePath();ctx.fill();ctx.globalAlpha=1;
+
+  // p값 (간이 계산)
+  const expLast=expAvg[expAvg.length-1], ctrlLast=ctrlAvg[ctrlAvg.length-1];
+  if(expLast!=null && ctrlLast!=null){
+    const diff = Math.abs(expLast-ctrlLast);
+    const pText = diff>5?'p<0.001***':diff>2?'p=0.012*':'p=0.342';
+    const isSig = diff>2;
+    ctx.fillStyle=isSig?'#dcfce7':'#f3f4f6';
+    const pvW=ctx.measureText(pText).width+14;
+    ctx.beginPath();ctx.roundRect(W-pad.r+8,pad.t+8,pvW,18,3);ctx.fill();
+    ctx.fillStyle=isSig?'#166534':'#6b7280';ctx.font='bold 9px SF Mono,Monaco,monospace';ctx.textAlign='left';
+    ctx.fillText(pText,W-pad.r+15,pad.t+20);
+
+    // Δ
+    const midY=(yPos(expLast)+yPos(ctrlLast))/2;
+    ctx.fillStyle='#6b7280';ctx.font='9px -apple-system,sans-serif';
+    ctx.fillText(`Δ ${metric==='steps'?Math.round(diff).toLocaleString():diff.toFixed(1)}`,xPos(labels.length-1)+6,midY);
+    ctx.strokeStyle='#d1d5db';ctx.lineWidth=1;ctx.setLineDash([2,2]);
+    ctx.beginPath();ctx.moveTo(xPos(labels.length-1)+3,yPos(expLast));ctx.lineTo(xPos(labels.length-1)+3,yPos(ctrlLast));ctx.stroke();
+    ctx.setLineDash([]);
+  }
+}
+
+// ==================== 탭 + 윈도우 전환 ====================
+function switchTab(n){
+  document.querySelectorAll('.tab[data-tab]').forEach(t=>t.classList.toggle('active',t.dataset.tab===n));
+  document.getElementById('tc-ov').classList.toggle('active',n==='overview');
+  document.getElementById('tc-tb').classList.toggle('active',n==='table');
+  document.getElementById('nav-ov').classList.toggle('active',n==='overview');
+  document.getElementById('nav-tb').classList.toggle('active',n==='table');
+  if(n==='overview') setTimeout(drawChart,50);
+  if(n==='table') renderTable();
+}
+document.querySelectorAll('.tab[data-tab]').forEach(t=>t.addEventListener('click',()=>t.dataset.tab&&switchTab(t.dataset.tab)));
+document.getElementById('nav-ov').addEventListener('click',()=>switchTab('overview'));
+document.getElementById('nav-tb').addEventListener('click',()=>switchTab('table'));
+
+// 개요 시간 윈도우
+document.querySelectorAll('.tw-btn2').forEach(b=>b.addEventListener('click',function(){
+  document.querySelectorAll('.tw-btn2').forEach(x=>x.classList.remove('active'));this.classList.add('active');
+  currentTW = this.dataset.tw;
+  drawChart();
+  updateAnalysis();
+}));
+
+document.getElementById('metricSel').addEventListener('change',function(){
+  currentMetric=this.value; drawChart();
+});
+
+// 테이블 시간 윈도우
+document.querySelectorAll('.tw-tbl').forEach(b=>b.addEventListener('click',function(){
+  document.querySelectorAll('.tw-tbl').forEach(x=>x.classList.remove('active'));this.classList.add('active');
+  currentTW = this.dataset.tw;
+  renderTable();
+  drawChart();
+  updateAnalysis();
+}));
+
+// ==================== 테이블 렌더링 ====================
+const MET=[
+  {k:'wt',n:'체중',u:'kg',d:'down',sc:'#3b82f6'},
+  {k:'sbp',n:'SBP',u:'mmHg',d:'down',sc:'#3b82f6'},
+  {k:'hr',n:'심박수',u:'bpm',d:'down',sc:'#22c55e'},
+  {k:'steps',n:'걸음수',u:'보',d:'up',sc:'#22c55e'},
+  {k:'comp',n:'순응도',u:'%',d:'up',sc:'#a855f7'},
+];
+
+function renderTable(){
+  const windowDays = WINDOWS[currentTW];
+  const patients = getWindowData(windowDays);
+  const labels = getLabels(windowDays);
+  const tBody = document.getElementById('tBody');
+  tBody.innerHTML = '';
+
+  patients.forEach((p,i)=>{
+    const tr = document.createElement('tr');
+    if(p.profile==='anomaly'||p.profile==='dropout') tr.className='alert-row';
+    const sv = p.profile==='dropout'?'bad':p.profile==='anomaly'?'warn':'good';
+    let h = `<td class="pid"><span class="sv ${sv}"></span>${p.id}<span class="gb ${p.g}">${p.g==='exp'?'실험':'대조'}</span><br><span style="font-size:10px;color:#9ca3af;font-weight:400;">${p.nm}</span></td>`;
+
+    MET.forEach(m=>{
+      const a = p.agg[m.k];
+      if(!a||a.length<2){h+='<td class="ce">—</td>';return;}
+      const first=a[0], last=a[a.length-1];
+      if(first==null||last==null){h+='<td class="ce">—</td>';return;}
+      const d=last-first;
+      const g=(m.d==='down'&&d<0)||(m.d==='up'&&d>0);
+      const b=(m.d==='down'&&d>2)||(m.d==='up'&&d<-2);
+      const ar=d>0?'↑':d<0?'↓':'';
+      const c=g?'good':b?'bad':'neutral';
+      const v=m.k==='steps'?(d>0?'+':'')+Math.round(d).toLocaleString():m.k==='comp'?(d>0?'+':'')+d.toFixed(0)+'%':(d>0?'+':'')+d.toFixed(1);
+      const bg=g?'background:rgba(34,197,94,.04);':b?'background:rgba(239,68,68,.04);':'';
+      const rv=m.k==='steps'?Math.round(last).toLocaleString():m.k==='comp'?last.toFixed(0)+'%':last.toFixed(1)+m.u;
+      h+=`<td style="${bg}"><span class="cd ${c}">${ar}${v}</span><span class="cr">${rv}</span></td>`;
+    });
+
+    tr.innerHTML=h;
+    tr.addEventListener('click',()=>openDetail(i));
+    tBody.appendChild(tr);
+  });
+}
+
+// ==================== 디테일 패널 ====================
+const panel=document.getElementById('detailPanel'),tableArea=document.getElementById('tableArea'),dpTitle=document.getElementById('dpTitle'),dpBody=document.getElementById('dpBody');
+let selIdx=null;
+
+function mkSVG(arr,color,w,h){
+  const vd=arr.map((v,i)=>v!=null?{v,i}:null).filter(Boolean);
+  if(vd.length<2)return`<svg width="${w}" height="${h}"><text x="${w/2}" y="${h/2+4}" text-anchor="middle" fill="#d1d5db" font-size="9">—</text></svg>`;
+  const mn=Math.min(...vd.map(d=>d.v)),mx=Math.max(...vd.map(d=>d.v)),rg=mx-mn||1,pd=4;
+  const pts=vd.map(d=>{const x=pd+(d.i/(arr.length-1))*(w-pd*2);const y=pd+(1-(d.v-mn)/rg)*(h-pd*2);return`${x},${y}`;});
+  return`<svg width="${w}" height="${h}"><polyline points="${pts.join(' ')}" fill="none" stroke="${color}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+}
+
+function openDetail(i){
+  const windowDays = WINDOWS[currentTW];
+  const patients = getWindowData(windowDays);
+  const labels = getLabels(windowDays);
+  selIdx=i;const p=patients[i];
+  document.getElementById('tBody').querySelectorAll('tr').forEach((r,ri)=>r.classList.toggle('selected',ri===i));
+  tableArea.classList.add('shrunk');panel.classList.add('open');
+  const sv=p.profile==='dropout'?'bad':p.profile==='anomaly'?'warn':'good';
+  dpTitle.innerHTML=`<span class="sv ${sv}"></span>${p.id} ${p.nm} <span class="gb ${p.g}">${p.g==='exp'?'실험':'대조'}</span>`;
+
+  let ch=MET.slice(0,3).map(m=>{
+    const a=p.agg[m.k]||[];
+    return`<div class="chart-card"><div class="chart-card-title"><span class="cs" style="background:${m.sc};"></span>${m.n}</div><div class="mini-chart">${mkSVG(a,m.sc,260,80)}</div><div class="chart-x">${labels.filter((_,j)=>j%(Math.ceil(labels.length/6))===0||j===labels.length-1).map(w=>`<span>${w}</span>`).join('')}</div></div>`;
+  }).join('');
+
+  let fs=`<div class="fs-title">📋 플로우시트 (${labels.length}포인트)</div><div style="overflow-x:auto;"><table class="fs-table"><thead><tr><th>지표</th>`;
+  const showLabels = labels.length>12 ? labels.filter((_,j)=>j%Math.ceil(labels.length/12)===0||j===labels.length-1) : labels;
+  const showIdxs = labels.length>12 ? labels.map((_,j)=>j).filter(j=>j%Math.ceil(labels.length/12)===0||j===labels.length-1) : labels.map((_,j)=>j);
+  showLabels.forEach(w=>fs+=`<th>${w}</th>`);
+  fs+='</tr></thead><tbody>';
+  MET.forEach(m=>{
+    const a=p.agg[m.k]||[];
+    fs+=`<tr><td>${m.n}</td>`;
+    showIdxs.forEach(j=>{
+      const v=a[j];
+      if(v==null){fs+='<td class="ce">—</td>';return;}
+      const fmt=m.k==='steps'?Math.round(v).toLocaleString():m.k==='comp'?v.toFixed(0):v.toFixed(1);
+      fs+=`<td>${fmt}</td>`;
+    });
+    fs+='</tr>';
+  });
+  fs+='</tbody></table></div>';
+  dpBody.innerHTML=ch+fs;
+}
+
+document.getElementById('dpClose').addEventListener('click',()=>{panel.classList.remove('open');tableArea.classList.remove('shrunk');document.getElementById('tBody').querySelectorAll('tr').forEach(r=>r.classList.remove('selected'));selIdx=null;});
+document.getElementById('dpPrev').addEventListener('click',()=>{if(selIdx>0)openDetail(selIdx-1);});
+document.getElementById('dpNext').addEventListener('click',()=>{if(selIdx<PATIENTS.length-1)openDetail(selIdx+1);});
+
+// ==================== 연구자 관점 분석 ====================
+function updateAnalysis(){
+  const ap = document.getElementById('apBody');
+  const tw = currentTW;
+
+  // 각 윈도우별 데이터 특성 분석
+  const analyses = {
+    d: analyzeWindow(1, 'D'),
+    w: analyzeWindow(7, 'W'),
+    m: analyzeWindow(28, 'M'),
+    c3: analyzeWindow(3, '3d'),
+  };
+
+  const a = analyses[tw];
+  const twNames = {d:'일간(84포인트)',w:'주간(12포인트)',m:'월간(3포인트)',c3:'3일(28포인트)'};
+
+  let html = `<h4>현재: ${twNames[tw]}</h4>`;
+  html += a.findings.map(f=>`<div class="finding">${f}</div>`).join('');
+  html += a.problems.map(p=>`<div class="problem">${p}</div>`).join('');
+
+  html += `<h4>윈도우 간 비교</h4>`;
+  html += `<div class="insight"><span class="tw-tag d">일간</span> 84포인트 — ${analyses.d.summary}</div>`;
+  html += `<div class="insight"><span class="tw-tag w">주간</span> 12포인트 — ${analyses.w.summary}</div>`;
+  html += `<div class="insight"><span class="tw-tag m">월간</span> 3포인트 — ${analyses.m.summary}</div>`;
+  html += `<div class="insight"><span class="tw-tag c3">3일</span> 28포인트 — ${analyses.c3.summary}</div>`;
+
+  html += `<h4>연구적 발견</h4>`;
+  html += `<div class="finding">✅ <b>주말 효과 발견:</b> 일간/3일 윈도우에서만 보임. 걸음수 주말 −15%, 순응도 −3%. 주간 집계 시 스무딩되어 소실.</div>`;
+  html += `<div class="finding">✅ <b>P018 SBP 반등:</b> 월간에서는 "약간 높음" 수준이지만, 주간/3일에서는 W7부터 급반등 패턴 명확. 일간에서는 노이즈 속에 묻힘.</div>`;
+  html += `<div class="finding">✅ <b>P031 드롭아웃 패턴:</b> 월간에서는 M3에서야 보임 → 너무 늦음. 주간 W9부터 순응도 급락 포착. 3일 윈도우가 가장 빠른 D50(3d-17)에서 감지.</div>`;
+  html += `<div class="finding">✅ <b>실험군 체중 감소 곡선:</b> 월간(3포인트)은 직선에 불과. 주간(12포인트)은 감소 가속 구간(W4~W8) 포착. 3일은 주중 플래토 + 주말 요요 패턴까지 포착.</div>`;
+
+  html += `<h4>발견된 UX 문제점</h4>`;
+  html += `<div class="problem">❌ <b>일간 84포인트:</b> X축 라벨 겹침, 스파게티 라인이 "노이즈 덩어리"로 보임. 개별 환자 궤적 식별 불가. 연구자 피로도 극심.</div>`;
+  html += `<div class="problem">❌ <b>월간 3포인트:</b> 포인트가 너무 적어 직선. 트렌드 방향만 보이고 변곡점·이상치·패턴 전부 소실. 연구적 가치 낮음.</div>`;
+  html += `<div class="problem">❌ <b>3일 윈도우:</b> 주말 패턴이 3일 묶음 위치에 따라 들쭉날쭉. 월-수/목-토/일-화 중 어느 묶음인지에 따라 값이 달라짐 → 시작일 기준점 문제.</div>`;
+  html += `<div class="problem">❌ <b>시간 윈도우 전환 시 δ값 변화:</b> 체중 Δ가 윈도우마다 미세하게 다름 (일간 평균 vs 주간 평균 vs 월간 평균). 연구자가 "어떤 게 진짜?"라고 혼란.</div>`;
+  html += `<div class="problem">❌ <b>테이블 플로우시트:</b> 일간 84열은 가로 스크롤 폭발. 3일 28열도 좁음. 테이블에서의 일간은 사실상 불가.</div>`;
+  html += `<div class="problem">❌ <b>컨텍스트 네비게이터 라벨:</b> 일간일 때 "D47"이 언제인지 직관적이지 않음 → 날짜(1/15) 병기 필요. 3일도 마찬가지.</div>`;
+
+  html += `<h4>결론 & 권장</h4>`;
+  html += `<div class="insight">🎯 <b>주간이 디폴트로 최적.</b> 12포인트는 시각적으로 깔끔하고, 주요 트렌드 + 변곡점 + 이상치 모두 포착. 주말 효과만 스무딩됨.</div>`;
+  html += `<div class="insight">🎯 <b>개요 탭은 주간 고정, 테이블 탭만 시간 윈도우 변경 허용</b> — 이 설계가 맞다. 개요에서 시간 윈도우를 바꾸면 p값/KPI 등의 해석이 달라져 혼란.</div>`;
+  html += `<div class="insight">🎯 <b>일간은 "드릴다운"으로만 제공.</b> 개별 환자 디테일 패널에서, 특정 주간을 클릭하면 그 주의 일간 데이터를 펼치는 방식.</div>`;
+  html += `<div class="insight">🎯 <b>커스텀은 연구 프로토콜 기반으로.</b> "매 3일" 같은 임의 윈도우보다, "투약 사이클(매 14일)" 같은 의미 있는 단위를 프로토콜에서 자동 추출.</div>`;
+
+  ap.innerHTML = html;
+}
+
+function analyzeWindow(windowDays, prefix){
+  const patients = getWindowData(windowDays);
+  const labels = getLabels(windowDays);
+  const n = labels.length;
+  const exp = patients.filter(p=>p.g==='exp');
+  const ctrl = patients.filter(p=>p.g==='ctrl');
+
+  const findings = [];
+  const problems = [];
+
+  // 스파게티 가독성
+  if(n > 40){
+    problems.push(`📊 ${n}포인트: X축이 과밀. 라벨 7개당 1개만 표시 가능. 개별 라인이 노이즈 덩어리.`);
+    findings.push(`🔍 일간 변동의 디테일은 보이나, 신호(signal) 대 잡음(noise) 비율 낮음.`);
+  } else if(n <= 4){
+    problems.push(`📊 ${n}포인트: 너무 적어 직선. 변곡점/이상치 식별 불가. 시각적 정보량 극히 낮음.`);
+  } else if(n <= 14){
+    findings.push(`📊 ${n}포인트: 적절한 밀도. 트렌드 + 변곡점 + 개별 편차 모두 시각화 가능.`);
+  } else {
+    findings.push(`📊 ${n}포인트: 중간 밀도. 주중/주말 패턴 일부 포착 가능하나, X축 라벨 조정 필요.`);
+  }
+
+  // P018 SBP 반등 감지력
+  const p018 = patients.find(p=>p.id==='P018');
+  if(p018){
+    const sbp = p018.agg.sbp;
+    const mid = Math.floor(sbp.length/2);
+    const firstHalf = sbp.slice(0,mid).filter(v=>v!=null);
+    const secondHalf = sbp.slice(mid).filter(v=>v!=null);
+    if(firstHalf.length && secondHalf.length){
+      const fAvg = firstHalf.reduce((a,b)=>a+b,0)/firstHalf.length;
+      const sAvg = secondHalf.reduce((a,b)=>a+b,0)/secondHalf.length;
+      if(sAvg > fAvg+1){
+        findings.push(`🚨 P018 SBP 반등 감지: 전반 평균 ${fAvg.toFixed(1)} → 후반 ${sAvg.toFixed(1)} (+${(sAvg-fAvg).toFixed(1)}). ${n>6?'패턴 명확':'포인트 부족으로 모호'}.`);
+      }
+    }
+  }
+
+  // P031 드롭아웃 감지 시점
+  const p031 = patients.find(p=>p.id==='P031');
+  if(p031){
+    const comp = p031.agg.comp;
+    let dropIdx = comp.findIndex((v,i)=>i>0&&v!=null&&comp[0]!=null&&v<comp[0]-5);
+    if(dropIdx>=0){
+      findings.push(`📉 P031 순응도 급락 최초 감지: ${labels[dropIdx]} (${prefix}${dropIdx+1}). ${n>6?'조기 개입 가능':'너무 늦은 감지'.split('')}`);
+    }
+  }
+
+  const summary = n>40 ? '디테일 풍부하나 노이즈 과다. 개요 부적합, 디테일 드릴다운용.' :
+                  n<=4 ? '정보량 극히 부족. 방향성만 파악 가능.' :
+                  n<=14 ? '신호/잡음 비율 최적. 연구적 판단에 충분한 정보 밀도.' :
+                  '중간 밀도. 일부 미시 패턴 포착 가능하나 가독성 trade-off.';
+
+  return {findings, problems, summary};
+}
+
+// ==================== 초기화 ====================
+setTimeout(()=>{
+  drawChart();
+  renderTable();
+  updateAnalysis();
+},100);
+window.addEventListener('resize',drawChart);
+
+// 분석 패널 토글
+document.getElementById('apToggle').addEventListener('click',()=>{
+  const p = document.getElementById('analysisPanel');
+  p.classList.toggle('hidden');
+  document.getElementById('apBtn').textContent = p.classList.contains('hidden')?'▲':'▼';
+});
+</script>
+</body>
+</html>

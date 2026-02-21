@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>결제/에스크로 - Wireframe</title>
+  <title>내 지갑 - Wireframe</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -191,19 +191,18 @@
       <div class="logo">UniQdata</div>
       <a href="research/list.html" class="nav-item">🏠 연구 허브</a>
       <a href="research/create.html" class="nav-item">➕ 새 연구</a>
-      <a href="research/irb-submission.html" class="nav-item">📝 IRB 심의 신청</a>
-      <a href="research/irb-status.html" class="nav-item">📊 IRB 현황</a>
-      <a href="research/action-center.html" class="nav-item">🔔 조치 센터</a>
+      <a href="research/action-center.html" class="nav-item">🔔 알림 <span style="margin-left:auto;background:#ef4444;color:white;font-size:11px;padding:2px 6px;border-radius:10px;">3</span></a>
       <div style="border-top: 1px solid #333; margin: 12px 0;"></div>
       <a href="team.html" class="nav-item">👥 팀</a>
-      <a href="billing.html" class="nav-item active">💳 결제/에스크로</a>
+      <a href="billing.html" class="nav-item active">💳 내 지갑</a>
+      <a href="#" class="nav-item">⚙️ 설정</a>
     </div>
 
     <div class="main">
       <div class="content">
         <div class="page-header">
           <div>
-            <h1>결제/에스크로</h1>
+            <h1>내 지갑</h1>
             <p class="subtitle">연구별 지출/정산 추적, 외부 입출금, 이체 인증 흐름</p>
           </div>
           <div class="toolbar">
@@ -222,6 +221,8 @@
             <button class="btn">CSV 내보내기</button>
           </div>
         </div>
+
+        <!-- === 개인 지갑 (내 지갑) === -->
 
         <!-- 개요 -->
         <div class="overview-grid">
@@ -475,6 +476,8 @@ POST /api/v2/auth/passkey/verify
           </div>
         </div>
 
+        </div><!-- End personal wallet -->
+
         <div class="step-nav">
           <a href="index.html">← 목록</a>
         </div>
@@ -553,5 +556,9 @@ POST /api/v2/auth/passkey/verify
   </div>
   <link rel="stylesheet" href="tooltip-spec.css">
   <script src="tooltip-spec.js"></script>
+
+  <script>
+    // 개인 지갑 — 별도 기능 없음 (정적 와이어프레임)
+  </script>
 </body>
 </html>

@@ -1,0 +1,68 @@
+/* Global Styles - Common Reset & Base */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: #f5f5f5;
+  color: #1f2937;
+}
+
+/* CSS Custom Properties */
+:root {
+  --color-primary: #3b82f6;
+  --color-primary-light: #eff6ff;
+  --color-secondary: #8b5cf6;
+  --color-success: #22c55e;
+  --color-warning: #f59e0b;
+  --color-danger: #ef4444;
+  --color-error: #dc2626;
+
+  --color-dark-bg-1: #0f172a;
+  --color-dark-bg-2: #1e293b;
+  --color-dark-bg-3: #334155;
+
+  --color-light-bg: #f5f5f5;
+  --color-white: white;
+  --color-border: #e5e7eb;
+  --color-border-light: #f1f5f9;
+
+  --color-text-primary: #1f2937;
+  --color-text-secondary: #6b7280;
+  --color-text-tertiary: #9ca3af;
+  --color-text-muted: #64748b;
+
+  --color-text-light: #e2e8f0;
+  --color-text-light-secondary: #94a3b8;
+
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 10px;
+  --radius-xl: 12px;
+  --radius-2xl: 20px;
+  --radius-full: 50%;
+}
+
+/* Layout Base */
+.layout {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+}
+
+/* Animations */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+@keyframes saveFade {
+  0% { opacity: 0; transform: translateY(4px); }
+  15% { opacity: 1; transform: translateY(0); }
+  85% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-4px); }
+}

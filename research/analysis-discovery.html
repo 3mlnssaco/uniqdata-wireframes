@@ -299,21 +299,31 @@
 
     .tab-content { display: none; }
     .tab-content.active { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
-  </style>
+    .skip-link {
+      position: absolute; left: -9999px; top: auto;
+      width: 1px; height: 1px; overflow: hidden;
+    }
+    .skip-link:focus {
+      position: fixed; top: 10px; left: 10px; z-index: 10000;
+      padding: 8px 16px; background: #3b82f6; color: white;
+      border-radius: 4px; width: auto; height: auto;
+    }
+    </style>
 </head>
 <body>
+  <a href="#main-content" class="skip-link">본문으로 건너뛰기</a>
   <div class="layout">
-    <div class="sidebar">
+    <nav class="sidebar" role="navigation" aria-label="사이드바 내비게이션">
       <div class="logo" style="display: flex; align-items: center; gap: 10px;">
         <div style="width: 32px; height: 32px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px;">U</div>
         UniQdata
       </div>
 
       <div class="nav-section">
-        <a href="list.html" class="nav-item"><span class="icon">🏠</span> 연구 허브</a>
-        <a href="create.html" class="nav-item"><span class="icon">➕</span> 새 연구</a>
+        <a href="list.html" class="nav-item"><span class="icon"><span role="img" aria-label="홈">🏠</span></span> 연구 허브</a>
+        <a href="create.html" class="nav-item"><span class="icon"><span role="img" aria-label="추가">➕</span></span> 새 연구</a>
         <a href="irb-submission.html" class="nav-item"><span class="icon">📝</span> IRB 심의 신청</a>
-        <a href="irb-status.html" class="nav-item"><span class="icon">📊</span> IRB 현황</a>
+        <a href="irb-status.html" class="nav-item"><span class="icon"><span role="img" aria-label="차트">📊</span></span> IRB 현황</a>
         <a href="action-center.html" class="nav-item"><span class="icon">🔔</span> 조치 센터</a>
       </div>
 
@@ -321,11 +331,11 @@
       <div class="nav-section" style="flex: 1; overflow-y: auto; padding-top: 8px; border-top: 1px solid #2a2a2a;">
         <div style="font-size: 10px; color: #64748b; padding: 6px 12px; text-transform: uppercase; letter-spacing: 0.5px;">내 연구 <span style="background: #3b82f6; color: white; padding: 1px 6px; border-radius: 8px; font-size: 9px; margin-left: 4px;">3</span></div>
 
-        <!-- 연구 1: 당뇨병 - 현재 선택됨, 펼쳐진 상태 -->
+        <!-- 연구 1: 만성질환 - 현재 선택됨, 펼쳐진 상태 -->
         <div class="research-nav-item expanded">
           <div class="research-nav-header">
             <span class="folder-icon">📁</span>
-            <span class="research-title">당뇨병 복약 순응도</span>
+            <span class="research-title">만성질환 약물 순응도</span>
             <span class="status-dot active"></span>
           </div>
           <div class="research-nav-sub">
@@ -372,11 +382,11 @@
       </div>
     </div>
 
-    <div class="main">
+    <main class="main" id="main-content">
       <div class="header" data-spec="AI 허브: 5개 AI 분석 도구 통합. 인과발견/SHAP/CATE/What-If/이상추적을 탭으로 전환." data-spec-type="ai" data-added="회의 결정: AI 허브 통합">
         <div class="header-left">
           <h1><span class="icon">🤖</span> AI 허브</h1>
-          <div class="sub">연구 방법론별 AI 분석 도구 통합 · 당뇨병 복약 순응도 연구</div>
+          <div class="sub">연구 방법론별 AI 분석 도구 통합 · 만성질환 약물 순응도 연구</div>
         </div>
         <div class="header-actions">
           <button class="ai-badge-btn" id="ai-insight-toggle">AI 인사이트 <span class="ai-badge" id="ai-insight-badge">3</span></button>
@@ -422,7 +432,7 @@
           <optgroup label="🩸 생체지표">
             <option value="blood_glucose_variability" selected>혈당 변동성 (Blood Glucose Variability)</option>
             <option value="fasting_glucose">공복 혈당 (Fasting Glucose)</option>
-            <option value="hba1c">당화혈색소 (HbA1c)</option>
+            <option value="hba1c">주요지표 (주요지표)</option>
             <option value="blood_pressure">혈압 (Blood Pressure)</option>
             <option value="heart_rate_variability">심박변이도 (HRV)</option>
           </optgroup>
@@ -430,8 +440,8 @@
             <option value="sleep_quality">수면 질 (Sleep Quality)</option>
             <option value="sleep_duration">수면 시간 (Sleep Duration)</option>
           </optgroup>
-          <optgroup label="💊 복약">
-            <option value="medication_adherence">복약 순응도 (Medication Adherence)</option>
+          <optgroup label="💊 약물">
+            <option value="medication_adherence">약물 순응도 (Medication Adherence)</option>
           </optgroup>
           <optgroup label="🧠 인지/정서">
             <option value="stress_level">스트레스 (Stress Level)</option>
@@ -460,7 +470,7 @@
             <div class="insight-list">
               <div class="insight-item">
                 <div class="title">AI 예상 발견 #1</div>
-                <div class="desc">복약 순응도 → 혈당 (β = -0.42)</div>
+                <div class="desc">약물 순응도 → 주요지표 (β = -0.42)</div>
               </div>
               <div class="insight-item">
                 <div class="title">AI 예상 발견 #2</div>
@@ -508,8 +518,8 @@
             <div style="background: #252525; border: 1px solid #333; border-radius: 10px; padding: 12px; margin-bottom: 10px;">
               <div style="font-size: 11px; color: #22c55e; font-weight: 600; margin-bottom: 8px;">🟢 Y축</div>
               <select style="width: 100%; padding: 10px 12px; background: #1a1a1a; border: 1px solid #333; border-radius: 8px; color: #e5e5e5; font-size: 13px;">
-                <option selected>복약 순응도 (%)</option>
-                <option>복약 시간 일관성</option>
+                <option selected>약물 순응도 (%)</option>
+                <option>약물 시간 일관성</option>
               </select>
             </div>
             <div style="background: #252525; border: 1px solid #333; border-radius: 10px; padding: 12px;">
@@ -609,13 +619,13 @@
             <div style="display: flex; flex-direction: column; gap: 6px; max-height: 200px; overflow-y: auto;">
               <div style="display: flex; align-items: center; gap: 8px; padding: 8px 10px; background: #252525; border-radius: 8px; font-size: 12px; cursor: pointer; border: 1px solid transparent;" onmouseover="this.style.borderColor='#3b82f6'" onmouseout="this.style.borderColor='transparent'">
                 <span style="width: 8px; height: 8px; border-radius: 50%; background: #ef4444;"></span>
-                <span style="flex: 1; color: #e5e5e5;">복약 순응도</span>
+                <span style="flex: 1; color: #e5e5e5;">약물 순응도</span>
                 <span style="font-weight: 600; color: #10b981;">r=-0.42</span>
                 <span style="font-size: 10px; color: #64748b;">★★★★</span>
               </div>
               <div style="display: flex; align-items: center; gap: 8px; padding: 8px 10px; background: #252525; border-radius: 8px; font-size: 12px; cursor: pointer; border: 1px solid transparent;" onmouseover="this.style.borderColor='#3b82f6'" onmouseout="this.style.borderColor='transparent'">
                 <span style="width: 8px; height: 8px; border-radius: 50%; background: #f59e0b;"></span>
-                <span style="flex: 1; color: #e5e5e5;">탄수화물 섭취</span>
+                <span style="flex: 1; color: #e5e5e5;">식이 요인</span>
                 <span style="font-weight: 600; color: #ef4444;">r=+0.38</span>
                 <span style="font-size: 10px; color: #64748b;">★★★</span>
               </div>
@@ -863,7 +873,7 @@
               <div style="display: flex; flex-direction: column; gap: 8px; font-size: 11px; color: #94a3b8; line-height: 1.5;">
                 <div style="padding: 8px 10px; background: #1a1a1a; border-radius: 6px;">
                   <div style="color: #e5e5e5; font-weight: 500; margin-bottom: 4px;">Cochrane Review 2024</div>
-                  <div>"스트레스 호르몬(코르티솔)이 인슐린 저항성을 증가시켜 혈당 조절에 영향"</div>
+                  <div>"스트레스 호르몬(코르티솔)이 대사 저항성을 증가시켜 혈당 조절에 영향"</div>
                 </div>
                 <div style="padding: 8px 10px; background: #1a1a1a; border-radius: 6px;">
                   <div style="color: #e5e5e5; font-weight: 500; margin-bottom: 4px;">PMID:35847293</div>
@@ -951,7 +961,7 @@
           <div style="padding: 14px; border-top: 1px solid #2a2a2a;">
             <div style="font-size: 11px; color: #64748b; margin-bottom: 8px;">AI에게 질문하기</div>
             <div class="ask-input">
-              <input type="text" placeholder="예: 복약과 혈당의 관계는?">
+              <input type="text" placeholder="예: 약물과 혈당의 관계는?">
               <button>→</button>
             </div>
           </div>
@@ -992,7 +1002,7 @@
           <div style="font-size: 18px; font-weight: 600; color: #e5e5e5;">What-If 시뮬레이션</div>
           <div style="font-size: 13px; max-width: 400px; text-align: center; line-height: 1.6;">
             반사실(Counterfactual) 시나리오를 시뮬레이션합니다.<br>
-            "만약 복약률이 90%였다면?" 같은 질문에 답변
+            "만약 약물률이 90%였다면?" 같은 질문에 답변
           </div>
           <a href="analysis-whatif.html" style="padding: 12px 24px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); border-radius: 10px; color: white; text-decoration: none; font-size: 13px; font-weight: 600;">상세 페이지 보기 →</a>
         </div>
@@ -1073,10 +1083,10 @@
 </script>
 <script>
   const variables = [
-    { id: 'glucose', name: '혈당 (HbA1c)', type: 'outcome', connections: 12, x: 200, y: 0, z: 0 },
-    { id: 'medication', name: '복약 순응도', type: 'treatment', coef: -0.42, connections: 5, x: -180, y: -30, z: 80 },
+    { id: 'glucose', name: '주요지표 (주요지표)', type: 'outcome', connections: 12, x: 200, y: 0, z: 0 },
+    { id: 'medication', name: '약물 순응도', type: 'treatment', coef: -0.42, connections: 5, x: -180, y: -30, z: 80 },
     { id: 'diet', name: '식이 패턴', type: 'treatment', coef: 0.28, connections: 4, x: -150, y: 120, z: -60 },
-    { id: 'insulin', name: '인슐린 민감성', type: 'mediator', coef: -0.35, connections: 6, x: 20, y: 20, z: 40 },
+    { id: 'insulin', name: '대사 민감성', type: 'mediator', coef: -0.35, connections: 6, x: 20, y: 20, z: 40 },
     { id: 'age', name: '연령', type: 'confounder', coef: 0.15, connections: 8, x: -80, y: -150, z: 20 },
     { id: 'exercise', name: '운동량', type: 'other', coef: -0.08, connections: 3, x: -220, y: 80, z: 100 },
     { id: 'sleep', name: '수면 시간', type: 'other', coef: -0.12, connections: 4, x: -100, y: 180, z: 80 },
@@ -1336,7 +1346,7 @@ Layer 2 (플랫폼): UniQdata k-anon 집계 (ε=0.5 DP 적용, 주간 갱신)<br
 Layer 3 (개인): 사용자 본인 데이터 (n≥30일 필요, 실시간)
       </code>
     </div>
-  </div>
+    </main>
 
   <script src="page-spec.js"></script>
   <link rel="stylesheet" href="../tooltip-spec.css">

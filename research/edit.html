@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>연구 수정 - 당뇨병 복약 순응도 - Wireframe</title>
+  <title>연구 수정 - 만성질환 약물 순응도 - Wireframe</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: -apple-system, sans-serif; background: #f5f5f5; }
@@ -274,12 +274,40 @@
     .btn-submit:hover { background: #7c3aed; }
     .btn-draft { background: white; color: #374151; border: 1px solid #d1d5db; }
     .btn-draft:hover { background: #f9fafb; }
-  </style>
+
+    /* ===== COMMON INLINE STYLE CLASSES ===== */
+    .sidebar-nav-badge { background: #3b82f6; color: white; font-size: 11px; padding: 2px 8px; border-radius: 10px; font-weight: 600; }
+    .sidebar-nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 8px; cursor: pointer; margin-bottom: 4px; }
+    .sidebar-nav-item:hover { background: rgba(255,255,255,0.05); }
+    .sidebar-nav-item.active { background: none; }
+    .sidebar-nav-item-dot { width: 8px; height: 8px; background: #22c55e; border-radius: 50%; }
+    .sidebar-nav-item-dot.recruiting { background: #3b82f6; }
+    .sidebar-nav-item-dot.draft { background: #64748b; }
+    .sidebar-draft-item-container { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 8px; text-decoration: none; margin-bottom: 4px; background: rgba(251,191,36,0.08); }
+    .sidebar-draft-item-container:hover { background: rgba(251,191,36,0.1); }
+    .sidebar-draft-item-dot { width: 6px; height: 6px; background: #fbbf24; border-radius: 50%; flex-shrink: 0; }
+    .sidebar-draft-item-dot.gray { background: #64748b; }
+    .sidebar-draft-content { flex: 1; min-width: 0; }
+    .sidebar-draft-title { font-size: 12px; color: #e2e8f0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .sidebar-draft-meta { font-size: 10px; color: #64748b; margin-top: 2px; }
+    .sidebar-draft-item-alt { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 8px; text-decoration: none; }
+    .sidebar-draft-item-alt:hover { background: rgba(255,255,255,0.05); }
+    .skip-link {
+      position: absolute; left: -9999px; top: auto;
+      width: 1px; height: 1px; overflow: hidden;
+    }
+    .skip-link:focus {
+      position: fixed; top: 10px; left: 10px; z-index: 10000;
+      padding: 8px 16px; background: #3b82f6; color: white;
+      border-radius: 4px; width: auto; height: auto;
+    }
+    </style>
 </head>
 <body>
+  <a href="#main-content" class="skip-link">본문으로 건너뛰기</a>
   <div class="layout">
     <!-- ===== 사이드바 ===== -->
-    <div class="sidebar">
+    <nav class="sidebar" role="navigation" aria-label="사이드바 내비게이션">
       <div class="logo">
         <div class="logo-icon">U</div>
         UniQdata
@@ -287,14 +315,14 @@
 
       <div class="nav-section">
         <a href="list.html" class="nav-item">
-          <span class="icon">🏠</span> 연구 허브
+          <span class="icon"><span role="img" aria-label="홈">🏠</span></span> 연구 허브
         </a>
       </div>
 
       <div class="nav-section">
         <div class="nav-section-title">연구</div>
         <a href="create.html" class="nav-item">
-          <span class="icon">➕</span> 새 연구
+          <span class="icon"><span role="img" aria-label="추가">➕</span></span> 새 연구
         </a>
       </div>
 
@@ -302,22 +330,22 @@
       <div class="nav-section" style="flex:1; overflow-y:auto;">
         <div class="nav-section-title" style="display:flex; align-items:center; justify-content:space-between;">
           내 연구
-          <span style="background:#3b82f6; color:white; font-size:11px; padding:2px 8px; border-radius:10px; font-weight:600;">3</span>
+          <span class="sidebar-nav-badge">3</span>
         </div>
         <div class="nav-item active">
           <span style="font-size:14px;">📁</span>
-          <span style="flex:1; font-size:13px;">당뇨병 복약 순응도</span>
-          <span style="width:8px; height:8px; background:#22c55e; border-radius:50%;"></span>
+          <span style="flex:1; font-size:13px;">만성질환 약물 순응도</span>
+          <span class="sidebar-nav-item-dot"></span>
         </div>
-        <div style="display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:8px; cursor:pointer; margin-bottom:4px;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
+        <div class="sidebar-nav-item">
           <span style="font-size:14px;">📁</span>
           <span style="flex:1; font-size:13px; color:#94a3b8;">노인 수면 패턴</span>
-          <span style="width:8px; height:8px; background:#3b82f6; border-radius:50%;"></span>
+          <span class="sidebar-nav-item-dot recruiting"></span>
         </div>
-        <div style="display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:8px; cursor:pointer;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
+        <div class="sidebar-nav-item">
           <span style="font-size:14px;">📄</span>
           <span style="flex:1; font-size:13px; color:#94a3b8;">ADHD 생활습관</span>
-          <span style="width:8px; height:8px; background:#64748b; border-radius:50%;"></span>
+          <span class="sidebar-nav-item-dot draft"></span>
         </div>
 
         <!-- 임시저장 -->
@@ -326,18 +354,18 @@
             <span style="font-size:11px; font-weight:600; color:#64748b; text-transform:uppercase; letter-spacing:0.5px;">임시저장</span>
             <span style="background:#334155; color:#94a3b8; font-size:10px; padding:2px 6px; border-radius:8px;">2</span>
           </div>
-          <a href="#" style="display:flex; align-items:center; gap:10px; padding:8px 12px; border-radius:8px; text-decoration:none; margin-bottom:4px; background:rgba(251,191,36,0.08);">
-            <span style="width:6px; height:6px; background:#fbbf24; border-radius:50%; flex-shrink:0;"></span>
-            <div style="flex:1; min-width:0;">
-              <div style="font-size:12px; color:#e2e8f0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">소아 비만 개입 연구</div>
-              <div style="font-size:10px; color:#64748b; margin-top:2px;">Step 3 · 2일 전</div>
+          <a href="#" class="sidebar-draft-item-container">
+            <span class="sidebar-draft-item-dot"></span>
+            <div class="sidebar-draft-content">
+              <div class="sidebar-draft-title">소아 비만 개입 연구</div>
+              <div class="sidebar-draft-meta">Step 3 · 2일 전</div>
             </div>
           </a>
-          <a href="#" style="display:flex; align-items:center; gap:10px; padding:8px 12px; border-radius:8px; text-decoration:none;">
-            <span style="width:6px; height:6px; background:#64748b; border-radius:50%; flex-shrink:0;"></span>
-            <div style="flex:1; min-width:0;">
-              <div style="font-size:12px; color:#94a3b8; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">직장인 스트레스 코르티솔</div>
-              <div style="font-size:10px; color:#64748b; margin-top:2px;">Step 1 · 5일 전</div>
+          <a href="#" class="sidebar-draft-item-alt">
+            <span class="sidebar-draft-item-dot gray"></span>
+            <div class="sidebar-draft-content">
+              <div class="sidebar-draft-title">직장인 스트레스 코르티솔</div>
+              <div class="sidebar-draft-meta">Step 1 · 5일 전</div>
             </div>
           </a>
         </div>
@@ -358,10 +386,10 @@
     <div class="workspace">
 
       <!-- 좌측: 아코디언 네비게이션 -->
-      <div class="edit-panel">
+      <div class="edit-panel" id="main-content">
         <div class="page-header">
           <div class="breadcrumb">
-            <a href="list.html">연구 허브</a> &gt; <a href="#">당뇨병 복약 순응도</a> &gt; 수정
+            <a href="list.html">연구 허브</a> &gt; <a href="#">만성질환 약물 순응도</a> &gt; 수정
           </div>
           <div class="page-title">
             연구 수정
@@ -380,14 +408,14 @@
           <div class="accordion-bar" onclick="toggleAccordion(this)">
             <div class="bar-num">1</div>
             <div class="bar-title">연구 개요</div>
-            <div class="bar-summary">제2형 당뇨병 · RCT · 12주 · 120명</div>
+            <div class="bar-summary">만성질환 · RCT · 12주 · 120명</div>
             <span class="bar-status unchanged">변경 없음</span>
             <span class="bar-arrow">▼</span>
           </div>
           <div class="accordion-body">
             <div class="field-group">
               <div class="field-label">연구 제목</div>
-              <input class="field-input readonly" value="모바일 앱 기반 혈당 모니터링이 제2형 당뇨병 환자의 복약 순응도에 미치는 영향" readonly>
+              <input class="field-input readonly" value="모바일 앱 기반 건강 모니터링이 만성질환 환자의 약물 순응도에 미치는 영향" readonly>
             </div>
             <div class="field-row">
               <div class="field-group">
@@ -402,7 +430,7 @@
             <div class="field-row three">
               <div class="field-group">
                 <div class="field-label">대상자</div>
-                <input class="field-input readonly" value="제2형 당뇨병 환자" readonly>
+                <input class="field-input readonly" value="만성질환 환자" readonly>
               </div>
               <div class="field-group">
                 <div class="field-label">참여자 수</div>
@@ -415,7 +443,7 @@
             </div>
             <div class="field-group">
               <div class="field-label">가설</div>
-              <textarea class="field-input readonly" readonly>모바일 앱 기반 실시간 혈당 모니터링 시스템을 사용하는 제2형 당뇨병 환자군이 기존 방식의 대조군에 비해 12주 후 복약 순응도(MMAS-8)가 유의미하게 높을 것이다.</textarea>
+              <textarea class="field-input readonly" readonly>모바일 앱 기반 실시간 건강 모니터링 시스템을 사용하는 만성질환 환자군이 기존 방식의 대조군에 비해 12주 후 약물 순응도(MMAS-8)가 유의미하게 높을 것이다.</textarea>
             </div>
             <p style="font-size:11px; color:#9ca3af; margin-top:6px;">연구 개요 수정 시 연구 재설계가 필요합니다.</p>
           </div>
@@ -444,11 +472,11 @@
             <div class="field-row">
               <div class="field-group">
                 <div class="field-label">1차 결과변수</div>
-                <input class="field-input" value="MMAS-8 점수 변화량">
+                <input class="field-input" value="약물 순응도 점수 변화량">
               </div>
               <div class="field-group">
                 <div class="field-label">2차 결과변수</div>
-                <input class="field-input" value="HbA1c, 자기효능감(DSES)">
+                <input class="field-input" value="주요지표, 자기효능감(DSES)">
               </div>
             </div>
             <div class="field-row three">
@@ -477,7 +505,7 @@
           <div class="accordion-bar" onclick="toggleAccordion(this)">
             <div class="bar-num">3</div>
             <div class="bar-title">데이터 수집</div>
-            <div class="bar-summary">혈당+복약+설문 → 혈압, PSS-10 추가</div>
+            <div class="bar-summary">주요지표+약물+설문 → 혈압, PSS-10 추가</div>
             <span class="bar-status modified">수정됨</span>
             <span class="bar-arrow">▼</span>
           </div>
@@ -485,12 +513,12 @@
             <div class="field-group">
               <div class="field-label">수집 항목 <span class="current">(기존 3개 → 5개)</span></div>
               <div class="tag-list">
-                <span class="tag">혈당 (CGM)</span>
-                <span class="tag">복약 기록</span>
+                <span class="tag">주요지표 (지속혈당측정기)</span>
+                <span class="tag">약물 기록</span>
                 <span class="tag">MMAS-8 설문</span>
                 <span class="tag added">+ 혈압 (웨어러블)</span>
                 <span class="tag added">+ PSS-10 스트레스</span>
-                <span class="tag removable">HbA1c <span class="x">✕</span></span>
+                <span class="tag removable">주요지표 <span class="x">✕</span></span>
               </div>
             </div>
             <div class="field-row">
@@ -515,7 +543,7 @@
             </div>
             <div class="reason-box">
               <div class="reason-label">✏️ 수정 사유 *</div>
-              <textarea class="reason-input" style="border-color:#8b5cf6;">중간분석(6주) 결과 스트레스 수준이 복약 순응도와 유의한 상관을 보여, PSS-10을 추가 수집합니다. 혈압 데이터는 웨어러블로 자동 수집되어 추가 부담 최소.</textarea>
+              <textarea class="reason-input" style="border-color:#8b5cf6; outline:none;">중간분석(6주) 결과 스트레스 수준이 약물 순응도와 유의한 상관을 보여, PSS-10을 추가 수집합니다. 혈압 데이터는 웨어러블로 자동 수집되어 추가 부담 최소.</textarea>
             </div>
           </div>
         </div>
@@ -556,8 +584,8 @@
             </div>
             <div class="field-group">
               <div class="field-label">선정 기준</div>
-              <textarea class="field-input">1. 제2형 당뇨병 진단 후 6개월 이상
-2. 현재 경구 혈당강하제 복용 중
+              <textarea class="field-input">1. 만성질환 진단 후 6개월 이상
+2. 현재 처방 약물 복용 중
 3. 스마트폰 사용 가능
 4. 서면 동의 가능</textarea>
             </div>
@@ -760,7 +788,7 @@
   </div>
 
   <!-- 디자이너 노트 -->
-  <div style="background: linear-gradient(135deg, #fdf4ff, #fae8ff); border: 2px solid #d946ef; border-radius: 12px; padding: 20px; margin: 24px; max-width: 900px;">
+  <div class="designer-note" style="background: linear-gradient(135deg, #fdf4ff, #fae8ff); border: 2px solid #d946ef; margin: 24px; max-width: 900px;">
     <h3 style="color: #a21caf; margin-bottom: 16px; font-size: 16px;">📋 디자이너 노트: 연구 수정</h3>
     <div style="margin-bottom: 14px;">
       <strong style="color: #86198f; display: block; margin-bottom: 4px;">🟡 우선순위: Phase 1B (3~6개월)</strong>

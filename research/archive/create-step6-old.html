@@ -526,12 +526,76 @@
       cursor: pointer; z-index: 101; box-shadow: 0 4px 12px rgba(217,70,239,0.3);
     }
 
-  </style>
+    /* ===== SIDEBAR NAVIGATION STYLES ===== */
+    .sidebar-nav-section { flex: 1; overflow-y: auto; }
+    .sidebar-badge {
+      background: #3b82f6; color: white; font-size: 11px;
+      padding: 2px 8px; border-radius: 10px; font-weight: 600;
+    }
+    .sidebar-research-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 12px; border-radius: 8px; cursor: pointer;
+      margin-bottom: 4px;
+    }
+    .sidebar-research-item:hover { background: rgba(255,255,255,0.05); }
+    .sidebar-item-emoji { font-size: 14px; }
+    .sidebar-item-name {
+      flex: 1; font-size: 13px; color: #94a3b8;
+    }
+    .sidebar-status-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+    }
+
+    /* Draft section styles */
+    .sidebar-draft-title {
+      font-size: 11px; font-weight: 600; color: #64748b;
+      text-transform: uppercase; letter-spacing: 0.5px;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 12px; margin-bottom: 8px;
+    }
+    .sidebar-draft-badge {
+      background: #334155; color: #94a3b8;
+      font-size: 10px; padding: 2px 6px; border-radius: 8px;
+    }
+    .sidebar-draft-link {
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 12px; border-radius: 8px;
+      text-decoration: none; margin-bottom: 4px;
+      background: rgba(251,191,36,0.08);
+    }
+    .sidebar-draft-dot {
+      width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0;
+    }
+    .sidebar-draft-meta { flex: 1; min-width: 0; }
+    .sidebar-draft-title-text {
+      font-size: 12px; color: #e2e8f0;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .sidebar-draft-meta-text {
+      font-size: 10px; color: #64748b; margin-top: 2px;
+    }
+
+    /* ===== PAGE HEADER STYLES ===== */
+    .page-header-container { display: flex; align-items: center; gap: 16px; margin-bottom: 8px; }
+    .page-title { font-size: 24px; font-weight: 700; }
+    .page-description { color: #6b7280; margin-bottom: 28px; font-size: 14px; }
+
+    .skip-link {
+      position: absolute; left: -9999px; top: auto;
+      width: 1px; height: 1px; overflow: hidden;
+    }
+    .skip-link:focus {
+      position: fixed; top: 10px; left: 10px; z-index: 10000;
+      padding: 8px 16px; background: #3b82f6; color: white;
+      border-radius: 4px; width: auto; height: auto;
+    }
+    </style>
 </head>
 <body>
+  <a href="#main-content" class="skip-link">본문으로 건너뛰기</a>
   <div class="layout">
     <!-- Nav -->
-    <div class="sidebar">
+    <nav class="sidebar" role="navigation" aria-label="사이드바 내비게이션">
       <div class="logo">
         <div class="logo-icon">U</div>
         UniQdata
@@ -551,45 +615,45 @@
       </div>
 
       <!-- 내 연구 (접힌 상태) -->
-      <div class="nav-section" style="flex:1; overflow-y:auto;">
+      <div class="nav-section sidebar-nav-section">
         <div class="nav-section-title" style="display:flex; align-items:center; justify-content:space-between;">
           내 연구
-          <span style="background:#3b82f6; color:white; font-size:11px; padding:2px 8px; border-radius:10px; font-weight:600;">3</span>
+          <span class="sidebar-badge">3</span>
         </div>
-        <div style="display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:8px; cursor:pointer; margin-bottom:4px;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
-          <span style="font-size:14px;">&#x1F4C1;</span>
-          <span style="flex:1; font-size:13px; color:#94a3b8;">당뇨병 복약 순응도</span>
-          <span style="width:8px; height:8px; background:#22c55e; border-radius:50%;"></span>
+        <div class="sidebar-research-item">
+          <span class="sidebar-item-emoji">📁</span>
+          <span class="sidebar-item-name">만성질환 약물 순응도</span>
+          <span class="sidebar-status-dot" style="background:#22c55e;"></span>
         </div>
-        <div style="display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:8px; cursor:pointer; margin-bottom:4px;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
-          <span style="font-size:14px;">&#x1F4C1;</span>
-          <span style="flex:1; font-size:13px; color:#94a3b8;">노인 수면 패턴</span>
-          <span style="width:8px; height:8px; background:#3b82f6; border-radius:50%;"></span>
+        <div class="sidebar-research-item">
+          <span class="sidebar-item-emoji">📁</span>
+          <span class="sidebar-item-name">노인 수면 패턴</span>
+          <span class="sidebar-status-dot" style="background:#3b82f6;"></span>
         </div>
-        <div style="display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:8px; cursor:pointer;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
-          <span style="font-size:14px;">&#x1F4C4;</span>
-          <span style="flex:1; font-size:13px; color:#94a3b8;">ADHD 생활습관</span>
-          <span style="width:8px; height:8px; background:#64748b; border-radius:50%;"></span>
+        <div class="sidebar-research-item">
+          <span class="sidebar-item-emoji">📄</span>
+          <span class="sidebar-item-name">ADHD 생활습관</span>
+          <span class="sidebar-status-dot" style="background:#64748b;"></span>
         </div>
 
         <!-- 임시저장 -->
         <div style="margin-top:16px; padding-top:12px; border-top:1px solid #1e293b;">
-          <div style="display:flex; align-items:center; justify-content:space-between; padding:0 12px; margin-bottom:8px;">
-            <span style="font-size:11px; font-weight:600; color:#64748b; text-transform:uppercase; letter-spacing:0.5px;">임시저장</span>
-            <span style="background:#334155; color:#94a3b8; font-size:10px; padding:2px 6px; border-radius:8px;">2</span>
+          <div class="sidebar-draft-title">
+            <span>임시저장</span>
+            <span class="sidebar-draft-badge">2</span>
           </div>
-          <a href="#" style="display:flex; align-items:center; gap:10px; padding:8px 12px; border-radius:8px; text-decoration:none; margin-bottom:4px; background:rgba(251,191,36,0.08);">
-            <span style="width:6px; height:6px; background:#fbbf24; border-radius:50%; flex-shrink:0;"></span>
-            <div style="flex:1; min-width:0;">
-              <div style="font-size:12px; color:#e2e8f0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">소아 비만 개입 연구</div>
-              <div style="font-size:10px; color:#64748b; margin-top:2px;">Step 3 &middot; 2일 전</div>
+          <a href="#" class="sidebar-draft-link" style="background:rgba(251,191,36,0.08);">
+            <span class="sidebar-draft-dot" style="background:#fbbf24;"></span>
+            <div class="sidebar-draft-meta">
+              <div class="sidebar-draft-title-text">소아 비만 개입 연구</div>
+              <div class="sidebar-draft-meta-text">Step 3 · 2일 전</div>
             </div>
           </a>
-          <a href="#" style="display:flex; align-items:center; gap:10px; padding:8px 12px; border-radius:8px; text-decoration:none;">
-            <span style="width:6px; height:6px; background:#64748b; border-radius:50%; flex-shrink:0;"></span>
-            <div style="flex:1; min-width:0;">
-              <div style="font-size:12px; color:#94a3b8; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">직장인 스트레스 코르티솔</div>
-              <div style="font-size:10px; color:#64748b; margin-top:2px;">Step 1 &middot; 5일 전</div>
+          <a href="#" class="sidebar-draft-link">
+            <span class="sidebar-draft-dot" style="background:#64748b;"></span>
+            <div class="sidebar-draft-meta">
+              <div class="sidebar-draft-title-text">직장인 스트레스 코르티솔</div>
+              <div class="sidebar-draft-meta-text">Step 1 · 5일 전</div>
             </div>
           </a>
         </div>
@@ -629,14 +693,14 @@
       <div class="workspace">
 
         <!-- 에디터 패널 -->
-        <div class="editor-panel">
+        <div class="editor-panel" id="main-content">
 
           <!-- 페이지 헤더 -->
-          <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 8px;">
-            <h1 style="font-size: 24px; font-weight: 700;">에스크로 예치 + 모집 실행</h1>
+          <div class="page-header-container">
+            <h1 class="page-title">에스크로 예치 + 모집 실행</h1>
             <span class="status-badge" style="background:#ede9fe; color:#7c3aed;">Step 6</span>
           </div>
-          <p style="color: #6b7280; margin-bottom: 28px; font-size: 14px;">연구 예산을 예치하고, 참가자 모집을 시작합니다</p>
+          <p class="page-description">연구 예산을 예치하고, 참가자 모집을 시작합니다</p>
 
           <!-- Section 1: 프로젝트 지갑 -->
           <div class="wallet-card">
@@ -803,7 +867,7 @@
 
             <div class="chat-context">
               <div class="label">현재 연구</div>
-              <div class="value">당뇨 복약 순응도 연구 &#x2014; 에스크로 예치 중</div>
+              <div class="value">만성질환 약물 순응도 연구 &#x2014; 에스크로 예치 중</div>
               <div class="chat-context-chips">
                 <span class="chat-context-chip">IRB 승인</span>
                 <span class="chat-context-chip">7,740 XRP</span>
@@ -858,158 +922,20 @@
   <button class="toggle-notes" onclick="toggleNotes()">&#x1F4CB; 디자이너 노트</button>
 
   <!-- 디자이너 노트 -->
-  <div class="designer-notes" id="designer-note">
-    <h3>&#x1F4CB; 디자이너 노트: Step 6 - 에스크로 예치 + 모집 실행</h3>
-    <div class="content">
-      <strong>레이아웃:</strong><br>
-      &#x2460; Nav (240px) | &#x2461; 에스크로 예치 에디터 (flex:1) | &#x2462; AI 에스크로 어시스턴트 (360px)<br>
-      Step 4/5와 동일한 workspace-wrap 패턴 (step-bar &#x2192; workspace &#x2192; editor + chat)<br><br>
-
-      <strong>&#x2461; 에디터 5개 섹션:</strong><br>
-      - 프로젝트 지갑: IRB 승인 후 자동 생성. 다크 카드로 잔액/필요금액/진행률 표시<br>
-      - 내 지갑 입금: 잔액 확인 &#x2192; 금액 입력 &#x2192; 빠른 버튼 &#x2192; 입금 실행<br>
-      - 에스크로 금액 내역: 보라색 그라디언트 카드, IRB 신청비(기납부)/보상/수수료 breakdown<br>
-      - 에스크로 예치 동의: 3개 체크박스 전체 체크 시 예치 버튼 활성화<br>
-      - 모집 실행: 에스크로 예치 완료 전 잠금 상태. Step 4 모집 요약 표시, 초대/공개 모집 버튼<br><br>
-
-      <strong>&#x2462; AI 에스크로 어시스턴트:</strong><br>
-      - 예치 &#x2192; 모집 실행 흐름을 안내하는 대화형 패널<br>
-      - 맥락 칩: IRB 승인, 7,740 XRP, 100명 목표, 선착순<br>
-      - 빠른 액션: 필요 금액 입금, 에스크로 상세 보기, 모집 미리보기, 지갑 충전<br><br>
-
-      <strong>흐름 (Flow):</strong><br>
-      &#x2460; IRB 승인 &#x2192; 프로젝트 지갑 자동 생성<br>
-      &#x2461; 내 지갑에서 프로젝트 지갑으로 입금<br>
-      &#x2462; 에스크로 예치 동의 &#x2192; 예치 실행<br>
-      &#x2463; 모집 실행 섹션 활성화<br>
-      &#x2464; 사전 초대 발송 &#x2192; 수락 대기(3일) &#x2192; 미수락분 공개 전환<br>
-      &#x2465; 목표 인원 달성 &#x2192; 자동 마감 &#x2192; 연구 일괄 시작<br><br>
-
-      <strong>핵심 포인트:</strong><br>
-      &bull; 에스크로 예치와 모집 실행을 하나의 Step으로 통합<br>
-      &bull; 모집 실행은 에스크로 예치 완료 후에만 활성화 (잠금 UX)<br>
-      &bull; 체크박스 3개 모두 체크해야 예치 버튼 활성화 (동의 확보)<br><br>
-
-      <strong>ERD 매핑 (v6 — 33 Tables):</strong><br>
-      &bull; 프로젝트 지갑 &#x2192; <code>project_wallets</code> (uniqdata_db, 1:1 projects)<br>
-      &bull; 입금/출금 내역 &#x2192; <code>project_wallet_transactions</code> (tx_type: DEPOSIT|WITHDRAWAL|REWARD_PAYOUT|REFUND)<br>
-      &bull; 개인 지갑 잔액 &#x2192; <code>user_wallets</code> (health_db, cross-DB API 조회)<br>
-      &bull; XRPL 트랜잭션 &#x2192; <code>xrpl_transactions</code> (health_db, tx_type=ESCROW_CREATE)<br>
-      &bull; 지갑 생성 흐름: IRB 승인 &#x2192; project_wallets INSERT (status=CREATED) &#x2192; 입금 &#x2192; FUNDED &#x2192; 에스크로 &#x2192; ACTIVE
-    </div>
+  <!-- 디자이너 노트: docs/create-step6-notes.md 참조 -->
   </div>
 
   <!-- 기능 명세 -->
-  <div class="designer-notes" id="func-spec">
-    <h3 style="color: #047857;">&#x2699;&#xFE0F; 기능 명세: Step 6 - 에스크로 예치 + 모집 실행</h3>
-    <div class="content" style="columns: 1;">
-      <strong>핵심 기능:</strong><br>
-      &bull; 프로젝트 지갑 잔액 확인 및 진행률 표시<br>
-      &bull; 내 지갑 &#x2192; 프로젝트 지갑 입금 (금액 입력 + 빠른 버튼)<br>
-      &bull; 에스크로 금액 내역 (IRB 신청비/보상/수수료 breakdown)<br>
-      &bull; 에스크로 예치 동의 (3개 체크박스 전체 체크 시 활성화)<br>
-      &bull; 모집 실행 (에스크로 예치 후 잠금 해제): 사전 초대 + 공개 모집<br><br>
-
-      <strong>비즈니스 로직:</strong><br>
-      &bull; IRB 승인 시 프로젝트 지갑이 XRPL에 자동 생성됨 &#x2192; <code>project_wallets</code> INSERT<br>
-      &bull; 개인지갑(user_wallets) &#x2192; 프로젝트지갑(project_wallets)으로 이체 &#x2192; <code>project_wallet_transactions</code> (tx_type=DEPOSIT)<br>
-      &bull; IRB 심사비(1,000 XRP)는 에스크로 예치 시 함께 결제됨<br>
-      &bull; 에스크로 예치 = 참여자 보상(6,400) + 플랫폼 수수료(340) = 6,740 XRP<br>
-      &bull; 총 합계 7,740 XRP는 IRB 신청비 포함 전체 연구 비용<br>
-      &bull; 에스크로 예치 &#x2192; <code>project_wallet_transactions</code> (tx_type=WITHDRAWAL) + <code>xrpl_transactions</code> (tx_type=ESCROW_CREATE)<br>
-      &bull; 에스크로 예치 후 연구 설정 변경 불가 (잠금) — project_wallets.status = ACTIVE<br>
-      &bull; 사전 초대 &#x2192; 3일 대기 &#x2192; 미수락분 공개 모집 전환<br>
-      &bull; 목표 100명 달성 시 자동 마감 &#x2192; 연구 일괄 시작 — projects.status = RECRUITING &#x2192; ACTIVE
-    </div>
+  <!-- 디자이너 노트: docs/create-step6-notes.md 참조 -->
   </div>
 
   <!-- 백엔드 호출 -->
-  <div class="designer-notes" id="backend-spec">
-    <h3 style="color: #6d28d9;">&#x1F517; 백엔드 호출: Step 6</h3>
-    <div class="content" style="columns: 1;">
-      <strong>ERD 참조 테이블:</strong><br>
-      &bull; <code>project_wallets</code> — 프로젝트 전용 지갑 (서버 키 보유, 프로젝트당 1:1)<br>
-      &bull; <code>project_wallet_transactions</code> — 입출금 내역 (DEPOSIT|WITHDRAWAL|REWARD_PAYOUT|REFUND)<br>
-      &bull; <code>xrpl_transactions</code> — XRPL 트랜잭션 기록<br>
-      &bull; <code>settlement_batches</code> / <code>settlement_items</code> — 참여자 정산<br><br>
-
-      <strong>1. 프로젝트 지갑 생성 (IRB 승인 시 자동):</strong><br>
-      <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0; font-size: 11px; font-family: 'SF Mono', Monaco, monospace;">
-POST /api/v2/projects/:id/wallet/create<br>
-{ "project_id": "uuid" }<br>
-&#x2192; {<br>
-&nbsp;&nbsp;"wallet_id": "uuid",<br>
-&nbsp;&nbsp;"wallet_address": "rPrj...1A2",<br>
-&nbsp;&nbsp;"budget_total": 7740,<br>
-&nbsp;&nbsp;"budget_deposited": 0,<br>
-&nbsp;&nbsp;"status": "CREATED"<br>
-}<br>
-// &#x2192; INSERT project_wallets (status=CREATED)
-      </code><br>
-
-      <strong>2. 개인지갑 &#x2192; 프로젝트 지갑 이체 (DEPOSIT):</strong><br>
-      <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0; font-size: 11px; font-family: 'SF Mono', Monaco, monospace;">
-POST /api/v2/projects/:id/wallet/deposit<br>
-{<br>
-&nbsp;&nbsp;"from_wallet": "rMyWallet...",&nbsp;&nbsp;// user_wallets.xrpl_address<br>
-&nbsp;&nbsp;"amount": 7740,<br>
-&nbsp;&nbsp;"currency": "XRP"<br>
-}<br>
-&#x2192; {<br>
-&nbsp;&nbsp;"tx_id": "uuid",<br>
-&nbsp;&nbsp;"xrpl_tx_hash": "A1B2C3...",<br>
-&nbsp;&nbsp;"status": "CONFIRMED",<br>
-&nbsp;&nbsp;"wallet_balance": 7740<br>
-}<br>
-// &#x2192; INSERT project_wallet_transactions (tx_type=DEPOSIT)<br>
-// &#x2192; UPDATE project_wallets.budget_deposited += 7740<br>
-// &#x2192; UPDATE project_wallets.status = FUNDED
-      </code><br>
-
-      <strong>3. 에스크로 예치:</strong><br>
-      <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0; font-size: 11px; font-family: 'SF Mono', Monaco, monospace;">
-POST /api/v2/projects/:id/escrow/create<br>
-{<br>
-&nbsp;&nbsp;"project_wallet_id": "uuid",<br>
-&nbsp;&nbsp;"compensation_amount": 6400,<br>
-&nbsp;&nbsp;"platform_fee": 340,<br>
-&nbsp;&nbsp;"irb_fee": 1000,<br>
-&nbsp;&nbsp;"conditions": {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;"release_on": "participant_complete",<br>
-&nbsp;&nbsp;&nbsp;&nbsp;"refund_on": "research_cancelled"<br>
-&nbsp;&nbsp;}<br>
-}<br>
-&#x2192; {<br>
-&nbsp;&nbsp;"escrow_tx_hash": "E4F5G6...",<br>
-&nbsp;&nbsp;"escrow_status": "funded",<br>
-&nbsp;&nbsp;"recruitment_unlocked": true<br>
-}<br>
-// &#x2192; INSERT project_wallet_transactions (tx_type=WITHDRAWAL, memo=에스크로 예치)<br>
-// &#x2192; UPDATE project_wallets.budget_spent += 7740<br>
-// &#x2192; UPDATE project_wallets.status = ACTIVE<br>
-// &#x2192; INSERT xrpl_transactions (tx_type=ESCROW_CREATE)
-      </code><br>
-
-      <strong>4. 모집 시작:</strong><br>
-      <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0; font-size: 11px; font-family: 'SF Mono', Monaco, monospace;">
-POST /enterprise/projects/:id/recruitment/start<br>
-{<br>
-&nbsp;&nbsp;"pre_invite": true,<br>
-&nbsp;&nbsp;"open_recruit": false,<br>
-&nbsp;&nbsp;"invite_accept_deadline_days": 3<br>
-}<br>
-&#x2192; {<br>
-&nbsp;&nbsp;"status": "RECRUITING",<br>
-&nbsp;&nbsp;"invites_sent": 4,<br>
-&nbsp;&nbsp;"open_slots": 60<br>
-}<br>
-// &#x2192; UPDATE projects.status = RECRUITING
-      </code>
-    </div>
+  <!-- 디자이너 노트: docs/create-step6-notes.md 참조 -->
   </div>
 
+  <script src="js/common.js"></script>
   <script>
-    // 동의 체크박스에 따라 에스크로 예치 버튼 활성화/비활성화
+    // Page-specific: Escrow button enable/disable based on consent checkboxes
     function updateEscrowBtn() {
       var c1 = document.getElementById('consent1').checked;
       var c2 = document.getElementById('consent2').checked;
@@ -1029,30 +955,8 @@ POST /enterprise/projects/:id/recruitment/start<br>
       }
     }
 
-    // 디자이너 노트 토글 (3개 패널 순환)
-    var notesPanels = ['designer-note', 'func-spec', 'backend-spec'];
-    var notesIndex = -1;
-    function toggleNotes() {
-      // 현재 표시된 패널 찾기
-      var currentShown = -1;
-      for (var i = 0; i < notesPanels.length; i++) {
-        if (document.getElementById(notesPanels[i]).classList.contains('show')) {
-          currentShown = i;
-          break;
-        }
-      }
-      // 모두 닫기
-      for (var i = 0; i < notesPanels.length; i++) {
-        document.getElementById(notesPanels[i]).classList.remove('show');
-      }
-      // 다음 패널 열기 (없으면 첫 번째, 마지막이면 닫기)
-      if (currentShown === -1) {
-        document.getElementById(notesPanels[0]).classList.add('show');
-      } else if (currentShown < notesPanels.length - 1) {
-        document.getElementById(notesPanels[currentShown + 1]).classList.add('show');
-      }
-      // 마지막이면 모두 닫힌 상태 유지
-    }
+    // Designer notes panel cycling
+    var toggleNotes = createNotesCycler(['designer-note', 'func-spec', 'backend-spec']);
   </script>
 
   <script src="page-spec.js"></script>

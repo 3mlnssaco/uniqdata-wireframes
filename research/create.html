@@ -9,7 +9,7 @@
     body { font-family: -apple-system, sans-serif; background: #f5f5f5; }
 
     /* ===== 레이아웃 ===== */
-    .layout { display: flex; height: 100vh; width: 100%; }
+    .layout { display: flex; height: 100vh; width: 100%; overflow: hidden; }
 
     /* ① 사이드바 */
     .sidebar {
@@ -18,6 +18,8 @@
       color: white;
       display: flex;
       flex-direction: column;
+      flex-shrink: 0;
+      overflow-y: auto;
       flex-shrink: 0;
     }
     .logo {
@@ -81,12 +83,12 @@
     a.sb-step:hover .sb-label { color: #e2e8f0; }
 
     /* ===== 워크스페이스 (채팅 + 레포트) ===== */
-    .workspace-wrap { flex: 1; display: flex; flex-direction: column; }
-    .workspace { flex: 1; display: flex; overflow: hidden; }
+    .workspace-wrap { flex: 1; min-width: 0; min-height: 0; display: flex; flex-direction: column; }
+    .workspace { flex: 1; display: flex; overflow: hidden; min-width: 0; }
 
     /* ② 채팅 패널 */
     .chat-panel {
-      flex: 1; display: flex; flex-direction: column;
+      flex: 1; min-width: 0; display: flex; flex-direction: column;
       background: #fafafa; border-right: 1px solid #e5e7eb;
     }
     .chat-header {
@@ -218,12 +220,177 @@
       85% { opacity: 1; transform: translateY(0); }
       100% { opacity: 0; transform: translateY(-4px); }
     }
-  </style>
+
+    /* ===== Sidebar Navigation CSS Classes ===== */
+    .sidebar-nav-link {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      border-radius: 8px;
+      text-decoration: none;
+      margin-bottom: 4px;
+    }
+    .sidebar-nav-link.active-research {
+      background: rgba(139, 92, 246, 0.15);
+      border-left: 3px solid #8b5cf6;
+    }
+    .sidebar-nav-link.inactive {
+      background: rgba(251, 191, 36, 0.08);
+    }
+    .nav-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .nav-dot.active {
+      background: #8b5cf6;
+      animation: pulse 2s infinite;
+    }
+    .nav-dot.warning {
+      background: #fbbf24;
+    }
+    .nav-dot.inactive {
+      background: #64748b;
+    }
+    .sidebar-research-title {
+      font-size: 12px;
+      color: #e2e8f0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-weight: 600;
+    }
+    .sidebar-research-title.muted {
+      color: #94a3b8;
+    }
+    .sidebar-sub-text {
+      font-size: 10px;
+      color: #64748b;
+      margin-top: 2px;
+    }
+    .sidebar-sub-text.active {
+      color: #a78bfa;
+    }
+    .draft-badge {
+      font-size: 9px;
+      background: #374151;
+      color: #9ca3af;
+      padding: 1px 5px;
+      border-radius: 4px;
+      margin-left: 4px;
+    }
+    .chat-label {
+      font-size: 13px;
+      color: #94a3b8;
+    }
+    .status-count-badge {
+      background: #334155;
+      color: #94a3b8;
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 8px;
+    }
+    .nav-item-flex {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-bottom: 4px;
+    }
+    .sidebar-section-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .sidebar-header-flex {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .status-badge-blue {
+      background: #3b82f6;
+      color: white;
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-weight: 600;
+    }
+    .skip-link {
+      position: absolute; left: -9999px; top: auto;
+      width: 1px; height: 1px; overflow: hidden;
+    }
+    .skip-link:focus {
+      position: fixed; top: 10px; left: 10px; z-index: 10000;
+      padding: 8px 16px; background: #3b82f6; color: white;
+      border-radius: 4px; width: auto; height: auto;
+    }
+    /* ===== SIDEBAR NAVIGATION STYLES ===== */
+    .sidebar-nav-section { flex: 1; overflow-y: auto; }
+    .sidebar-badge {
+      background: #3b82f6; color: white; font-size: 11px;
+      padding: 2px 8px; border-radius: 10px; font-weight: 600;
+    }
+    .sidebar-research-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 12px; border-radius: 8px; cursor: pointer;
+      margin-bottom: 4px;
+    }
+    .sidebar-research-item:hover { background: rgba(255,255,255,0.05); }
+    .sidebar-item-emoji { font-size: 14px; }
+    .sidebar-item-name {
+      flex: 1; font-size: 13px; color: #94a3b8;
+    }
+    .sidebar-status-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+    }
+    .sidebar-draft-title {
+      font-size: 11px; font-weight: 600; color: #64748b;
+      text-transform: uppercase; letter-spacing: 0.5px;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 12px; margin-bottom: 8px;
+    }
+    .sidebar-draft-badge {
+      background: #334155; color: #94a3b8;
+      font-size: 10px; padding: 2px 6px; border-radius: 8px;
+    }
+    .sidebar-draft-link {
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 12px; border-radius: 8px;
+      text-decoration: none; margin-bottom: 4px;
+    }
+    .sidebar-draft-dot {
+      width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0;
+    }
+    .sidebar-draft-meta { flex: 1; min-width: 0; }
+    .sidebar-draft-title-text {
+      font-size: 12px; color: #e2e8f0;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .sidebar-draft-meta-text {
+      font-size: 10px; color: #64748b; margin-top: 2px;
+    }
+    .user-info-sidebar { display: flex; align-items: center; gap: 12px; padding: 8px; }
+    .user-avatar-sidebar {
+      width: 36px; height: 36px;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-size: 14px; color: white;
+    }
+    .user-name-sidebar { font-size: 14px; color: #e2e8f0; }
+    .user-org-sidebar { font-size: 12px; color: #64748b; }
+    </style>
 </head>
 <body>
+  <a href="#main-content" class="skip-link">본문으로 건너뛰기</a>
   <div class="layout">
     <!-- ① 사이드바 -->
-    <div class="sidebar">
+    <nav class="sidebar" role="navigation" aria-label="사이드바 내비게이션">
       <div class="logo">
         <div class="logo-icon">U</div>
         UniQdata
@@ -231,69 +398,60 @@
 
       <div class="nav-section">
         <a href="list.html" class="nav-item">
-          <span class="icon">🏠</span> 연구 허브
+          <span class="icon">&#x1F3E0;</span> 연구 허브
         </a>
       </div>
 
       <div class="nav-section">
         <div class="nav-section-title">연구</div>
         <a href="create.html" class="nav-item active">
-          <span class="icon">➕</span> 새 연구
+          <span class="icon">&#x2795;</span> 새 연구
         </a>
-
-        <!-- 임시저장 (새 연구 바로 하단) -->
-        <div style="margin-top:8px; padding:8px 0;">
-          <div style="display:flex; align-items:center; justify-content:space-between; padding:0 12px; margin-bottom:8px;">
-            <span style="font-size:11px; font-weight:600; color:#64748b; text-transform:uppercase; letter-spacing:0.5px;">임시저장</span>
-            <span style="background:#334155; color:#94a3b8; font-size:10px; padding:2px 6px; border-radius:8px;">3</span>
-          </div>
-          <!-- 현재 세션 (자동 저장됨) -->
-          <a href="#" style="display:flex; align-items:center; gap:10px; padding:8px 12px; border-radius:8px; text-decoration:none; margin-bottom:4px; background:rgba(139,92,246,0.15); border-left:3px solid #8b5cf6;">
-            <span style="width:6px; height:6px; background:#8b5cf6; border-radius:50%; flex-shrink:0; animation: pulse 2s infinite;"></span>
-            <div style="flex:1; min-width:0;">
-              <div style="font-size:12px; color:#e2e8f0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-weight:600;">저탄수화물 식단 혈당 연구</div>
-              <div style="font-size:10px; color:#a78bfa; margin-top:2px;">Step 1 · 방금 전 · <span style="color:#22c55e;">자동 저장됨</span></div>
-            </div>
-          </a>
-          <a href="#" style="display:flex; align-items:center; gap:10px; padding:8px 12px; border-radius:8px; text-decoration:none; margin-bottom:4px; background:rgba(251,191,36,0.08);">
-            <span style="width:6px; height:6px; background:#fbbf24; border-radius:50%; flex-shrink:0;"></span>
-            <div style="flex:1; min-width:0;">
-              <div style="font-size:12px; color:#e2e8f0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">소아 비만 개입 연구</div>
-              <div style="font-size:10px; color:#64748b; margin-top:2px;">Step 3 · 2일 전</div>
-            </div>
-          </a>
-          <a href="#" style="display:flex; align-items:center; gap:10px; padding:8px 12px; border-radius:8px; text-decoration:none;">
-            <span style="width:6px; height:6px; background:#64748b; border-radius:50%; flex-shrink:0;"></span>
-            <div style="flex:1; min-width:0;">
-              <div style="font-size:12px; color:#94a3b8; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">직장인 스트레스 코르티솔</div>
-              <div style="font-size:10px; color:#64748b; margin-top:2px;">Step 1 · 5일 전</div>
-            </div>
-          </a>
-        </div>
       </div>
 
       <!-- 내 연구 (접힌 상태) -->
-      <div class="nav-section" style="flex:1; overflow-y:auto;">
+      <div class="nav-section sidebar-nav-section">
         <div class="nav-section-title" style="display:flex; align-items:center; justify-content:space-between;">
           내 연구
-          <span style="background:#3b82f6; color:white; font-size:11px; padding:2px 8px; border-radius:10px; font-weight:600;">3</span>
+          <span class="sidebar-badge">3</span>
         </div>
-        <div style="display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:8px; cursor:pointer; margin-bottom:4px;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
-          <span style="font-size:14px;">📁</span>
-          <span style="flex:1; font-size:13px; color:#94a3b8;">당뇨병 복약 순응도</span>
-          <span style="width:8px; height:8px; background:#22c55e; border-radius:50%;"></span>
+        <div class="sidebar-research-item">
+          <span class="sidebar-item-emoji">📁</span>
+          <span class="sidebar-item-name">만성질환 약물 순응도</span>
+          <span class="sidebar-status-dot" style="background:#22c55e;"></span>
         </div>
-        <div style="display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:8px; cursor:pointer; margin-bottom:4px;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
-          <span style="font-size:14px;">📁</span>
-          <span style="flex:1; font-size:13px; color:#94a3b8;">노인 수면 패턴</span>
-          <span style="width:8px; height:8px; background:#3b82f6; border-radius:50%;"></span>
+        <div class="sidebar-research-item">
+          <span class="sidebar-item-emoji">📁</span>
+          <span class="sidebar-item-name">노인 수면 패턴</span>
+          <span class="sidebar-status-dot" style="background:#3b82f6;"></span>
         </div>
-        <div style="display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:8px; cursor:pointer;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
-          <span style="font-size:14px;">📄</span>
-          <span style="flex:1; font-size:13px; color:#94a3b8;">ADHD 생활습관</span>
-          <span style="width:8px; height:8px; background:#64748b; border-radius:50%;"></span>
+        <div class="sidebar-research-item">
+          <span class="sidebar-item-emoji">📄</span>
+          <span class="sidebar-item-name">ADHD 생활습관</span>
+          <span class="sidebar-status-dot" style="background:#64748b;"></span>
         </div>
 
+        <!-- 임시저장 -->
+        <div style="margin-top:16px; padding-top:12px; border-top:1px solid #1e293b;">
+          <div class="sidebar-draft-title">
+            <span>임시저장</span>
+            <span class="sidebar-draft-badge">2</span>
+          </div>
+          <a href="#" class="sidebar-draft-link" style="background:rgba(251,191,36,0.08);">
+            <span class="sidebar-draft-dot" style="background:#fbbf24;"></span>
+            <div class="sidebar-draft-meta">
+              <div class="sidebar-draft-title-text">소아 비만 개입 연구</div>
+              <div class="sidebar-draft-meta-text">Step 3 · 2일 전</div>
+            </div>
+          </a>
+          <a href="#" class="sidebar-draft-link">
+            <span class="sidebar-draft-dot" style="background:#64748b;"></span>
+            <div class="sidebar-draft-meta">
+              <div class="sidebar-draft-title-text">직장인 스트레스 코르티솔</div>
+              <div class="sidebar-draft-meta-text">Step 1 · 5일 전</div>
+            </div>
+          </a>
+        </div>
       </div>
 
       <div class="sidebar-footer">
@@ -305,7 +463,7 @@
           </div>
         </div>
       </div>
-    </div>
+    </nav>
 
     <!-- 워크스페이스 -->
     <div class="workspace-wrap">
@@ -316,17 +474,15 @@
           <div class="sb-line"></div>
           <a class="sb-step pending" href="create-step2.html"><div class="sb-num">2</div><div class="sb-label">연구 설계</div></a>
           <div class="sb-line"></div>
-          <a class="sb-step pending" href="create-step3.html"><div class="sb-num">3</div><div class="sb-label">데이터 수집</div></a>
+          <a class="sb-step pending" href="create-step3.html"><div class="sb-num">3</div><div class="sb-label">타겟 설정</div></a>
           <div class="sb-line"></div>
-          <a class="sb-step pending" href="create-step4.html"><div class="sb-num">4</div><div class="sb-label">타겟 설정</div></a>
+          <a class="sb-step pending" href="create-step4.html"><div class="sb-num">4</div><div class="sb-label">데이터 수집</div></a>
           <div class="sb-line"></div>
-          <a class="sb-step pending" href="create-step5.html"><div class="sb-num">5</div><div class="sb-label">IRB 심의</div></a>
-          <div class="sb-line"></div>
-          <a class="sb-step pending" href="create-step6.html"><div class="sb-num">6</div><div class="sb-label">에스크로</div></a>
+          <a class="sb-step pending" href="create-step5.html"><div class="sb-num">5</div><div class="sb-label">에스크로</div></a>
         </div>
       </div>
 
-      <div class="workspace">
+      <div class="workspace" id="main-content">
         <!-- ② AI 채팅 패널 -->
         <div class="chat-panel">
           <div class="chat-header">
@@ -349,7 +505,7 @@
                 어떤 연구를 하고 싶으신지 자유롭게 말씀해주세요. 주제, 궁금한 점, 가설 등 무엇이든 좋습니다.
               </div>
               <div class="suggestion-chips">
-                <div class="chip">식단이 혈당에 미치는 영향</div>
+                <div class="chip">생활습관이 건강지표에 미치는 영향</div>
                 <div class="chip">수면과 혈압의 관계</div>
                 <div class="chip">앱 사용 경험 UX 리서치</div>
                 <div class="chip">운동 습관과 체중</div>
@@ -359,7 +515,7 @@
             <!-- 사용자 입력 -->
             <div class="msg user">
               <div class="sender">김연구</div>
-              <div class="text">제2형 당뇨 환자들한테 저탄수화물 식단이 혈당 변동에 어떤 영향을 주는지 알고 싶어요. 특히 CGM으로 측정해서 일반 식단이랑 비교하고 싶습니다.</div>
+              <div class="text">만성질환 환자들의 생활습관 개입이 건강 지표에 어떤 영향을 주는지 알고 싶어요. 웨어러블 디바이스로 측정해서 대조군과 비교하고 싶습니다.</div>
             </div>
 
             <!-- AI 분석 + 후속 질문 -->
@@ -378,9 +534,9 @@
               <div class="text">
                 좋은 주제입니다! 정리하면:<br><br>
                 <strong>파악된 내용:</strong><br>
-                · 대상: 제2형 당뇨 환자<br>
-                · 개입: 저탄수화물 식단 vs 일반 식단<br>
-                · 측정: CGM 기반 혈당 변동성<br>
+                · 대상: 만성질환 환자<br>
+                · 개입: 개입군 vs 대조군 식단<br>
+                · 측정: 웨어러블 기반 건강지표<br>
                 · 방향: 비교 연구 (인과관계 검증)
               </div>
               <div class="follow-up">
@@ -388,7 +544,7 @@
                 <div class="text" style="margin-top:8px;">
                   1. <strong>대상자 연령대</strong>는 어떻게 생각하세요? (예: 30-65세?)<br>
                   2. <strong>연구 기간</strong>은 어느 정도를 생각하세요?<br>
-                  3. 저탄수화물의 <strong>구체적 기준</strong>이 있나요? (예: 일 탄수화물 50g 이하?)
+                  3. 개입의 <strong>구체적 기준</strong>이 있나요? (예: 일일 목표치 설정?)
                 </div>
               </div>
             </div>
@@ -396,7 +552,7 @@
             <!-- 사용자 답변 -->
             <div class="msg user">
               <div class="sender">김연구</div>
-              <div class="text">30-65세요. 기간은 8주 정도? 탄수화물은 하루 50g 이하로 하려고요. 한국인 식습관 고려해서 밥 중심 식단이랑 비교하고 싶어요.</div>
+              <div class="text">30-65세요. 기간은 8주 정도? 구체적인 개입 기준을 설정하려고요. 한국인 생활습관을 고려해서 대조군과 비교하고 싶어요.</div>
             </div>
 
             <!-- AI 추가 질문 -->
@@ -414,7 +570,7 @@
               </div>
               <div class="text">
                 좋습니다. 더 구체화해볼게요:<br><br>
-                4. <strong>주요 결과지표</strong>로 MAGE(혈당 변동 폭)를 생각하시는 건가요? 아니면 HbA1c도 포함?<br>
+                4. <strong>주요 결과지표</strong>로 어떤 건강지표들을 생각하시는 건가요?<br>
                 5. <strong>참여자 수</strong>는 생각해보셨나요? 유사 연구 기준으로 군당 42-50명이 적절합니다.<br>
                 6. 참여자 <strong>무작위 배정</strong>(RCT)으로 하실 건가요?
               </div>
@@ -426,7 +582,7 @@
             <!-- 사용자 답변 (결과지표 + 방법론) -->
             <div class="msg user">
               <div class="sender">김연구</div>
-              <div class="text">MAGE를 1차 지표로 하고, HbA1c랑 TIR도 2차로 볼게요. RCT로 하고 싶고, 군당 50명씩 총 100명이요.</div>
+              <div class="text">건강지표들을 1차, 2차로 구분해서 측정할게요. RCT로 하고 싶고, 군당 50명씩 총 100명이요.</div>
             </div>
 
             <!-- AI 가설 제안 -->
@@ -447,7 +603,7 @@
                 지금까지 내용을 바탕으로 가설을 제안드립니다:<br><br>
                 <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:8px; padding:12px; margin:8px 0;">
                   <strong style="color:#166534;">제안 가설:</strong><br>
-                  "8주간 저탄수화물 식단(≤50g/일)을 섭취한 제2형 당뇨 환자군은 일반 한식 식단 대조군 대비 CGM 기반 MAGE가 유의하게 감소할 것이다."
+                  "8주간 생활습관 개입을 적용한 만성질환 환자군은 대조군 대비 웨어러블 기반 건강지표가 유의하게 개선될 것이다."
                 </div>
                 이 가설로 진행할까요? 수정하고 싶으시면 말씀해주세요.
               </div>
@@ -477,13 +633,13 @@
                 <div style="background:#f5f3ff; border:1px solid #c4b5fd; border-radius:8px; padding:12px; margin:8px 0;">
                   <div style="font-size:13px; line-height:1.8; color:#374151;">
                     <strong style="color:#7c3aed;">연구 설계 요약</strong><br>
-                    · <strong>주제:</strong> 저탄수화물 식단이 혈당 변동에 미치는 영향<br>
-                    · <strong>대상:</strong> 30-65세 제2형 당뇨 환자 100명<br>
-                    · <strong>개입:</strong> 저탄수화물(≤50g/일) vs 일반 한식 식단<br>
+                    · <strong>주제:</strong> 생활습관 개입이 건강 지표에 미치는 영향<br>
+                    · <strong>대상:</strong> 30-65세 만성질환 환자 100명<br>
+                    · <strong>개입:</strong> 개입군(프로토콜 적용) vs 대조군(일반 관리)<br>
                     · <strong>기간:</strong> 8주<br>
-                    · <strong>결과지표:</strong> 1차 MAGE, 2차 HbA1c·TIR<br>
+                    · <strong>결과지표:</strong> 1차, 2차 건강지표 측정<br>
                     · <strong>방법론:</strong> RCT (군당 50명)<br>
-                    · <strong>가설:</strong> 저탄수화물군의 MAGE 유의 감소
+                    · <strong>가설:</strong> 개입군의 주요 건강지표 유의 개선
                   </div>
                 </div>
               </div>
@@ -543,7 +699,7 @@
                 </div>
               </div>
               <p style="font-size:12px; color:#374151; line-height:1.6; margin-bottom:12px;">
-                최근 3년간 저탄수화물 식단과 혈당 변동 관련 연구는 <strong>RCT 중심으로 전환</strong>되는 추세. CGM 기반 측정이 표준화되고 있으며, 특히 <strong>MAGE</strong>를 주요 지표로 사용하는 연구가 증가.
+                최근 3년간 생활습관 개입과 건강 지표 관련 연구는 <strong>RCT 중심으로 전환</strong>되는 추세. 웨어러블 기반 측정이 표준화되고 있으며, 연속 모니터링 지표를 사용하는 연구가 증가.
               </p>
             </div>
 
@@ -551,25 +707,25 @@
             <div class="report-section">
               <div class="report-section-title">📄 관련 논문</div>
               <div class="trend-card">
-                <div class="title">Low-carbohydrate diet and glycemic variability in T2DM: A systematic review</div>
+                <div class="title">Lifestyle intervention and health outcomes: A systematic review</div>
                 <div class="authors">Kim et al. 2025</div>
-                <div class="journal">Diabetes Care</div>
+                <div class="journal">Health Outcomes Review</div>
                 <div class="doi">DOI: 10.2337/dc25-0142</div>
-                <div class="snippet">8주간 저탄수화물 개입 후 MAGE가 평균 23% 감소. 한국인 대상 연구는 3건에 불과하여 추가 연구 필요.</div>
+                <div class="snippet">8주간 생활습관 개입 후 주요 지표가 평균 23% 개선. 한국인 대상 연구는 3건에 불과하여 추가 연구 필요.</div>
               </div>
               <div class="trend-card">
-                <div class="title">CGM-based outcomes in dietary intervention trials: A meta-analysis</div>
+                <div class="title">Wearable-based outcomes in intervention trials: A meta-analysis</div>
                 <div class="authors">Park & Lee 2024</div>
-                <div class="journal">J Clin Endocrinol Metab</div>
+                <div class="journal">J Clin Health Outcomes</div>
                 <div class="doi">DOI: 10.1210/jc.2024-0891</div>
-                <div class="snippet">CGM 기반 RCT에서 TIR(Time in Range)과 MAGE 모두 유의한 개선. 최소 6주 이상 개입 권장.</div>
+                <div class="snippet">웨어러블 기반 RCT에서 주요 건강지표 모두 유의한 개선. 최소 6주 이상 개입 권장.</div>
               </div>
               <div class="trend-card">
-                <div class="title">Korean dietary patterns and blood glucose control in diabetes management</div>
+                <div class="title">Korean lifestyle patterns and health outcomes in chronic disease management</div>
                 <div class="authors">Choi et al. 2025</div>
-                <div class="journal">Nutrition Research</div>
+                <div class="journal">Health Behavior Research</div>
                 <div class="doi">DOI: 10.1016/j.nutres.2025-03-018</div>
-                <div class="snippet">한국인 고탄수화물 식습관(밥 중심)에서 저탄수화물 전환 시 순응도 문제 보고. 단계적 감량 프로토콜 제안.</div>
+                <div class="snippet">한국인 생활습관 특성에서 개입 전환 시 순응도 문제 보고. 단계적 프로토콜 제안.</div>
               </div>
             </div>
 
@@ -595,13 +751,13 @@
             <div class="report-section">
               <div class="report-section-title">🔑 관련 키워드</div>
               <div class="keyword-tags">
-                <div class="keyword-tag">low-carbohydrate diet</div>
-                <div class="keyword-tag">CGM</div>
-                <div class="keyword-tag">MAGE</div>
-                <div class="keyword-tag">T2DM</div>
-                <div class="keyword-tag">glycemic variability</div>
+                <div class="keyword-tag">lifestyle intervention</div>
+                <div class="keyword-tag">wearable device</div>
+                <div class="keyword-tag">health outcomes</div>
+                <div class="keyword-tag">chronic disease</div>
+                <div class="keyword-tag">health indicators</div>
                 <div class="keyword-tag">RCT</div>
-                <div class="keyword-tag">Korean diet</div>
+                <div class="keyword-tag">Korean lifestyle</div>
               </div>
             </div>
           </div>
@@ -648,7 +804,7 @@
       <strong style="color: #86198f; display: block; margin-bottom: 4px;">임시저장 자동 저장 동작</strong>
       <ul style="font-size: 13px; color: #374151; line-height: 1.8; padding-left: 20px;">
         <li><strong>트리거</strong>: 사용자가 첫 메시지 전송 시 자동으로 임시저장 생성</li>
-        <li><strong>제목 자동 생성</strong>: AI가 대화 내용에서 연구 주제를 추출하여 임시저장 제목 자동 부여 (예: "저탄수화물 식단 혈당 연구")</li>
+        <li><strong>제목 자동 생성</strong>: AI가 대화 내용에서 연구 주제를 추출하여 임시저장 제목 자동 부여 (예: "건강 데이터 코호트 분석 연구")</li>
         <li><strong>저장 주기</strong>: 매 메시지 전송 시 + 30초 idle 자동 저장</li>
         <li><strong>사이드바 반영</strong>: 현재 세션이 임시저장 리스트 최상단에 보라 하이라이트로 표시. pulse dot으로 활성 상태 표현</li>
         <li><strong>채팅 헤더</strong>: "자동 저장됨" 뱃지가 fade 애니메이션으로 반복 표시</li>

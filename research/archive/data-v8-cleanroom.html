@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UniQdata — v8 클린룸 (원본 데이터 뷰어)</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f5;color:#1f2937;font-size:13px;}
+.layout{display:flex;height:100vh;overflow:hidden;}
+
+.sidebar{width:210px;background:linear-gradient(180deg,#0f172a,#1e293b);color:white;display:flex;flex-direction:column;flex-shrink:0;}
+.logo{padding:14px 18px;font-size:17px;font-weight:700;border-bottom:1px solid rgba(255,255,255,.1);display:flex;align-items:center;gap:8px;}
+.logo-icon{width:26px;height:26px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13px;}
+.nav-section{padding:10px;border-bottom:1px solid rgba(255,255,255,.05);}
+.nav-item{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:5px;color:#94a3b8;cursor:pointer;font-size:12px;}
+.rn-header{display:flex;align-items:center;gap:5px;padding:5px 8px;border-radius:5px;font-size:11px;color:#60a5fa;background:rgba(59,130,246,.1);}
+.rn-sub{padding-left:14px;margin-top:2px;border-left:2px solid rgba(255,255,255,.1);margin-left:12px;}
+.ns-item{display:flex;align-items:center;gap:5px;padding:5px 8px;border-radius:4px;color:#94a3b8;font-size:10px;cursor:pointer;margin-bottom:1px;}
+.ns-item:hover{background:rgba(255,255,255,.05);}
+.ns-item.active{background:rgba(59,130,246,.15);color:#60a5fa;}
+.sidebar-footer{margin-top:auto;padding:10px;border-top:1px solid rgba(255,255,255,.05);}
+.u-av{width:28px;height:28px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;}
+
+.main{flex:1;overflow:hidden;display:flex;flex-direction:column;}
+.content{padding:16px 20px;flex:1;display:flex;flex-direction:column;overflow:hidden;min-height:0;}
+.page-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;flex-shrink:0;}
+.page-title{font-size:17px;font-weight:700;}
+.page-sub{color:#6b7280;font-size:11px;margin-top:2px;}
+.study-status{display:flex;align-items:center;gap:6px;padding:5px 10px;background:white;border:1px solid #e5e7eb;border-radius:6px;font-size:11px;}
+.st-dot{width:8px;height:8px;border-radius:50%;background:#22c55e;}
+
+.tabs{display:flex;border-bottom:2px solid #e5e7eb;margin-bottom:10px;flex-shrink:0;}
+.tab{padding:7px 18px;font-size:12px;color:#6b7280;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;font-weight:500;user-select:none;}
+.tab.active{color:#3b82f6;border-bottom-color:#3b82f6;}
+
+.tab-content{display:none;flex:1;min-height:0;overflow:hidden;}
+.tab-content.active{display:flex;flex-direction:column;flex:1;min-height:0;}
+
+/* ===== 클린룸 전용 스타일 ===== */
+
+/* 세션 바 */
+.cr-session{display:flex;align-items:center;gap:12px;padding:6px 14px;background:#0f172a;border-radius:8px;margin-bottom:8px;flex-shrink:0;}
+.cr-live{display:flex;align-items:center;gap:4px;}
+.cr-dot{width:6px;height:6px;background:#22c55e;border-radius:50%;animation:crpulse 2s infinite;}
+@keyframes crpulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+.cr-live-label{font-size:10px;color:#22c55e;font-weight:600;}
+.cr-meta{font-size:10px;color:#64748b;}
+.cr-meta b{color:#94a3b8;}
+.cr-chip{padding:2px 6px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:4px;font-size:9px;color:#94a3b8;}
+.cr-chip.privacy{color:#22c55e;border-color:rgba(34,197,94,.3);}
+.cr-right{margin-left:auto;display:flex;align-items:center;gap:8px;}
+.cr-audit{font-size:9px;color:#f59e0b;display:flex;align-items:center;gap:3px;}
+
+/* 스키마 네비게이터 + 데이터 그리드 */
+.cr-body{display:flex;flex:1;min-height:0;gap:8px;overflow:hidden;}
+
+/* 왼쪽: 스키마 패널 */
+.schema-panel{width:220px;background:white;border:1px solid #e5e7eb;border-radius:8px;display:flex;flex-direction:column;flex-shrink:0;overflow:hidden;}
+.sp-header{padding:8px 12px;border-bottom:1px solid #e5e7eb;font-size:10px;font-weight:600;color:#374151;display:flex;justify-content:space-between;align-items:center;}
+.sp-search{width:100%;padding:4px 8px;border:1px solid #e5e7eb;border-radius:4px;font-size:10px;margin:6px 8px;width:calc(100% - 16px);}
+.sp-list{flex:1;overflow-y:auto;padding:4px;}
+.sp-server{padding:4px 8px;font-size:9px;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:.5px;margin-top:6px;}
+.sp-table{display:flex;align-items:center;gap:6px;padding:5px 10px;border-radius:4px;font-size:11px;color:#374151;cursor:pointer;margin-bottom:1px;}
+.sp-table:hover{background:#f3f4f6;}
+.sp-table.active{background:#eff6ff;color:#3b82f6;font-weight:600;}
+.sp-table .sp-icon{font-size:12px;width:16px;text-align:center;}
+.sp-table .sp-count{margin-left:auto;font-size:9px;color:#9ca3af;font-family:'SF Mono',Monaco,monospace;}
+.sp-domain{display:inline-block;padding:1px 4px;border-radius:3px;font-size:8px;font-weight:600;margin-left:auto;}
+.sp-domain.health{background:#dcfce7;color:#166534;}.sp-domain.auth{background:#dbeafe;color:#1d4ed8;}.sp-domain.research{background:#fce7f3;color:#be185d;}
+.sp-domain.consent{background:#fef3c7;color:#92400e;}.sp-domain.irb{background:#e0e7ff;color:#3730a3;}.sp-domain.wallet{background:#f3e8ff;color:#6b21a8;}
+
+/* 오른쪽: 데이터 그리드 */
+.data-grid{flex:1;display:flex;flex-direction:column;min-width:0;overflow:hidden;}
+.dg-toolbar{display:flex;align-items:center;gap:8px;padding:8px 12px;background:white;border:1px solid #e5e7eb;border-radius:8px;margin-bottom:6px;flex-shrink:0;flex-wrap:wrap;}
+.dg-title{font-size:12px;font-weight:700;color:#1f2937;display:flex;align-items:center;gap:6px;}
+.dg-title .t-icon{font-size:14px;}
+.dg-pills{display:flex;gap:4px;}
+.dg-pill{padding:2px 6px;border:1px solid #e5e7eb;border-radius:4px;font-size:9px;color:#6b7280;cursor:pointer;}
+.dg-pill.active{background:#3b82f6;color:white;border-color:#3b82f6;}
+.dg-filter{display:flex;align-items:center;gap:4px;margin-left:auto;}
+.dg-filter select,.dg-filter input{padding:3px 6px;border:1px solid #e5e7eb;border-radius:4px;font-size:10px;background:white;}
+.dg-privacy{display:flex;align-items:center;gap:4px;padding:3px 8px;background:rgba(34,197,94,.06);border:1px solid rgba(34,197,94,.2);border-radius:4px;font-size:9px;color:#166534;}
+
+/* 테이블 */
+.dg-table-wrap{flex:1;overflow:auto;background:white;border:1px solid #e5e7eb;border-radius:8px;}
+table.dg-tbl{width:100%;border-collapse:collapse;font-size:10px;}
+table.dg-tbl thead th{position:sticky;top:0;z-index:10;background:#f9fafb;border-bottom:2px solid #e5e7eb;padding:6px 8px;text-align:left;font-size:9px;color:#6b7280;font-weight:600;white-space:nowrap;}
+table.dg-tbl thead th .col-type{font-size:8px;color:#9ca3af;font-weight:400;font-family:'SF Mono',Monaco,monospace;display:block;}
+table.dg-tbl tbody td{padding:5px 8px;border-bottom:1px solid #f1f5f9;font-family:'SF Mono',Monaco,monospace;font-size:9px;white-space:nowrap;}
+table.dg-tbl tbody tr:hover{background:#f8fafc;}
+.masked{color:#d1d5db;font-style:italic;letter-spacing:1px;}
+.pseudo{color:#8b5cf6;font-weight:600;}
+.hash-val{color:#9ca3af;font-size:8px;max-width:80px;overflow:hidden;text-overflow:ellipsis;display:inline-block;}
+.json-val{color:#0ea5e9;cursor:pointer;max-width:180px;overflow:hidden;text-overflow:ellipsis;display:inline-block;}
+.json-val:hover{text-decoration:underline;}
+.ts-val{color:#374151;}
+.null-val{color:#d1d5db;font-style:italic;}
+.bool-val.true{color:#22c55e;}.bool-val.false{color:#ef4444;}
+.num-val{color:#3b82f6;}
+
+/* 하단 상태바 */
+.dg-footer{display:flex;align-items:center;justify-content:space-between;padding:6px 12px;background:white;border:1px solid #e5e7eb;border-radius:8px;font-size:10px;color:#6b7280;flex-shrink:0;margin-top:6px;}
+.dg-footer-privacy{display:flex;align-items:center;gap:10px;}
+.privacy-badge{display:flex;align-items:center;gap:3px;font-size:9px;}
+.privacy-badge.ok{color:#22c55e;}.privacy-badge.warn{color:#f59e0b;}
+
+/* JSON 모달 */
+.json-modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:200;align-items:center;justify-content:center;}
+.json-modal.open{display:flex;}
+.json-box{background:#1e293b;border-radius:10px;padding:16px;max-width:500px;width:90%;max-height:60vh;overflow-y:auto;}
+.json-box-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.json-box-title{color:#e2e8f0;font-size:12px;font-weight:600;}
+.json-box-close{color:#94a3b8;cursor:pointer;font-size:13px;padding:2px 6px;border:1px solid #334155;border-radius:4px;background:transparent;}
+.json-box pre{font-family:'SF Mono',Monaco,monospace;font-size:10px;color:#94a3b8;line-height:1.5;white-space:pre-wrap;}
+.json-box .jk{color:#7dd3fc;}.json-box .js{color:#86efac;}.json-box .jn{color:#fbbf24;}.json-box .jb{color:#f472b6;}
+</style>
+</head>
+<body>
+<div class="layout">
+  <nav class="sidebar">
+    <div class="logo"><div class="logo-icon">U</div>UniQdata</div>
+    <div class="nav-section"><a class="nav-item">🏠 연구 허브</a></div>
+    <div class="nav-section" style="flex:1;overflow-y:auto;">
+      <div style="font-size:9px;color:#64748b;padding:5px 8px;">내 연구</div>
+      <div class="rn-header">📁 대사개선 약물 연구</div>
+      <div class="rn-sub">
+        <a class="ns-item" id="nav-ov">개요</a>
+        <a class="ns-item" id="nav-tb">테이블</a>
+        <a class="ns-item active" id="nav-cr">🔒 클린룸</a>
+      </div>
+    </div>
+    <div class="sidebar-footer"><div style="display:flex;align-items:center;gap:8px;padding:4px;"><div class="u-av">김</div><div><div style="font-size:12px;color:#e2e8f0;">김연구</div><div style="font-size:10px;color:#64748b;">서울대학교병원</div></div></div></div>
+  </nav>
+
+  <main class="main">
+    <div class="content">
+      <div class="page-header">
+        <div>
+          <div class="page-title">대사개선 약물 연구</div>
+          <div class="page-sub">처방 약물(2.4mg) · RCT · 실험 40 / 대조 40 · 12주(84일) · IRB 2025-0847</div>
+        </div>
+        <div class="study-status"><span class="st-dot"></span><b>진행 중</b> · 6주차 / 12주</div>
+      </div>
+
+      <div class="tabs">
+        <div class="tab" data-tab="overview">개요</div>
+        <div class="tab" data-tab="table">테이블</div>
+        <div class="tab active" data-tab="cleanroom">🔒 클린룸</div>
+      </div>
+
+      <!-- ===== 클린룸 탭 ===== -->
+      <div class="tab-content active" id="tc-cr">
+
+        <!-- 세션 바 -->
+        <div class="cr-session">
+          <div class="cr-live"><span class="cr-dot"></span><span class="cr-live-label">세션</span></div>
+          <span class="cr-meta"><b id="crElapsed">00:00</b> / 4h 00m</span>
+          <span class="cr-chip">IRB-2025-0847</span>
+          <span class="cr-chip privacy">🛡️ k≥5 · ε 0.98 잔여</span>
+          <span class="cr-chip">가명화 적용</span>
+          <div class="cr-right">
+            <span class="cr-audit">📝 감사 로그 기록 중</span>
+          </div>
+        </div>
+
+        <div class="cr-body">
+          <!-- 왼쪽: 스키마 네비게이터 -->
+          <div class="schema-panel">
+            <div class="sp-header">
+              <span>스키마 탐색기</span>
+              <span style="font-size:9px;color:#9ca3af;">27 테이블</span>
+            </div>
+            <input type="text" class="sp-search" placeholder="테이블 검색..." id="spSearch">
+            <div class="sp-list" id="spList">
+              <!-- JS로 생성 -->
+            </div>
+          </div>
+
+          <!-- 오른쪽: 데이터 그리드 -->
+          <div class="data-grid">
+            <div class="dg-toolbar" id="dgToolbar">
+              <!-- JS로 채움 -->
+            </div>
+            <div class="dg-table-wrap" id="dgTableWrap">
+              <table class="dg-tbl" id="dgTable">
+                <thead id="dgHead"></thead>
+                <tbody id="dgBody"></tbody>
+              </table>
+            </div>
+            <div class="dg-footer">
+              <span id="dgRowInfo">50 rows · 10 columns</span>
+              <div class="dg-footer-privacy">
+                <span class="privacy-badge ok">🛡️ k-익명성: 5 이상</span>
+                <span class="privacy-badge ok">🔒 user_id: 가명 처리</span>
+                <span class="privacy-badge ok">📝 쿼리 #{queryCount} 기록됨</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- JSON 모달 -->
+<div class="json-modal" id="jsonModal">
+  <div class="json-box">
+    <div class="json-box-header">
+      <span class="json-box-title" id="jmTitle">JSONB 값</span>
+      <button class="json-box-close" id="jmClose">✕</button>
+    </div>
+    <pre id="jmContent"></pre>
+  </div>
+</div>
+
+<script>
+// ===== ERD 기반 스키마 정의 =====
+const SCHEMA = [
+  // health_db
+  {name:'users',domain:'auth',server:'health_db',icon:'👤',cols:[
+    {n:'id',t:'uuid',pk:true},{n:'email',t:'varchar'},{n:'phone',t:'varchar'},{n:'display_name',t:'varchar'},
+    {n:'role',t:'enum'},{n:'kyc_level',t:'smallint'},{n:'status',t:'varchar'},{n:'last_login_at',t:'ts'},{n:'created_at',t:'ts'}
+  ]},
+  {name:'user_profiles',domain:'auth',server:'health_db',icon:'📋',cols:[
+    {n:'id',t:'uuid',pk:true},{n:'user_id',t:'uuid',fk:'users'},{n:'birth_date',t:'date'},{n:'gender',t:'varchar'},
+    {n:'height_cm',t:'decimal'},{n:'weight_kg',t:'decimal'},{n:'chronic_conditions',t:'text'},{n:'medications',t:'jsonb'}
+  ]},
+  {name:'data_points',domain:'health',server:'health_db',icon:'📊',cols:[
+    {n:'id',t:'uuid',pk:true},{n:'user_id',t:'uuid',fk:'users'},{n:'category',t:'varchar'},{n:'sub_category',t:'varchar'},
+    {n:'value',t:'jsonb'},{n:'source',t:'varchar'},{n:'measured_at',t:'ts'},{n:'data_hash',t:'varchar'},{n:'xrpl_anchored',t:'bool'},{n:'quality_score',t:'decimal'}
+  ]},
+  {name:'data_point_tags',domain:'health',server:'health_db',icon:'🏷️',cols:[
+    {n:'id',t:'uuid',pk:true},{n:'data_point_id',t:'uuid',fk:'data_points'},{n:'tag_key',t:'varchar'},{n:'tag_value',t:'varchar'}
+  ]},
+  {name:'data_access_logs',domain:'health',server:'health_db',icon:'📝',cols:[
+    {n:'id',t:'uuid',pk:true},{n:'data_point_ids',t:'text'},{n:'accessor_type',t:'varchar'},{n:'accessor_id',t:'uuid'},
+    {n:'project_id',t:'uuid'},{n:'consent_id',t:'uuid',fk:'consents'},{n:'record_count',t:'int'},{n:'pseudonymized',t:'bool'}
+  ]},
+  {name:'consents',domain:'consent',server:'health_db',icon:'✅',cols:[
+    {n:'id',t:'uuid',pk:true},{n:'user_id',t:'uuid',fk:'users'},{n:'consent_type',t:'varchar'},{n:'status',t:'varchar'},
+    {n:'signature_hash',t:'varchar'},{n:'grant_tx_hash',t:'varchar'},{n:'project_id',t:'uuid'},{n:'irb_number',t:'varchar'},{n:'version',t:'int'}
+  ]},
+  {name:'consent_audit_trail',domain:'consent',server:'health_db',icon:'🔍',cols:[
+    {n:'id',t:'uuid',pk:true},{n:'consent_id',t:'uuid',fk:'consents'},{n:'action',t:'varchar'},{n:'actor_id',t:'uuid'},
+    {n:'changes',t:'jsonb'},{n:'xrpl_tx_hash',t:'varchar'}
+  ]},
+  // uniqdata_db
+  {name:'projects',domain:'research',server:'uniqdata_db',icon:'🔬',cols:[
+    {n:'id',t:'uuid',pk:true},{n:'enterprise_id',t:'uuid',fk:'enterprises'},{n:'title',t:'varchar'},{n:'project_type',t:'enum'},
+    {n:'status',t:'varchar'},{n:'pi_user_id',t:'uuid'},{n:'irb_number',t:'varchar'},{n:'target_participant_count',t:'int'},
+    {n:'reward_per_participant',t:'decimal'},{n:'total_reward_budget',t:'decimal'}
+  ]},
+  {name:'participants',domain:'research',server:'uniqdata_db',icon:'🧑‍🔬',cols:[
+    {n:'id',t:'uuid',pk:true},{n:'project_id',t:'uuid',fk:'projects'},{n:'user_id',t:'uuid'},
+    {n:'consent_id',t:'uuid'},{n:'status',t:'varchar'},{n:'group_assignment',t:'varchar'},{n:'reward_earned',t:'decimal'},{n:'reward_paid',t:'decimal'}
+  ]},
+  {name:'project_milestones',domain:'research',server:'uniqdata_db',icon:'🎯',cols:[
+    {n:'id',t:'uuid',pk:true},{n:'project_id',t:'uuid',fk:'projects'},{n:'milestone_type',t:'varchar'},
+    {n:'status',t:'varchar'},{n:'target_date',t:'date'},{n:'completed_at',t:'ts'}
+  ]},
+  {name:'irb_submissions',domain:'irb',server:'uniqdata_db',icon:'📑',cols:[
+    {n:'id',t:'uuid',pk:true},{n:'project_id',t:'uuid',fk:'projects'},{n:'enterprise_id',t:'uuid',fk:'enterprises'},
+    {n:'submission_type',t:'varchar'},{n:'status',t:'varchar'},{n:'version',t:'int'},{n:'ai_generated',t:'bool'},{n:'approval_valid_until',t:'date'}
+  ]},
+  {name:'irb_documents',domain:'irb',server:'uniqdata_db',icon:'📄',cols:[
+    {n:'id',t:'uuid',pk:true},{n:'submission_id',t:'uuid',fk:'irb_submissions'},{n:'doc_type',t:'varchar'},
+    {n:'title',t:'varchar'},{n:'content',t:'text'},{n:'version',t:'int'},{n:'generated_by',t:'varchar'}
+  ]},
+];
+
+// ===== 가명화 매핑 =====
+const PSEUDO_MAP={};
+const PSEUDO_PREFIX='SUB-';
+let pseudoCounter=1;
+function pseudonymize(userId){
+  if(!PSEUDO_MAP[userId])PSEUDO_MAP[userId]=PSEUDO_PREFIX+String(pseudoCounter++).padStart(3,'0');
+  return PSEUDO_MAP[userId];
+}
+function fakeUUID(){return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,c=>{const r=Math.random()*16|0;return(c==='x'?r:r&0x3|0x8).toString(16);});}
+function fakeHash(){return '0x'+Array.from({length:12},()=>Math.random().toString(16)[2]).join('');}
+function fakeDate(base,offsetDays){const d=new Date(base);d.setDate(d.getDate()+offsetDays+Math.random()*3);return d.toISOString().replace('T',' ').slice(0,19);}
+
+// ===== 더미 데이터 생성기 =====
+const PATIENT_IDS=Array.from({length:10},()=>fakeUUID());
+const PROJECT_ID=fakeUUID();
+const ENTERPRISE_ID=fakeUUID();
+const CATEGORIES=['weight','sbp','dbp','heart_rate','steps','sleep_duration','compliance','app_usage'];
+const SOURCES=['EMR_SNUH','Fitbit_Charge5','EMA_App','Manual_Input'];
+const BASE_DATE='2025-12-27';
+
+function generateDataPoints(count){
+  const rows=[];
+  for(let i=0;i<count;i++){
+    const uid=PATIENT_IDS[Math.floor(Math.random()*PATIENT_IDS.length)];
+    const cat=CATEGORIES[Math.floor(Math.random()*CATEGORIES.length)];
+    const src=cat==='weight'||cat==='sbp'||cat==='dbp'?'EMR_SNUH':
+              cat==='heart_rate'||cat==='steps'||cat==='sleep_duration'?'Fitbit_Charge5':
+              cat==='compliance'?'EMA_App':'Manual_Input';
+    const dayOffset=Math.floor(Math.random()*42);
+    let val;
+    switch(cat){
+      case'weight':val={value:75+Math.random()*20,unit:'kg'};break;
+      case'sbp':val={value:110+Math.random()*35,unit:'mmHg'};break;
+      case'dbp':val={value:65+Math.random()*20,unit:'mmHg'};break;
+      case'heart_rate':val={value:58+Math.random()*25,unit:'bpm',device:'Fitbit Charge 5'};break;
+      case'steps':val={value:Math.round(2000+Math.random()*10000),unit:'steps',period:'daily'};break;
+      case'sleep_duration':val={value:Math.round((4+Math.random()*5)*10)/10,unit:'hours',quality:Math.round(Math.random()*100)};break;
+      case'compliance':val={value:Math.round(Math.random()*100),type:'medication_adherence'};break;
+      case'app_usage':val={value:Math.round(Math.random()*120),unit:'minutes'};break;
+    }
+    rows.push({
+      id:fakeUUID(),
+      user_id:uid,
+      category:cat,
+      sub_category:cat==='weight'?'body_weight':cat==='sbp'?'systolic':cat==='dbp'?'diastolic':cat,
+      value:val,
+      source:src,
+      measured_at:fakeDate(BASE_DATE,dayOffset),
+      data_hash:fakeHash(),
+      xrpl_anchored:Math.random()>0.3,
+      quality_score:Math.round((0.7+Math.random()*0.3)*100)/100
+    });
+  }
+  return rows.sort((a,b)=>b.measured_at.localeCompare(a.measured_at));
+}
+
+function generateParticipants(){
+  const groups=['experimental','control'];
+  return PATIENT_IDS.map((uid,i)=>({
+    id:fakeUUID(),
+    project_id:PROJECT_ID,
+    user_id:uid,
+    consent_id:fakeUUID(),
+    status:i===8?'withdrawn':'active',
+    group_assignment:groups[i%2],
+    reward_earned:Math.round(Math.random()*50000),
+    reward_paid:Math.round(Math.random()*30000)
+  }));
+}
+
+function generateMilestones(){
+  return [
+    {id:fakeUUID(),project_id:PROJECT_ID,milestone_type:'irb_approval',status:'completed',target_date:'2025-11-01',completed_at:'2025-10-28 14:30:00'},
+    {id:fakeUUID(),project_id:PROJECT_ID,milestone_type:'first_enrollment',status:'completed',target_date:'2025-11-15',completed_at:'2025-11-14 09:15:00'},
+    {id:fakeUUID(),project_id:PROJECT_ID,milestone_type:'enrollment_complete',status:'completed',target_date:'2025-12-15',completed_at:'2025-12-13 16:45:00'},
+    {id:fakeUUID(),project_id:PROJECT_ID,milestone_type:'interim_analysis',status:'in_progress',target_date:'2026-02-07',completed_at:null},
+    {id:fakeUUID(),project_id:PROJECT_ID,milestone_type:'treatment_end',status:'pending',target_date:'2026-03-21',completed_at:null},
+    {id:fakeUUID(),project_id:PROJECT_ID,milestone_type:'data_lock',status:'pending',target_date:'2026-06-01',completed_at:null},
+  ];
+}
+
+// 미리 생성
+const DATA_CACHE={
+  data_points:generateDataPoints(50),
+  participants:generateParticipants(),
+  project_milestones:generateMilestones(),
+};
+
+let queryCount=0;
+let currentTable='data_points';
+
+// ===== 스키마 패널 =====
+function buildSchemaPanel(){
+  const list=document.getElementById('spList');
+  let html='';
+  let curServer='';
+  SCHEMA.forEach(s=>{
+    if(s.server!==curServer){
+      curServer=s.server;
+      html+=`<div class="sp-server">${curServer==='health_db'?'🗄️ health_db (Core)':'🗄️ uniqdata_db (Business)'}</div>`;
+    }
+    const rowCount=DATA_CACHE[s.name]?DATA_CACHE[s.name].length:'—';
+    const domCls=s.domain;
+    html+=`<div class="sp-table${s.name===currentTable?' active':''}" data-table="${s.name}">
+      <span class="sp-icon">${s.icon}</span>
+      <span>${s.name}</span>
+      <span class="sp-count">${rowCount}</span>
+    </div>`;
+  });
+  list.innerHTML=html;
+  list.querySelectorAll('.sp-table').forEach(el=>{
+    el.addEventListener('click',()=>{
+      currentTable=el.dataset.table;
+      list.querySelectorAll('.sp-table').forEach(e=>e.classList.remove('active'));
+      el.classList.add('active');
+      renderTable(currentTable);
+    });
+  });
+}
+
+// ===== 데이터 그리드 =====
+function renderTable(tableName){
+  queryCount++;
+  const schema=SCHEMA.find(s=>s.name===tableName);
+  if(!schema)return;
+  const data=DATA_CACHE[tableName]||[];
+
+  // 툴바
+  const toolbar=document.getElementById('dgToolbar');
+  toolbar.innerHTML=`
+    <div class="dg-title"><span class="t-icon">${schema.icon}</span>${schema.name}</div>
+    <div class="dg-pills">
+      <span class="dg-pill active">전체</span>
+      ${tableName==='data_points'?'<span class="dg-pill" data-cat="weight">weight</span><span class="dg-pill" data-cat="sbp">sbp</span><span class="dg-pill" data-cat="steps">steps</span>':''}
+    </div>
+    <div class="dg-privacy">🛡️ 가명화 · user_id → ${PSEUDO_PREFIX}XXX</div>
+    <div class="dg-filter">
+      <span style="font-size:9px;color:#9ca3af;">서버: ${schema.server}</span>
+      <span style="font-size:9px;color:#9ca3af;">· 도메인: ${schema.domain}</span>
+    </div>
+  `;
+  // 필터링 이벤트
+  toolbar.querySelectorAll('.dg-pill').forEach(p=>{
+    p.addEventListener('click',()=>{
+      toolbar.querySelectorAll('.dg-pill').forEach(pp=>pp.classList.remove('active'));
+      p.classList.add('active');
+      const cat=p.dataset.cat;
+      renderRows(schema,cat?data.filter(r=>r.category===cat):data);
+    });
+  });
+
+  // 헤더
+  const head=document.getElementById('dgHead');
+  head.innerHTML='<tr>'+schema.cols.map(c=>{
+    let badge='';
+    if(c.pk)badge='<span style="color:#f59e0b;font-size:7px;">PK</span>';
+    if(c.fk)badge='<span style="color:#3b82f6;font-size:7px;">FK→'+c.fk+'</span>';
+    return `<th>${c.n}${badge?'<br>'+badge:''}<span class="col-type">${c.t}</span></th>`;
+  }).join('')+'</tr>';
+
+  renderRows(schema,data);
+}
+
+function renderRows(schema,data){
+  const body=document.getElementById('dgBody');
+  if(data.length===0){
+    body.innerHTML=`<tr><td colspan="${schema.cols.length}" style="text-align:center;padding:40px;color:#9ca3af;">
+      데이터 없음 — 이 테이블은 데모 데이터가 생성되지 않았습니다.<br>
+      <span style="font-size:9px;">data_points, participants, project_milestones 테이블에 데모 데이터가 있습니다.</span>
+    </td></tr>`;
+    document.getElementById('dgRowInfo').textContent=`0 rows · ${schema.cols.length} columns`;
+    return;
+  }
+  body.innerHTML=data.map(row=>{
+    return '<tr>'+schema.cols.map(c=>{
+      const v=row[c.n];
+      if(v===undefined||v===null)return '<td><span class="null-val">NULL</span></td>';
+
+      // 가명화: user_id, pi_user_id, accessor_id → 가명
+      if((c.n==='user_id'||c.n==='pi_user_id'||c.n==='accessor_id')&&c.t==='uuid'){
+        return `<td><span class="pseudo">${pseudonymize(v)}</span></td>`;
+      }
+      // UUID (PK) → 축약
+      if(c.t==='uuid'){
+        return `<td><span class="hash-val" title="${v}">${v.slice(0,8)}…</span></td>`;
+      }
+      // JSONB → 클릭 가능
+      if(c.t==='jsonb'){
+        const preview=JSON.stringify(v).slice(0,40);
+        return `<td><span class="json-val" onclick="showJSON('${c.n}',this)" data-json='${JSON.stringify(v).replace(/'/g,"&#39;")}'>${preview}${JSON.stringify(v).length>40?'…':''}</span></td>`;
+      }
+      // bool
+      if(c.t==='bool'){
+        return `<td><span class="bool-val ${v?'true':'false'}">${v}</span></td>`;
+      }
+      // timestamp
+      if(c.t==='ts'){
+        return `<td><span class="ts-val">${v||'—'}</span></td>`;
+      }
+      // decimal/int
+      if(c.t==='decimal'||c.t==='int'||c.t==='smallint'){
+        return `<td><span class="num-val">${typeof v==='number'?v.toFixed?v.toFixed(2):v:v}</span></td>`;
+      }
+      // hash → 축약
+      if(c.n.includes('hash')){
+        return `<td><span class="hash-val" title="${v}">${String(v).slice(0,12)}…</span></td>`;
+      }
+      // 기본
+      return `<td>${v}</td>`;
+    }).join('')+'</tr>';
+  }).join('');
+
+  document.getElementById('dgRowInfo').textContent=`${data.length} rows · ${schema.cols.length} columns · 쿼리 #${queryCount}`;
+}
+
+// JSON 모달
+function showJSON(colName,el){
+  const data=JSON.parse(el.dataset.json);
+  document.getElementById('jmTitle').textContent=colName+' (JSONB)';
+  const formatted=JSON.stringify(data,null,2)
+    .replace(/"([^"]+)":/g,'<span class="jk">"$1"</span>:')
+    .replace(/: "([^"]+)"/g,': <span class="js">"$1"</span>')
+    .replace(/: (\d+\.?\d*)/g,': <span class="jn">$1</span>')
+    .replace(/: (true|false)/g,': <span class="jb">$1</span>');
+  document.getElementById('jmContent').innerHTML=formatted;
+  document.getElementById('jsonModal').classList.add('open');
+}
+document.getElementById('jmClose').addEventListener('click',()=>document.getElementById('jsonModal').classList.remove('open'));
+document.getElementById('jsonModal').addEventListener('click',e=>{if(e.target===e.currentTarget)e.currentTarget.classList.remove('open');});
+
+// 스키마 검색
+document.getElementById('spSearch').addEventListener('input',function(){
+  const q=this.value.toLowerCase();
+  document.querySelectorAll('.sp-table').forEach(el=>{
+    el.style.display=el.dataset.table.includes(q)?'':'none';
+  });
+});
+
+// 세션 타이머
+let elapsed=0;
+setInterval(()=>{
+  elapsed++;
+  const m=Math.floor(elapsed/60);const s=elapsed%60;
+  document.getElementById('crElapsed').textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+},1000);
+
+// ===== 초기화 =====
+buildSchemaPanel();
+renderTable('data_points');
+</script>
+</body>
+</html>

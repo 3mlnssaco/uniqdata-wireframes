@@ -89,6 +89,18 @@
     .user-name-sidebar { font-size: 14px; color: #e2e8f0; }
     .user-org-sidebar { font-size: 12px; color: #64748b; }
 
+    /* ===== COMMON INLINE STYLE CLASSES ===== */
+    .sidebar-badge-inline { background: #3b82f6; color: white; font-size: 11px; padding: 2px 8px; border-radius: 10px; font-weight: 600; }
+    .sidebar-saved-item { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 8px; text-decoration: none; margin-bottom: 4px; background: rgba(251,191,36,0.08); }
+    .sidebar-saved-item-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+    .sidebar-saved-item-dot.yellow { background: #fbbf24; }
+    .sidebar-saved-item-dot.gray { background: #64748b; }
+    .sidebar-saved-item-content { flex: 1; min-width: 0; }
+    .sidebar-saved-item-title { font-size: 12px; color: #e2e8f0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .sidebar-saved-item-meta { font-size: 10px; color: #64748b; margin-top: 2px; }
+    .sidebar-saved-item-secondary { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 8px; text-decoration: none; }
+    .sidebar-saved-item-secondary:hover { background: rgba(255,255,255,0.05); }
+
     .main { flex: 1; padding: 32px; max-width: 1200px; }
     .main h1 { font-size: 28px; margin-bottom: 8px; }
     .main .subtitle { color: #6b7280; margin-bottom: 32px; }
@@ -154,12 +166,22 @@
     .designer-note { background: #fefce8; border: 2px dashed #eab308; border-radius: 12px; padding: 20px; margin-top: 40px; }
     .designer-note h3 { color: #a16207; margin-bottom: 12px; }
     .designer-note .content { font-size: 13px; color: #713f12; line-height: 1.8; }
+    .skip-link {
+      position: absolute; left: -9999px; top: auto;
+      width: 1px; height: 1px; overflow: hidden;
+    }
+    .skip-link:focus {
+      position: fixed; top: 10px; left: 10px; z-index: 10000;
+      padding: 8px 16px; background: #3b82f6; color: white;
+      border-radius: 4px; width: auto; height: auto;
+    }
   </style>
 </head>
 <body>
+  <a href="#main-content" class="skip-link">본문으로 건너뛰기</a>
   <div class="layout">
     <!-- 사이드바 -->
-    <div class="sidebar">
+    <nav class="sidebar" role="navigation" aria-label="사이드바 내비게이션">
       <div class="logo">
         <div class="logo-icon">U</div>
         UniQdata
@@ -181,13 +203,13 @@
       <div class="nav-section" style="flex:1; overflow-y:auto;">
         <div class="nav-section-title" style="display:flex; align-items:center; justify-content:space-between;">
           내 연구
-          <span style="background:#3b82f6; color:white; font-size:11px; padding:2px 8px; border-radius:10px; font-weight:600;">3</span>
+          <span class="sidebar-badge-inline">3</span>
         </div>
 
         <div class="research-nav-item expanded">
           <div class="research-nav-header">
             <span style="font-size:14px;">&#x1F4C1;</span>
-            <span class="research-title">위고비 대사개선 연구</span>
+            <span class="research-title">대사개선 약물 연구</span>
             <span class="status-dot active"></span>
           </div>
           <div class="research-nav-sub">
@@ -228,18 +250,18 @@
             <span style="font-size:11px; font-weight:600; color:#64748b; text-transform:uppercase; letter-spacing:0.5px;">임시저장</span>
             <span style="background:#334155; color:#94a3b8; font-size:10px; padding:2px 6px; border-radius:8px;">2</span>
           </div>
-          <a href="#" style="display:flex; align-items:center; gap:10px; padding:8px 12px; border-radius:8px; text-decoration:none; margin-bottom:4px; background:rgba(251,191,36,0.08);">
-            <span style="width:6px; height:6px; background:#fbbf24; border-radius:50%; flex-shrink:0;"></span>
-            <div style="flex:1; min-width:0;">
-              <div style="font-size:12px; color:#e2e8f0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">소아 비만 개입 연구</div>
-              <div style="font-size:10px; color:#64748b; margin-top:2px;">Step 3 &middot; 2일 전</div>
+          <a href="#" class="sidebar-saved-item">
+            <span class="sidebar-saved-item-dot yellow"></span>
+            <div class="sidebar-saved-item-content">
+              <div class="sidebar-saved-item-title">소아 비만 개입 연구</div>
+              <div class="sidebar-saved-item-meta">Step 3 &middot; 2일 전</div>
             </div>
           </a>
-          <a href="#" style="display:flex; align-items:center; gap:10px; padding:8px 12px; border-radius:8px; text-decoration:none;">
-            <span style="width:6px; height:6px; background:#64748b; border-radius:50%; flex-shrink:0;"></span>
-            <div style="flex:1; min-width:0;">
-              <div style="font-size:12px; color:#94a3b8; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">직장인 스트레스 코르티솔</div>
-              <div style="font-size:10px; color:#64748b; margin-top:2px;">Step 1 &middot; 5일 전</div>
+          <a href="#" class="sidebar-saved-item-secondary">
+            <span class="sidebar-saved-item-dot gray"></span>
+            <div class="sidebar-saved-item-content">
+              <div class="sidebar-saved-item-title">직장인 스트레스 코르티솔</div>
+              <div class="sidebar-saved-item-meta">Step 1 &middot; 5일 전</div>
             </div>
           </a>
         </div>
@@ -254,12 +276,12 @@
           </div>
         </div>
       </div>
-    </div>
+    </nav>
 
     <!-- 메인 -->
-    <div class="main">
+    <main class="main" id="main-content">
       <h1>🎯 조치 센터</h1>
-      <p class="subtitle">당뇨병 환자 생활습관 연구 - 권장 조치 및 알림 관리</p>
+      <p class="subtitle">만성질환 환자 생활습관 연구 - 권장 조치 및 알림 관리</p>
 
       <!-- 알림 요약 -->
       <div class="alert-summary"
@@ -483,7 +505,7 @@
             <span class="action-badge info">알림</span>
           </div>
           <div class="action-detail">
-            요청하신 '복약 순응도-혈당 관계' 인과 분석이 완료되었습니다.
+            요청하신 '약물 순응도-주요지표 관계' 인과 분석이 완료되었습니다.
           </div>
           <div class="action-buttons">
             <button class="btn btn-primary">🤖 결과 확인</button>
@@ -549,7 +571,7 @@
         </div>
       </div>
 
-    </div>
+    </main>
   </div>
 </body>
 </html>

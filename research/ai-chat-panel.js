@@ -198,8 +198,8 @@ class AIChatPanel {
     }
 
     // 질환 조건
-    if (lowerText.includes('당뇨') || lowerText.includes('diabetes')) {
-      this.handleCondition('diabetes_t2', '제2형 당뇨');
+    if (lowerText.includes('만성질환') || lowerText.includes('diabetes')) {
+      this.handleCondition('diabetes_t2', '제2형 만성질환');
       return;
     }
     if (lowerText.includes('고혈압') || lowerText.includes('hypertension')) {
@@ -209,7 +209,7 @@ class AIChatPanel {
 
     // 데이터 선택
     if (lowerText.includes('cgm') || lowerText.includes('혈당')) {
-      this.handleDataSelection('cgm', 'CGM (연속혈당)');
+      this.handleDataSelection('cgm', '웨어러블 (연속혈당)');
       return;
     }
     if (lowerText.includes('심박') || lowerText.includes('heart')) {
@@ -224,8 +224,8 @@ class AIChatPanel {
       this.handleDataSelection('diet', '식단 기록');
       return;
     }
-    if (lowerText.includes('복약') || lowerText.includes('medication')) {
-      this.handleDataSelection('medication', '복약 기록');
+    if (lowerText.includes('약물') || lowerText.includes('medication')) {
+      this.handleDataSelection('medication', '약물 기록');
       return;
     }
 
@@ -245,8 +245,8 @@ class AIChatPanel {
     this.addMessage('assistant',
       "죄송해요, 정확히 이해하지 못했어요. 다음과 같이 말씀해주시면 도움을 드릴 수 있어요:\n\n" +
       "• \"40대 이상만 모집해줘\"\n" +
-      "• \"당뇨 환자만 대상으로 해줘\"\n" +
-      "• \"CGM이랑 식단 데이터 추가해줘\"\n" +
+      "• \"만성질환 환자만 대상으로 해줘\"\n" +
+      "• \"웨어러블이랑 식단 데이터 추가해줘\"\n" +
       "• \"AI 추천대로 설정해줘\""
     );
   }
@@ -337,10 +337,10 @@ class AIChatPanel {
     const actionId = 'recommend_' + Date.now();
 
     const recommendations = [
-      { id: 'cgm', label: 'CGM' },
+      { id: 'cgm', label: '웨어러블' },
       { id: 'heart_rate', label: '심박수' },
       { id: 'sleep', label: '수면' },
-      { id: 'medication', label: '복약' },
+      { id: 'medication', label: '약물' },
       { id: 'diet', label: '식단' },
       { id: 'mood', label: '기분' }
     ];
@@ -354,14 +354,14 @@ class AIChatPanel {
     this.applyToForm('condition', 'diabetes_t2');
 
     this.addMessage('assistant',
-      `당뇨 연구에 최적화된 설정을 적용했습니다. 이 설정은 복약-혈당 인과관계 분석에 적합해요.`,
+      `만성질환 연구에 최적화된 설정을 적용했습니다. 이 설정은 약물-혈당 인과관계 분석에 적합해요.`,
       {
         id: actionId,
         title: 'AI 추천 설정 적용',
         items: [
           { field: '연령', value: '30~70세' },
-          { field: '질환', value: '제2형 당뇨' },
-          { field: '수집 데이터', value: 'CGM, 심박, 수면, 복약, 식단, 기분' }
+          { field: '질환', value: '제2형 만성질환' },
+          { field: '수집 데이터', value: '웨어러블, 심박, 수면, 약물, 식단, 기분' }
         ]
       }
     );
@@ -443,7 +443,7 @@ class AIChatPanel {
     }
 
     if (selections.condition) {
-      const labels = { diabetes_t2: '당뇨', hypertension: '고혈압' };
+      const labels = { diabetes_t2: '만성질환', hypertension: '고혈압' };
       html += `<span class="ai-context-chip active">${labels[selections.condition] || selections.condition}</span>`;
     }
 
@@ -467,11 +467,11 @@ class AIChatPanel {
         this.sendMessage();
         break;
       case 'diabetes':
-        this.inputField.value = '당뇨 환자만 대상으로 해줘';
+        this.inputField.value = '만성질환 환자만 대상으로 해줘';
         this.sendMessage();
         break;
       case 'cgm_diet':
-        this.inputField.value = 'CGM이랑 식단 데이터 추가해줘';
+        this.inputField.value = '웨어러블이랑 식단 데이터 추가해줘';
         this.sendMessage();
         break;
     }
@@ -487,7 +487,7 @@ document.addEventListener('DOMContentLoaded', () => {
   window.aiChat = new AIChatPanel({
     step: currentStep,
     research: {
-      title: '당뇨 복약 순응도 연구'
+      title: '만성질환 약물 순응도 연구'
     }
   });
 });

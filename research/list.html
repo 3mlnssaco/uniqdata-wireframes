@@ -98,6 +98,20 @@
       color: #94a3b8;
       font-size: 12px;
     }
+    /* ===== COMMON INLINE STYLE CLASSES ===== */
+    .sidebar-nav-badge-list { background: #3b82f6; color: white; font-size: 11px; padding: 2px 8px; border-radius: 10px; font-weight: 600; }
+    .status-indicator { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+    .status-indicator.active { background: #22c55e; }
+    .status-indicator.recruiting { background: #3b82f6; }
+    .status-indicator.draft { background: #6b7280; }
+    .research-card-item { background: white; border-radius: 12px; padding: 20px; margin-bottom: 14px; border: 1px solid #e5e7eb; transition: all 0.2s; }
+    .research-card-item:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+    .research-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+    .research-card-title { font-size: 18px; font-weight: 700; color: #1f2937; }
+    .research-card-badge { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 500; }
+    .status-badge-active { background: #dcfce7; color: #166534; border: 1px solid #86efac; }
+    .status-badge-recruiting { background: #dbeafe; color: #1e40af; border: 1px solid #93c5fd; }
+    .status-badge-draft { background: #f3f4f6; color: #6b7280; border: 1px solid #d1d5db; }
     .sidebar-footer {
       margin-top: auto;
       padding: 16px;
@@ -220,9 +234,30 @@
       background: #334155;
       margin: 8px 0;
     }
-    .main { flex: 1; overflow-x: hidden; }
+    .rtype-chip {
+      font-size: 9px;
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-weight: 600;
+      margin-left: auto;
+      white-space: nowrap;
+    }
+    .rtype-chip.prospective { background: rgba(0,114,178,.15); color: #60a5fa; }
+    .rtype-chip.hybrid { background: rgba(139,92,246,.15); color: #c4b5fd; }
+    .rtype-chip.retrospective { background: rgba(99,102,241,.15); color: #a5b4fc; }
+    .draft-section { padding: 4px 0 8px; border-bottom: 1px solid rgba(255,255,255,.05); margin-bottom: 4px; }
+    .draft-label { font-size: 10px; color: #64748b; padding: 4px 12px; display: flex; align-items: center; gap: 6px; }
+    .draft-item { display: flex; align-items: center; gap: 6px; padding: 5px 12px; font-size: 11px; color: #94a3b8; cursor: pointer; border-radius: 4px; }
+    .draft-item:hover { background: rgba(255,255,255,.05); }
+    .draft-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+    .draft-dot.red { background: #ef4444; }
+    .draft-dot.yellow { background: #eab308; }
+    .draft-status { font-size: 9px; margin-left: auto; padding: 1px 5px; border-radius: 3px; }
+    .draft-status.red { background: rgba(239,68,68,.15); color: #fca5a5; }
+    .draft-status.yellow { background: rgba(234,179,8,.15); color: #fde68a; }
+    .main { flex: 1; min-width: 0; overflow-x: hidden; overflow-y: auto; height: 100vh; }
     .header { background: white; padding: 20px 24px; border-bottom: 1px solid #e5e7eb; }
-    .content { padding: 24px; }
+    .content { padding: 24px; min-width: 0; }
 
     /* 페이지 헤더 */
     .page-header { display: flex; justify-content: space-between; align-items: flex-start; }
@@ -232,8 +267,9 @@
     .btn-primary:hover { background: #2563eb; }
 
     /* 전체 KPI 요약 */
-    .kpi-summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
-    .kpi-card { background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 20px; }
+    .kpi-summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; min-width: 0; }
+    @media (max-width: 1400px) { .kpi-summary { grid-template-columns: repeat(2, 1fr); } }
+    .kpi-card { background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 20px; min-width: 0; overflow: hidden; }
     .kpi-card .label { font-size: 13px; color: #6b7280; margin-bottom: 8px; }
     .kpi-card .value { font-size: 28px; font-weight: 700; color: #111827; }
     .kpi-card .change { font-size: 13px; margin-top: 4px; }
@@ -253,11 +289,11 @@
     .sort-select { height: 42px; border: 1px solid #e5e7eb; border-radius: 8px; padding: 0 12px; font-size: 14px; }
 
     /* 프로젝트 그리드 */
-    .project-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+    .project-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; min-width: 0; }
     @media (max-width: 1200px) { .project-grid { grid-template-columns: 1fr; } }
 
     /* 프로젝트 카드 - 대폭 개선 */
-    .project-card { background: white; border: 1px solid #e5e7eb; border-radius: 16px; overflow: hidden; transition: all 0.2s; text-decoration: none; color: inherit; display: block; }
+    .project-card { background: white; border: 1px solid #e5e7eb; border-radius: 16px; overflow: hidden; transition: all 0.2s; text-decoration: none; color: inherit; display: block; min-width: 0; }
     .project-card:hover { border-color: #3b82f6; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15); transform: translateY(-2px); }
 
     .card-header { padding: 20px 20px 16px; border-bottom: 1px solid #f3f4f6; }
@@ -275,7 +311,7 @@
     .card-menu:hover { background: #f3f4f6; }
 
     /* 메트릭 그리드 */
-    .card-metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; padding: 16px 20px; background: #f9fafb; }
+    .card-metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; padding: 16px 20px; background: #f9fafb; min-width: 0; }
     .metric { text-align: center; }
     .metric .label { font-size: 11px; color: #6b7280; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
     .metric .value { font-size: 20px; font-weight: 700; color: #111827; }
@@ -296,7 +332,7 @@
     .data-item .icon { font-size: 14px; }
 
     /* 트렌드 + 알림 */
-    .card-status { display: flex; gap: 16px; padding: 16px 20px; border-bottom: 1px solid #f3f4f6; }
+    .card-status { display: flex; gap: 16px; padding: 16px 20px; border-bottom: 1px solid #f3f4f6; min-width: 0; }
     .trend-section { flex: 1; }
     .trend-label { font-size: 12px; color: #6b7280; margin-bottom: 8px; }
     .sparkline { height: 40px; background: linear-gradient(90deg,
@@ -309,7 +345,7 @@
       position: relative;
     }
     .sparkline::after { content: ''; position: absolute; bottom: 10px; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, #3b82f6 0%, #3b82f6 30%, #3b82f6 50%, #22c55e 70%, #22c55e 100%); border-radius: 1px; }
-    .alert-section { width: 200px; }
+    .alert-section { width: 200px; flex-shrink: 0; }
     .alert-label { font-size: 12px; color: #6b7280; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
     .alert-count { background: #fef2f2; color: #dc2626; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; }
     .alert-list { font-size: 12px; color: #6b7280; }
@@ -319,8 +355,8 @@
     .alert-item .dot.yellow { background: #f59e0b; }
 
     /* 카드 푸터 */
-    .card-footer { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; }
-    .footer-info { display: flex; gap: 20px; font-size: 13px; color: #6b7280; }
+    .card-footer { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; min-width: 0; }
+    .footer-info { display: flex; gap: 20px; font-size: 13px; color: #6b7280; min-width: 0; flex-wrap: wrap; }
     .footer-info .item { display: flex; align-items: center; gap: 6px; }
     .footer-info .item .icon { font-size: 14px; }
     .footer-actions { display: flex; gap: 8px; }
@@ -348,11 +384,21 @@
 
     .step-nav { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
     .step-nav a { padding: 8px 16px; background: #eee; border-radius: 6px; text-decoration: none; color: #333; font-size: 14px; }
-  </style>
+    .skip-link {
+      position: absolute; left: -9999px; top: auto;
+      width: 1px; height: 1px; overflow: hidden;
+    }
+    .skip-link:focus {
+      position: fixed; top: 10px; left: 10px; z-index: 10000;
+      padding: 8px 16px; background: #3b82f6; color: white;
+      border-radius: 4px; width: auto; height: auto;
+    }
+    </style>
 </head>
 <body>
+  <a href="#main-content" class="skip-link">본문으로 건너뛰기</a>
   <div class="layout">
-    <div class="sidebar">
+    <nav class="sidebar" role="navigation" aria-label="사이드바 내비게이션">
       <div class="logo">
         <div class="logo-icon">U</div>
         UniQdata
@@ -360,7 +406,7 @@
 
       <div class="nav-section">
         <a href="list.html" class="nav-item active">
-          <span class="icon">🏠</span>
+          <span class="icon"><span role="img" aria-label="홈">🏠</span></span>
           연구 허브
         </a>
       </div>
@@ -368,69 +414,80 @@
       <div class="nav-section">
         <div class="nav-section-title">연구</div>
         <a href="create.html" class="nav-item">
-          <span class="icon">➕</span>
+          <span class="icon"><span role="img" aria-label="추가">➕</span></span>
           새 연구
-        </a>
-        <a href="irb-submission.html" class="nav-item">
-          <span class="icon">📝</span>
-          IRB 심의 신청
-        </a>
-        <a href="irb-status.html" class="nav-item">
-          <span class="icon">📊</span>
-          IRB 현황
         </a>
         <a href="action-center.html" class="nav-item">
           <span class="icon">🔔</span>
-          조치 센터
+          알림
+          <span class="badge">3</span>
         </a>
       </div>
 
       <!-- 내 연구들 -->
       <div class="nav-section" style="flex: 1; overflow-y: auto;">
-        <div class="nav-section-title">내 연구 <span style="background: #3b82f6; color: white; padding: 1px 6px; border-radius: 8px; font-size: 10px; margin-left: 4px;">3</span></div>
+        <!-- 임시저장 -->
+        <div class="draft-section">
+          <div class="draft-label">📝 임시저장 <span style="background:rgba(239,68,68,.15);color:#fca5a5;padding:0 4px;border-radius:3px;font-size:8px;font-weight:600;">2</span></div>
+          <div class="draft-item">
+            <span class="draft-dot red"></span>
+            <span>당뇨 환자 관찰 연구</span>
+            <span class="draft-status red">미완료</span>
+          </div>
+          <div class="draft-item">
+            <span class="draft-dot yellow"></span>
+            <span>간기능 바이오마커</span>
+            <span class="draft-status yellow">IRB 대기</span>
+          </div>
+        </div>
 
-        <!-- 연구 1: 펼쳐진 상태 -->
+        <div class="nav-section-title">내 연구 <span class="sidebar-nav-badge-list">3</span></div>
+
+        <!-- 전향적 연구 -->
         <div class="research-nav-item expanded">
           <div class="research-nav-header" onclick="this.parentElement.classList.toggle('expanded')">
-            <span class="folder-icon">📁</span>
-            <span class="research-title">당뇨병 복약 순응도</span>
-            <span class="status-dot active"></span>
-            <span class="expand-icon">▼</span>
-          </div>
-          <div class="research-nav-sub" data-spec="메뉴 구조: 홈, 개요, 테이블, 클린룸. 클린룸 안에서 인과발견/SHAP/CATE/What-If/이상추적 통합." data-spec-type="nav" data-changed="클린룸 피봇">
-            <a href="data-overview.html" class="nav-sub-item"><span class="dot"></span> 개요</a>
-            <a href="data-table.html" class="nav-sub-item"><span class="dot"></span> 테이블</a>
-            <a href="clean-room.html" class="nav-sub-item ai" data-spec="클린룸: 보안 분석 환경. 세션 기반 진입, 감사 로그, 내보내기 승인. 인과발견/SHAP/CATE/What-If/이상추적 통합." data-spec-type="ai" data-added="클린룸 피봇"><span class="dot"></span> 🔒 클린룸</a>
-          </div>
-        </div>
-
-        <!-- 연구 2: 접힌 상태 -->
-        <div class="research-nav-item">
-          <div class="research-nav-header" onclick="this.parentElement.classList.toggle('expanded')">
-            <span class="folder-icon">📁</span>
-            <span class="research-title">노인 수면 패턴</span>
-            <span class="status-dot recruiting"></span>
+            <span style="color:#0072B2;">●</span>
+            <span class="research-title">대사개선 약물 연구</span>
+            <span class="rtype-chip prospective">전향적</span>
             <span class="expand-icon">▶</span>
           </div>
           <div class="research-nav-sub">
             <a href="data-overview.html" class="nav-sub-item"><span class="dot"></span> 개요</a>
             <a href="data-table.html" class="nav-sub-item"><span class="dot"></span> 테이블</a>
             <a href="clean-room.html" class="nav-sub-item ai"><span class="dot"></span> 🔒 클린룸</a>
+            <a href="project-wallet.html" class="nav-sub-item"><span class="dot"></span> 💰 프로젝트 지갑</a>
           </div>
         </div>
 
-        <!-- 연구 3: 접힌 상태 (초안) -->
+        <!-- 하이브리드 연구 -->
         <div class="research-nav-item">
           <div class="research-nav-header" onclick="this.parentElement.classList.toggle('expanded')">
-            <span class="folder-icon">📄</span>
-            <span class="research-title">ADHD 생활습관</span>
-            <span class="status-dot draft"></span>
+            <span style="color:#8b5cf6;">●</span>
+            <span class="research-title">약물안전성 하이브리드</span>
+            <span class="rtype-chip hybrid">하이브리드</span>
             <span class="expand-icon">▶</span>
           </div>
           <div class="research-nav-sub">
             <a href="data-overview.html" class="nav-sub-item"><span class="dot"></span> 개요</a>
             <a href="data-table.html" class="nav-sub-item"><span class="dot"></span> 테이블</a>
             <a href="clean-room.html" class="nav-sub-item ai"><span class="dot"></span> 🔒 클린룸</a>
+            <a href="project-wallet.html" class="nav-sub-item"><span class="dot"></span> 💰 프로젝트 지갑</a>
+          </div>
+        </div>
+
+        <!-- 후향적 연구 -->
+        <div class="research-nav-item">
+          <div class="research-nav-header" onclick="this.parentElement.classList.toggle('expanded')">
+            <span style="color:#6366f1;">●</span>
+            <span class="research-title">CDM 후향적 코호트</span>
+            <span class="rtype-chip retrospective">후향적</span>
+            <span class="expand-icon">▶</span>
+          </div>
+          <div class="research-nav-sub">
+            <a href="data-overview.html" class="nav-sub-item"><span class="dot"></span> 개요</a>
+            <a href="data-table.html" class="nav-sub-item"><span class="dot"></span> 테이블</a>
+            <a href="clean-room.html" class="nav-sub-item ai"><span class="dot"></span> 🔒 클린룸</a>
+            <a href="project-wallet.html" class="nav-sub-item"><span class="dot"></span> 💰 프로젝트 지갑</a>
           </div>
         </div>
       </div>
@@ -443,7 +500,7 @@
         </a>
         <a href="../billing.html" class="nav-item">
           <span class="icon">💳</span>
-          결제
+          내 지갑
         </a>
         <a href="#" class="nav-item">
           <span class="icon">⚙️</span>
@@ -460,9 +517,9 @@
           </div>
         </div>
       </div>
-    </div>
+    </nav>
 
-    <div class="main">
+    <main class="main" id="main-content">
       <div class="header">
         <div class="page-header">
           <div>
@@ -477,30 +534,30 @@
 
       <div class="content">
         <!-- 전체 KPI 요약 -->
-        <div class="kpi-summary" data-spec="홈 화면 상단 KPI: 연구자가 한눈에 전체 현황 파악. 가장 중요한 4가지 지표만 표시." data-spec-type="kpi" data-priority="1">
-          <div class="kpi-card" data-spec="전체 연구: 상태별 연구 수 (진행 중/모집 중/초안/완료). 연구 포트폴리오 개요." data-spec-type="kpi">
+        <div class="kpi-summary" data-spec="홈 KPI 4축: 규모(전체 연구) + 재정(내 지갑) + 운영(미해결 쿼리) + 품질(데이터 품질). 포트폴리오 레벨만." data-spec-type="kpi" data-priority="1">
+          <div class="kpi-card" data-spec="전체 연구: 상태별 연구 수. 포트폴리오 규모." data-spec-type="kpi">
             <span class="icon">📋</span>
             <div class="label">전체 연구</div>
             <div class="value">5</div>
             <div class="change up">진행 중 3 · 모집 중 1 · 초안 1</div>
           </div>
-          <div class="kpi-card" data-spec="총 참여자: 모든 연구의 현재 참여자 합계. 주간 증감으로 성장 추이 파악." data-spec-type="kpi">
-            <span class="icon">👥</span>
-            <div class="label">총 참여자</div>
-            <div class="value">1,430</div>
-            <div class="change up">▲ 156 이번 주</div>
-          </div>
-          <div class="kpi-card" data-spec="수집 데이터: 전체 데이터 포인트 수. 연구 규모와 데이터 자산 가치 표시." data-spec-type="kpi">
-            <span class="icon">📊</span>
-            <div class="label">수집 데이터</div>
-            <div class="value">2.8M</div>
-            <div class="change up">▲ 340K 이번 주</div>
-          </div>
-          <div class="kpi-card" data-spec="에스크로 총액: XRPL 에스크로 잔액. 지급완료 금액 함께 표시하여 예산 현황 파악." data-spec-type="wallet">
+          <div class="kpi-card" data-spec="내 지갑: 개인 XRP 잔고 + 에스크로 예치 총액. 포트폴리오 전체 재정 상태." data-spec-type="wallet">
             <span class="icon">💰</span>
-            <div class="label">에스크로 총액</div>
-            <div class="value">65,000 XRP</div>
-            <div class="change">지급완료 12,000 XRP</div>
+            <div class="label">내 지갑</div>
+            <div class="value">42,500 XRP</div>
+            <div class="change">에스크로 예치 중 65,000 XRP</div>
+          </div>
+          <div class="kpi-card" data-spec="미해결 쿼리: 전체 연구의 데이터 불일치·확인 필요 건수. CTMS 표준 운영 지표." data-spec-type="kpi">
+            <span class="icon">⚠️</span>
+            <div class="label">미해결 쿼리</div>
+            <div class="value">24건</div>
+            <div class="change down">긴급 3 · 일반 21 · ▲ 5 이번 주</div>
+          </div>
+          <div class="kpi-card" data-spec="데이터 품질: 진행 중인 전체 연구의 평균 데이터 품질. 포트폴리오 건강도." data-spec-type="kpi">
+            <span class="icon">📊</span>
+            <div class="label">데이터 품질</div>
+            <div class="value">91%</div>
+            <div class="change up">3개 연구 평균 · ▲ 2% vs 지난주</div>
           </div>
         </div>
 
@@ -508,11 +565,11 @@
         <div class="filter-bar">
           <input type="text" class="search-box" placeholder="연구명, 설명, 데이터 유형으로 검색...">
           <div class="filter-group">
-            <button class="filter-btn active">전체</button>
-            <button class="filter-btn">진행 중</button>
-            <button class="filter-btn">모집 중</button>
-            <button class="filter-btn">초안</button>
-            <button class="filter-btn">완료</button>
+            <button class="filter-btn active" aria-label="필터">전체</button>
+            <button class="filter-btn" aria-label="필터">진행 중</button>
+            <button class="filter-btn" aria-label="필터">모집 중</button>
+            <button class="filter-btn" aria-label="필터">초안</button>
+            <button class="filter-btn" aria-label="필터">완료</button>
           </div>
           <select class="sort-select">
             <option>최근 활동순</option>
@@ -528,12 +585,12 @@
 
         <!-- 프로젝트 그리드 -->
         <div class="project-grid">
-          <!-- 카드 1: 당뇨병 연구 (진행 중) -->
+          <!-- 카드 1: 만성질환 연구 (진행 중) -->
           <a href="data-overview.html" class="project-card">
             <div class="card-header">
               <div class="card-title-row">
                 <div class="card-title">
-                  당뇨병 환자 복약 순응도 연구
+                  만성질환 환자 약물 순응도 연구
                 </div>
                 <button class="card-menu">⋮</button>
               </div>
@@ -541,7 +598,7 @@
                 <span class="badge badge-green">진행 중</span>
                 <span class="badge badge-purple">관찰 연구</span>
               </div>
-              <p class="card-desc">2형 당뇨 환자의 복약 패턴과 혈당 변화 상관관계 분석. DoWhy 인과추론으로 복약 순응도의 혈당 관리 효과 추정.</p>
+              <p class="card-desc">만성질환 환자의 약물 패턴과 주요지표 변화 상관관계 분석. DoWhy 인과추론으로 약물 순응도의 주요지표 관리 효과 추정.</p>
             </div>
 
             <div class="card-metrics">
@@ -575,7 +632,7 @@
               <div class="data-items">
                 <span class="data-item"><span class="icon">❤️</span> 심박수</span>
                 <span class="data-item"><span class="icon">🩸</span> 혈당</span>
-                <span class="data-item"><span class="icon">💊</span> 복약</span>
+                <span class="data-item"><span class="icon">💊</span> 약물</span>
                 <span class="data-item"><span class="icon">😴</span> 수면</span>
                 <span class="data-item"><span class="icon">😊</span> 기분</span>
               </div>
@@ -604,7 +661,7 @@
                     <div class="avatar purple">+1</div>
                   </div>
                 </div>
-                <div class="item"><span class="icon">📊</span> 1.2M 포인트</div>
+                <div class="item"><span class="icon"><span role="img" aria-label="차트">📊</span></span> 1.2M 포인트</div>
                 <div class="item"><span class="icon">💰</span> 25,000 XRP</div>
               </div>
               <div class="footer-actions" data-spec="액션 버튼: 참여자/데이터 버튼을 하나로 통합. 클릭 시 개요 페이지로 이동." data-spec-type="action" data-changed="참여자/데이터 버튼 통합">
@@ -684,7 +741,7 @@
                     <div class="avatar green">최</div>
                   </div>
                 </div>
-                <div class="item"><span class="icon">📊</span> 340K 포인트</div>
+                <div class="item"><span class="icon"><span role="img" aria-label="차트">📊</span></span> 340K 포인트</div>
                 <div class="item"><span class="icon">💰</span> 15,000 XRP</div>
               </div>
               <div class="footer-actions" data-changed="버튼 통합">
@@ -702,6 +759,7 @@
               </div>
               <div class="card-badges">
                 <span class="badge badge-gray">초안</span>
+                <span class="badge badge-yellow">IRB 대기</span>
               </div>
               <p class="card-desc">ADHD 진단 청년의 루틴 수행과 집중력 변화 추적. ready-Q 앱 사용자 대상.</p>
             </div>
@@ -715,9 +773,9 @@
               </div>
               <div class="metric">
                 <div class="label">설정 완료</div>
-                <div class="value">4/6</div>
+                <div class="value">4/5</div>
                 <div class="sub">에스크로 미예치</div>
-                <div class="progress"><div class="progress-fill yellow" style="width: 66%;"></div></div>
+                <div class="progress"><div class="progress-fill yellow" style="width: 80%;"></div></div>
               </div>
               <div class="metric">
                 <div class="label">예상 비용</div>
@@ -737,7 +795,7 @@
                 <span class="data-item"><span class="icon">📋</span> 루틴</span>
                 <span class="data-item"><span class="icon">🎯</span> 집중도</span>
                 <span class="data-item"><span class="icon">😴</span> 수면</span>
-                <span class="data-item"><span class="icon">💊</span> 복약</span>
+                <span class="data-item"><span class="icon">💊</span> 약물</span>
                 <span class="data-item"><span class="icon">😊</span> 기분</span>
                 <span class="data-item"><span class="icon">⚡</span> 에너지</span>
               </div>
@@ -859,7 +917,7 @@ GET /api/v2/dashboard/summary<br>
           <a href="data-overview.html">연구 상세 →</a>
         </div>
       </div>
-    </div>
+    </main>
   </div>
   <script src="page-spec.js"></script>
   <link rel="stylesheet" href="../tooltip-spec.css">

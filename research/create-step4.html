@@ -3,15 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>연구 생성 Step 4 - 참가자 타겟 설정 - Wireframe</title>
+  <title>연구 생성 Step 4 - 데이터 수집 - Wireframe</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: -apple-system, sans-serif; background: #f5f5f5; }
 
     /* ===== 레이아웃 ===== */
-    .layout { display: flex; min-height: 100vh; width: 100%; }
+    .layout { display: flex; height: 100vh; width: 100%; overflow: hidden; }
 
-    /* ① Nav (좌측 사이드바) */
+    /* Nav (좌측 사이드바) */
     .sidebar {
       width: 240px;
       background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
@@ -53,11 +53,13 @@
       display: flex;
       flex-direction: column;
       min-width: 0;
+      min-height: 0;
     }
     .workspace {
       flex: 1;
       display: flex;
       min-height: 0;
+      min-width: 0;
     }
 
     /* Step Bar */
@@ -100,6 +102,9 @@
       white-space: nowrap;
     }
     .sb-step.active .sb-label { color: #e2e8f0; }
+    a.sb-step { text-decoration: none; color: inherit; cursor: pointer; }
+    a.sb-step:hover .sb-num:not(.active) { transform: scale(1.1); transition: transform 0.15s; }
+    a.sb-step:hover .sb-label { color: #e2e8f0; }
     .sb-line {
       width: 40px;
       height: 2px;
@@ -108,9 +113,6 @@
       margin-bottom: 18px;
     }
     .sb-line.done { background: #22c55e; }
-    a.sb-step { text-decoration: none; color: inherit; cursor: pointer; }
-    a.sb-step:hover .sb-num:not(.active):not(.done) { transform: scale(1.1); transition: transform 0.15s; }
-    a.sb-step:hover .sb-label { color: #e2e8f0; }
 
     .sidebar-footer {
       margin-top: auto; padding: 16px; border-top: 1px solid rgba(255,255,255,0.05);
@@ -125,9 +127,10 @@
     .user-name-sidebar { font-size: 14px; color: #e2e8f0; }
     .user-org-sidebar { font-size: 12px; color: #64748b; }
 
-    /* ② 에디터 패널 (중앙) */
+    /* 에디터 패널 (중앙) */
     .editor-panel {
       flex: 1;
+      min-width: 0;
       overflow-y: auto;
       padding: 28px 32px;
       background: white;
@@ -138,116 +141,122 @@
     .card-header { background: #f9fafb; padding: 16px 20px; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center; }
     .card-header h3 { font-size: 16px; font-weight: 600; }
     .card-body { padding: 20px; }
+    .ai-badge { font-size: 11px; color: #7c3aed; background: #f3e8ff; padding: 4px 10px; border-radius: 12px; }
+
+    /* 데이터 카테고리 섹션 */
+    .data-category { margin-bottom: 24px; }
+    .data-category-title { font-size: 14px; font-weight: 600; color: #374151; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+    .data-category-title .icon { font-size: 18px; }
+    .data-category-desc { font-size: 12px; color: #6b7280; margin-bottom: 12px; }
+
+    /* 데이터 항목 그리드 */
+    .data-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .data-item { padding: 14px 16px; border: 2px solid #e5e7eb; border-radius: 10px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 12px; }
+    .data-item:hover { border-color: #c4b5fd; }
+    .data-item.selected { border-color: #8b5cf6; background: #faf5ff; }
+    .data-item .icon { font-size: 20px; }
+    .data-item .info { flex: 1; }
+    .data-item .name { font-size: 14px; font-weight: 500; margin-bottom: 2px; }
+    .data-item .desc { font-size: 11px; color: #6b7280; }
+    .data-item .ai-reason { font-size: 10px; color: #7c3aed; margin-top: 4px; line-height: 1.3; background: #f5f3ff; padding: 3px 8px; border-radius: 4px; border-left: 2px solid #8b5cf6; }
+    .ema-row .ai-reason { font-size: 10px; color: #7c3aed; margin-top: 2px; margin-left: 112px; background: #f5f3ff; padding: 2px 8px; border-radius: 4px; border-left: 2px solid #8b5cf6; }
+    .data-item .check {
+      width: 36px;
+      height: 20px;
+      border-radius: 999px;
+      background: #e5e7eb;
+      position: relative;
+      flex-shrink: 0;
+    }
+    .data-item .check::after {
+      content: "";
+      width: 16px;
+      height: 16px;
+      background: #fff;
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      border-radius: 50%;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+      transition: all 0.2s;
+    }
+    .data-item.selected .check { background: #8b5cf6; }
+    .data-item.selected .check::after { left: 18px; }
+
+    /* EMA 설정 */
+    .ema-settings { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 16px; margin-top: 12px; }
+    .ema-settings h4 { font-size: 13px; font-weight: 600; margin-bottom: 12px; }
+    .ema-row { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+    .ema-row label { font-size: 13px; color: #374151; min-width: 100px; }
+    .ema-select { padding: 8px 12px; border: 1px solid #e5e7eb; border-radius: 6px; font-size: 13px; }
+    .ema-select.ai-filled { border-color: #8b5cf6; background: #faf5ff; }
+
+    /* 맥락/정성 섹션 */
+    .context-section { background: #f8fafc; border: 1px dashed #cbd5f5; border-radius: 8px; padding: 12px; margin-top: 12px; }
+    .context-section h4 { font-size: 13px; font-weight: 600; margin-bottom: 10px; color: #334155; }
+
+    /* 레포트 보기 버튼 (각 섹션 헤더 오른쪽) */
+    .report-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 6px 14px; border-radius: 8px; font-size: 12px; font-weight: 600;
+      cursor: pointer; border: 1px solid #ddd6fe; background: white; color: #7c3aed;
+      transition: all 0.15s;
+    }
+    .report-btn:hover { background: #f5f3ff; border-color: #a78bfa; }
+    .report-btn .icon { font-size: 14px; }
+    .header-right { display: flex; align-items: center; gap: 8px; }
+
+    /* ===== 모달 오버레이 ===== */
+    .modal-overlay {
+      display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.4); z-index: 1000; justify-content: center; align-items: center;
+    }
+    .modal-overlay.show { display: flex; }
+    .modal {
+      background: white; border-radius: 16px; width: 640px; max-height: 80vh;
+      overflow: hidden; box-shadow: 0 25px 50px rgba(0,0,0,0.25);
+      display: flex; flex-direction: column;
+    }
+    .modal-header {
+      padding: 16px 24px; border-bottom: 1px solid #e5e7eb;
+      display: flex; align-items: center; justify-content: space-between;
+      background: #f9fafb;
+    }
+    .modal-header h3 { font-size: 16px; font-weight: 600; }
+    .modal-header .badge { font-size: 11px; color: #6b7280; background: #f3f4f6; padding: 3px 10px; border-radius: 8px; }
+    .modal-close { width: 32px; height: 32px; border: 1px solid #e5e7eb; border-radius: 8px; background: white; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; }
+    .modal-body { padding: 24px; overflow-y: auto; flex: 1; }
+
+    /* 모달 내부 콘텐츠 */
+    .rationale-item { display: flex; gap: 12px; padding: 14px; border: 1px solid #e5e7eb; border-radius: 10px; margin-bottom: 10px; }
+    .rationale-item:hover { background: #f9fafb; }
+    .rationale-icon { width: 40px; height: 40px; border-radius: 10px; background: #f3e8ff; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+    .rationale-info { flex: 1; }
+    .rationale-title { font-size: 13px; font-weight: 600; color: #7c3aed; margin-bottom: 4px; }
+    .rationale-desc { font-size: 12px; color: #6b7280; line-height: 1.5; }
+    .rationale-stat { font-size: 11px; color: #059669; font-weight: 600; margin-top: 4px; }
+    .method-note { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 12px 14px; font-size: 12px; color: #1e40af; margin-top: 12px; line-height: 1.6; }
+
+    /* 요약 박스 */
+    .summary-box { background: #eff6ff; border: 1px solid #bfdbfe; padding: 16px; border-radius: 8px; margin-top: 20px; }
+    .summary-box h4 { font-size: 14px; margin-bottom: 12px; color: #1d4ed8; }
+    .summary-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+    .summary-item { text-align: center; }
+    .summary-item .value { font-size: 24px; font-weight: 700; color: #1e40af; }
+    .summary-item .label { font-size: 11px; color: #6b7280; }
 
     /* 상태 뱃지 */
     .status-badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 500; }
 
-    /* 검색바 */
-    .search-bar { display: flex; gap: 8px; margin-bottom: 16px; }
-    .search-bar input { flex: 1; height: 44px; border: 1px solid #e5e7eb; border-radius: 8px; padding: 0 16px; font-size: 14px; }
-    .search-bar input:focus { outline: none; border-color: #8b5cf6; box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1); }
-    .search-bar button { height: 44px; padding: 0 20px; background: #8b5cf6; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; }
-    .search-bar button:hover { background: #7c3aed; }
-
-    /* 필터 칩 */
-    .filter-chips { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
-    .filter-chip { padding: 6px 14px; border-radius: 20px; font-size: 13px; border: 1px solid #e5e7eb; background: white; color: #374151; cursor: pointer; }
-    .filter-chip.active { background: #8b5cf6; color: white; border-color: #8b5cf6; }
-    .filter-chip:hover { border-color: #8b5cf6; }
-
-    /* 초대자 리스트 */
-    .invitee-list { margin: 16px 0; }
-    .invitee-item { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; margin-bottom: 8px; }
-    .invitee-info { display: flex; align-items: center; gap: 12px; }
-    .invitee-avatar { width: 36px; height: 36px; background: linear-gradient(135deg, #8b5cf6, #6366f1); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 13px; font-weight: 600; }
-    .invitee-details .name { font-size: 14px; font-weight: 500; color: #1f2937; }
-    .invitee-details .meta { font-size: 12px; color: #6b7280; margin-top: 2px; }
-    .invitee-remove { padding: 6px 12px; border: 1px solid #fca5a5; background: #fef2f2; color: #dc2626; border-radius: 6px; font-size: 12px; cursor: pointer; }
-    .invitee-remove:hover { background: #fee2e2; }
-
-    .add-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 12px; border: 2px dashed #d1d5db; border-radius: 8px; background: white; color: #6b7280; font-size: 14px; cursor: pointer; }
-    .add-btn:hover { border-color: #8b5cf6; color: #8b5cf6; }
-
-    .invitee-counter { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background: #f5f3ff; border: 1px solid #ddd6fe; border-radius: 8px; margin-top: 12px; }
-    .invitee-counter .text { font-size: 14px; font-weight: 500; color: #5b21b6; }
-    .invitee-counter .progress { font-size: 13px; color: #7c3aed; }
-
-    /* 모집 비율 슬라이더 */
-    .ratio-section { margin: 20px 0; }
-    .ratio-bar { display: flex; height: 40px; border-radius: 8px; overflow: hidden; margin-bottom: 12px; }
-    .ratio-bar .pre-invite { background: linear-gradient(135deg, #8b5cf6, #7c3aed); display: flex; align-items: center; justify-content: center; color: white; font-size: 13px; font-weight: 600; transition: width 0.3s; }
-    .ratio-bar .open-recruit { background: linear-gradient(135deg, #3b82f6, #2563eb); display: flex; align-items: center; justify-content: center; color: white; font-size: 13px; font-weight: 600; transition: width 0.3s; }
-    .ratio-slider { width: 100%; height: 8px; border-radius: 4px; background: #e5e7eb; appearance: none; cursor: pointer; margin: 12px 0; }
-    .ratio-slider::-webkit-slider-thumb { appearance: none; width: 24px; height: 24px; border-radius: 50%; background: #8b5cf6; cursor: pointer; border: 3px solid white; box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
-    .ratio-slider::-webkit-slider-track { height: 8px; border-radius: 4px; background: linear-gradient(to right, #8b5cf6 0%, #8b5cf6 40%, #3b82f6 40%, #3b82f6 100%); }
-    .ratio-labels { display: flex; justify-content: space-between; font-size: 12px; color: #6b7280; }
-
-    .ratio-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; }
-    .ratio-info-box { padding: 16px; border-radius: 10px; }
-    .ratio-info-box.pre-invite { background: #f5f3ff; border: 1px solid #ddd6fe; }
-    .ratio-info-box.open-recruit { background: #eff6ff; border: 1px solid #bfdbfe; }
-    .ratio-info-box h4 { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
-    .ratio-info-box.pre-invite h4 { color: #5b21b6; }
-    .ratio-info-box.open-recruit h4 { color: #1e40af; }
-    .ratio-info-box .count { font-size: 24px; font-weight: 700; margin-bottom: 8px; }
-    .ratio-info-box.pre-invite .count { color: #8b5cf6; }
-    .ratio-info-box.open-recruit .count { color: #3b82f6; }
-    .ratio-info-box p { font-size: 12px; color: #6b7280; line-height: 1.6; }
-
-    /* 설정 옵션 */
-    .setting-row { display: flex; align-items: center; justify-content: space-between; padding: 16px 0; border-bottom: 1px solid #e5e7eb; }
-    .setting-row:last-child { border-bottom: none; }
-    .setting-left { flex: 1; }
-    .setting-left .title { font-size: 14px; font-weight: 500; color: #1f2937; margin-bottom: 2px; }
-    .setting-left .desc { font-size: 12px; color: #6b7280; }
-    .setting-right { display: flex; align-items: center; gap: 8px; }
-    .setting-input { width: 80px; height: 40px; border: 1px solid #e5e7eb; border-radius: 8px; padding: 0 12px; font-size: 15px; font-weight: 600; text-align: center; }
-    .setting-unit { font-size: 13px; color: #6b7280; }
-
-    /* 토글 */
-    .toggle { position: relative; width: 48px; height: 26px; border-radius: 13px; background: #22c55e; cursor: pointer; }
-    .toggle.off { background: #d1d5db; }
-    .toggle::after { content: ''; position: absolute; top: 3px; left: 25px; width: 20px; height: 20px; border-radius: 50%; background: white; transition: left 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
-    .toggle.off::after { left: 3px; }
-
-    /* 체크박스 그룹 */
-    .checkbox-group { display: flex; gap: 16px; }
-    .checkbox-item { display: flex; align-items: center; gap: 8px; padding: 8px 16px; border: 1px solid #e5e7eb; border-radius: 8px; font-size: 13px; color: #374151; cursor: pointer; }
-    .checkbox-item.checked { border-color: #8b5cf6; background: #f5f3ff; color: #5b21b6; }
-    .checkbox-item input { accent-color: #8b5cf6; width: 16px; height: 16px; }
-
-    /* 폰 목업 */
-    .phone-mockup { width: 280px; margin: 0 auto; background: #1f2937; border-radius: 28px; padding: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.2); }
-    .phone-screen { background: white; border-radius: 20px; overflow: hidden; }
-    .phone-statusbar { background: #f9fafb; padding: 8px 16px; display: flex; justify-content: space-between; font-size: 11px; color: #6b7280; }
-    .phone-notification { padding: 16px; }
-    .phone-notification .notif-header { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
-    .phone-notification .notif-icon { width: 32px; height: 32px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; color: white; }
-    .phone-notification .notif-title { font-size: 14px; font-weight: 600; color: #1f2937; }
-    .phone-notification .notif-subtitle { font-size: 11px; color: #6b7280; }
-    .phone-notification .research-title { font-size: 15px; font-weight: 600; color: #1f2937; margin-bottom: 12px; line-height: 1.4; }
-    .phone-notification .research-meta { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
-    .phone-notification .research-meta-item { display: flex; justify-content: space-between; font-size: 13px; padding: 8px 0; border-bottom: 1px solid #f3f4f6; }
-    .phone-notification .research-meta-item .label { color: #6b7280; }
-    .phone-notification .research-meta-item .value { font-weight: 500; color: #1f2937; }
-    .phone-notification .research-meta-item .value.highlight { color: #8b5cf6; font-weight: 600; }
-    .phone-buttons { display: flex; gap: 8px; padding: 0 16px 16px; }
-    .phone-buttons .btn-accept { flex: 1; padding: 12px; background: linear-gradient(135deg, #22c55e, #16a34a); color: white; border: none; border-radius: 10px; font-size: 14px; font-weight: 600; text-align: center; cursor: pointer; }
-    .phone-buttons .btn-decline { flex: 1; padding: 12px; background: #f3f4f6; color: #6b7280; border: none; border-radius: 10px; font-size: 14px; font-weight: 500; text-align: center; cursor: pointer; }
-
-    /* 경고 박스 */
-    .warning-box { background: #fef3c7; border: 1px solid #fcd34d; border-radius: 12px; padding: 16px; margin: 20px 0; }
-    .warning-box h4 { font-size: 14px; color: #92400e; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
-    .warning-box p { font-size: 13px; color: #a16207; line-height: 1.5; }
-
     /* 버튼 */
-    .btn-row { display: flex; justify-content: space-between; align-items: center; margin-top: 24px; padding-top: 24px; border-top: 1px solid #e5e7eb; }
-    .btn { padding: 12px 28px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; text-decoration: none; display: inline-block; border: none; }
+    .btn { padding: 14px 28px; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; border: none; text-align: center; transition: all 0.15s; }
     .btn-secondary { background: white; border: 1px solid #e5e7eb; color: #374151; }
+    .btn-secondary:hover { background: #f9fafb; }
     .btn-primary { background: #8b5cf6; color: white; }
     .btn-primary:hover { background: #7c3aed; }
+    .btn-row { display: flex; justify-content: space-between; align-items: center; margin-top: 24px; padding-top: 24px; border-top: 1px solid #e5e7eb; }
 
-    /* ③ AI 채팅 패널 (우측) */
+    /* AI 채팅 패널 (우측) */
     .chat-panel {
       width: 360px;
       flex-shrink: 0;
@@ -343,17 +352,6 @@
       display: flex; align-items: center; justify-content: center; font-size: 16px;
     }
 
-    /* 방법론 탭 */
-    .method-tab {
-      padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: 500;
-      border: 1px solid #e5e7eb; background: white; color: #6b7280; cursor: pointer;
-      transition: all 0.15s;
-    }
-    .method-tab:hover { border-color: #8b5cf6; color: #7c3aed; }
-    .method-tab.active { background: #8b5cf6; color: white; border-color: #8b5cf6; }
-    .method-section { display: none; }
-    .method-section.active { display: block; }
-
     /* 디자이너 노트 (하단 오버레이) */
     .designer-notes {
       position: fixed; bottom: 0; left: 0; right: 0;
@@ -374,13 +372,67 @@
       border: none; border-radius: 8px; font-size: 13px; font-weight: 600;
       cursor: pointer; z-index: 101; box-shadow: 0 4px 12px rgba(217,70,239,0.3);
     }
+    /* ===== SIDEBAR NAVIGATION STYLES ===== */
+    .sidebar-nav-section { flex: 1; overflow-y: auto; }
+    .sidebar-badge {
+      background: #3b82f6; color: white; font-size: 11px;
+      padding: 2px 8px; border-radius: 10px; font-weight: 600;
+    }
+    .sidebar-research-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 12px; border-radius: 8px; cursor: pointer;
+      margin-bottom: 4px;
+    }
+    .sidebar-research-item:hover { background: rgba(255,255,255,0.05); }
+    .sidebar-item-emoji { font-size: 14px; }
+    .sidebar-item-name {
+      flex: 1; font-size: 13px; color: #94a3b8;
+    }
+    .sidebar-status-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+    }
+    .sidebar-draft-title {
+      font-size: 11px; font-weight: 600; color: #64748b;
+      text-transform: uppercase; letter-spacing: 0.5px;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 12px; margin-bottom: 8px;
+    }
+    .sidebar-draft-badge {
+      background: #334155; color: #94a3b8;
+      font-size: 10px; padding: 2px 6px; border-radius: 8px;
+    }
+    .sidebar-draft-link {
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 12px; border-radius: 8px;
+      text-decoration: none; margin-bottom: 4px;
+    }
+    .sidebar-draft-dot {
+      width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0;
+    }
+    .sidebar-draft-meta { flex: 1; min-width: 0; }
+    .sidebar-draft-title-text {
+      font-size: 12px; color: #e2e8f0;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .sidebar-draft-meta-text {
+      font-size: 10px; color: #64748b; margin-top: 2px;
+    }
+    .user-info-sidebar { display: flex; align-items: center; gap: 12px; padding: 8px; }
+    .user-avatar-sidebar {
+      width: 36px; height: 36px;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-size: 14px; color: white;
+    }
+    .user-name-sidebar { font-size: 14px; color: #e2e8f0; }
+    .user-org-sidebar { font-size: 12px; color: #64748b; }
 
   </style>
 </head>
 <body>
   <div class="layout">
-    <!-- ① Nav -->
-    <div class="sidebar">
+    <!-- Nav -->
+    <nav class="sidebar" role="navigation" aria-label="사이드바 내비게이션">
       <div class="logo">
         <div class="logo-icon">U</div>
         UniQdata
@@ -388,57 +440,57 @@
 
       <div class="nav-section">
         <a href="list.html" class="nav-item">
-          <span class="icon">🏠</span> 연구 허브
+          <span class="icon">&#x1F3E0;</span> 연구 허브
         </a>
       </div>
 
       <div class="nav-section">
         <div class="nav-section-title">연구</div>
         <a href="create.html" class="nav-item active">
-          <span class="icon">➕</span> 새 연구
+          <span class="icon">&#x2795;</span> 새 연구
         </a>
       </div>
 
       <!-- 내 연구 (접힌 상태) -->
-      <div class="nav-section" style="flex:1; overflow-y:auto;">
+      <div class="nav-section sidebar-nav-section">
         <div class="nav-section-title" style="display:flex; align-items:center; justify-content:space-between;">
           내 연구
-          <span style="background:#3b82f6; color:white; font-size:11px; padding:2px 8px; border-radius:10px; font-weight:600;">3</span>
+          <span class="sidebar-badge">3</span>
         </div>
-        <div style="display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:8px; cursor:pointer; margin-bottom:4px;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
-          <span style="font-size:14px;">📁</span>
-          <span style="flex:1; font-size:13px; color:#94a3b8;">당뇨병 복약 순응도</span>
-          <span style="width:8px; height:8px; background:#22c55e; border-radius:50%;"></span>
+        <div class="sidebar-research-item">
+          <span class="sidebar-item-emoji">📁</span>
+          <span class="sidebar-item-name">만성질환 약물 순응도</span>
+          <span class="sidebar-status-dot" style="background:#22c55e;"></span>
         </div>
-        <div style="display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:8px; cursor:pointer; margin-bottom:4px;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
-          <span style="font-size:14px;">📁</span>
-          <span style="flex:1; font-size:13px; color:#94a3b8;">노인 수면 패턴</span>
-          <span style="width:8px; height:8px; background:#3b82f6; border-radius:50%;"></span>
+        <div class="sidebar-research-item">
+          <span class="sidebar-item-emoji">📁</span>
+          <span class="sidebar-item-name">노인 수면 패턴</span>
+          <span class="sidebar-status-dot" style="background:#3b82f6;"></span>
         </div>
-        <div style="display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:8px; cursor:pointer;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
-          <span style="font-size:14px;">📄</span>
-          <span style="flex:1; font-size:13px; color:#94a3b8;">ADHD 생활습관</span>
-          <span style="width:8px; height:8px; background:#64748b; border-radius:50%;"></span>
+        <div class="sidebar-research-item">
+          <span class="sidebar-item-emoji">📄</span>
+          <span class="sidebar-item-name">ADHD 생활습관</span>
+          <span class="sidebar-status-dot" style="background:#64748b;"></span>
         </div>
 
         <!-- 임시저장 -->
         <div style="margin-top:16px; padding-top:12px; border-top:1px solid #1e293b;">
-          <div style="display:flex; align-items:center; justify-content:space-between; padding:0 12px; margin-bottom:8px;">
-            <span style="font-size:11px; font-weight:600; color:#64748b; text-transform:uppercase; letter-spacing:0.5px;">임시저장</span>
-            <span style="background:#334155; color:#94a3b8; font-size:10px; padding:2px 6px; border-radius:8px;">2</span>
+          <div class="sidebar-draft-title">
+            <span>임시저장</span>
+            <span class="sidebar-draft-badge">2</span>
           </div>
-          <a href="#" style="display:flex; align-items:center; gap:10px; padding:8px 12px; border-radius:8px; text-decoration:none; margin-bottom:4px; background:rgba(251,191,36,0.08);">
-            <span style="width:6px; height:6px; background:#fbbf24; border-radius:50%; flex-shrink:0;"></span>
-            <div style="flex:1; min-width:0;">
-              <div style="font-size:12px; color:#e2e8f0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">소아 비만 개입 연구</div>
-              <div style="font-size:10px; color:#64748b; margin-top:2px;">Step 3 · 2일 전</div>
+          <a href="#" class="sidebar-draft-link" style="background:rgba(251,191,36,0.08);">
+            <span class="sidebar-draft-dot" style="background:#fbbf24;"></span>
+            <div class="sidebar-draft-meta">
+              <div class="sidebar-draft-title-text">소아 비만 개입 연구</div>
+              <div class="sidebar-draft-meta-text">Step 3 · 2일 전</div>
             </div>
           </a>
-          <a href="#" style="display:flex; align-items:center; gap:10px; padding:8px 12px; border-radius:8px; text-decoration:none;">
-            <span style="width:6px; height:6px; background:#64748b; border-radius:50%; flex-shrink:0;"></span>
-            <div style="flex:1; min-width:0;">
-              <div style="font-size:12px; color:#94a3b8; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">직장인 스트레스 코르티솔</div>
-              <div style="font-size:10px; color:#64748b; margin-top:2px;">Step 1 · 5일 전</div>
+          <a href="#" class="sidebar-draft-link">
+            <span class="sidebar-draft-dot" style="background:#64748b;"></span>
+            <div class="sidebar-draft-meta">
+              <div class="sidebar-draft-title-text">직장인 스트레스 코르티솔</div>
+              <div class="sidebar-draft-meta-text">Step 1 · 5일 전</div>
             </div>
           </a>
         </div>
@@ -453,601 +505,382 @@
           </div>
         </div>
       </div>
-    </div>
+    </nav>
 
     <!-- Workspace Wrap -->
     <div class="workspace-wrap">
       <!-- Step Bar -->
       <div class="step-bar">
         <div class="step-bar-inner">
-          <a class="sb-step done" href="create.html"><div class="sb-num">✓</div><div class="sb-label">AI 인터뷰</div></a>
+          <a class="sb-step done" href="create.html"><div class="sb-num">&#x2713;</div><div class="sb-label">AI 인터뷰</div></a>
           <div class="sb-line done"></div>
-          <a class="sb-step done" href="create-step2.html"><div class="sb-num">✓</div><div class="sb-label">연구 설계</div></a>
+          <a class="sb-step done" href="create-step2.html"><div class="sb-num">&#x2713;</div><div class="sb-label">연구 설계</div></a>
           <div class="sb-line done"></div>
-          <a class="sb-step done" href="create-step3.html"><div class="sb-num">✓</div><div class="sb-label">데이터 수집</div></a>
+          <a class="sb-step done" href="create-step3.html"><div class="sb-num">&#x2713;</div><div class="sb-label">타겟 설정</div></a>
           <div class="sb-line done"></div>
-          <a class="sb-step active" href="create-step4.html"><div class="sb-num">4</div><div class="sb-label">타겟 설정</div></a>
+          <a class="sb-step active" href="create-step4.html"><div class="sb-num">4</div><div class="sb-label">데이터 수집</div></a>
           <div class="sb-line"></div>
-          <a class="sb-step pending" href="create-step5.html"><div class="sb-num">5</div><div class="sb-label">IRB 심의</div></a>
-          <div class="sb-line"></div>
-          <a class="sb-step pending" href="create-step6.html"><div class="sb-num">6</div><div class="sb-label">에스크로</div></a>
+          <a class="sb-step pending" href="create-step5.html"><div class="sb-num">5</div><div class="sb-label">에스크로</div></a>
         </div>
       </div>
 
       <!-- Workspace (editor + chat) -->
       <div class="workspace">
 
-        <!-- ② 에디터 패널 -->
+        <!-- 에디터 패널 -->
         <div class="editor-panel">
 
           <!-- 페이지 헤더 -->
           <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 8px;">
-            <h1 style="font-size: 24px; font-weight: 700;">참가자 타겟 설정</h1>
+            <h1 style="font-size: 24px; font-weight: 700;">데이터 수집 설계</h1>
             <span class="status-badge" style="background:#ede9fe; color:#7c3aed;">Step 4</span>
           </div>
-          <p style="color: #6b7280; margin-bottom: 28px; font-size: 14px;">모집 대상자 조건과 타겟 풀을 설정합니다. 실제 모집은 IRB + 에스크로 완료 후 Step 6에서 시작됩니다.</p>
+          <p style="color: #6b7280; margin-bottom: 28px; font-size: 14px;">연구에 필요한 데이터 항목을 선택하세요</p>
 
-          <!-- 방법론 기반 그룹 구성 -->
-          <div class="card" style="border: 2px solid #8b5cf6;">
-            <div class="card-header" style="background: linear-gradient(135deg, #7c3aed, #6366f1); border: none;">
-              <h3 style="color: white;">🔬 연구 그룹 구성</h3>
-              <span style="font-size: 11px; color: #c4b5fd; background: rgba(255,255,255,0.15); padding: 4px 10px; border-radius: 12px;">Step 2 방법론 기반</span>
+          <!-- 패시브 데이터 -->
+          <div class="card">
+            <div class="card-header">
+              <h3>&#x1F4F1; 패시브 데이터 (자동 수집)</h3>
+              <div class="header-right">
+                <span class="ai-badge">AI 추천</span>
+                <button class="report-btn" onclick="openModal('passive-modal')">
+                  <span class="icon">&#x1F916;</span> AI 추천 근거
+                </button>
+              </div>
             </div>
             <div class="card-body">
-              <!-- 방법론 선택 탭 -->
-              <div style="font-size: 12px; font-weight: 600; color: #374151; margin-bottom: 10px;">적용된 방법론</div>
-              <div style="display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap;" id="methodTabs">
-                <button class="method-tab active" onclick="selectMethod('rct')">RCT</button>
-                <button class="method-tab" onclick="selectMethod('cohort')">코호트</button>
-                <button class="method-tab" onclick="selectMethod('smart')">SMART</button>
-                <button class="method-tab" onclick="selectMethod('mrt')">MRT</button>
-                <button class="method-tab" onclick="selectMethod('nof1')">N-of-1</button>
-                <button class="method-tab" onclick="selectMethod('cross')">횡단 조사</button>
+              <p class="data-category-desc">앱 백그라운드에서 자동으로 수집되는 데이터입니다. 참여자 부담이 거의 없습니다.</p>
+
+              <div class="data-grid">
+                <div class="data-item selected" data-group="passive" data-id="cgm" data-ai="true">
+                  <span class="icon">&#x1F4C8;</span>
+                  <div class="info">
+                    <div class="name">CGM (연속혈당)</div>
+                    <div class="desc">5분 간격 혈당 데이터</div>
+                    <div class="ai-reason">&#x1F916; 주 outcome(MAGE) 측정 필수 · 유사 RCT 93% 사용</div>
+                  </div>
+                  <div class="check"></div>
+                </div>
+                <div class="data-item selected" data-group="passive" data-id="heart_rate" data-ai="true">
+                  <span class="icon">&#x2764;&#xFE0F;</span>
+                  <div class="info">
+                    <div class="name">심박수</div>
+                    <div class="desc">웨어러블 기기 연동</div>
+                    <div class="ai-reason">&#x1F916; 저혈당 에피소드 감지 보조지표 · 식이개입 RCT 67% 수집</div>
+                  </div>
+                  <div class="check"></div>
+                </div>
+                <div class="data-item selected" data-group="passive" data-id="steps">
+                  <span class="icon">&#x1F6B6;</span>
+                  <div class="info">
+                    <div class="name">활동량/걸음수</div>
+                    <div class="desc">일일 활동 데이터</div>
+                  </div>
+                  <div class="check"></div>
+                </div>
+                <div class="data-item selected" data-group="passive" data-id="sleep" data-ai="true">
+                  <span class="icon">&#x1F634;</span>
+                  <div class="info">
+                    <div class="name">수면</div>
+                    <div class="desc">수면 시간, 품질, 단계</div>
+                    <div class="ai-reason">&#x1F916; 인슐린 저항성 상관 r=0.42 · 새벽현상 분석 필요</div>
+                  </div>
+                  <div class="check"></div>
+                </div>
+                <div class="data-item" data-group="passive" data-id="temperature">
+                  <span class="icon">&#x1F321;&#xFE0F;</span>
+                  <div class="info">
+                    <div class="name">체온</div>
+                    <div class="desc">웨어러블 체온 측정</div>
+                  </div>
+                  <div class="check"></div>
+                </div>
+                <div class="data-item" data-group="passive" data-id="location">
+                  <span class="icon">&#x1F4CD;</span>
+                  <div class="info">
+                    <div class="name">위치/이동</div>
+                    <div class="desc">활동 패턴 분석용</div>
+                  </div>
+                  <div class="check"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 능동 데이터 (EMA) -->
+          <div class="card">
+            <div class="card-header">
+              <h3>&#x270D;&#xFE0F; 능동 데이터 (EMA/설문)</h3>
+              <div class="header-right">
+                <span class="ai-badge">AI 추천</span>
+                <button class="report-btn" onclick="openModal('active-modal')">
+                  <span class="icon">&#x1F916;</span> AI 추천 근거
+                </button>
+              </div>
+            </div>
+            <div class="card-body">
+              <p class="data-category-desc">참여자가 직접 입력하는 데이터입니다. 빈도를 적절히 설정해 부담을 줄이세요.</p>
+
+              <div class="data-grid">
+                <div class="data-item selected" data-group="active" data-id="diet" data-ai="true">
+                  <span class="icon">&#x1F37D;&#xFE0F;</span>
+                  <div class="info">
+                    <div class="name">식단 기록</div>
+                    <div class="desc">탄수화물/식사 유형</div>
+                    <div class="ai-reason">&#x1F916; 저탄수화물 개입 순응도 핵심 · 매 식사 기록 권장</div>
+                  </div>
+                  <div class="check"></div>
+                </div>
+                <div class="data-item selected" data-group="active" data-id="medication" data-ai="true">
+                  <span class="icon">&#x1F48A;</span>
+                  <div class="info">
+                    <div class="name">복약 기록</div>
+                    <div class="desc">복용 시간, 순응도</div>
+                    <div class="ai-reason">&#x1F916; 혈당강하제 순응도 → 결과 해석 필수 변수</div>
+                  </div>
+                  <div class="check"></div>
+                </div>
+                <div class="data-item selected" data-group="active" data-id="mood" data-ai="true">
+                  <span class="icon">&#x1F60A;</span>
+                  <div class="info">
+                    <div class="name">기분/컨디션</div>
+                    <div class="desc">1-5점 스케일</div>
+                    <div class="ai-reason">&#x1F916; 식단 개입의 삶의질 영향 측정 · PRO 지표</div>
+                  </div>
+                  <div class="check"></div>
+                </div>
+                <div class="data-item" data-group="active" data-id="exercise">
+                  <span class="icon">&#x1F3C3;</span>
+                  <div class="info">
+                    <div class="name">운동 기록</div>
+                    <div class="desc">운동 종류, 시간</div>
+                  </div>
+                  <div class="check"></div>
+                </div>
+                <div class="data-item" data-group="active" data-id="water">
+                  <span class="icon">&#x1F4A7;</span>
+                  <div class="info">
+                    <div class="name">수분 섭취</div>
+                    <div class="desc">일일 물 섭취량</div>
+                  </div>
+                  <div class="check"></div>
+                </div>
+                <div class="data-item" data-group="active" data-id="symptoms">
+                  <span class="icon">&#x1F613;</span>
+                  <div class="info">
+                    <div class="name">증상 기록</div>
+                    <div class="desc">저혈당, 피로 등</div>
+                  </div>
+                  <div class="check"></div>
+                </div>
               </div>
 
-              <!-- RCT 그룹 -->
-              <div class="method-section active" id="method-rct">
-                <div style="background: #faf5ff; border: 1px solid #ddd6fe; border-radius: 10px; padding: 16px; margin-bottom: 16px;">
-                  <div style="font-size: 13px; font-weight: 600; color: #7c3aed; margin-bottom: 8px;">무작위 대조 시험 (RCT)</div>
-                  <div style="font-size: 12px; color: #6b7280; line-height: 1.6;">참여자를 실험군과 대조군에 무작위 배정합니다. 군당 인원과 배정 비율을 설정하세요.</div>
-                </div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
-                  <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; padding: 16px; text-align: center;">
-                    <div style="font-size: 11px; color: #059669; margin-bottom: 4px;">실험군 (Intervention)</div>
-                    <div style="font-size: 28px; font-weight: 800; color: #059669;">50명</div>
-                    <div style="font-size: 12px; color: #6b7280;">저탄수화물 식단 (≤50g/일)</div>
-                  </div>
-                  <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 10px; padding: 16px; text-align: center;">
-                    <div style="font-size: 11px; color: #2563eb; margin-bottom: 4px;">대조군 (Control)</div>
-                    <div style="font-size: 28px; font-weight: 800; color: #2563eb;">50명</div>
-                    <div style="font-size: 12px; color: #6b7280;">일반 한식 식단</div>
-                  </div>
-                </div>
-                <div style="display: flex; align-items: center; gap: 12px;">
-                  <span style="font-size: 13px; color: #374151; font-weight: 500;">배정 비율:</span>
-                  <select style="height: 36px; border: 1px solid #e5e7eb; border-radius: 8px; padding: 0 12px; font-size: 13px;">
-                    <option selected>1:1 (동일 배정)</option>
-                    <option>2:1 (실험군 우선)</option>
-                    <option>3:1 (실험군 3배)</option>
+              <!-- EMA 빈도 설정 -->
+              <div class="ema-settings">
+                <h4>&#x1F4CA; EMA 빈도 설정</h4>
+                <div class="ema-row">
+                  <label>식단 기록:</label>
+                  <select class="ema-select ai-filled">
+                    <option>매 식사 후 (1일 3회)</option>
+                    <option>1일 1회 (저녁)</option>
+                    <option>1일 2회 (점심/저녁)</option>
                   </select>
-                  <span style="font-size: 12px; color: #6b7280;">블록 무작위 배정</span>
+                </div>
+                <div class="ema-row">
+                  <label>기분/컨디션:</label>
+                  <select class="ema-select ai-filled">
+                    <option>1일 2회 (아침/저녁)</option>
+                    <option>1일 1회</option>
+                    <option>1일 3회</option>
+                  </select>
+                </div>
+                <div class="ema-row">
+                  <label>복약 기록:</label>
+                  <select class="ema-select ai-filled">
+                    <option>복용 시마다</option>
+                    <option>1일 1회 요약</option>
+                  </select>
                 </div>
               </div>
 
-              <!-- 코호트 그룹 -->
-              <div class="method-section" id="method-cohort">
-                <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 10px; padding: 16px; margin-bottom: 16px;">
-                  <div style="font-size: 13px; font-weight: 600; color: #2563eb; margin-bottom: 8px;">전향적 코호트</div>
-                  <div style="font-size: 12px; color: #6b7280; line-height: 1.6;">노출군과 비노출군을 관찰 추적합니다. 무작위 배정 없이 자연 발생 그룹을 추적합니다.</div>
-                </div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
-                  <div style="background: #fef3c7; border: 1px solid #fde68a; border-radius: 10px; padding: 16px; text-align: center;">
-                    <div style="font-size: 11px; color: #92400e; margin-bottom: 4px;">노출군 (Exposed)</div>
-                    <div style="font-size: 28px; font-weight: 800; color: #92400e;">60명</div>
-                    <div style="font-size: 12px; color: #6b7280;">저탄수화물 식단 실천자</div>
-                  </div>
-                  <div style="background: #f3f4f6; border: 1px solid #e5e7eb; border-radius: 10px; padding: 16px; text-align: center;">
-                    <div style="font-size: 11px; color: #374151; margin-bottom: 4px;">비노출군 (Unexposed)</div>
-                    <div style="font-size: 28px; font-weight: 800; color: #374151;">60명</div>
-                    <div style="font-size: 12px; color: #6b7280;">일반 식단 유지자</div>
-                  </div>
-                </div>
-                <div style="display: flex; align-items: center; gap: 12px;">
-                  <span style="font-size: 13px; color: #374151; font-weight: 500;">추적 기간:</span>
-                  <input type="number" value="12" style="width: 60px; height: 36px; border: 1px solid #e5e7eb; border-radius: 8px; text-align: center; font-size: 13px;">
-                  <span style="font-size: 12px; color: #6b7280;">주 · 매칭 기준: 연령, 성별, BMI</span>
-                </div>
-              </div>
-
-              <!-- SMART 그룹 -->
-              <div class="method-section" id="method-smart">
-                <div style="background: #fef3c7; border: 1px solid #fde68a; border-radius: 10px; padding: 16px; margin-bottom: 16px;">
-                  <div style="font-size: 13px; font-weight: 600; color: #92400e; margin-bottom: 8px;">적응형 다단계 배정 (SMART)</div>
-                  <div style="font-size: 12px; color: #6b7280; line-height: 1.6;">1단계 개입 후 반응/비반응에 따라 2단계 개입이 달라집니다. 단계별 그룹을 설정하세요.</div>
-                </div>
-                <div style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 10px; padding: 16px;">
-                  <div style="font-size: 12px; font-weight: 600; color: #374151; margin-bottom: 12px;">Stage 1 → 반응 평가 → Stage 2</div>
-                  <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-                    <div style="background: #8b5cf6; color: white; padding: 8px 14px; border-radius: 8px; font-size: 12px; font-weight: 600;">전체 100명</div>
-                    <span style="color: #6b7280;">→</span>
-                    <div style="background: #f0fdf4; border: 1px solid #bbf7d0; padding: 8px 14px; border-radius: 8px; font-size: 12px;">반응군 → 유지/강화</div>
-                    <div style="background: #fef2f2; border: 1px solid #fecaca; padding: 8px 14px; border-radius: 8px; font-size: 12px;">비반응군 → 대안 A/B</div>
-                  </div>
-                  <div style="margin-top: 12px; font-size: 12px; color: #6b7280;">
-                    4주 후 반응 평가 기준: MAGE 감소 ≥15% → 반응군
-                  </div>
-                </div>
-              </div>
-
-              <!-- MRT 그룹 -->
-              <div class="method-section" id="method-mrt">
-                <div style="background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 10px; padding: 16px; margin-bottom: 16px;">
-                  <div style="font-size: 13px; font-weight: 600; color: #047857; margin-bottom: 8px;">마이크로 무작위 시험 (MRT)</div>
-                  <div style="font-size: 12px; color: #6b7280; line-height: 1.6;">매 결정 시점마다 개입 여부를 무작위 배정합니다. JITAI(Just-In-Time Adaptive Intervention) 설계입니다.</div>
-                </div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px;">
-                  <div style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 10px; padding: 14px; text-align: center;">
-                    <div style="font-size: 11px; color: #6b7280;">참여자</div>
-                    <div style="font-size: 24px; font-weight: 800;">100명</div>
-                  </div>
-                  <div style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 10px; padding: 14px; text-align: center;">
-                    <div style="font-size: 11px; color: #6b7280;">결정 시점/일</div>
-                    <div style="font-size: 24px; font-weight: 800;">5회</div>
-                  </div>
-                  <div style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 10px; padding: 14px; text-align: center;">
-                    <div style="font-size: 11px; color: #6b7280;">배정 확률</div>
-                    <div style="font-size: 24px; font-weight: 800;">0.5</div>
-                  </div>
-                </div>
-                <div style="margin-top: 12px; font-size: 12px; color: #6b7280;">
-                  총 결정 시점: 100명 × 5회/일 × 56일 = 28,000 관측치
-                </div>
-              </div>
-
-              <!-- N-of-1 그룹 -->
-              <div class="method-section" id="method-nof1">
-                <div style="background: #fdf2f8; border: 1px solid #fbcfe8; border-radius: 10px; padding: 16px; margin-bottom: 16px;">
-                  <div style="font-size: 13px; font-weight: 600; color: #be185d; margin-bottom: 8px;">단일 피험자 반복 측정 (N-of-1)</div>
-                  <div style="font-size: 12px; color: #6b7280; line-height: 1.6;">1명의 참여자에 대해 A-B-A-B 교차 설계로 반복 측정합니다. 개인 맞춤 효과를 검증합니다.</div>
-                </div>
-                <div style="display: grid; grid-template-columns: 1fr; gap: 12px;">
-                  <div style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 10px; padding: 16px;">
-                    <div style="font-size: 12px; font-weight: 600; margin-bottom: 8px;">A-B-A-B 교차 설계</div>
-                    <div style="display: flex; gap: 4px;">
-                      <div style="flex: 1; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; padding: 10px; text-align: center; font-size: 11px;">
-                        <strong>A기</strong><br>저탄수화물<br>2주
-                      </div>
-                      <div style="flex: 1; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 6px; padding: 10px; text-align: center; font-size: 11px;">
-                        <strong>B기</strong><br>일반 식단<br>2주
-                      </div>
-                      <div style="flex: 1; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; padding: 10px; text-align: center; font-size: 11px;">
-                        <strong>A기</strong><br>저탄수화물<br>2주
-                      </div>
-                      <div style="flex: 1; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 6px; padding: 10px; text-align: center; font-size: 11px;">
-                        <strong>B기</strong><br>일반 식단<br>2주
-                      </div>
+              <div class="context-section">
+                <h4>&#x1F4DD; 맥락/정성 입력 (선택)</h4>
+                <div class="data-grid">
+                  <div class="data-item" data-group="qual" data-id="meal_photo" data-ai="true">
+                    <span class="icon">&#x1F4F7;</span>
+                    <div class="info">
+                      <div class="name">식사 사진</div>
+                      <div class="desc">실제 식사/구성 기록</div>
+                      <div class="ai-reason">&#x1F916; AI 탄수화물 자동 추정으로 식단 기록 정확도 ↑</div>
                     </div>
-                    <div style="margin-top: 8px; font-size: 12px; color: #6b7280;">wash-out 기간: 각 기 전환 시 3일</div>
+                    <div class="check"></div>
+                  </div>
+                  <div class="data-item" data-group="qual" data-id="diary">
+                    <span class="icon">&#x1F5D2;&#xFE0F;</span>
+                    <div class="info">
+                      <div class="name">일기/자유서술</div>
+                      <div class="desc">오늘의 상태, 이유, 맥락</div>
+                    </div>
+                    <div class="check"></div>
+                  </div>
+                  <div class="data-item" data-group="qual" data-id="life_events">
+                    <span class="icon">&#x1F9E9;</span>
+                    <div class="info">
+                      <div class="name">생활 사건 로그</div>
+                      <div class="desc">스트레스/변화 이벤트</div>
+                    </div>
+                    <div class="check"></div>
+                  </div>
+                  <div class="data-item" data-group="qual" data-id="voice_memo">
+                    <span class="icon">&#x1F399;&#xFE0F;</span>
+                    <div class="info">
+                      <div class="name">음성 메모 (선택)</div>
+                      <div class="desc">주 1회 1~2분 요약</div>
+                    </div>
+                    <div class="check"></div>
                   </div>
                 </div>
-                <div style="margin-top: 12px; display: flex; align-items: center; gap: 12px;">
-                  <span style="font-size: 13px; color: #374151; font-weight: 500;">동시 진행 참여자:</span>
-                  <input type="number" value="10" style="width: 60px; height: 36px; border: 1px solid #e5e7eb; border-radius: 8px; text-align: center; font-size: 13px;">
-                  <span style="font-size: 12px; color: #6b7280;">명 (각각 독립적 A-B-A-B)</span>
-                </div>
-              </div>
-
-              <!-- 횡단 조사 그룹 -->
-              <div class="method-section" id="method-cross">
-                <div style="background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 10px; padding: 16px; margin-bottom: 16px;">
-                  <div style="font-size: 13px; font-weight: 600; color: #0369a1; margin-bottom: 8px;">횡단 조사 (Cross-sectional)</div>
-                  <div style="font-size: 12px; color: #6b7280; line-height: 1.6;">한 시점 스냅샷으로 데이터를 수집합니다. 층화 표본 추출로 대표성을 확보하세요.</div>
-                </div>
-                <div style="font-size: 12px; font-weight: 600; color: #374151; margin-bottom: 10px;">층화 표본 쿼터</div>
-                <table style="width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 12px;">
-                  <thead>
-                    <tr style="background: #f9fafb;">
-                      <th style="text-align: left; padding: 8px; border-bottom: 1px solid #e5e7eb;">층 (Stratum)</th>
-                      <th style="text-align: center; padding: 8px; border-bottom: 1px solid #e5e7eb;">목표 인원</th>
-                      <th style="text-align: center; padding: 8px; border-bottom: 1px solid #e5e7eb;">비율</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr><td style="padding: 6px 8px; border-bottom: 1px solid #f3f4f6;">30~39세</td><td style="text-align: center; padding: 6px; border-bottom: 1px solid #f3f4f6;">15명</td><td style="text-align: center; padding: 6px; border-bottom: 1px solid #f3f4f6;">15%</td></tr>
-                    <tr><td style="padding: 6px 8px; border-bottom: 1px solid #f3f4f6;">40~49세</td><td style="text-align: center; padding: 6px; border-bottom: 1px solid #f3f4f6;">25명</td><td style="text-align: center; padding: 6px; border-bottom: 1px solid #f3f4f6;">25%</td></tr>
-                    <tr><td style="padding: 6px 8px; border-bottom: 1px solid #f3f4f6;">50~59세</td><td style="text-align: center; padding: 6px; border-bottom: 1px solid #f3f4f6;">35명</td><td style="text-align: center; padding: 6px; border-bottom: 1px solid #f3f4f6;">35%</td></tr>
-                    <tr><td style="padding: 6px 8px;">60~65세</td><td style="text-align: center; padding: 6px;">25명</td><td style="text-align: center; padding: 6px;">25%</td></tr>
-                  </tbody>
-                </table>
-                <div style="font-size: 12px; color: #6b7280;">총 100명 · 인구 분포 비례 할당 · 1회 데이터 수집</div>
               </div>
             </div>
           </div>
 
-          <!-- Section 1: 사전 초대자 지정 -->
+          <!-- 바이오마커 -->
           <div class="card">
             <div class="card-header">
-              <h3>👥 타겟 대상자 지정</h3>
-              <span style="font-size: 12px; color: #8b5cf6; font-weight: 500;">핵심 기능</span>
-            </div>
-            <div class="card-body" style="padding: 0;">
-              <div style="display: flex; min-height: 420px;">
-
-                <!-- 왼쪽: 초대 리스트 -->
-                <div style="flex: 1; border-right: 1px solid #e5e7eb; padding: 20px; display: flex; flex-direction: column;">
-                  <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
-                    <div style="font-size: 14px; font-weight: 600; color: #1f2937;">타겟 리스트</div>
-                    <span style="font-size: 12px; color: #8b5cf6; font-weight: 600;">4명 선택됨</span>
-                  </div>
-
-                  <div class="invitee-list" style="flex: 1; overflow-y: auto;">
-                    <div class="invitee-item">
-                      <div class="invitee-info">
-                        <div class="invitee-avatar">박</div>
-                        <div class="invitee-details">
-                          <div class="name">박○○ (56세/F)</div>
-                          <div class="meta">T2DM, CGM 사용 중</div>
-                        </div>
-                      </div>
-                      <button class="invitee-remove">✕</button>
-                    </div>
-                    <div class="invitee-item">
-                      <div class="invitee-info">
-                        <div class="invitee-avatar">이</div>
-                        <div class="invitee-details">
-                          <div class="name">이○○ (62세/M)</div>
-                          <div class="meta">T2DM, 복약 관리 중</div>
-                        </div>
-                      </div>
-                      <button class="invitee-remove">✕</button>
-                    </div>
-                    <div class="invitee-item">
-                      <div class="invitee-info">
-                        <div class="invitee-avatar">최</div>
-                        <div class="invitee-details">
-                          <div class="name">최○○ (48세/F)</div>
-                          <div class="meta">T2DM, 인슐린 펌프</div>
-                        </div>
-                      </div>
-                      <button class="invitee-remove">✕</button>
-                    </div>
-                    <div class="invitee-item">
-                      <div class="invitee-info">
-                        <div class="invitee-avatar">정</div>
-                        <div class="invitee-details">
-                          <div class="name">정○○ (55세/M)</div>
-                          <div class="meta">T2DM + 고혈압</div>
-                        </div>
-                      </div>
-                      <button class="invitee-remove">✕</button>
-                    </div>
-                  </div>
-
-                  <!-- 카운터 -->
-                  <div class="invitee-counter" style="margin-top: 12px;">
-                    <span class="text">타겟 대상자: 4명 / 목표: 100명</span>
-                    <span class="progress">4%</span>
-                  </div>
-                </div>
-
-                <!-- 오른쪽: 사용자 검색 -->
-                <div style="flex: 1; padding: 20px; background: #f9fafb; display: flex; flex-direction: column;">
-                  <div style="font-size: 14px; font-weight: 600; color: #1f2937; margin-bottom: 12px;">UniQdata 사용자 검색</div>
-
-                  <!-- 검색바 -->
-                  <div class="search-bar" style="margin-bottom: 12px;">
-                    <input type="text" placeholder="닉네임, 건강 태그, 관심 분야로 검색">
-                    <button>검색</button>
-                  </div>
-
-                  <!-- 필터 칩 -->
-                  <div class="filter-chips" style="margin-bottom: 16px;">
-                    <span class="filter-chip">전체</span>
-                    <span class="filter-chip active">당뇨 (T2DM)</span>
-                    <span class="filter-chip">고혈압</span>
-                    <span class="filter-chip">심장질환</span>
-                    <span class="filter-chip">비만</span>
-                  </div>
-
-                  <!-- 검색 결과 -->
-                  <div style="font-size: 12px; color: #6b7280; margin-bottom: 8px;">검색 결과 — <strong>T2DM</strong> 태그 사용자 1,200명 중</div>
-                  <div style="flex: 1; overflow-y: auto;">
-                    <div class="invitee-item" style="background: white; border: 1px solid #e5e7eb;">
-                      <div class="invitee-info">
-                        <div class="invitee-avatar" style="background: linear-gradient(135deg, #e0e7ff, #c7d2fe); color: #4338ca;">김</div>
-                        <div class="invitee-details">
-                          <div class="name">김○○ (51세/M)</div>
-                          <div class="meta">T2DM, 메트포르민 복용 중, CGM 미사용</div>
-                        </div>
-                      </div>
-                      <button style="padding: 4px 12px; border-radius: 6px; border: 1px solid #8b5cf6; background: white; color: #7c3aed; font-size: 12px; cursor: pointer; font-weight: 500;">+ 선택</button>
-                    </div>
-                    <div class="invitee-item" style="background: white; border: 1px solid #e5e7eb;">
-                      <div class="invitee-info">
-                        <div class="invitee-avatar" style="background: linear-gradient(135deg, #e0e7ff, #c7d2fe); color: #4338ca;">한</div>
-                        <div class="invitee-details">
-                          <div class="name">한○○ (63세/F)</div>
-                          <div class="meta">T2DM + 고혈압, 인슐린 주사</div>
-                        </div>
-                      </div>
-                      <button style="padding: 4px 12px; border-radius: 6px; border: 1px solid #8b5cf6; background: white; color: #7c3aed; font-size: 12px; cursor: pointer; font-weight: 500;">+ 선택</button>
-                    </div>
-                    <div class="invitee-item" style="background: white; border: 1px solid #e5e7eb;">
-                      <div class="invitee-info">
-                        <div class="invitee-avatar" style="background: linear-gradient(135deg, #e0e7ff, #c7d2fe); color: #4338ca;">윤</div>
-                        <div class="invitee-details">
-                          <div class="name">윤○○ (45세/F)</div>
-                          <div class="meta">T2DM, 식이요법, 활동량 높음</div>
-                        </div>
-                      </div>
-                      <button style="padding: 4px 12px; border-radius: 6px; border: 1px solid #8b5cf6; background: white; color: #7c3aed; font-size: 12px; cursor: pointer; font-weight: 500;">+ 선택</button>
-                    </div>
-                    <div class="invitee-item" style="background: white; border: 1px solid #e5e7eb;">
-                      <div class="invitee-info">
-                        <div class="invitee-avatar" style="background: linear-gradient(135deg, #e0e7ff, #c7d2fe); color: #4338ca;">송</div>
-                        <div class="invitee-details">
-                          <div class="name">송○○ (58세/M)</div>
-                          <div class="meta">T2DM, CGM 사용, 운동 습관</div>
-                        </div>
-                      </div>
-                      <button style="padding: 4px 12px; border-radius: 6px; border: 1px solid #8b5cf6; background: white; color: #7c3aed; font-size: 12px; cursor: pointer; font-weight: 500;">+ 선택</button>
-                    </div>
-                    <div class="invitee-item" style="background: #f3f0ff; border: 1px solid #c4b5fd; opacity: 0.6;">
-                      <div class="invitee-info">
-                        <div class="invitee-avatar" style="background: linear-gradient(135deg, #e0e7ff, #c7d2fe); color: #4338ca;">정</div>
-                        <div class="invitee-details">
-                          <div class="name">정○○ (55세/M)</div>
-                          <div class="meta">T2DM + 고혈압 — 이미 선택됨</div>
-                        </div>
-                      </div>
-                      <span style="font-size: 11px; color: #7c3aed; font-weight: 500;">선택됨 ✓</span>
-                    </div>
-                  </div>
-                </div>
-
-              </div>
-            </div>
-          </div>
-
-          <!-- Section 2: 모집 비율 설정 -->
-          <div class="card">
-            <div class="card-header">
-              <h3>📊 모집 비율 계획</h3>
+              <h3>&#x1F52C; 바이오마커 (고급)</h3>
             </div>
             <div class="card-body">
-              <!-- 비율 바 -->
-              <div class="ratio-section">
-                <div class="ratio-bar">
-                  <div class="pre-invite" style="width: 40%;">사전 초대 40%</div>
-                  <div class="open-recruit" style="width: 60%;">공개 모집 60%</div>
-                </div>
+              <p class="data-category-desc">AI 분석을 위한 고급 바이오마커 데이터입니다. 특수 장비나 검사가 필요할 수 있습니다.</p>
 
-                <!-- 슬라이더 -->
-                <input type="range" class="ratio-slider" min="0" max="100" value="40" id="ratioSlider">
-                <div class="ratio-labels">
-                  <span>0% 사전 초대</span>
-                  <span>50 / 50</span>
-                  <span>100% 사전 초대</span>
+              <div class="data-grid">
+                <div class="data-item" data-group="biomarker" data-id="voice_biomarker">
+                  <span class="icon">&#x1F3A4;</span>
+                  <div class="info">
+                    <div class="name">음성 바이오마커</div>
+                    <div class="desc">음성 패턴 AI 분석</div>
+                  </div>
+                  <div class="check"></div>
                 </div>
-              </div>
-
-              <!-- 비율 정보 박스 -->
-              <div class="ratio-info-grid">
-                <div class="ratio-info-box pre-invite">
-                  <h4>사전 초대</h4>
-                  <div class="count">40명</div>
-                  <p>조건에 맞는 UniQdata 사용자에게 직접 초대. 모집 시작 시 알림 발송.</p>
+                <div class="data-item" data-group="biomarker" data-id="cognitive_test">
+                  <span class="icon">&#x1F9E0;</span>
+                  <div class="info">
+                    <div class="name">인지 기능 테스트</div>
+                    <div class="desc">반응속도, 기억력</div>
+                  </div>
+                  <div class="check"></div>
                 </div>
-                <div class="ratio-info-box open-recruit">
-                  <h4>공개 모집</h4>
-                  <div class="count">60명</div>
-                  <p>조건 맞는 UniQdata 전체 사용자에게 공개. 모집 시작 시 앱에 노출.</p>
+                <div class="data-item" data-group="biomarker" data-id="hba1c">
+                  <span class="icon">&#x1FA78;</span>
+                  <div class="info">
+                    <div class="name">HbA1c</div>
+                    <div class="desc">당화혈색소 (연구 전후)</div>
+                  </div>
+                  <div class="check"></div>
+                </div>
+                <div class="data-item" data-group="biomarker" data-id="blood_test">
+                  <span class="icon">&#x1F4CA;</span>
+                  <div class="info">
+                    <div class="name">혈액 검사</div>
+                    <div class="desc">지질, 간기능 등</div>
+                  </div>
+                  <div class="check"></div>
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- Section 3: 모집 설정 -->
-          <div class="card">
-            <div class="card-header">
-              <h3>⚙️ 모집 조건 설정</h3>
-            </div>
-            <div class="card-body">
-              <!-- 목표 인원 -->
-              <div class="setting-row">
-                <div class="setting-left">
-                  <div class="title">목표 인원</div>
-                  <div class="desc">선착순 모집 — 도달 시 자동 마감 후 연구 일괄 시작</div>
-                </div>
-                <div class="setting-right">
-                  <input type="number" class="setting-input" value="100">
-                  <span class="setting-unit">명</span>
-                </div>
+          <!-- 요약 -->
+          <div class="summary-box">
+            <h4>선택된 데이터 요약</h4>
+            <div class="summary-grid">
+              <div class="summary-item">
+                <div class="value" id="summary-passive">4</div>
+                <div class="label">패시브 데이터</div>
               </div>
-
-              <!-- 최소 시작 인원 -->
-              <div class="setting-row">
-                <div class="setting-left">
-                  <div class="title">최소 시작 인원</div>
-                  <div class="desc">이 수 이상이면 연구자가 수동으로 시작 가능</div>
-                </div>
-                <div class="setting-right">
-                  <input type="number" class="setting-input" value="50">
-                  <span class="setting-unit">명</span>
-                </div>
+              <div class="summary-item">
+                <div class="value" id="summary-active">3</div>
+                <div class="label">능동 데이터</div>
               </div>
-
-              <!-- 초대 수락 대기 기한 -->
-              <div class="setting-row">
-                <div class="setting-left">
-                  <div class="title">초대 수락 대기</div>
-                  <div class="desc">기한 내 미수락 시 초대 자동 만료 → 공개 모집으로 전환</div>
-                </div>
-                <div class="setting-right">
-                  <input type="number" class="setting-input" value="3">
-                  <span class="setting-unit">일</span>
-                </div>
+              <div class="summary-item">
+                <div class="value" id="summary-qual">1</div>
+                <div class="label">맥락 데이터</div>
               </div>
-
-              <!-- 대기자 설정 -->
-              <div class="setting-row">
-                <div class="setting-left">
-                  <div class="title">대기자 설정</div>
-                  <div class="desc">초대 거절/미응답 시 대기자 자동 배정</div>
-                </div>
-                <div class="setting-right">
-                  <div class="toggle" title="ON"></div>
-                  <span class="setting-unit" style="min-width: 24px;">ON</span>
-                </div>
-              </div>
-
-              <!-- 알림 방식 -->
-              <div class="setting-row">
-                <div class="setting-left">
-                  <div class="title">알림 방식</div>
-                  <div class="desc">참가자에게 모집 알림을 보낼 채널</div>
-                </div>
-                <div class="setting-right">
-                  <div class="checkbox-group">
-                    <label class="checkbox-item checked">
-                      <input type="checkbox" checked> 앱 푸시
-                    </label>
-                    <label class="checkbox-item">
-                      <input type="checkbox"> SMS
-                    </label>
-                    <label class="checkbox-item">
-                      <input type="checkbox"> 이메일
-                    </label>
-                  </div>
-                </div>
+              <div class="summary-item">
+                <div class="value" id="summary-frequency">~9회/일</div>
+                <div class="label">예상 입력 빈도</div>
               </div>
             </div>
-          </div>
-
-          <!-- Section 4: 모집 미리보기 -->
-          <div class="card">
-            <div class="card-header">
-              <h3>📱 모집 미리보기</h3>
-              <span style="font-size: 12px; color: #6b7280;">참가자에게 보이는 화면</span>
-            </div>
-            <div class="card-body" style="display: flex; justify-content: center; padding: 32px 20px;">
-              <!-- 폰 목업 -->
-              <div class="phone-mockup">
-                <div class="phone-screen">
-                  <div class="phone-statusbar">
-                    <span>9:41</span>
-                    <span>UniQdata</span>
-                  </div>
-                  <div class="phone-notification">
-                    <div class="notif-header">
-                      <div class="notif-icon">U</div>
-                      <div>
-                        <div class="notif-title">연구 참여 초대</div>
-                        <div class="notif-subtitle">김연구 · 서울대학교병원</div>
-                      </div>
-                    </div>
-                    <div class="research-title">저탄수화물 식단의 혈당 변동 개선 효과 연구</div>
-                    <div class="research-meta">
-                      <div class="research-meta-item">
-                        <span class="label">연구 기간</span>
-                        <span class="value">56일 (8주)</span>
-                      </div>
-                      <div class="research-meta-item">
-                        <span class="label">보상</span>
-                        <span class="value highlight">50 XRP + 보너스</span>
-                      </div>
-                      <div class="research-meta-item">
-                        <span class="label">수집 데이터</span>
-                        <span class="value">CGM, 활동량, 식단</span>
-                      </div>
-                      <div class="research-meta-item">
-                        <span class="label">에스크로</span>
-                        <span class="value" style="color: #22c55e;">보상 보장됨</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div style="padding:10px 16px; background:#faf5ff; border-top:1px solid #ede9fe;">
-                    <div style="font-size:11px; color:#6d28d9; font-weight:600; margin-bottom:6px;">📄 동의서 확인</div>
-                    <div style="font-size:10px; color:#6b7280; line-height:1.5;">참여 전 연구 동의서를 확인하고 서명합니다. 수집 데이터, 보상, 위험 요소를 확인하세요.</div>
-                  </div>
-                  <div class="phone-buttons">
-                    <button class="btn-accept">동의서 확인 및 서명</button>
-                    <button class="btn-decline">거절</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- 안내 박스 -->
-          <div class="warning-box" style="background: #eff6ff; border-color: #93c5fd;">
-            <h4 style="color: #1e40af;">ℹ️ 다음 단계 안내</h4>
-            <p style="color: #1d4ed8;">타겟 설정 완료 후 <strong>IRB 심의(Step 5)</strong> → <strong>에스크로 예치 + 모집 실행(Step 6)</strong>으로 진행됩니다. 실제 초대 발송과 공개 모집은 Step 6에서 시작됩니다.</p>
           </div>
 
           <!-- 네비게이션 버튼 -->
           <div class="btn-row">
-            <a href="create-step3.html" class="btn btn-secondary">← 이전</a>
-            <a href="create-step5.html" class="btn btn-primary">다음: IRB 심의 →</a>
+            <a href="create-step3.html" class="btn btn-secondary">&#x2190; 이전</a>
+            <a href="create-step5.html" class="btn btn-primary">다음 &#x2192;</a>
           </div>
 
         </div><!-- /.editor-panel -->
 
-        <!-- ③ AI 모집 어시스턴트 -->
+        <!-- AI 데이터 어시스턴트 -->
         <div class="chat-panel">
           <div class="chat-panel-inner">
             <div class="chat-header">
               <div class="title">
-                <span class="icon">🤖</span>
-                AI 타겟 어시스턴트
+                <span class="icon">&#x1F916;</span>
+                AI 데이터 어시스턴트
               </div>
-              <div class="sub">대상자 선정 전략을 조언합니다</div>
+              <div class="sub">데이터 수집 설계를 도와드립니다</div>
             </div>
 
             <div class="chat-context">
               <div class="label">현재 연구</div>
-              <div class="value">당뇨 복약 순응도 연구 — 타겟 설정 중</div>
+              <div class="value">저탄수화물 식단 혈당 변동 RCT &#x2014; 데이터 수집 설계 중</div>
               <div class="chat-context-chips">
                 <span class="chat-context-chip">RCT</span>
-                <span class="chat-context-chip">목표 100명 (선착순)</span>
-                <span class="chat-context-chip">사전초대 40%</span>
-                <span class="chat-context-chip">공개 60%</span>
+                <span class="chat-context-chip">8주</span>
+                <span class="chat-context-chip">CGM 기반</span>
+                <span class="chat-context-chip">n=100</span>
               </div>
             </div>
 
             <div class="chat-messages">
               <div class="msg ai">
                 <div class="sender">AI 어시스턴트</div>
-                현재 타겟 대상자 4명이 선택되어 있고, 목표 인원 대비 <strong>4%</strong> 수준입니다. UniQdata 플랫폼 내 <strong>T2DM 태그 사용자</strong>가 약 <strong>1,200명</strong>이므로 충분한 풀이 있습니다.<br><br>
-                대상자 선택 시 <strong>CGM 기기 보유자</strong>를 우선 필터링하면 연구 적합도가 높아집니다.
+                연구 설계를 분석했습니다. CGM 데이터가 핵심이므로, 다음 패시브 데이터를 추천합니다:<br><br>
+                &#x2713; CGM 연속혈당<br>
+                &#x2713; 활동량 (만보기)<br>
+                &#x2713; 수면 패턴<br><br>
+                추가로 식단 기록은 액티브 데이터로 수집하는 것을 권장합니다.
               </div>
 
               <div class="msg user">
                 <div class="sender">김연구</div>
-                T2DM 사용자 중 CGM 보유자만 필터링하면 몇 명이야?
+                식단 기록 빈도는?
               </div>
 
               <div class="msg ai">
                 <div class="sender">AI 어시스턴트</div>
-                T2DM 태그 사용자 1,200명 중 <strong>CGM 기기 보유자는 약 340명</strong>입니다. 목표 100명 대비 충분한 풀이에요.<br><br>
-                타겟 설정 완료 후 IRB 심의(Step 5) → 에스크로 예치(Step 6)를 거치면 <strong>실제 모집이 시작</strong>됩니다. 지금은 대상자 조건만 잘 잡아두세요.
+                RCT 특성상 매 식사(3회/일) 기록을 권장합니다. 사진 촬영 + AI 분석으로 탄수화물 섭취량을 자동 추정하면 참여자 부담을 줄일 수 있습니다.<br><br>
+                <strong>추천 EMA 빈도:</strong><br>
+                &#x2713; 식단: 매 식사 후 (3회/일)<br>
+                &#x2713; 기분: 아침/저녁 (2회/일)<br>
+                &#x2713; 복약: 복용 시마다
               </div>
             </div>
 
             <div class="chat-quick">
-              <div class="label">빠른 액션</div>
+              <div class="label">빠른 질문</div>
               <div class="chat-quick-chips">
-                <span class="chat-quick-chip">목표 인원 조정</span>
-                <span class="chat-quick-chip">대상자 추가</span>
-                <span class="chat-quick-chip">적합도 분석</span>
-                <span class="chat-quick-chip">비율 조정</span>
+                <span class="chat-quick-chip">수집 빈도 추천</span>
+                <span class="chat-quick-chip">필수 vs 선택</span>
+                <span class="chat-quick-chip">참여자 부담 분석</span>
+                <span class="chat-quick-chip">민감도 레벨 확인</span>
               </div>
             </div>
 
             <div class="chat-input">
               <div class="chat-input-wrapper">
-                <input type="text" placeholder="예: 연령대를 40~65세로 좁히면 몇 명이야?">
-                <button class="chat-send-btn">➤</button>
+                <input type="text" placeholder="예: 수면 데이터도 추가해줘">
+                <button class="chat-send-btn">&#x27A4;</button>
               </div>
             </div>
           </div>
@@ -1057,100 +890,295 @@
     </div><!-- /.workspace-wrap -->
   </div><!-- /.layout -->
 
-  <!-- 디자이너 노트 토글 -->
-  <button class="toggle-notes" onclick="document.querySelector('.designer-notes').classList.toggle('show')">📋 디자이너 노트</button>
+  <!-- ========== 모달: 패시브 데이터 AI 추천 근거 ========== -->
+  <div class="modal-overlay" id="passive-modal" onclick="if(event.target===this)closeModal('passive-modal')">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>&#x1F916; 패시브 데이터 AI 추천 근거</h3>
+        <div style="display:flex; align-items:center; gap: 8px;">
+          <span class="badge">AI 분석</span>
+          <button class="modal-close" onclick="closeModal('passive-modal')">&#x2715;</button>
+        </div>
+      </div>
+      <div class="modal-body">
+        <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; padding: 14px 16px; margin-bottom: 16px; font-size: 13px; color: #166534; line-height: 1.6;">
+          연구 설계(RCT, 저탄수화물 식단, CGM 기반 혈당 변동)를 분석하여 <strong>4개 패시브 데이터 항목</strong>을 추천합니다. 유사 RCT 41건의 데이터 수집 패턴을 참고했습니다.
+        </div>
 
-  <div class="designer-notes">
-    <h3>📋 디자이너 노트: Step 4 - 참가자 타겟 설정 (워크스페이스)</h3>
+        <div class="rationale-item">
+          <div class="rationale-icon">&#x1F4C8;</div>
+          <div class="rationale-info">
+            <div class="rationale-title">CGM (연속혈당) &#x2014; 필수</div>
+            <div class="rationale-desc">MAGE 계산에 최소 14일 연속 측정 필요. 5분 간격 데이터로 혈당 변동성(MAGE, CV%, TIR)을 정밀 측정합니다.</div>
+            <div class="rationale-stat">유사 RCT 41건 중 38건(93%)이 CGM을 1차 데이터로 사용</div>
+          </div>
+        </div>
+
+        <div class="rationale-item">
+          <div class="rationale-icon">&#x2764;&#xFE0F;</div>
+          <div class="rationale-info">
+            <div class="rationale-title">심박수 &#x2014; 권장</div>
+            <div class="rationale-desc">저혈당 에피소드 시 심박수 변화 감지. 야간 저혈당 탐지 보조 지표로 활용 가능합니다.</div>
+            <div class="rationale-stat">식이 개입 RCT의 67%가 심박수를 보조 지표로 수집</div>
+          </div>
+        </div>
+
+        <div class="rationale-item">
+          <div class="rationale-icon">&#x1F6B6;</div>
+          <div class="rationale-info">
+            <div class="rationale-title">활동량/걸음수 &#x2014; 권장</div>
+            <div class="rationale-desc">신체 활동은 혈당에 직접 영향. 식단 효과를 분리하기 위한 통제 변수로 필수적입니다.</div>
+            <div class="rationale-stat">운동량 미통제 시 MAGE 효과크기 과대추정 위험 (bias ~15%)</div>
+          </div>
+        </div>
+
+        <div class="rationale-item">
+          <div class="rationale-icon">&#x1F634;</div>
+          <div class="rationale-info">
+            <div class="rationale-title">수면 &#x2014; 권장</div>
+            <div class="rationale-desc">수면 품질/시간은 인슐린 저항성과 직결. Dawn phenomenon(새벽 현상) 분석에 수면 데이터가 필요합니다.</div>
+            <div class="rationale-stat">수면-혈당 상관 r=0.42 (Park et al. 2024)</div>
+          </div>
+        </div>
+
+        <div class="method-note">
+          <strong>참고:</strong> 체온, 위치/이동 데이터는 본 연구 설계에서 직접적 분석 가치가 낮아 선택 사항으로 분류했습니다. 필요 시 탐색적 분석용으로 추가 가능합니다.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== 모달: 능동 데이터 AI 추천 근거 ========== -->
+  <div class="modal-overlay" id="active-modal" onclick="if(event.target===this)closeModal('active-modal')">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>&#x1F916; 능동 데이터 AI 추천 근거</h3>
+        <div style="display:flex; align-items:center; gap: 8px;">
+          <span class="badge">AI 분석</span>
+          <button class="modal-close" onclick="closeModal('active-modal')">&#x2715;</button>
+        </div>
+      </div>
+      <div class="modal-body">
+        <div style="background: #fef3c7; border: 1px solid #fcd34d; border-radius: 10px; padding: 14px 16px; margin-bottom: 16px; font-size: 13px; color: #92400e; line-height: 1.6;">
+          능동 데이터는 참여자 부담과 직결됩니다. <strong>3개 필수 항목</strong>을 추천하며, EMA 빈도는 완료율을 고려하여 최적화했습니다.
+        </div>
+
+        <div class="rationale-item">
+          <div class="rationale-icon">&#x1F37D;&#xFE0F;</div>
+          <div class="rationale-info">
+            <div class="rationale-title">식단 기록 &#x2014; 필수 (3회/일)</div>
+            <div class="rationale-desc">저탄수화물 식단 순응도를 직접 측정하는 핵심 변수. 매 식사 후 탄수화물 섭취량을 기록합니다. 사진 촬영 + AI 분석으로 자동 추정하면 입력 시간을 70% 단축 가능합니다.</div>
+            <div class="rationale-stat">3회/일 기록 시 순응도 측정 정확도 92% (vs 1회/일 64%)</div>
+          </div>
+        </div>
+
+        <div class="rationale-item">
+          <div class="rationale-icon">&#x1F48A;</div>
+          <div class="rationale-info">
+            <div class="rationale-title">복약 기록 &#x2014; 필수 (복용 시)</div>
+            <div class="rationale-desc">혈당 강하제/인슐린 사용 여부는 혈당 변동의 주요 교란변수. 복약 시간과 용량을 기록하여 식단 효과를 분리합니다.</div>
+            <div class="rationale-stat">복약 미기록 시 MAGE 효과크기 해석 불가 (교란 위험)</div>
+          </div>
+        </div>
+
+        <div class="rationale-item">
+          <div class="rationale-icon">&#x1F60A;</div>
+          <div class="rationale-info">
+            <div class="rationale-title">기분/컨디션 &#x2014; 권장 (2회/일)</div>
+            <div class="rationale-desc">식단 개입의 삶의 질 영향을 2차 결과변수로 측정. 저탄수화물 식단 초기 피로감/짜증 등 부작용 모니터링에도 활용됩니다.</div>
+            <div class="rationale-stat">EMA 2회/일(아침/저녁)이 부담 대비 데이터 품질 최적</div>
+          </div>
+        </div>
+
+        <div class="method-note">
+          <strong>참여자 부담 분석:</strong> 현재 설정(식단 3회 + 복약 수시 + 기분 2회)으로 하루 약 9회 입력, 예상 소요 시간 12분/일. 완료율 유지를 위해 운동/수분 기록은 선택 사항으로 분류했습니다.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 디자이너 노트 토글 -->
+  <button class="toggle-notes" onclick="toggleNotes()">&#x1F4CB; 디자이너 노트</button>
+
+  <!-- 디자이너 노트 -->
+  <div class="designer-notes" id="designer-note">
+    <h3>&#x1F4CB; 디자이너 노트: Step 3 - 데이터 수집</h3>
     <div class="content">
       <strong>레이아웃:</strong><br>
-      ① Nav (240px) | ② 타겟 설정 에디터 (flex:1) | ③ AI 타겟 어시스턴트 (360px)<br>
-      Step 3과 동일한 workspace-wrap 패턴 (step-bar → workspace → editor + chat)<br><br>
+      &#x2460; Nav (240px) | &#x2461; 데이터 수집 에디터 (flex:1) | &#x2462; AI 데이터 어시스턴트 (360px)<br>
+      Step 6과 동일한 workspace-wrap 패턴 (step-bar &#x2192; workspace &#x2192; editor + chat)<br><br>
 
-      <strong>② 에디터:</strong><br>
-      - 타겟 대상자 지정 (2패널: 왼쪽 선택 리스트 / 오른쪽 사용자 검색)<br>
-      - 모집 비율 계획 (사전 초대 / 공개 모집)<br>
-      - 모집 조건 설정: 목표 인원, 최소 시작 인원, 수락 대기 기한, 대기자, 알림 방식<br>
-      - 모집 미리보기: 폰 목업 (참가자 시점)<br>
-      - 안내 박스: 실제 모집은 Step 6에서 시작<br><br>
+      <strong>데이터 분류:</strong><br>
+      &bull; <strong>패시브</strong>: 자동 수집 (CGM, 활동량, 수면, 심박수) - 참여자 부담 최소<br>
+      &bull; <strong>능동 (EMA)</strong>: 직접 입력 (식단, 복약, 기분) - 빈도 설정 중요<br>
+      &bull; <strong>맥락 (Qual)</strong>: 식사 사진/일기/사건 로그 등 (정량 해석 보완)<br>
+      &bull; <strong>바이오마커</strong>: 고급 분석용 (음성, 인지, 혈액검사)<br><br>
 
-      <strong>③ AI 타겟 어시스턴트:</strong><br>
-      - 대상자 선정 전략 맥락을 보고 답변하는 대화형 패널<br>
-      - 플랫폼 내 매칭 가능 사용자 수, 적합도 분석 등<br>
-      - 빠른 액션 칩: 목표 인원 조정, 대상자 추가, 적합도 분석, 비율 조정<br><br>
+      <strong>EMA 빈도 설정:</strong><br>
+      &bull; 연구 방법론에 따라 AI가 적정 빈도 추천<br>
+      &bull; MRT: 하루 여러 번 무작위<br>
+      &bull; 코호트: 하루 1-2회 고정<br><br>
 
-      <strong>타겟 대상자:</strong><br>
-      • UniQdata 가입 사용자 중 조건에 맞는 참여자를 PI가 미리 선택<br>
-      • 사용자 검색: 닉네임, 건강 태그, 관심 분야로 검색<br>
-      • 필터링: 건강 태그별 빠른 필터 제공<br>
-      • 실제 초대 발송은 Step 6 (에스크로 완료 후)에서 실행<br><br>
-
-      <strong>핵심 포인트:</strong><br>
-      • 이 단계는 "누구를 모집할 것인가" 를 설정하는 단계<br>
-      • 실제 모집 실행(초대 발송, 공개 모집 시작)은 Step 6에서 진행<br>
-      • IRB 심의(Step 5) + 에스크로 예치(Step 6) 완료 후 모집 시작
+      <strong>참여자 부담 계산:</strong><br>
+      &bull; 예상 일일 입력 횟수 표시<br>
+      &bull; 너무 많으면 완료율 하락 경고
     </div>
   </div>
 
   <!-- 기능 명세 -->
   <div class="designer-notes" id="func-spec">
-    <h3 style="color: #047857;">⚙️ 기능 명세: Step 4 - 참가자 타겟 설정</h3>
+    <h3 style="color: #047857;">&#x2699;&#xFE0F; 기능 명세: Step 3 - 데이터 수집</h3>
     <div class="content" style="columns: 1;">
       <strong>핵심 기능:</strong><br>
-      • UniQdata 가입 사용자 검색 및 타겟 선택<br>
-      • 모집 비율 계획 (사전 초대 / 공개 모집)<br>
-      • 목표 인원, 최소 시작 인원, 수락 대기 기한 설정<br>
-      • 알림 채널 선택 (앱 푸시, SMS, 이메일)<br>
-      • 모집 미리보기 (참가자 시점)<br><br>
+      &bull; 수집 데이터 항목 선택 (토글)<br>
+      &bull; 4개 카테고리: 패시브/능동(EMA)/맥락/바이오마커<br>
+      &bull; EMA 빈도 설정 (하루 N회)<br>
+      &bull; 참여자 부담 점수 실시간 계산<br><br>
 
-      <strong>비즈니스 로직:</strong><br>
-      • 타겟 설정 완료 후 IRB 심의(Step 5)으로 이동<br>
-      • 이 단계에서는 대상자 조건/풀만 정의 (모집 실행 X)<br>
-      • 실제 모집은 Step 6에서 에스크로 예치 완료 후 실행
+      <strong>데이터 민감도 레벨 (L1-L4):</strong><br>
+      &bull; <strong>L1 (Public)</strong>: app_id, 타임스탬프 - At Rest 암호화<br>
+      &bull; <strong>L2 (Internal)</strong>: 연령대, 성별 - At Rest 암호화<br>
+      &bull; <strong>L3 (Confidential)</strong>: 이메일, 전화 - At Rest + 필드 암호화<br>
+      &bull; <strong>L4 (Restricted)</strong>: 진단코드, 처방, 바이오마커 - At Rest + 필드 암호화 + 접근 로그<br><br>
+
+      <strong>동의 스코프 (Consent Scope):</strong><br>
+      &bull; 형식: <code>{domain}:{metric}:{permission}:{range}</code><br>
+      &bull; 예시: <code>health:heart_rate:read:30d</code><br>
+      &bull; 예시: <code>med:medication:write:7d</code><br>
+      &bull; 수집 항목별로 필요한 동의 스코프 자동 생성<br><br>
+
+      <strong>AI 어시스턴트:</strong><br>
+      &bull; 연구 목적 기반 추천 항목 표시<br>
+      &bull; "추천 적용" 버튼으로 일괄 선택<br>
+      &bull; 인과 연결 예상 설명
     </div>
   </div>
 
   <!-- 백엔드 호출 -->
   <div class="designer-notes" id="backend-spec">
-    <h3 style="color: #6d28d9;">🔗 백엔드 호출: Step 4</h3>
+    <h3 style="color: #6d28d9;">&#x1F517; 백엔드 호출: Step 3</h3>
     <div class="content" style="columns: 1;">
-      <strong>1. 사용자 검색:</strong><br>
+      <strong>1. 데이터 수집 설정 저장 (민감도 레벨 포함)</strong><br>
       <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0; font-size: 11px; font-family: 'SF Mono', Monaco, monospace;">
-GET /users/search?q=당뇨&tags=t2dm&platform=uniqdata<br>
-→ { "users": [{ "id": "uuid", "nickname": "박○○", "age": 56, "health_tags": ["T2DM"] }] }
+PATCH /api/v2/projects/:id<br>
+Headers: Authorization: Bearer {jwt}<br><br>
+Request Body:<br>
+{<br>
+&nbsp;&nbsp;"data_collection": {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"passive": [<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ "type": "cgm", "sensitivity_level": "L4", "consent_scope": "health:blood_glucose:read:60d", "frequency": "5min" },<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ "type": "heart_rate", "sensitivity_level": "L2", "consent_scope": "health:heart_rate:read:60d", "frequency": "continuous" },<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ "type": "sleep", "sensitivity_level": "L2", "consent_scope": "health:sleep:read:60d", "frequency": "daily" },<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ "type": "steps", "sensitivity_level": "L1", "consent_scope": "health:activity:read:60d", "frequency": "daily" }<br>
+&nbsp;&nbsp;&nbsp;&nbsp;],<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"active": [<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ "type": "medication", "sensitivity_level": "L4", "consent_scope": "med:medication:read:60d", "ema_frequency": "per_dose" },<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ "type": "mood", "sensitivity_level": "L2", "consent_scope": "health:mood:read:60d", "ema_frequency": "2_per_day" },<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ "type": "diet", "sensitivity_level": "L2", "consent_scope": "health:nutrition:read:60d", "ema_frequency": "3_per_day" }<br>
+&nbsp;&nbsp;&nbsp;&nbsp;],<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"qualitative": [<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ "type": "meal_photo", "sensitivity_level": "L3", "consent_scope": "media:photo:read:60d" }<br>
+&nbsp;&nbsp;&nbsp;&nbsp;]<br>
+&nbsp;&nbsp;}<br>
+}<br>
+&#x2192; 200 OK { "project_id": "uuid", "data_collection_updated": true, "estimated_burden_score": 7.5, "l4_data_included": true }
       </code><br>
 
-      <strong>2. 타겟 설정 저장:</strong><br>
+      <strong>2. AI 추천 데이터 항목 조회</strong><br>
       <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0; font-size: 11px; font-family: 'SF Mono', Monaco, monospace;">
-POST /enterprise/projects/:id/target/config<br>
-{<br>
-&nbsp;&nbsp;"target_user_ids": ["uuid1", "uuid2", ...],<br>
-&nbsp;&nbsp;"pre_invite_ratio": 0.4,<br>
-&nbsp;&nbsp;"open_ratio": 0.6,<br>
-&nbsp;&nbsp;"target_participants": 100,<br>
-&nbsp;&nbsp;"min_start_participants": 50,<br>
-&nbsp;&nbsp;"auto_close_on_target": true,<br>
-&nbsp;&nbsp;"invite_accept_deadline_days": 3,<br>
-&nbsp;&nbsp;"waitlist_enabled": true,<br>
-&nbsp;&nbsp;"notification_channels": ["push", "sms"]<br>
-}<br>
-→ { "status": "target_configured" }
+POST /api/v2/ai/recommend-data-collection<br>
+{ "project_id": "uuid", "research_question": "복약 순응도와 혈당 변동의 상관관계", "methodology": "prospective_cohort" }<br>
+&#x2192; 200 OK { "recommendations": [...], "causal_graph_preview": { "edges": [...] } }
+      </code><br>
+
+      <strong>3. 참여자 부담 점수 계산</strong><br>
+      <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0; font-size: 11px; font-family: 'SF Mono', Monaco, monospace;">
+POST /api/v2/projects/:id/calculate-burden<br>
+&#x2192; 200 OK { "burden_score": 7.5, "daily_prompts": 9, "time_per_day_minutes": 12, "warning": "daily_prompts > 8: 완료율 하락 위험" }
+      </code><br>
+
+      <strong>4. 동의서 템플릿 미리보기 생성</strong><br>
+      <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0; font-size: 11px; font-family: 'SF Mono', Monaco, monospace;">
+POST /api/v2/projects/:id/consent-preview<br>
+&#x2192; 200 OK { "consent_template": { "title": "연구 참여 동의서", "sections": [...], "passkey_required": true } }
       </code>
-      <br>
-      <em style="font-size: 11px; color: #6b7280; font-family: -apple-system, sans-serif;">※ 실제 모집 시작(recruitment/start)은 Step 6에서 호출</em>
     </div>
   </div>
 
   <script>
-    function selectMethod(type) {
-      // 탭 활성화
-      document.querySelectorAll('.method-tab').forEach(t => t.classList.remove('active'));
-      event.target.classList.add('active');
-      // 섹션 전환
-      document.querySelectorAll('.method-section').forEach(s => s.classList.remove('active'));
-      document.getElementById('method-' + type).classList.add('active');
+    // 모달 열기/닫기
+    function openModal(id) {
+      document.getElementById(id).classList.add('show');
+    }
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('show');
+    }
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        document.querySelectorAll('.modal-overlay.show').forEach(function(m) { m.classList.remove('show'); });
+      }
+    });
+
+    // 데이터 항목 토글 및 요약 업데이트
+    var items = document.querySelectorAll('.data-item');
+
+    function updateSummary() {
+      var counts = { passive: 0, active: 0, qual: 0 };
+      items.forEach(function(item) {
+        var group = item.getAttribute('data-group');
+        if (item.classList.contains('selected') && counts[group] !== undefined) {
+          counts[group] += 1;
+        }
+      });
+
+      var passive = document.getElementById('summary-passive');
+      var active = document.getElementById('summary-active');
+      var qual = document.getElementById('summary-qual');
+
+      if (passive) passive.textContent = String(counts.passive);
+      if (active) active.textContent = String(counts.active);
+      if (qual) qual.textContent = String(counts.qual);
+    }
+
+    function setSelected(item, selected) {
+      item.classList.toggle('selected', selected);
+      item.setAttribute('aria-pressed', selected ? 'true' : 'false');
+    }
+
+    items.forEach(function(item) {
+      item.setAttribute('role', 'button');
+      item.setAttribute('aria-pressed', item.classList.contains('selected') ? 'true' : 'false');
+      item.addEventListener('click', function(e) {
+        if (!e.isTrusted || e.detail !== 'ai-trigger') {
+          setSelected(item, !item.classList.contains('selected'));
+          updateSummary();
+        }
+      });
+    });
+
+    updateSummary();
+
+    // 디자이너 노트 토글 (3개 패널 순환)
+    var notesPanels = ['designer-note', 'func-spec', 'backend-spec'];
+    function toggleNotes() {
+      var currentShown = -1;
+      for (var i = 0; i < notesPanels.length; i++) {
+        if (document.getElementById(notesPanels[i]).classList.contains('show')) {
+          currentShown = i;
+          break;
+        }
+      }
+      for (var i = 0; i < notesPanels.length; i++) {
+        document.getElementById(notesPanels[i]).classList.remove('show');
+      }
+      if (currentShown === -1) {
+        document.getElementById(notesPanels[0]).classList.add('show');
+      } else if (currentShown < notesPanels.length - 1) {
+        document.getElementById(notesPanels[currentShown + 1]).classList.add('show');
+      }
     }
   </script>
+
   <script src="page-spec.js"></script>
   <link rel="stylesheet" href="../tooltip-spec.css">
   <script src="../tooltip-spec.js"></script>

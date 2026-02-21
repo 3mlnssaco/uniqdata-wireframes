@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>코호트 히트맵 — 시간 중재 + 멀티해상도</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,'Pretendard',sans-serif;background:#0a0e1a;color:#e2e8f0;line-height:1.5;overflow:hidden;height:100vh;display:flex;flex-direction:column}
+
+/* Topbar */
+.topbar{display:flex;align-items:center;padding:10px 24px;border-bottom:1px solid #1e293b;background:#0f1525;gap:14px;flex-shrink:0}
+.topbar-title{font-size:15px;font-weight:700;color:#f1f5f9}
+.topbar-sub{font-size:12px;color:#475569}
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:14px;font-size:12px;color:#64748b}
+.topbar-right strong{color:#e2e8f0}
+
+/* ======== TIMELINE BAR ======== */
+.timeline-bar{display:flex;align-items:stretch;border-bottom:1px solid #1e293b;background:#0c1120;flex-shrink:0;position:relative;height:72px}
+.tl-label{min-width:130px;display:flex;flex-direction:column;justify-content:center;padding:0 16px;border-right:1px solid #1e293b}
+.tl-label .tl-l1{font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.5px}
+.tl-label .tl-l2{font-size:8px;color:#475569;margin-top:2px}
+.tl-zoom{display:flex;gap:4px;margin-top:4px}
+.tl-zoom button{padding:1px 6px;border-radius:3px;font-size:8px;font-weight:700;border:1px solid #334155;background:transparent;color:#475569;cursor:pointer;transition:all .15s}
+.tl-zoom button:hover{border-color:#60a5fa;color:#94a3b8}
+.tl-zoom button.active{background:#1e293b;border-color:#60a5fa;color:#60a5fa}
+
+.tl-track{flex:1;position:relative;display:flex;flex-direction:column;overflow:hidden}
+
+/* Week-level cells */
+.tl-weeks{display:flex;flex:1;position:relative}
+.tl-week{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:all .15s;border-right:1px solid #151d30;position:relative}
+.tl-week:hover{background:rgba(96,165,250,0.05)}
+.tl-week.selected{background:rgba(96,165,250,0.1);border-bottom:2px solid #60a5fa}
+.tl-week.current{border-bottom:2px solid #4ade80}
+.tl-week .tw-label{font-size:11px;font-weight:700;color:#94a3b8}
+.tl-week .tw-date{font-size:8px;color:#475569;margin-top:1px}
+.tl-week.selected .tw-label{color:#60a5fa}
+.tl-week.current .tw-label{color:#4ade80}
+
+/* Day-level cells (when zoomed) */
+.tl-days{display:flex;flex:1;position:relative}
+.tl-day{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:all .15s;border-right:1px solid #0f1525;position:relative}
+.tl-day:hover{background:rgba(96,165,250,0.05)}
+.tl-day.selected{background:rgba(96,165,250,0.1);border-bottom:2px solid #60a5fa}
+.tl-day .td-label{font-size:10px;font-weight:600;color:#94a3b8}
+.tl-day .td-date{font-size:7px;color:#475569;margin-top:1px}
+.tl-day.selected .td-label{color:#60a5fa}
+
+/* Intervention markers */
+.tl-marker{position:absolute;top:2px;left:50%;transform:translateX(-50%);z-index:10}
+.tl-marker .tm-dot{width:8px;height:8px;border-radius:50%;cursor:pointer;position:relative}
+.tl-marker .tm-dot.tm-drug{background:#f472b6;box-shadow:0 0 6px rgba(244,114,182,0.4)}
+.tl-marker .tm-dot.tm-counsel{background:#38bdf8;box-shadow:0 0 6px rgba(56,189,248,0.4)}
+.tl-marker .tm-dot.tm-adjust{background:#fbbf24;box-shadow:0 0 6px rgba(251,191,36,0.4)}
+.tm-label{position:absolute;top:12px;left:50%;transform:translateX(-50%);font-size:7px;color:#94a3b8;white-space:nowrap;background:#0c1120;padding:1px 4px;border-radius:3px;pointer-events:none;display:none}
+.tl-marker:hover .tm-label{display:block}
+
+/* Week group indicator when in day view */
+.tl-back{display:flex;align-items:center;gap:6px;padding:0 8px;font-size:10px;font-weight:600;color:#60a5fa;cursor:pointer;border-right:1px solid #1e293b;min-width:60px;justify-content:center}
+.tl-back:hover{background:rgba(96,165,250,0.05)}
+
+/* ======== FILTER BAR ======== */
+.filter-bar{display:flex;align-items:center;gap:12px;padding:8px 24px;border-bottom:1px solid #151d30;background:#0c1120;flex-shrink:0;flex-wrap:wrap}
+.filter-bar .fl{font-size:10px;color:#475569;font-weight:600;text-transform:uppercase;letter-spacing:0.5px}
+.fbtn{padding:3px 8px;border-radius:5px;font-size:10px;font-weight:600;border:1px solid #334155;background:transparent;color:#64748b;cursor:pointer;transition:all 0.15s}
+.fbtn:hover{border-color:#475569;color:#94a3b8}
+.fbtn.active{background:#1e293b;border-color:#60a5fa;color:#60a5fa}
+.fbtn.f-bad{border-color:#f87171;color:#f87171}.fbtn.f-bad.active{background:rgba(248,113,113,0.1)}
+.fbtn.f-warn{border-color:#fbbf24;color:#fbbf24}.fbtn.f-warn.active{background:rgba(251,191,36,0.1)}
+.fbtn.f-good{border-color:#4ade80;color:#4ade80}.fbtn.f-good.active{background:rgba(74,222,128,0.1)}
+.f-sep{width:1px;height:18px;background:#1e293b}
+.f-count{font-size:9px;color:#475569;margin-left:3px}
+
+.legend{display:flex;gap:10px;align-items:center;margin-left:auto}
+.legend .lg{display:flex;align-items:center;gap:4px;font-size:8px;color:#64748b}
+.lg-box{width:12px;height:9px;border-radius:2px}
+
+/* ======== MAIN GRID ======== */
+.main{flex:1;overflow:auto;padding:0}
+
+/* Header row */
+.hdr-row{display:flex;align-items:center;padding:0 24px;border-bottom:1px solid #1e293b;background:#111827;position:sticky;top:0;z-index:19;flex-shrink:0}
+.hdr-patient{min-width:130px;padding:5px 0;display:flex;align-items:center;gap:8px}
+.hdr-patient span{font-size:9px;color:#475569;font-weight:600;text-transform:uppercase;letter-spacing:0.5px}
+.hdr-metrics{display:flex;flex:1;gap:2px}
+.hdr-grp{display:flex;flex-direction:column;flex:1}
+.hdr-grp-title{font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:0.5px;text-align:center;padding:2px 0;border-bottom:2px solid}
+.hdr-grp-cols{display:flex;gap:1px}
+.hdr-col{flex:1;text-align:center;font-size:8px;color:#475569;font-weight:600;padding:3px 2px;white-space:nowrap}
+.hdr-trend{min-width:50px;font-size:8px;color:#475569;text-align:center;font-weight:600;padding:3px}
+
+/* Cohort summary */
+.cohort-summary{display:flex;align-items:center;padding:8px 24px;border-bottom:1px solid #1e293b;background:#0f1525;gap:16px;flex-shrink:0;position:sticky;top:32px;z-index:18}
+.cs-label{font-size:10px;font-weight:700;color:#64748b;min-width:130px}
+.cs-metrics{display:flex;gap:2px;flex:1}
+.cs-cell{flex:1;text-align:center;padding:3px 2px;border-radius:3px;font-size:9px;color:#94a3b8;position:relative}
+.cs-cell .cs-val{font-family:'SF Mono',Monaco,monospace;font-size:10px;font-weight:700;display:block}
+.cs-cell .cs-range{font-size:7px;color:#475569;display:block;margin-top:1px}
+
+/* Patient row */
+.p-row{display:flex;align-items:stretch;padding:0 24px;border-bottom:1px solid #151d30;cursor:pointer;transition:background 0.1s;min-height:40px}
+.p-row:hover{background:#131b2e}
+.p-row.selected{background:#1e293b}
+.p-row.filtered-out{display:none}
+.p-row.alert-row{border-left:3px solid #fbbf24}
+
+.p-info{min-width:130px;display:flex;align-items:center;gap:6px;padding:5px 0;flex-shrink:0}
+.p-id{font-family:'SF Mono',Monaco,monospace;font-size:10px;font-weight:700;color:#94a3b8}
+.p-id.alert{color:#fbbf24}
+.p-name{font-size:10px;font-weight:600;color:#e2e8f0}
+.p-sub{font-size:8px;color:#475569;display:block;margin-top:1px}
+.p-badge{padding:2px 5px;border-radius:4px;font-size:8px;font-weight:700;white-space:nowrap;flex-shrink:0}
+.pb-imp{background:rgba(96,165,250,0.12);color:#60a5fa}
+.pb-ok{background:rgba(74,222,128,0.12);color:#4ade80}
+.pb-bad{background:rgba(248,113,113,0.12);color:#f87171}
+
+.p-strip{display:flex;flex:1;gap:2px;align-items:stretch}
+.p-grp{display:flex;gap:1px;flex:1}
+
+.hc{flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;padding:2px 1px;border-radius:2px;transition:all .12s;min-width:0;position:relative}
+.hc-val{font-family:'SF Mono',Monaco,monospace;font-size:10px;font-weight:600;color:#e2e8f0;line-height:1.2}
+.hc-delta{font-size:7px;line-height:1}
+.hc:hover{transform:scale(1.05);z-index:5;box-shadow:0 0 8px rgba(0,0,0,.5)}
+
+.hc-g{background:rgba(74,222,128,0.12)}.hc-g .hc-val{color:#4ade80}
+.hc-y{background:rgba(251,191,36,0.10)}.hc-y .hc-val{color:#fbbf24}
+.hc-r{background:rgba(248,113,113,0.12)}.hc-r .hc-val{color:#f87171}
+.hc-n{background:transparent}
+
+.hc.abnormal{animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{box-shadow:none}50%{box-shadow:inset 0 0 0 1px rgba(248,113,113,0.4)}}
+
+.p-trend{min-width:50px;display:flex;align-items:center;justify-content:center;padding:2px 4px}
+
+/* Expanded detail */
+.p-expand{display:none;padding:10px 24px 10px 154px;border-bottom:1px solid #1e293b;background:#0c1120}
+.p-expand.open{display:block}
+.exp-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px}
+.exp-chart{background:#111827;border:1px solid #1e293b;border-radius:8px;padding:8px 10px}
+.exp-chart .ec-title{font-size:10px;font-weight:600;color:#94a3b8;margin-bottom:4px;display:flex;align-items:center;gap:6px}
+
+/* Time change indicator */
+.time-indicator{display:flex;align-items:center;gap:6px;padding:6px 24px 6px 154px;border-bottom:1px solid #1e293b;background:#111827;font-size:10px;color:#64748b;flex-shrink:0}
+.time-indicator strong{color:#60a5fa;font-weight:700}
+.time-indicator .ti-arrow{color:#475569;font-size:14px}
+
+/* Tooltip */
+.tip{position:fixed;pointer-events:none;z-index:100;background:#1e293b;border:1px solid #334155;border-radius:8px;padding:8px 12px;font-size:10px;color:#e2e8f0;box-shadow:0 8px 24px rgba(0,0,0,.5);display:none;max-width:280px}
+.tip .t-hdr{font-weight:700;color:#60a5fa;margin-bottom:3px}
+.tip .t-val{font-family:'SF Mono',Monaco,monospace;font-weight:600}
+.tip .t-lbl{color:#64748b}
+.tip .t-row{display:flex;justify-content:space-between;gap:12px;margin-top:2px}
+.tip .t-spark{margin-top:4px;border-top:1px solid #334155;padding-top:4px}
+
+/* Intervention legend */
+.int-legend{display:flex;gap:12px;align-items:center;margin-left:16px}
+.int-lg{display:flex;align-items:center;gap:4px;font-size:8px;color:#64748b}
+.int-lg .il-dot{width:6px;height:6px;border-radius:50%}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <span class="topbar-title">비만 중재 효과 연구</span>
+  <span class="topbar-sub" id="topSub">· W6 (2/9~15)</span>
+  <div class="topbar-right">
+    <span>참여자 <strong>80</strong>명</span>
+    <span>수집률 <strong style="color:#4ade80">94%</strong></span>
+  </div>
+</div>
+
+<!-- ======== TIMELINE BAR ======== -->
+<div class="timeline-bar" id="timelineBar"></div>
+
+<!-- ======== FILTER BAR ======== -->
+<div class="filter-bar" id="filterBar">
+  <span class="fl">상태</span>
+  <button class="fbtn f-bad active" onclick="toggleFilter('bad')">⚠ 위험<span class="f-count" id="cBad"></span></button>
+  <button class="fbtn f-warn active" onclick="toggleFilter('warn')">주의<span class="f-count" id="cWarn"></span></button>
+  <button class="fbtn f-good active" onclick="toggleFilter('good')">정상/개선<span class="f-count" id="cGood"></span></button>
+  <div class="f-sep"></div>
+  <span class="fl">이상지표</span>
+  <button class="fbtn" onclick="toggleAbnormal()">이상값만 강조</button>
+  <div class="legend">
+    <div class="lg"><div class="lg-box" style="background:rgba(74,222,128,.25)"></div>정상</div>
+    <div class="lg"><div class="lg-box" style="background:rgba(251,191,36,.25)"></div>주의</div>
+    <div class="lg"><div class="lg-box" style="background:rgba(248,113,113,.25)"></div>위험</div>
+  </div>
+  <div class="int-legend">
+    <div class="int-lg"><div class="il-dot" style="background:#f472b6"></div>약물변경</div>
+    <div class="int-lg"><div class="il-dot" style="background:#38bdf8"></div>상담</div>
+    <div class="int-lg"><div class="il-dot" style="background:#fbbf24"></div>프로토콜 조정</div>
+  </div>
+</div>
+
+<div class="time-indicator" id="timeIndicator"></div>
+
+<!-- Header + Body -->
+<div class="hdr-row" id="hdrRow">
+  <div class="hdr-patient"><span>환자</span></div>
+  <div class="hdr-metrics" id="hdrMetrics"></div>
+  <div class="hdr-trend">6W 추이</div>
+</div>
+<div class="main" id="mainBody"></div>
+
+<div class="tip" id="tip"></div>
+
+<script>
+// ===== TIMELINE DATA =====
+const WEEKS = [
+  {id:'W1',label:'W1',date:'1/5~11',startDate:'2026-01-05'},
+  {id:'W2',label:'W2',date:'1/12~18',startDate:'2026-01-12'},
+  {id:'W3',label:'W3',date:'1/19~25',startDate:'2026-01-19'},
+  {id:'W4',label:'W4',date:'1/26~2/1',startDate:'2026-01-26'},
+  {id:'W5',label:'W5',date:'2/2~8',startDate:'2026-02-02'},
+  {id:'W6',label:'W6',date:'2/9~15',startDate:'2026-02-09',current:true},
+];
+const DAYS = ['월','화','수','목','금','토','일'];
+
+// Intervention events (per-patient, per-week or per-day)
+const INTERVENTIONS = [
+  {pid:'P018',week:3,day:null,type:'counsel',label:'영양 상담'},
+  {pid:'P018',week:4,day:null,type:'drug',label:'약물 용량 변경'},
+  {pid:'P041',week:2,day:null,type:'counsel',label:'운동 상담'},
+  {pid:'P041',week:4,day:null,type:'drug',label:'처방 변경'},
+  {pid:'P041',week:5,day:null,type:'counsel',label:'심리 상담'},
+  {pid:'P001',week:3,day:null,type:'adjust',label:'프로토콜 조정'},
+  {pid:'P063',week:2,day:null,type:'counsel',label:'식단 상담'},
+  // Cohort-level
+  {pid:'ALL',week:1,day:null,type:'adjust',label:'연구 시작'},
+  {pid:'ALL',week:4,day:null,type:'adjust',label:'중간평가'},
+];
+
+// ===== PATIENT DATA (10 patients, 6 weeks × 7 days) =====
+const P=[
+  {id:'P001',nm:'김OO',grp:'exp',st:'imp',stL:'↑ 개선',
+   emr:{wt:81.2,wt0:88,sbp:136,sbp0:148,dbp:82,dbp0:90},
+   wear:{hr:72,steps:8234,sleep:7.2},ema:{diet:95},
+   tr:{wt:[88,86.4,85.1,84,82.5,81.2],sbp:[148,146,143,141,138,136],hr:[80,78,76,74,73,72],steps:[5200,6100,6800,7500,8000,8234],sleep:[6,6.3,6.5,6.8,7,7.2],ema:[72,78,82,88,92,95]},
+   daily:{wt:[[88.2,88.1,88,87.9,87.8,87.7,87.5],[86.8,86.6,86.5,86.4,86.3,86.2,86.0],[85.5,85.4,85.2,85.1,85,84.9,84.7],[84.4,84.3,84.1,84,83.9,83.8,83.6],[83,82.8,82.7,82.6,82.5,82.4,82.2],[81.8,81.6,81.5,81.4,81.3,81.2,81.0]],
+     hr:[[82,81,80,80,79,79,78],[79,78,78,77,77,76,76],[77,76,76,75,75,75,74],[75,74,74,73,73,73,72],[73,73,72,72,72,71,71],[72,72,72,71,71,71,70]],
+     steps:[[4800,5100,5400,5200,5600,5800,4500],[5800,6200,6000,6300,6400,6100,5900],[6500,6800,7000,6700,7100,6900,6600],[7200,7500,7600,7400,7800,7600,7300],[7800,8100,8000,8200,8300,7900,7700],[8000,8300,8200,8400,8500,8100,8000]],
+     sleep:[[5.8,6,6.2,5.9,6.1,6.3,5.7],[6.1,6.3,6.4,6.2,6.5,6.4,6.0],[6.3,6.5,6.6,6.4,6.7,6.6,6.2],[6.6,6.8,6.9,6.7,7,6.9,6.5],[6.8,7,7.1,6.9,7.2,7.1,6.7],[7,7.2,7.3,7.1,7.4,7.3,6.9]]}},
+  {id:'P005',nm:'이OO',grp:'exp',st:'ok',stL:'정상',
+   emr:{wt:84.7,wt0:89,sbp:142,sbp0:148,dbp:86,dbp0:91},
+   wear:{hr:76,steps:6102,sleep:6.8},ema:{diet:86},
+   tr:{wt:[89,87.8,86.9,86.2,85.4,84.7],sbp:[148,147,146,144,143,142],hr:[82,80,79,78,77,76],steps:[4800,5200,5500,5800,6000,6102],sleep:[6,6.2,6.3,6.4,6.6,6.8],ema:[65,70,74,78,82,86]},
+   daily:{wt:[[89.2,89.1,89,88.9,88.8,88.7,88.5],[88,87.9,87.8,87.7,87.6,87.5,87.3],[87.2,87.1,86.9,86.8,86.7,86.6,86.5],[86.5,86.4,86.2,86.1,86,85.9,85.8],[85.8,85.6,85.5,85.4,85.3,85.2,85.0],[85,84.9,84.8,84.7,84.6,84.5,84.3]],
+     hr:[[83,82,82,81,81,80,80],[81,80,80,79,79,79,78],[80,79,79,78,78,78,77],[79,78,78,78,77,77,76],[78,77,77,76,76,76,75],[76,76,76,75,75,75,74]],
+     steps:[[4500,4800,5000,4700,5100,4900,4600],[5000,5200,5300,5100,5400,5300,5000],[5300,5500,5600,5400,5700,5600,5300],[5600,5800,5900,5700,6000,5900,5600],[5800,6000,6100,5900,6200,6100,5800],[5900,6100,6200,6000,6300,6200,5900]],
+     sleep:[[5.8,6,6.1,5.9,6.2,6.1,5.7],[6,6.2,6.3,6.1,6.4,6.3,5.9],[6.1,6.3,6.4,6.2,6.5,6.4,6],[6.2,6.4,6.5,6.3,6.6,6.5,6.1],[6.4,6.6,6.7,6.5,6.8,6.7,6.3],[6.6,6.8,6.9,6.7,7,6.9,6.5]]}},
+  {id:'P011',nm:'박OO',grp:'exp',st:'imp',stL:'↑ 개선',
+   emr:{wt:79.9,wt0:87,sbp:138,sbp0:148,dbp:80,dbp0:89},
+   wear:{hr:68,steps:9450,sleep:7.8},ema:{diet:100},
+   tr:{wt:[87,85.2,83.8,82.5,81,79.9],sbp:[148,146,143,141,139,138],hr:[78,76,73,71,70,68],steps:[6000,7200,8100,8800,9200,9450],sleep:[6.2,6.5,6.8,7.2,7.5,7.8],ema:[80,85,90,95,98,100]},
+   daily:{wt:[[87.3,87.1,87,86.8,86.7,86.5,86.3],[85.6,85.4,85.3,85.1,85,84.9,84.7],[84.2,84,83.9,83.7,83.6,83.4,83.2],[82.9,82.7,82.6,82.4,82.3,82.1,82],[81.4,81.2,81.1,80.9,80.8,80.6,80.4],[80.3,80.1,80,79.9,79.8,79.6,79.5]],
+     hr:[[79,78,78,77,77,76,76],[77,76,75,75,74,74,73],[74,73,73,72,72,71,71],[72,71,71,70,70,69,69],[71,70,70,69,69,68,68],[69,68,68,67,67,67,66]],
+     steps:[[5600,6000,6200,5900,6400,6200,5800],[6800,7200,7400,7100,7600,7400,7000],[7800,8100,8300,8000,8400,8200,7800],[8500,8800,9000,8700,9100,8900,8500],[9000,9200,9400,9100,9500,9300,8900],[9200,9500,9600,9400,9700,9500,9200]],
+     sleep:[[6,6.2,6.3,6.1,6.4,6.3,5.9],[6.3,6.5,6.6,6.4,6.7,6.6,6.2],[6.6,6.8,6.9,6.7,7,6.9,6.5],[7,7.2,7.3,7.1,7.4,7.3,6.9],[7.3,7.5,7.6,7.4,7.7,7.6,7.2],[7.6,7.8,7.9,7.7,8,7.9,7.5]]}},
+  {id:'P018',nm:'최OO',grp:'exp',st:'bad',stL:'⚠ 위험',alert:true,
+   emr:{wt:90.9,wt0:93,sbp:152,sbp0:148,dbp:96,dbp0:93},
+   wear:{hr:88,steps:3200,sleep:5.1},ema:{diet:43},
+   tr:{wt:[93,92.5,92,91.5,91.2,90.9],sbp:[148,149,150,150,151,152],hr:[80,82,84,85,86,88],steps:[5500,5000,4500,4000,3600,3200],sleep:[6.5,6.2,5.8,5.5,5.3,5.1],ema:[70,65,58,52,48,43]},
+   daily:{wt:[[93.2,93.1,93,92.9,92.8,92.7,92.6],[92.7,92.6,92.5,92.5,92.4,92.3,92.2],[92.3,92.2,92.1,92,91.9,91.8,91.7],[91.8,91.7,91.6,91.5,91.4,91.3,91.2],[91.4,91.3,91.3,91.2,91.1,91.1,91],[91.2,91.1,91,91,90.9,90.9,90.8]],
+     hr:[[79,80,80,81,81,82,82],[81,82,82,83,83,83,84],[83,83,84,84,84,85,85],[84,85,85,85,86,86,86],[85,86,86,86,87,87,87],[87,87,88,88,88,89,89]],
+     steps:[[5800,5600,5500,5400,5300,5200,5000],[5200,5000,4900,4800,4700,4600,4500],[4700,4500,4400,4300,4200,4100,4000],[4200,4000,3900,3800,3700,3600,3500],[3800,3600,3500,3400,3300,3200,3100],[3400,3200,3100,3000,2900,2800,2700]],
+     sleep:[[6.6,6.5,6.5,6.4,6.4,6.3,6.3],[6.3,6.2,6.2,6.1,6.1,6,6],[6,5.9,5.8,5.8,5.7,5.7,5.6],[5.7,5.6,5.5,5.5,5.4,5.4,5.3],[5.5,5.4,5.3,5.3,5.2,5.2,5.1],[5.2,5.1,5.1,5,5,4.9,4.9]]}},
+  {id:'P023',nm:'정OO',grp:'exp',st:'ok',stL:'정상',
+   emr:{wt:82.5,wt0:88,sbp:139,sbp0:148,dbp:84,dbp0:90},
+   wear:{hr:74,steps:7800,sleep:7},ema:{diet:90},
+   tr:{wt:[88,86.8,85.5,84.5,83.4,82.5],sbp:[148,146,144,142,140,139],hr:[80,78,77,76,75,74],steps:[5800,6400,6900,7200,7500,7800],sleep:[6.2,6.4,6.5,6.7,6.8,7],ema:[70,75,80,84,88,90]},
+   daily:{wt:[[88.2,88,87.9,87.7,87.5,87.3,87.1],[87,86.8,86.7,86.5,86.3,86.2,86],[85.8,85.6,85.5,85.3,85.2,85,84.8],[84.8,84.6,84.5,84.3,84.2,84,83.8],[83.7,83.5,83.4,83.3,83.1,83,82.8],[82.8,82.6,82.5,82.4,82.3,82.1,82]],
+     hr:[[81,80,80,79,79,79,78],[79,78,78,77,77,77,76],[78,77,77,76,76,76,75],[77,76,76,75,75,75,74],[76,75,75,75,74,74,74],[75,74,74,74,73,73,73]],
+     steps:[[5500,5800,6000,5700,6100,5900,5600],[6100,6400,6500,6300,6600,6500,6200],[6600,6900,7000,6800,7100,7000,6700],[7000,7200,7300,7100,7400,7300,7000],[7300,7500,7600,7400,7700,7600,7300],[7600,7800,7900,7700,8000,7900,7600]],
+     sleep:[[6,6.2,6.3,6.1,6.4,6.3,5.9],[6.2,6.4,6.5,6.3,6.6,6.5,6.1],[6.3,6.5,6.6,6.4,6.7,6.6,6.2],[6.5,6.7,6.8,6.6,6.9,6.8,6.4],[6.6,6.8,6.9,6.7,7,6.9,6.5],[6.8,7,7.1,6.9,7.2,7.1,6.7]]}},
+  {id:'P032',nm:'한OO',grp:'ctrl',st:'ok',stL:'정상',
+   emr:{wt:86.1,wt0:87,sbp:145,sbp0:148,dbp:88,dbp0:90},
+   wear:{hr:78,steps:5400,sleep:6.5},ema:{diet:72},
+   tr:{wt:[87,87.2,86.8,86.5,86.3,86.1],sbp:[148,147,147,146,146,145],hr:[79,79,78,78,78,78],steps:[5000,5100,5200,5300,5350,5400],sleep:[6.3,6.3,6.4,6.4,6.5,6.5],ema:[68,70,70,71,71,72]},
+   daily:{wt:[[87.1,87,87,86.9,86.9,86.8,86.8],[87.3,87.2,87.2,87.1,87.1,87,87],[87,86.9,86.9,86.8,86.7,86.7,86.6],[86.7,86.6,86.6,86.5,86.5,86.4,86.4],[86.5,86.4,86.4,86.3,86.3,86.2,86.2],[86.3,86.2,86.2,86.1,86.1,86,86]],
+     hr:[[79,79,79,79,78,78,78],[79,79,79,78,78,78,78],[79,78,78,78,78,78,77],[78,78,78,78,78,77,77],[78,78,78,78,77,77,77],[78,78,78,77,77,77,77]],
+     steps:[[4800,5000,5100,4900,5200,5100,4800],[4900,5100,5200,5000,5300,5200,4900],[5000,5200,5300,5100,5400,5300,5000],[5100,5300,5400,5200,5500,5400,5100],[5200,5350,5400,5300,5500,5400,5200],[5200,5400,5500,5300,5600,5500,5200]],
+     sleep:[[6.2,6.3,6.4,6.2,6.4,6.3,6.1],[6.2,6.3,6.4,6.2,6.4,6.3,6.1],[6.3,6.4,6.5,6.3,6.5,6.4,6.2],[6.3,6.4,6.5,6.3,6.5,6.4,6.2],[6.4,6.5,6.6,6.4,6.6,6.5,6.3],[6.4,6.5,6.6,6.4,6.6,6.5,6.3]]}},
+  {id:'P041',nm:'윤OO',grp:'exp',st:'bad',stL:'⚠ 위험',alert:true,
+   emr:{wt:95.2,wt0:96,sbp:158,sbp0:148,dbp:98,dbp0:92},
+   wear:{hr:92,steps:2100,sleep:4.8},ema:{diet:38},
+   tr:{wt:[96,95.8,95.6,95.5,95.3,95.2],sbp:[148,150,152,154,156,158],hr:[82,84,86,88,90,92],steps:[4200,3800,3200,2800,2400,2100],sleep:[6,5.8,5.5,5.2,5,4.8],ema:[62,55,50,45,40,38]},
+   daily:{wt:[[96.2,96.1,96,96,95.9,95.9,95.8],[95.9,95.8,95.8,95.7,95.7,95.6,95.6],[95.7,95.7,95.6,95.6,95.5,95.5,95.4],[95.6,95.5,95.5,95.5,95.4,95.4,95.3],[95.4,95.4,95.3,95.3,95.2,95.2,95.1],[95.3,95.2,95.2,95.2,95.1,95.1,95]],
+     hr:[[81,82,82,83,83,84,84],[83,84,84,85,85,85,86],[85,85,86,86,86,87,87],[87,87,88,88,88,89,89],[89,89,90,90,90,91,91],[91,91,92,92,92,93,93]],
+     steps:[[4400,4200,4100,4000,3900,3800,3600],[3900,3800,3700,3600,3500,3400,3200],[3400,3200,3100,3000,2900,2800,2600],[3000,2800,2700,2600,2500,2400,2300],[2600,2400,2300,2200,2100,2000,1900],[2300,2100,2000,1900,1800,1700,1600]],
+     sleep:[[6.1,6,6,5.9,5.9,5.8,5.8],[5.9,5.8,5.8,5.7,5.7,5.6,5.6],[5.6,5.5,5.5,5.4,5.4,5.3,5.3],[5.3,5.2,5.2,5.1,5.1,5,5],[5.1,5,5,5,4.9,4.9,4.8],[4.9,4.8,4.8,4.8,4.7,4.7,4.6]]}},
+  {id:'P055',nm:'서OO',grp:'ctrl',st:'ok',stL:'정상',
+   emr:{wt:83.8,wt0:85,sbp:141,sbp0:148,dbp:85,dbp0:89},
+   wear:{hr:75,steps:6800,sleep:6.9},ema:{diet:82},
+   tr:{wt:[85,84.8,84.5,84.2,84,83.8],sbp:[148,146,144,143,142,141],hr:[78,77,76,76,75,75],steps:[5500,5800,6100,6400,6600,6800],sleep:[6.2,6.4,6.5,6.7,6.8,6.9],ema:[65,70,74,76,80,82]},
+   daily:{wt:[[85.1,85,85,84.9,84.9,84.8,84.8],[84.9,84.8,84.8,84.7,84.7,84.6,84.6],[84.6,84.5,84.5,84.4,84.4,84.3,84.3],[84.3,84.2,84.2,84.1,84.1,84,84],[84.1,84,84,83.9,83.9,83.8,83.8],[83.9,83.8,83.8,83.7,83.7,83.6,83.6]],
+     hr:[[78,78,77,77,77,77,76],[77,77,77,76,76,76,76],[77,76,76,76,76,75,75],[76,76,76,75,75,75,75],[76,75,75,75,75,75,74],[75,75,75,75,74,74,74]],
+     steps:[[5300,5500,5600,5400,5700,5600,5300],[5600,5800,5900,5700,6000,5900,5600],[5900,6100,6200,6000,6300,6200,5900],[6200,6400,6500,6300,6600,6500,6200],[6400,6600,6700,6500,6800,6700,6400],[6600,6800,6900,6700,7000,6900,6600]],
+     sleep:[[6,6.2,6.3,6.1,6.4,6.3,5.9],[6.2,6.4,6.5,6.3,6.6,6.5,6.1],[6.3,6.5,6.6,6.4,6.7,6.6,6.2],[6.5,6.7,6.8,6.6,6.9,6.8,6.4],[6.6,6.8,6.9,6.7,7,6.9,6.5],[6.7,6.9,7,6.8,7.1,7,6.6]]}},
+  {id:'P063',nm:'강OO',grp:'exp',st:'imp',stL:'↑ 개선',
+   emr:{wt:77.5,wt0:86,sbp:132,sbp0:148,dbp:78,dbp0:88},
+   wear:{hr:66,steps:10200,sleep:8.1},ema:{diet:98},
+   tr:{wt:[86,83.5,81.8,80.2,78.8,77.5],sbp:[148,144,140,137,134,132],hr:[78,76,72,70,68,66],steps:[5800,7000,8200,9000,9800,10200],sleep:[6.5,6.8,7.2,7.5,7.8,8.1],ema:[75,82,88,92,96,98]},
+   daily:{wt:[[86.3,86.1,86,85.8,85.6,85.4,85.2],[84,83.8,83.6,83.4,83.2,83,82.8],[82.2,82,81.8,81.6,81.5,81.3,81.2],[80.6,80.4,80.2,80.1,79.9,79.8,79.6],[79.2,79,78.8,78.7,78.5,78.4,78.2],[77.9,77.7,77.6,77.4,77.3,77.2,77]],
+     hr:[[79,78,78,77,77,76,76],[77,76,75,75,74,74,73],[73,72,72,71,71,70,70],[71,70,70,69,69,68,68],[69,68,68,67,67,67,66],[67,66,66,66,65,65,65]],
+     steps:[[5500,5800,6000,5700,6100,5900,5600],[6700,7000,7200,6900,7300,7100,6800],[7900,8200,8400,8100,8500,8300,8000],[8700,9000,9200,8900,9300,9100,8800],[9500,9800,10000,9700,10100,9900,9600],[9900,10200,10400,10100,10500,10300,10000]],
+     sleep:[[6.3,6.5,6.6,6.4,6.7,6.6,6.2],[6.6,6.8,6.9,6.7,7,6.9,6.5],[7,7.2,7.3,7.1,7.4,7.3,6.9],[7.3,7.5,7.6,7.4,7.7,7.6,7.2],[7.6,7.8,7.9,7.7,8,7.9,7.5],[7.9,8.1,8.2,8,8.3,8.2,7.8]]}},
+  {id:'P078',nm:'조OO',grp:'ctrl',st:'ok',stL:'정상',
+   emr:{wt:88.5,wt0:89,sbp:146,sbp0:148,dbp:89,dbp0:90},
+   wear:{hr:77,steps:5100,sleep:6.3},ema:{diet:68},
+   tr:{wt:[89,89,88.8,88.7,88.6,88.5],sbp:[148,148,147,147,146,146],hr:[78,78,77,77,77,77],steps:[4800,4900,5000,5000,5050,5100],sleep:[6.2,6.2,6.3,6.3,6.3,6.3],ema:[60,62,64,65,66,68]},
+   daily:{wt:[[89.1,89,89,89,88.9,88.9,88.9],[89.1,89,89,89,88.9,88.9,88.8],[88.9,88.9,88.8,88.8,88.8,88.7,88.7],[88.8,88.7,88.7,88.7,88.7,88.6,88.6],[88.7,88.6,88.6,88.6,88.6,88.5,88.5],[88.6,88.5,88.5,88.5,88.5,88.4,88.4]],
+     hr:[[78,78,78,78,77,77,77],[78,78,78,77,77,77,77],[78,77,77,77,77,77,76],[77,77,77,77,77,76,76],[77,77,77,77,76,76,76],[77,77,77,76,76,76,76]],
+     steps:[[4600,4800,4900,4700,5000,4900,4600],[4700,4900,5000,4800,5100,5000,4700],[4800,5000,5100,4900,5200,5100,4800],[4800,5000,5100,4900,5200,5100,4800],[4900,5050,5100,5000,5200,5100,4900],[4900,5100,5200,5000,5300,5200,4900]],
+     sleep:[[6.1,6.2,6.3,6.1,6.3,6.2,6],[6.1,6.2,6.3,6.1,6.3,6.2,6],[6.2,6.3,6.4,6.2,6.4,6.3,6.1],[6.2,6.3,6.4,6.2,6.4,6.3,6.1],[6.2,6.3,6.4,6.2,6.4,6.3,6.1],[6.2,6.3,6.4,6.2,6.4,6.3,6.1]]}}
+];
+
+// Metric definitions
+const METRICS=[
+  {grp:'EMR',color:'#60a5fa',items:[
+    {key:'wt',name:'체중',unit:'kg',getWeek:p=>p.tr.wt,getDay:(p,w)=>p.daily.wt[w],dir:'down',th:[82,90],fmt:v=>v.toFixed(1)},
+    {key:'sbp',name:'SBP',unit:'',getWeek:p=>p.tr.sbp,getDay:null,dir:'down',th:[130,140],fmt:v=>v.toFixed(0)},
+  ]},
+  {grp:'웨어러블',color:'#4ade80',items:[
+    {key:'hr',name:'HR',unit:'bpm',getWeek:p=>p.tr.hr,getDay:(p,w)=>p.daily.hr[w],dir:'down',th:[65,85],fmt:v=>v.toFixed(0)},
+    {key:'steps',name:'걸음',unit:'',getWeek:p=>p.tr.steps,getDay:(p,w)=>p.daily.steps[w],dir:'up',th:[5000,8000],fmt:v=>v>=1000?(v/1000).toFixed(1)+'k':v},
+    {key:'sleep',name:'수면',unit:'h',getWeek:p=>p.tr.sleep,getDay:(p,w)=>p.daily.sleep[w],dir:'up',th:[6,7.5],fmt:v=>v.toFixed(1)},
+  ]},
+  {grp:'EMA',color:'#a78bfa',items:[
+    {key:'ema',name:'순응',unit:'%',getWeek:p=>p.tr.ema,getDay:null,dir:'up',th:[60,80],fmt:v=>v.toFixed(0)},
+  ]},
+];
+const allItems=METRICS.flatMap(g=>g.items.map(m=>({...m,grpColor:g.color,grpName:g.grp})));
+
+// ===== STATE =====
+let filters={bad:true,warn:true,good:true};
+let highlightAbnormal=false;
+let expandedId=null;
+
+// TIME STATE
+let viewMode='week'; // 'week' or 'day'
+let selectedWeek=5;   // 0-indexed (W6 = index 5)
+let selectedDay=null;  // null = weekly avg, 0-6 = specific day
+let zoomedWeek=null;   // which week is zoomed into day view (null = overview)
+
+// RETRO: range selection
+let rangeMode=false;   // is range selected?
+let rangeStart=null;   // week index
+let rangeEnd=null;     // week index
+
+// ===== HELPERS =====
+function hcClass(val,dir,th){
+  if(!th)return'hc-n';
+  const[lo,hi]=th;
+  if(dir==='down')return val<=lo?'hc-g':val>=hi?'hc-r':'hc-y';
+  if(dir==='up')return val>=hi?'hc-g':val<=lo?'hc-r':'hc-y';
+  return'hc-n';
+}
+function isAbnormal(val,dir,th){
+  if(!th)return false;
+  const[lo,hi]=th;
+  if(dir==='down')return val>=hi;
+  if(dir==='up')return val<=lo;
+  return false;
+}
+
+function getVal(p,m,weekIdx,dayIdx){
+  // Get value at specific time point
+  if(dayIdx!==null && m.getDay){
+    const daily=m.getDay(p,weekIdx);
+    return daily?daily[dayIdx]:null;
+  }
+  const weekly=m.getWeek(p);
+  return weekly?weekly[weekIdx]:null;
+}
+
+function getDelta(p,m,weekIdx,dayIdx){
+  const cur=getVal(p,m,weekIdx,dayIdx);
+  if(cur===null)return null;
+  // Compare to previous time point
+  if(dayIdx!==null && dayIdx>0 && m.getDay){
+    const prev=getVal(p,m,weekIdx,dayIdx-1);
+    return prev!==null?cur-prev:null;
+  }
+  if(dayIdx===0 && weekIdx>0 && m.getDay){
+    // First day of week → compare to last day of previous week
+    const prevDaily=m.getDay(p,weekIdx-1);
+    return prevDaily?cur-prevDaily[6]:null;
+  }
+  if(dayIdx===null && weekIdx>0){
+    const prev=getVal(p,m,weekIdx-1,null);
+    return prev!==null?cur-prev:null;
+  }
+  return null;
+}
+
+function miniSvg(data,w,h,col){
+  if(!data||data.length<2)return'';
+  const mn=Math.min(...data),mx=Math.max(...data),r=mx-mn||1;
+  const X=i=>(i/(data.length-1))*w,Y=v=>h-((v-mn)/r)*(h*.7)-h*.15;
+  let p=`M${X(0)},${Y(data[0])}`;for(let i=1;i<data.length;i++)p+=`L${X(i)},${Y(data[i])}`;
+  // Highlight selected point
+  let highlight='';
+  if(selectedWeek!==null && selectedWeek<data.length){
+    highlight=`<circle cx="${X(selectedWeek)}" cy="${Y(data[selectedWeek])}" r="2.5" fill="${col}" stroke="#0a0e1a" stroke-width="1"/>`;
+  }
+  return `<svg viewBox="0 0 ${w} ${h}" width="${w}" height="${h}"><path d="${p}" fill="none" stroke="${col}" stroke-width="1.2" stroke-linecap="round" opacity=".5"/><circle cx="${X(data.length-1)}" cy="${Y(data[data.length-1])}" r="1.5" fill="${col}" opacity=".3"/>${highlight}</svg>`;
+}
+
+function chart(data,w,h,col,selIdx){
+  const pad={t:8,r:8,b:16,l:30},iw=w-pad.l-pad.r,ih=h-pad.t-pad.b;
+  const mn=Math.min(...data)*.97,mx=Math.max(...data)*1.03,rng=mx-mn||1;
+  const X=i=>pad.l+(i/(data.length-1))*iw,Y=v=>pad.t+ih-((v-mn)/rng)*ih;
+  let s=`<svg viewBox="0 0 ${w} ${h}" width="100%" height="${h}" style="display:block">`;
+  for(let i=0;i<=2;i++){const gy=pad.t+(ih/2)*i;s+=`<line x1="${pad.l}" y1="${gy}" x2="${w-pad.r}" y2="${gy}" stroke="#1e293b" stroke-width=".5"/><text x="${pad.l-4}" y="${gy+3}" text-anchor="end" fill="#475569" font-size="8" font-family="SF Mono,monospace">${(mx-(rng/2)*i).toFixed(mx>=100?0:1)}</text>`;}
+  let lp=`M${X(0)},${Y(data[0])}`;for(let i=1;i<data.length;i++)lp+=`L${X(i)},${Y(data[i])}`;
+  let ap=lp+`L${X(data.length-1)},${pad.t+ih}L${X(0)},${pad.t+ih}Z`;
+  s+=`<path d="${ap}" fill="${col}" opacity=".08"/>`;
+  s+=`<path d="${lp}" fill="none" stroke="${col}" stroke-width="1.5" stroke-linecap="round"/>`;
+  data.forEach((v,i)=>{
+    const isSel=(selIdx!==null&&selIdx===i);
+    const r=isSel?3.5:2;
+    const sw=isSel?2:1.5;
+    s+=`<circle cx="${X(i)}" cy="${Y(v)}" r="${r}" fill="${isSel?col:'#0a0e1a'}" stroke="${col}" stroke-width="${sw}"/>`;
+  });
+  // Labels
+  const labels=data.length<=7?DAYS:WEEKS.map(w=>w.label);
+  labels.forEach((l,i)=>{if(i<data.length)s+=`<text x="${X(i)}" y="${h-2}" text-anchor="middle" fill="#475569" font-size="7">${l}</text>`;});
+  return s+'</svg>';
+}
+
+// ===== TIMELINE RENDER =====
+function renderTimeline(){
+  const bar=document.getElementById('timelineBar');
+  let h='';
+
+  h+=`<div class="tl-label">`;
+  h+=`<span class="tl-l1">타임라인</span>`;
+  h+=`<span class="tl-l2">${viewMode==='week'?'주간 뷰':'일간 뷰 · '+WEEKS[zoomedWeek].label}</span>`;
+  h+=`<div class="tl-zoom">`;
+  h+=`<button class="${viewMode==='week'?'active':''}" onclick="setWeekView()">주간</button>`;
+  h+=`<button class="${viewMode==='day'?'active':''}" ${viewMode==='week'?'disabled':''}>일간</button>`;
+  h+=`</div>`;
+  h+=`</div>`;
+
+  if(viewMode==='week'){
+    h+=`<div class="tl-track"><div class="tl-weeks">`;
+    WEEKS.forEach((w,i)=>{
+      const sel=selectedWeek===i&&selectedDay===null?'selected':'';
+      const cur=w.current?'current':'';
+      // Cohort-level interventions
+      const markers=INTERVENTIONS.filter(v=>v.pid==='ALL'&&v.week===i+1);
+      let mHtml='';
+      markers.forEach(m=>{
+        mHtml+=`<div class="tl-marker"><div class="tm-dot tm-${m.type}"></div><div class="tm-label">${m.label}</div></div>`;
+      });
+      h+=`<div class="tl-week ${sel} ${cur}" onclick="selectWeek(${i})" ondblclick="zoomToDay(${i})">`;
+      h+=mHtml;
+      h+=`<span class="tw-label">${w.label}</span><span class="tw-date">${w.date}</span>`;
+      // Mini cohort health bar
+      h+=renderMiniCohortBar(i);
+      h+=`</div>`;
+    });
+    h+=`</div></div>`;
+  } else {
+    // Day view
+    h+=`<div class="tl-back" onclick="setWeekView()">← ${WEEKS[zoomedWeek].label}</div>`;
+    h+=`<div class="tl-track"><div class="tl-days">`;
+    DAYS.forEach((d,i)=>{
+      const sel=selectedDay===i?'selected':'';
+      // Patient-specific interventions for this week+day
+      const markers=INTERVENTIONS.filter(v=>v.week===zoomedWeek+1&&v.day===i);
+      let mHtml='';
+      markers.forEach(m=>{
+        mHtml+=`<div class="tl-marker"><div class="tm-dot tm-${m.type}"></div><div class="tm-label">${m.label} ${m.pid!=='ALL'?'('+m.pid+')':''}</div></div>`;
+      });
+      h+=`<div class="tl-day ${sel}" onclick="selectDay(${i})">`;
+      h+=mHtml;
+      h+=`<span class="td-label">${d}</span><span class="td-date">${zoomedWeek+1}주 ${i+1}일</span>`;
+      h+=renderMiniCohortBar(zoomedWeek,i);
+      h+=`</div>`;
+    });
+    h+=`</div></div>`;
+  }
+
+  bar.innerHTML=h;
+  updateTimeIndicator();
+}
+
+// Mini cohort health bar under each timeline cell
+function renderMiniCohortBar(weekIdx,dayIdx){
+  // Show tiny colored dots for cohort health at this time point
+  let goodC=0,warnC=0,badC=0;
+  P.forEach(p=>{
+    let score=0;
+    allItems.forEach(m=>{
+      const v=dayIdx!=null?getVal(p,m,weekIdx,dayIdx):getVal(p,m,weekIdx,null);
+      if(v!==null&&isAbnormal(v,m.dir,m.th))score++;
+    });
+    if(score>=2)badC++;
+    else if(score>=1)warnC++;
+    else goodC++;
+  });
+  const total=P.length;
+  const gPct=Math.round(goodC/total*100),wPct=Math.round(warnC/total*100),bPct=Math.round(badC/total*100);
+  return `<div style="display:flex;width:80%;height:3px;border-radius:2px;overflow:hidden;margin-top:4px">
+    <div style="width:${gPct}%;background:#4ade80"></div>
+    <div style="width:${wPct}%;background:#fbbf24"></div>
+    <div style="width:${bPct}%;background:#f87171"></div>
+  </div>`;
+}
+
+function updateTimeIndicator(){
+  const el=document.getElementById('timeIndicator');
+  if(viewMode==='week'){
+    const w=WEEKS[selectedWeek];
+    const interventionsNow=INTERVENTIONS.filter(v=>(v.pid==='ALL')&&v.week===selectedWeek+1);
+    let intHtml=interventionsNow.map(v=>`<span style="color:${v.type==='drug'?'#f472b6':v.type==='counsel'?'#38bdf8':'#fbbf24'}">● ${v.label}</span>`).join(' ');
+    el.innerHTML=`<span class="ti-arrow">◀</span> 현재 시점: <strong>${w.label} (${w.date})</strong> — 주간 평균 기준 <span class="ti-arrow">▶</span>${intHtml?' | '+intHtml:''}`;
+    el.style.display='flex';
+    document.getElementById('topSub').textContent=`· ${w.label} (${w.date})`;
+  } else {
+    const w=WEEKS[zoomedWeek];
+    const d=DAYS[selectedDay!==null?selectedDay:0];
+    const dayLabel=selectedDay!==null?`${d}요일`:'전체';
+    el.innerHTML=`<span class="ti-arrow">◀</span> 현재 시점: <strong>${w.label} ${dayLabel}</strong> — 일별 측정값 기준 <span class="ti-arrow">▶</span> <span style="color:#60a5fa;cursor:pointer" onclick="setWeekView()">주간 뷰로 돌아가기</span>`;
+    el.style.display='flex';
+    document.getElementById('topSub').textContent=`· ${w.label} ${dayLabel}`;
+  }
+}
+
+// ===== TIMELINE INTERACTIONS =====
+function selectWeek(idx){
+  selectedWeek=idx;
+  selectedDay=null;
+  viewMode='week';
+  zoomedWeek=null;
+  renderTimeline();
+  render();
+}
+
+function zoomToDay(weekIdx){
+  viewMode='day';
+  zoomedWeek=weekIdx;
+  selectedWeek=weekIdx;
+  selectedDay=null; // show weekly avg initially, then click day
+  renderTimeline();
+  render();
+}
+
+function selectDay(dayIdx){
+  selectedDay=dayIdx;
+  renderTimeline();
+  render();
+}
+
+function setWeekView(){
+  viewMode='week';
+  selectedDay=null;
+  zoomedWeek=null;
+  renderTimeline();
+  render();
+}
+
+// ===== HEADER =====
+function renderHeader(){
+  let h='';
+  METRICS.forEach(g=>{
+    h+=`<div class="hdr-grp"><div class="hdr-grp-title" style="border-color:${g.color};color:${g.color}">${g.grp}</div><div class="hdr-grp-cols">`;
+    g.items.forEach(m=>{h+=`<div class="hdr-col">${m.name}</div>`;});
+    h+=`</div></div>`;
+  });
+  document.getElementById('hdrMetrics').innerHTML=h;
+}
+
+// ===== RENDER =====
+function render(){
+  const weekIdx=selectedWeek;
+  const dayIdx=viewMode==='day'?selectedDay:null;
+
+  // Count categories at current time point
+  let counts={bad:0,warn:0,good:0};
+  P.forEach(p=>{
+    let abnCount=0;
+    allItems.forEach(m=>{
+      const v=getVal(p,m,weekIdx,dayIdx);
+      if(v!==null&&isAbnormal(v,m.dir,m.th))abnCount++;
+    });
+    if(abnCount>=2)counts.bad++;
+    else if(abnCount>=1)counts.warn++;
+    else counts.good++;
+  });
+  document.getElementById('cBad').textContent=` (${counts.bad})`;
+  document.getElementById('cWarn').textContent=` (${counts.warn})`;
+  document.getElementById('cGood').textContent=` (${counts.good})`;
+
+  // Sort by severity at THIS time point
+  const sorted=[...P].sort((a,b)=>{
+    const aScore=allItems.reduce((s,m)=>{const v=getVal(a,m,weekIdx,dayIdx);return s+(v!==null&&isAbnormal(v,m.dir,m.th)?1:0);},0);
+    const bScore=allItems.reduce((s,m)=>{const v=getVal(b,m,weekIdx,dayIdx);return s+(v!==null&&isAbnormal(v,m.dir,m.th)?1:0);},0);
+    return bScore-aScore; // most abnormal first
+  });
+
+  let html='';
+
+  // Cohort summary at current time point
+  html+=`<div class="cohort-summary"><div class="cs-label">코호트 평균<br><span style="font-size:8px;color:#475569">${viewMode==='day'&&dayIdx!==null?WEEKS[weekIdx].label+' '+DAYS[dayIdx]:WEEKS[weekIdx].label}</span></div><div class="cs-metrics">`;
+  allItems.forEach(m=>{
+    const vals=P.map(p=>getVal(p,m,weekIdx,dayIdx)).filter(v=>v!==null);
+    if(vals.length){
+      const avg=vals.reduce((a,b)=>a+b,0)/vals.length;
+      const mn=Math.min(...vals),mx=Math.max(...vals);
+      const cls=hcClass(avg,m.dir,m.th);
+      html+=`<div class="cs-cell ${cls}"><span class="cs-val">${m.fmt(avg)}</span><span class="cs-range">${m.fmt(mn)}~${m.fmt(mx)}</span></div>`;
+    } else {
+      html+=`<div class="cs-cell hc-n"><span class="cs-val">—</span></div>`;
+    }
+  });
+  html+=`</div><div style="min-width:50px"></div></div>`;
+
+  // Patient rows
+  sorted.forEach(p=>{
+    const abnCount=allItems.reduce((s,m)=>{const v=getVal(p,m,weekIdx,dayIdx);return s+(v!==null&&isAbnormal(v,m.dir,m.th)?1:0);},0);
+    const cat=abnCount>=2?'bad':abnCount>=1?'warn':'good';
+    const show=filters[cat];
+    const isExp=expandedId===p.id;
+
+    // Check patient-level interventions at this time
+    const pInterventions=INTERVENTIONS.filter(v=>(v.pid===p.id||v.pid==='ALL')&&v.week===weekIdx+1);
+    const hasIntervention=pInterventions.length>0;
+
+    const bc=cat==='bad'?'pb-bad':cat==='warn'?'pb-ok':'pb-imp';
+    const stLabel=cat==='bad'?'⚠ 위험':cat==='warn'?'주의':'정상';
+
+    html+=`<div class="p-row ${cat==='bad'?'alert-row':''} ${isExp?'selected':''} ${show?'':'filtered-out'}" onclick="toggleExpand('${p.id}')">`;
+    html+=`<div class="p-info"><div><span class="p-id ${cat==='bad'?'alert':''}">${p.id}</span><span class="p-name">${p.nm}</span><span class="p-sub">${p.grp==='exp'?'실험':'대조'}${hasIntervention?' · <span style="color:#f472b6">●</span>':''}</span></div><span class="p-badge ${bc}">${stLabel}</span></div>`;
+
+    // Heatmap strip at CURRENT TIME POINT
+    html+=`<div class="p-strip">`;
+    METRICS.forEach(g=>{
+      html+=`<div class="p-grp">`;
+      g.items.forEach(m=>{
+        const val=getVal(p,m,weekIdx,dayIdx);
+        const delta=getDelta(p,m,weekIdx,dayIdx);
+        if(val!==null){
+          const cls=hcClass(val,m.dir,m.th);
+          const abn=isAbnormal(val,m.dir,m.th);
+          const abnCls=highlightAbnormal&&abn?'abnormal':'';
+          const dCol=delta!==null?(delta<0?(m.dir==='down'?'#4ade80':'#f87171'):delta>0?(m.dir==='down'?'#f87171':'#4ade80'):'#64748b'):'#64748b';
+          html+=`<div class="hc ${cls} ${abnCls}" onmouseenter="showTip(event,'${p.id}','${m.name}',${val},'${m.fmt(val)}','${delta!==null?(delta>0?'+':'')+delta.toFixed(1):'—'}','${m.grpName}')" onmouseleave="hideTip()">`;
+          html+=`<span class="hc-val">${m.fmt(val)}</span>`;
+          if(delta!==null){
+            html+=`<span class="hc-delta" style="color:${dCol}">${delta>0?'▲':delta<0?'▼':''}${Math.abs(delta).toFixed(delta%1?1:0)}</span>`;
+          }
+          html+=`</div>`;
+        } else {
+          html+=`<div class="hc hc-n"><span class="hc-val" style="color:#334155">—</span></div>`;
+        }
+      });
+      html+=`</div>`;
+    });
+    html+=`</div>`;
+
+    // Sparkline (full 6-week trend with selected point highlighted)
+    const wtData=p.tr.wt;
+    const wtDelta=wtData[wtData.length-1]-wtData[0];
+    const tCol=wtDelta<0?'#4ade80':'#f87171';
+    html+=`<div class="p-trend">${miniSvg(wtData,44,20,tCol)}</div>`;
+    html+=`</div>`;
+
+    // Expanded detail: show charts at current resolution
+    html+=`<div class="p-expand ${isExp?'open':''}" id="exp_${p.id}">`;
+    if(isExp){
+      // Show interventions for this patient
+      const allPInt=INTERVENTIONS.filter(v=>v.pid===p.id);
+      if(allPInt.length){
+        html+=`<div style="margin-bottom:8px;font-size:10px;color:#64748b">중재 이력: `;
+        allPInt.forEach(v=>{
+          const col=v.type==='drug'?'#f472b6':v.type==='counsel'?'#38bdf8':'#fbbf24';
+          html+=`<span style="color:${col}">● W${v.week} ${v.label}</span>  `;
+        });
+        html+=`</div>`;
+      }
+
+      html+=`<div class="exp-grid">`;
+      allItems.forEach(m=>{
+        let data,selIdx;
+        if(viewMode==='day'&&zoomedWeek!==null&&m.getDay){
+          // Show daily data for zoomed week
+          data=m.getDay(p,zoomedWeek);
+          selIdx=selectedDay;
+        } else {
+          // Show weekly data
+          data=m.getWeek(p);
+          selIdx=selectedWeek;
+        }
+        if(data){
+          const label=viewMode==='day'&&m.getDay?`${m.name} · ${WEEKS[zoomedWeek].label} 일별`:`${m.name} · 6주 추이`;
+          html+=`<div class="exp-chart"><div class="ec-title"><span style="color:${m.grpColor}">${label}</span></div>`;
+          html+=chart(data,220,80,m.grpColor,selIdx);
+          html+=`</div>`;
+        }
+      });
+      html+=`</div>`;
+    }
+    html+=`</div>`;
+  });
+
+  document.getElementById('mainBody').innerHTML=html;
+}
+
+// ===== FILTER / EXPAND =====
+function toggleFilter(cat){
+  filters[cat]=!filters[cat];
+  const btns=document.querySelectorAll('.filter-bar .fbtn');
+  btns.forEach(b=>{
+    if(b.textContent.includes('위험'))b.classList.toggle('active',filters.bad);
+    if(b.textContent.includes('주의'))b.classList.toggle('active',filters.warn);
+    if(b.textContent.includes('정상'))b.classList.toggle('active',filters.good);
+  });
+  render();
+}
+function toggleAbnormal(){
+  highlightAbnormal=!highlightAbnormal;
+  document.querySelectorAll('.filter-bar .fbtn')[3].classList.toggle('active',highlightAbnormal);
+  render();
+}
+function toggleExpand(id){
+  expandedId=expandedId===id?null:id;
+  render();
+}
+
+// ===== TOOLTIP =====
+function showTip(e,pid,metric,val,fmtVal,delta,grpName){
+  const tip=document.getElementById('tip');
+  const p=P.find(x=>x.id===pid);
+  const timeLabel=viewMode==='day'&&selectedDay!==null
+    ?`${WEEKS[selectedWeek].label} ${DAYS[selectedDay]}요일`
+    :WEEKS[selectedWeek].label;
+  tip.innerHTML=`
+    <div class="t-hdr">${pid} ${p.nm} · ${metric} (${grpName})</div>
+    <div class="t-row"><span class="t-lbl">시점:</span><span class="t-val">${timeLabel}</span></div>
+    <div class="t-row"><span class="t-lbl">현재:</span><span class="t-val">${fmtVal}</span></div>
+    <div class="t-row"><span class="t-lbl">변화:</span><span class="t-val">${delta}</span></div>
+    <div class="t-spark" style="font-size:9px;color:#475569">더블클릭: 일별 드릴다운</div>
+  `;
+  tip.style.display='block';
+  tip.style.left=Math.min(e.clientX+12,window.innerWidth-200)+'px';
+  tip.style.top=(e.clientY-10)+'px';
+}
+function hideTip(){document.getElementById('tip').style.display='none';}
+
+// ===== KEYBOARD NAV =====
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowLeft'){
+    if(viewMode==='day'&&selectedDay!==null){
+      if(selectedDay>0){selectedDay--;renderTimeline();render();}
+      else if(zoomedWeek>0){zoomedWeek--;selectedWeek=zoomedWeek;selectedDay=6;renderTimeline();render();}
+    } else if(viewMode==='week'&&selectedWeek>0){
+      selectedWeek--;renderTimeline();render();
+    }
+  }
+  if(e.key==='ArrowRight'){
+    if(viewMode==='day'&&selectedDay!==null){
+      if(selectedDay<6){selectedDay++;renderTimeline();render();}
+      else if(zoomedWeek<5){zoomedWeek++;selectedWeek=zoomedWeek;selectedDay=0;renderTimeline();render();}
+    } else if(viewMode==='week'&&selectedWeek<5){
+      selectedWeek++;renderTimeline();render();
+    }
+  }
+  if(e.key==='ArrowDown'&&viewMode==='week'){
+    zoomToDay(selectedWeek);
+  }
+  if(e.key==='ArrowUp'&&viewMode==='day'){
+    setWeekView();
+  }
+  if(e.key==='Escape'){
+    if(viewMode==='day')setWeekView();
+    else if(expandedId){expandedId=null;render();}
+  }
+});
+
+// ===== INIT =====
+renderHeader();
+renderTimeline();
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,134 @@
+/* Step Bar Styles - Non-Linear Navigation */
+
+.step-bar {
+  background: #1e293b;
+  border-bottom: 1px solid #334155;
+  padding: 10px 0;
+  flex-shrink: 0;
+}
+
+.step-bar-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.sb-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.sb-num {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 600;
+  transition: all 0.15s ease;
+}
+
+/* Completed State - Green checkmark */
+.sb-step.completed .sb-num {
+  background: #22c55e;
+  color: white;
+  font-weight: 700;
+}
+
+/* In-Progress/Active State - Purple blue */
+.sb-step.active .sb-num {
+  background: #8b5cf6;
+  color: white;
+  font-weight: 700;
+}
+
+/* Incomplete State - Amber/Orange warning */
+.sb-step.incomplete .sb-num {
+  background: #f59e0b;
+  color: white;
+  font-weight: 700;
+}
+
+.sb-label {
+  font-size: 10px;
+  color: #64748b;
+  white-space: nowrap;
+  transition: color 0.15s ease;
+}
+
+.sb-step.active .sb-label {
+  color: #e2e8f0;
+  font-weight: 500;
+}
+
+.sb-step.completed .sb-label {
+  color: #cbd5e1;
+}
+
+.sb-step.incomplete .sb-label {
+  color: #cbd5e1;
+}
+
+/* Connecting Lines with completion status */
+.sb-line {
+  width: 40px;
+  height: 2px;
+  background: #334155;
+  margin: 0 4px;
+  margin-bottom: 18px;
+  transition: background 0.15s ease;
+}
+
+/* Solid green for completed segments */
+.sb-line.completed {
+  background: #22c55e;
+}
+
+/* Dashed for incomplete segments */
+.sb-line.incomplete {
+  background: #334155;
+  border-bottom: 2px dashed #64748b;
+  background: transparent;
+}
+
+/* All steps are clickable */
+a.sb-step {
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  border-radius: 8px;
+  padding: 4px 8px;
+}
+
+/* Hover effects apply to ALL steps (completed, active, incomplete) */
+a.sb-step:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+a.sb-step:hover .sb-num {
+  transform: scale(1.15);
+}
+
+a.sb-step:hover .sb-label {
+  color: #e2e8f0;
+  font-weight: 600;
+}
+
+/* Remove any disabled states - all steps are always interactive */
+a.sb-step.disabled {
+  cursor: pointer;
+  opacity: 1;
+}
+
+a.sb-step.disabled .sb-num {
+  cursor: pointer;
+}

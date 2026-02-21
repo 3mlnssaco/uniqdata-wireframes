@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>data-table — 테이블 + 오른쪽 상세 패널</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,'Pretendard',sans-serif;background:#0a0e1a;color:#e2e8f0;line-height:1.5;overflow:hidden;height:100vh}
+
+/* ===== TOPBAR ===== */
+.topbar{display:flex;align-items:center;padding:14px 28px;border-bottom:1px solid #1e293b;background:#0f1525;gap:16px;flex-shrink:0}
+.topbar-title{font-size:15px;font-weight:700;color:#f1f5f9}
+.topbar-sub{font-size:12px;color:#475569}
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:16px;font-size:12px;color:#64748b}
+.topbar-right strong{color:#e2e8f0}
+
+/* ===== LEGEND ===== */
+.legend-strip{display:flex;gap:16px;padding:8px 28px;border-bottom:1px solid #151d30;font-size:11px;color:#94a3b8;flex-shrink:0}
+.legend-strip .leg{display:flex;align-items:center;gap:5px}
+.legend-strip .dot{width:7px;height:7px;border-radius:50%}
+.legend-strip .rule{color:#475569;font-size:10px}
+
+/* ===== MAIN SPLIT LAYOUT ===== */
+.main-split{display:flex;flex:1;overflow:hidden;height:calc(100vh - 95px)}
+
+/* LEFT: TABLE AREA */
+.table-area{flex:1;min-width:0;overflow:hidden;display:flex;flex-direction:column;transition:flex 0.35s cubic-bezier(.4,0,.2,1)}
+.table-area.shrunk{flex:0 0 45%}
+.table-wrap{overflow:auto;flex:1}
+table.dt{width:100%;border-collapse:separate;border-spacing:0;font-size:12px;min-width:1200px}
+.dt thead{position:sticky;top:0;z-index:10}
+
+/* Group header row */
+.dt .group-row th{padding:0;background:#0c1120;border-bottom:1px solid #1e293b}
+.group-cell{padding:6px 12px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1px;border-bottom:3px solid}
+
+/* Column header row */
+.dt .col-row th{background:#111827;padding:8px 12px;font-size:11px;font-weight:600;color:#64748b;border-bottom:1px solid #1e293b;white-space:nowrap;text-align:left}
+.dt .col-row th.sortable{cursor:pointer}.dt .col-row th.sortable:hover{color:#e2e8f0}
+
+/* Fixed columns */
+.dt .col-fix{position:sticky;left:0;z-index:5;background:#0f1525}
+.dt .col-fix2{position:sticky;left:56px;z-index:5;background:#0f1525}
+.dt tbody tr:hover .col-fix,.dt tbody tr:hover .col-fix2{background:#1a2236}
+
+/* Data cells */
+.dt td{padding:8px 12px;border-bottom:1px solid #151d30;white-space:nowrap;transition:background 0.1s}
+.dt tbody tr{cursor:pointer}.dt tbody tr:hover td{background:#131b2e}
+.dt tbody tr.alert-row td{background:rgba(251,191,36,0.05)}
+.dt tbody tr.alert-row:hover td{background:rgba(251,191,36,0.1)}
+.dt tbody tr.selected td{background:#1e293b}
+.dt tbody tr.selected .col-fix,.dt tbody tr.selected .col-fix2{background:#1e293b}
+
+/* Values */
+.v{font-family:'SF Mono',Monaco,monospace;font-weight:600}
+.v-g{color:#4ade80}.v-r{color:#f87171}.v-y{color:#fbbf24}.v-m{color:#64748b}
+.sub{display:block;font-size:9px;color:#475569;font-family:-apple-system,sans-serif;font-weight:400;margin-top:1px}
+.empty-cell{color:#334155;font-style:italic;font-size:10px}
+.src-tag{font-size:8px;font-weight:700;padding:1px 5px;border-radius:3px;margin-left:3px;vertical-align:middle}
+.t-emr{background:#1e3a5f;color:#60a5fa}.t-wear{background:#14532d;color:#4ade80}.t-ema{background:#3b1f6e;color:#a78bfa}.t-ext{background:#431407;color:#fb923c}
+
+/* Status badge */
+.badge{padding:3px 8px;border-radius:6px;font-size:10px;font-weight:700;white-space:nowrap}
+.b-imp{background:rgba(96,165,250,0.15);color:#60a5fa}
+.b-ok{background:rgba(74,222,128,0.15);color:#4ade80}
+.b-bad{background:rgba(248,113,113,0.15);color:#f87171}
+
+/* Footer */
+.table-footer{padding:10px 20px;border-top:1px solid #1e293b;display:flex;align-items:center;justify-content:space-between;font-size:11px;color:#64748b;background:#0f1525;flex-shrink:0}
+
+/* ===== RIGHT: DETAIL PANEL ===== */
+.detail-panel{width:0;overflow:hidden;border-left:1px solid #1e293b;background:#0c1120;transition:width 0.35s cubic-bezier(.4,0,.2,1);flex-shrink:0;display:flex;flex-direction:column}
+.detail-panel.open{width:55%}
+.detail-inner{overflow-y:auto;flex:1;min-width:0}
+
+/* Panel header */
+.dp-header{display:flex;align-items:center;gap:14px;padding:16px 20px;border-bottom:1px solid #1e293b;background:#0f1525;flex-shrink:0}
+.dp-close{width:28px;height:28px;border-radius:6px;border:1px solid #334155;background:transparent;color:#64748b;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;transition:all 0.15s}
+.dp-close:hover{background:#1e293b;color:#e2e8f0;border-color:#475569}
+.dp-avatar{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex-shrink:0}
+.dp-avatar.alert-av{background:linear-gradient(135deg,#f59e0b,#ef4444)}
+.dp-info h3{font-size:14px;font-weight:700;color:#f1f5f9}
+.dp-info p{font-size:11px;color:#64748b;margin-top:1px}
+.dp-nav{margin-left:auto;display:flex;gap:4px}
+.dp-nav button{width:28px;height:28px;border-radius:6px;border:1px solid #334155;background:transparent;color:#64748b;cursor:pointer;font-size:12px;transition:all 0.15s}
+.dp-nav button:hover{background:#1e293b;color:#e2e8f0}
+
+/* View toggle */
+.dp-toggle{display:flex;padding:0 20px;gap:0;border-bottom:1px solid #1e293b;background:#0c1120;flex-shrink:0}
+.dp-toggle button{flex:1;padding:8px 0;font-size:11px;font-weight:600;color:#475569;background:transparent;border:none;border-bottom:2px solid transparent;cursor:pointer;transition:all 0.15s}
+.dp-toggle button:hover{color:#94a3b8}
+.dp-toggle button.active{color:#60a5fa;border-bottom-color:#60a5fa}
+
+/* Panel body */
+.dp-body{padding:16px 20px}
+.dp-view{display:none}.dp-view.active{display:block}
+
+/* Raw data table (time-based vertical) */
+.raw-table{width:100%;border-collapse:separate;border-spacing:0;font-size:11px}
+.raw-table thead th{position:sticky;top:0;background:#111827;padding:6px 10px;font-size:10px;font-weight:600;color:#64748b;border-bottom:1px solid #1e293b;text-align:left;white-space:nowrap}
+.raw-table thead th.rg{padding:4px 10px;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:0.5px;border-bottom:2px solid}
+.raw-table tbody td{padding:5px 10px;border-bottom:1px solid #151d30;font-family:'SF Mono',Monaco,monospace;font-size:11px;white-space:nowrap}
+.raw-table tbody td:first-child{font-weight:700;color:#94a3b8;background:#0f1525;position:sticky;left:0;font-family:-apple-system,sans-serif}
+.raw-table tbody tr:hover td{background:#131b2e}
+.raw-table tbody tr:last-child td{font-weight:700;background:rgba(96,165,250,0.05)}
+.raw-table .rd{font-size:8px;color:#475569;font-family:-apple-system,sans-serif;display:block;font-weight:400}
+.raw-wrap{overflow:auto;flex:1}
+
+/* KPI row — 2x2 */
+.dk-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}
+.dk{background:#111827;border:1px solid #1e293b;border-radius:8px;padding:10px 12px;border-left:3px solid #334155}
+.dk .lbl{font-size:9px;color:#64748b;margin-bottom:2px}
+.dk .val{font-size:18px;font-weight:800;font-family:'SF Mono',Monaco,monospace}
+.dk .dlt{font-size:10px;margin-top:2px}
+
+/* Chart cards — single column in panel */
+.pc-section{margin-bottom:12px}
+.pc-section-title{font-size:10px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;padding-left:2px}
+.chart-card{background:#111827;border:1px solid #1e293b;border-radius:10px;padding:14px;margin-bottom:8px}
+.chart-card .cc-title{font-size:11px;font-weight:700;color:#94a3b8;margin-bottom:2px;display:flex;align-items:center;gap:6px}
+.chart-card .cc-sub{font-size:9px;color:#475569;margin-bottom:8px}
+.cc-legend{display:flex;gap:10px;font-size:9px;color:#64748b;margin-bottom:6px}
+.cc-legend .ll{display:flex;align-items:center;gap:3px}
+.cc-legend .ll-bar{width:12px;height:2px;border-radius:1px}
+
+/* Chart row — 2 charts side by side */
+.chart-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+
+/* Collection matrix */
+.cm{display:grid;grid-template-columns:60px repeat(7,1fr);gap:2px;font-size:9px}
+.cm-lbl{color:#64748b;font-weight:600;text-align:right;padding-right:6px;display:flex;align-items:center;justify-content:flex-end;height:22px}
+.cm-day{color:#475569;text-align:center;font-weight:600;height:16px;display:flex;align-items:center;justify-content:center}
+.cm-c{border-radius:3px;height:22px}
+.cm-c.on{opacity:0.85}.cm-c.off{background:#1e293b;opacity:0.25}
+
+/* Detail table */
+.dtl-table{width:100%;font-size:11px;border-collapse:collapse}
+.dtl-table td{padding:6px 10px;border-bottom:1px solid #1e293b}
+.dtl-table td:nth-child(odd){color:#64748b;width:80px}
+.dtl-table td:nth-child(even){font-weight:600}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <span class="topbar-title">비만 중재 효과 연구</span>
+  <span class="topbar-sub">· W6 (2/9~15)</span>
+  <div class="topbar-right">
+    <span>참여자 <strong>80</strong>명</span>
+    <span>실험 <strong>40</strong> · 대조 <strong>40</strong></span>
+    <span>수집률 <strong style="color:#4ade80">94%</strong></span>
+  </div>
+</div>
+<div class="legend-strip">
+  <div class="leg"><span class="dot" style="background:#60a5fa"></span>EMR <span class="rule">마지막 측정값</span></div>
+  <div class="leg"><span class="dot" style="background:#4ade80"></span>웨어러블 <span class="rule">7일 평균</span></div>
+  <div class="leg"><span class="dot" style="background:#a78bfa"></span>EMA <span class="rule">주간 완료율</span></div>
+  <div class="leg"><span class="dot" style="background:#fb923c"></span>외부 <span class="rule">일 평균</span></div>
+</div>
+
+<!-- ===== SPLIT LAYOUT ===== -->
+<div class="main-split">
+  <!-- LEFT: TABLE -->
+  <div class="table-area" id="tableArea">
+    <div class="table-wrap" id="tableWrap"></div>
+    <div class="table-footer">
+      <span>5명 / 80명 표시</span>
+      <span>총 16 칼럼 · 4 소스</span>
+    </div>
+  </div>
+
+  <!-- RIGHT: DETAIL PANEL -->
+  <div class="detail-panel" id="detailPanel">
+    <div class="dp-header">
+      <button class="dp-close" onclick="closePanel()" title="닫기">✕</button>
+      <div class="dp-avatar" id="dpAvatar">01</div>
+      <div class="dp-info">
+        <h3 id="dpName">P001 김OO</h3>
+        <p id="dpSub">실험군 · ↑ 개선</p>
+      </div>
+      <div class="dp-nav">
+        <button onclick="navPatient(-1)" title="이전">▲</button>
+        <button onclick="navPatient(1)" title="다음">▼</button>
+      </div>
+    </div>
+    <div class="dp-toggle" id="dpToggle">
+      <button class="active" onclick="switchView('chart')">차트 뷰</button>
+      <button onclick="switchView('raw')">원본 데이터</button>
+    </div>
+    <div class="detail-inner">
+      <div class="dp-view active" id="viewChart">
+        <div class="dp-body" id="dpBody"></div>
+      </div>
+      <div class="dp-view" id="viewRaw">
+        <div class="raw-wrap" id="dpRaw"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== DATA =====
+const P = [
+  {id:'P001',nm:'김OO',grp:'exp',
+   emr:{wt:81.2,wt0:88.0,sbp:136,sbp0:148,dbp:82,dbp0:90,ldl:112,ldl0:127,alt:24,alt0:22,egfr:82,visit:'2/12(수)',next:'2/26(수)'},
+   wear:{hr:72,hrR:[62,98],steps:8234,sleep:7.2,deep:1.8,spo2:97,rate:100},
+   ema:{diet:95,mood:4.1,med:true,done:20,tot:21},
+   ext:{app:42,exer:2,goal:85},
+   tr:{wt:[88.0,86.4,85.1,84.0,82.5,81.2],sbp:[148,146,143,141,138,136],dbp:[90,88,87,85,83,82],steps:[5200,6100,6800,7500,8000,8234],hr:[80,78,76,74,73,72],sleep:[6.0,6.3,6.5,6.8,7.0,7.2],ema:[72,78,82,88,92,95]},
+   dy:{hr:[68,74,71,73,70,75,72],steps:[7800,8500,9200,8000,8400,7600,8234],sleep:[7.0,6.8,7.5,7.2,7.4,7.0,7.2],col:{emr:[0,0,0,1,0,0,0],wear:[1,1,1,1,1,1,1],ema:[1,1,1,1,1,0,1],ext:[1,1,1,1,1,1,1]}},
+   st:'imp',stL:'↑ 개선'},
+  {id:'P005',nm:'이OO',grp:'exp',
+   emr:{wt:84.7,wt0:89.0,sbp:142,sbp0:148,dbp:86,dbp0:91,ldl:118,ldl0:126,alt:28,alt0:26,egfr:78,visit:'2/10(월)',next:'2/24(월)'},
+   wear:{hr:76,hrR:[65,102],steps:6102,sleep:6.8,deep:1.4,spo2:96,rate:100},
+   ema:{diet:86,mood:3.8,med:true,done:18,tot:21},
+   ext:{app:28,exer:1,goal:72},
+   tr:{wt:[89.0,87.8,86.9,86.2,85.4,84.7],sbp:[148,147,146,144,143,142],dbp:[91,90,89,88,87,86],steps:[4800,5200,5500,5800,6000,6102],hr:[82,80,79,78,77,76],sleep:[6.0,6.2,6.3,6.4,6.6,6.8],ema:[65,70,74,78,82,86]},
+   dy:{hr:[74,78,75,77,73,76,76],steps:[5800,6200,6500,5900,6100,6300,6102],sleep:[6.5,6.8,7.0,6.6,6.9,6.7,6.8],col:{emr:[1,0,0,0,0,0,0],wear:[1,1,1,1,1,1,1],ema:[1,1,0,1,1,1,1],ext:[1,1,1,1,1,1,1]}},
+   st:'ok',stL:'정상'},
+  {id:'P011',nm:'박OO',grp:'exp',
+   emr:{wt:79.9,wt0:87.0,sbp:138,sbp0:148,dbp:80,dbp0:89,ldl:108,ldl0:126,alt:22,alt0:20,egfr:85,visit:'2/13(목)',next:'2/27(목)'},
+   wear:{hr:68,hrR:[58,88],steps:9450,sleep:7.8,deep:2.1,spo2:98,rate:100},
+   ema:{diet:100,mood:4.5,med:true,done:21,tot:21},
+   ext:null,
+   tr:{wt:[87.0,85.2,83.8,82.5,81.0,79.9],sbp:[148,146,143,141,139,138],dbp:[89,87,85,83,82,80],steps:[6000,7200,8100,8800,9200,9450],hr:[78,76,73,71,70,68],sleep:[6.2,6.5,6.8,7.2,7.5,7.8],ema:[80,85,90,95,98,100]},
+   dy:{hr:[66,68,67,70,68,69,68],steps:[9000,9500,10200,9100,9800,9400,9450],sleep:[7.5,7.8,8.0,7.6,7.9,7.7,7.8],col:{emr:[0,0,0,0,1,0,0],wear:[1,1,1,1,1,1,1],ema:[1,1,1,1,1,1,1],ext:[0,0,0,0,0,0,0]}},
+   st:'imp',stL:'↑ 개선'},
+  {id:'P018',nm:'최OO',grp:'exp',alert:true,
+   emr:{wt:90.9,wt0:93.0,sbp:152,sbp0:148,dbp:96,dbp0:93,ldl:135,ldl0:128,alt:42,alt0:30,egfr:68,visit:'2/14(금)',next:'2/28(금)'},
+   wear:{hr:88,hrR:[72,118],steps:3200,sleep:5.1,deep:0.8,spo2:94,rate:71},
+   ema:{diet:43,mood:2.0,med:false,done:9,tot:21},
+   ext:null,
+   tr:{wt:[93.0,92.5,92.0,91.5,91.2,90.9],sbp:[148,149,150,150,151,152],dbp:[93,93,94,94,95,96],steps:[5500,5000,4500,4000,3600,3200],hr:[80,82,84,85,86,88],sleep:[6.5,6.2,5.8,5.5,5.3,5.1],ema:[70,65,58,52,48,43]},
+   dy:{hr:[85,90,86,92,88,87,88],steps:[3500,2800,3400,3000,3200,3100,3200],sleep:[5.0,4.8,5.3,5.2,5.0,5.1,5.1],col:{emr:[0,0,0,0,0,1,0],wear:[1,1,0,1,1,0,1],ema:[0,1,0,1,0,0,1],ext:[0,0,0,0,0,0,0]}},
+   st:'bad',stL:'⚠ 위험'},
+  {id:'P023',nm:'정OO',grp:'exp',
+   emr:{wt:82.5,wt0:88.0,sbp:139,sbp0:148,dbp:84,dbp0:90,ldl:115,ldl0:127,alt:26,alt0:24,egfr:80,visit:'2/11(화)',next:'2/25(화)'},
+   wear:{hr:74,hrR:[60,95],steps:7800,sleep:7.0,deep:1.6,spo2:97,rate:100},
+   ema:{diet:90,mood:4.0,med:true,done:19,tot:21},
+   ext:{app:55,exer:3,goal:92},
+   tr:{wt:[88.0,86.8,85.5,84.5,83.4,82.5],sbp:[148,146,144,142,140,139],dbp:[90,89,87,86,85,84],steps:[5800,6400,6900,7200,7500,7800],hr:[80,78,77,76,75,74],sleep:[6.2,6.4,6.5,6.7,6.8,7.0],ema:[70,75,80,84,88,90]},
+   dy:{hr:[72,76,73,75,74,73,74],steps:[7500,8000,8200,7600,7900,7700,7800],sleep:[6.8,7.0,7.2,6.9,7.1,7.0,7.0],col:{emr:[0,1,0,0,0,0,0],wear:[1,1,1,1,1,1,1],ema:[1,1,1,1,0,1,1],ext:[1,1,1,1,1,1,1]}},
+   st:'ok',stL:'정상'}
+];
+const WK=['W1','W2','W3','W4','W5','W6'], DY=['월','화','수','목','금','토','일'];
+let currentIdx = -1;
+
+// ===== SVG UTILS =====
+let _gid=0;
+function gid(){return 'sg'+(_gid++)}
+
+function chart(data,w,h,col,opts={}){
+  const{dots=true,area=true,yAxis=true,baseline=0,blLabel=''}=opts;
+  const pad={t:10,r:12,b:20,l:yAxis?36:8};
+  const iw=w-pad.l-pad.r,ih=h-pad.t-pad.b;
+  const mn=Math.min(...data)*.97,mx=Math.max(...data)*1.03,rng=mx-mn||1;
+  const id=gid();
+  const X=i=>pad.l+(i/(data.length-1))*iw, Y=v=>pad.t+ih-((v-mn)/rng)*ih;
+  let s=`<svg viewBox="0 0 ${w} ${h}" width="100%" height="${h}" style="display:block">`;
+  s+=`<defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${col}" stop-opacity=".3"/><stop offset="100%" stop-color="${col}" stop-opacity=".02"/></linearGradient></defs>`;
+  for(let i=0;i<=3;i++){const gy=pad.t+(ih/3)*i;s+=`<line x1="${pad.l}" y1="${gy}" x2="${w-pad.r}" y2="${gy}" stroke="#1e293b" stroke-width=".5"/>`;if(yAxis){const v=mx-(rng/3)*i;s+=`<text x="${pad.l-5}" y="${gy+3}" text-anchor="end" fill="#475569" font-size="8" font-family="SF Mono,monospace">${v.toFixed(v>=100?0:1)}</text>`;}}
+  if(baseline){const by=Y(baseline);s+=`<line x1="${pad.l}" y1="${by}" x2="${w-pad.r}" y2="${by}" stroke="#ef4444" stroke-width="1" stroke-dasharray="4,3" opacity=".5"/><text x="${w-pad.r+2}" y="${by+3}" fill="#ef4444" font-size="7" opacity=".7">${blLabel||'기준'}</text>`;}
+  if(area){let a=`M${X(0)},${Y(data[0])}`;for(let i=1;i<data.length;i++)a+=`L${X(i)},${Y(data[i])}`;a+=`L${X(data.length-1)},${pad.t+ih}L${X(0)},${pad.t+ih}Z`;s+=`<path d="${a}" fill="url(#${id})"/>`;}
+  let lp=`M${X(0)},${Y(data[0])}`;for(let i=1;i<data.length;i++)lp+=`L${X(i)},${Y(data[i])}`;s+=`<path d="${lp}" fill="none" stroke="${col}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>`;
+  if(dots)data.forEach((v,i)=>{s+=`<circle cx="${X(i)}" cy="${Y(v)}" r="2.5" fill="#0a0e1a" stroke="${col}" stroke-width="1.5"/>`;if(i===0||i===data.length-1)s+=`<text x="${X(i)}" y="${Y(v)-6}" text-anchor="${i===0?'start':'end'}" fill="${col}" font-size="9" font-weight="700" font-family="SF Mono,monospace">${v>=100?v.toFixed(0):v.toFixed(1)}</text>`;});
+  const lb=data.length===7?DY:WK.slice(-data.length);lb.forEach((l,i)=>{if(i<data.length)s+=`<text x="${X(i)}" y="${h-3}" text-anchor="middle" fill="#475569" font-size="8">${l}</text>`;});
+  return s+'</svg>';
+}
+
+function dualChart(d1,d2,w,h,c1,c2){
+  const pad={t:10,r:36,b:20,l:36},iw=w-pad.l-pad.r,ih=h-pad.t-pad.b;
+  const all=[...d1,...d2],mn=Math.min(...all)*.95,mx=Math.max(...all)*1.05,rng=mx-mn||1;
+  const X=i=>pad.l+(i/(d1.length-1))*iw,Y=v=>pad.t+ih-((v-mn)/rng)*ih;
+  let s=`<svg viewBox="0 0 ${w} ${h}" width="100%" height="${h}" style="display:block">`;
+  for(let i=0;i<=3;i++){const gy=pad.t+(ih/3)*i;s+=`<line x1="${pad.l}" y1="${gy}" x2="${w-pad.r}" y2="${gy}" stroke="#1e293b" stroke-width=".5"/><text x="${pad.l-5}" y="${gy+3}" text-anchor="end" fill="#475569" font-size="8" font-family="SF Mono,monospace">${(mx-(rng/3)*i).toFixed(0)}</text>`;}
+  [d1,d2].forEach((d,di)=>{const c=di?c2:c1;let p=`M${X(0)},${Y(d[0])}`;for(let i=1;i<d.length;i++)p+=`L${X(i)},${Y(d[i])}`;s+=`<path d="${p}" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" opacity="${di?.7:1}"/>`;d.forEach((v,i)=>s+=`<circle cx="${X(i)}" cy="${Y(v)}" r="2" fill="#0a0e1a" stroke="${c}" stroke-width="1.5"/>`);s+=`<text x="${X(d.length-1)+5}" y="${Y(d[d.length-1])+3}" fill="${c}" font-size="9" font-weight="700" font-family="SF Mono,monospace">${d[d.length-1]}</text>`;});
+  WK.slice(-d1.length).forEach((l,i)=>{if(i<d1.length)s+=`<text x="${X(i)}" y="${h-3}" text-anchor="middle" fill="#475569" font-size="8">${l}</text>`;});
+  return s+'</svg>';
+}
+
+function barChart(data,w,h,col,labels){
+  const pad={t:10,r:6,b:20,l:36},iw=w-pad.l-pad.r,ih=h-pad.t-pad.b;
+  const mx=Math.max(...data)*1.15||1,bw=iw/data.length*.6,gap=iw/data.length*.4;
+  let s=`<svg viewBox="0 0 ${w} ${h}" width="100%" height="${h}" style="display:block">`;
+  for(let i=0;i<=3;i++){const gy=pad.t+(ih/3)*i;s+=`<line x1="${pad.l}" y1="${gy}" x2="${w-pad.r}" y2="${gy}" stroke="#1e293b" stroke-width=".5"/>`;const v=mx-(mx/3)*i;s+=`<text x="${pad.l-5}" y="${gy+3}" text-anchor="end" fill="#475569" font-size="8" font-family="SF Mono,monospace">${v>=1000?(v/1000).toFixed(1)+'k':v.toFixed(0)}</text>`;}
+  data.forEach((v,i)=>{const bx=pad.l+(iw/data.length)*i+gap/2,bh=(v/mx)*ih,by=pad.t+ih-bh;s+=`<rect x="${bx}" y="${by}" width="${bw}" height="${bh}" rx="2" fill="${col}" opacity=".8"/><text x="${bx+bw/2}" y="${by-3}" text-anchor="middle" fill="${col}" font-size="8" font-weight="700" font-family="SF Mono,monospace">${v>=1000?(v/1000).toFixed(1)+'k':v}</text>`;});
+  (labels||[]).forEach((l,i)=>{s+=`<text x="${pad.l+(iw/data.length)*i+gap/2+bw/2}" y="${h-3}" text-anchor="middle" fill="#475569" font-size="8">${l}</text>`;});
+  return s+'</svg>';
+}
+
+// ===== TABLE RENDER =====
+function renderTable(){
+  const vc=c=>c<0?'v-g':c>0?'v-r':'v-m';
+  let h=`<table class="dt"><thead>`;
+  // Group header
+  h+=`<tr class="group-row"><th class="col-fix" rowspan="2" style="background:#0f1525;border-bottom:1px solid #1e293b;min-width:56px"></th><th class="col-fix2" rowspan="2" style="background:#0f1525;border-bottom:1px solid #1e293b;min-width:100px"></th>`;
+  h+=`<th colspan="6"><div class="group-cell" style="border-color:#60a5fa;color:#60a5fa">EMR / CDM</div></th>`;
+  h+=`<th colspan="4"><div class="group-cell" style="border-color:#4ade80;color:#4ade80">웨어러블</div></th>`;
+  h+=`<th colspan="3"><div class="group-cell" style="border-color:#a78bfa;color:#a78bfa">EMA / 설문</div></th>`;
+  h+=`<th colspan="3"><div class="group-cell" style="border-color:#fb923c;color:#fb923c">외부 · 헬시앱</div></th>`;
+  h+=`<th rowspan="2" style="background:#0f1525;border-bottom:1px solid #1e293b"><div style="padding:6px 12px;font-size:11px;color:#64748b">상태</div></th></tr>`;
+  // Column header
+  h+=`<tr class="col-row">`;
+  h+=`<th class="sortable">체중(kg)</th><th class="sortable">SBP</th><th class="sortable">DBP</th><th class="sortable">LDL</th><th>ALT</th><th>eGFR</th>`;
+  h+=`<th class="sortable">심박수</th><th class="sortable">걸음수</th><th>수면</th><th>SpO2</th>`;
+  h+=`<th class="sortable">식단순응</th><th>기분</th><th>투약</th>`;
+  h+=`<th>앱사용</th><th>운동</th><th>목표달성</th>`;
+  h+=`</tr></thead><tbody>`;
+
+  P.forEach((p,idx)=>{
+    const wd=(p.emr.wt-p.emr.wt0).toFixed(1);
+    const sd=p.emr.sbp-p.emr.sbp0;
+    const dd=p.emr.dbp-p.emr.dbp0;
+    const ld=p.emr.ldl-p.emr.ldl0;
+    const ad=p.emr.alt-p.emr.alt0;
+    const ar=p.alert?'alert-row':'';
+    const sel=idx===currentIdx?'selected':'';
+    const bc=p.st==='imp'?'b-imp':p.st==='ok'?'b-ok':'b-bad';
+
+    h+=`<tr class="${ar} ${sel}" onclick="showDetail(${idx})" data-idx="${idx}">`;
+    h+=`<td class="col-fix" style="font-weight:700;font-family:SF Mono,monospace;font-size:11px;${p.alert?'color:#fbbf24':''}">${p.id}</td>`;
+    h+=`<td class="col-fix2" style="font-size:12px;font-weight:600">${p.nm}<span class="sub">${p.grp==='exp'?'실험':'대조'} · ${p.emr.visit}</span></td>`;
+
+    // EMR
+    h+=`<td><span class="v ${vc(parseFloat(wd))}">${p.emr.wt}</span><span class="sub">${wd>0?'+':''}${wd}</span></td>`;
+    h+=`<td><span class="v ${vc(sd)}">${p.emr.sbp}</span><span class="sub">${sd>0?'+':''}${sd}</span></td>`;
+    h+=`<td><span class="v ${vc(dd)}">${p.emr.dbp}</span><span class="sub">${dd>0?'+':''}${dd}</span></td>`;
+    h+=`<td><span class="v ${vc(ld)}">${p.emr.ldl}</span><span class="sub">${ld>0?'+':''}${ld}</span></td>`;
+    h+=`<td><span class="v ${ad>35?'v-r':'v-m'}">${p.emr.alt}</span></td>`;
+    h+=`<td><span class="v ${p.emr.egfr<70?'v-y':'v-m'}">${p.emr.egfr}</span></td>`;
+
+    // Wearable
+    h+=`<td><span class="v">${p.wear.hr}</span><span class="sub">bpm</span></td>`;
+    h+=`<td><span class="v">${p.wear.steps.toLocaleString()}</span></td>`;
+    h+=`<td><span class="v">${p.wear.sleep}h</span><span class="sub">깊은 ${p.wear.deep}h</span></td>`;
+    h+=`<td><span class="v ${p.wear.spo2<95?'v-y':'v-m'}">${p.wear.spo2}%</span></td>`;
+
+    // EMA
+    h+=`<td><span class="v ${p.ema.diet>=80?'v-g':'v-y'}">${p.ema.diet}%</span><span class="sub">${p.ema.done}/${p.ema.tot}</span></td>`;
+    h+=`<td><span class="v">${p.ema.mood}</span><span class="sub">/5</span></td>`;
+    h+=`<td><span class="v ${p.ema.med?'v-g':'v-r'}">${p.ema.med?'✓':'✗'}</span></td>`;
+
+    // External
+    if(p.ext){
+      h+=`<td><span class="v">${p.ext.app}분</span></td>`;
+      h+=`<td><span class="v">${p.ext.exer}회</span></td>`;
+      h+=`<td><span class="v">${p.ext.goal}%</span></td>`;
+    } else {
+      h+=`<td class="empty-cell">미연결</td><td class="empty-cell">—</td><td class="empty-cell">—</td>`;
+    }
+
+    h+=`<td><span class="badge ${bc}">${p.stL}</span></td>`;
+    h+=`</tr>`;
+  });
+
+  h+=`</tbody></table>`;
+  document.getElementById('tableWrap').innerHTML=h;
+}
+
+// ===== DETAIL PANEL =====
+function showDetail(idx){
+  const p=P[idx];if(!p)return;
+  currentIdx=idx;
+  renderTable(); // re-render to highlight selected row
+
+  const ta=document.getElementById('tableArea');
+  const dp=document.getElementById('detailPanel');
+  ta.classList.add('shrunk');
+  dp.classList.add('open');
+
+  // Header
+  document.getElementById('dpAvatar').textContent=p.id.slice(1);
+  document.getElementById('dpAvatar').className='dp-avatar'+(p.alert?' alert-av':'');
+  document.getElementById('dpName').textContent=`${p.id} ${p.nm}`;
+  document.getElementById('dpSub').textContent=`${p.grp==='exp'?'실험군':'대조군'} · ${p.stL} · 방문 ${p.emr.visit}`;
+
+  const wd=(p.emr.wt-p.emr.wt0).toFixed(1);
+  const sd=p.emr.sbp-p.emr.sbp0;
+  const cw=440; // chart width for panel
+
+  let h='';
+
+  // KPIs 2x2
+  h+=`<div class="dk-row">
+    <div class="dk" style="border-left-color:#60a5fa"><div class="lbl">체중</div><div class="val ${parseFloat(wd)<0?'v-g':'v-r'}">${p.emr.wt}<span style="font-size:11px;color:#64748b"> kg</span></div><div class="dlt ${parseFloat(wd)<0?'v-g':'v-r'}">${wd>0?'+':''}${wd} (${((p.emr.wt-p.emr.wt0)/p.emr.wt0*100).toFixed(1)}%)</div></div>
+    <div class="dk" style="border-left-color:#60a5fa"><div class="lbl">혈압 SBP/DBP</div><div class="val ${sd<0?'v-g':'v-r'}">${p.emr.sbp}/${p.emr.dbp}</div><div class="dlt ${sd<0?'v-g':'v-r'}">${sd>0?'+':''}${sd} / ${p.emr.dbp-p.emr.dbp0>0?'+':''}${p.emr.dbp-p.emr.dbp0}</div></div>
+    <div class="dk" style="border-left-color:#4ade80"><div class="lbl">심박수</div><div class="val" style="color:#e2e8f0">${p.wear.hr}<span style="font-size:11px;color:#64748b"> bpm</span></div><div class="dlt v-m">${p.wear.hrR[0]}~${p.wear.hrR[1]} 범위</div></div>
+    <div class="dk" style="border-left-color:#a78bfa"><div class="lbl">EMA 순응</div><div class="val" style="color:${p.ema.diet>=80?'#a78bfa':'#fbbf24'}">${p.ema.diet}%</div><div class="dlt v-m">${p.ema.done}/${p.ema.tot} 완료</div></div>
+  </div>`;
+
+  // EMR Charts
+  h+=`<div class="pc-section"><div class="pc-section-title"><span class="src-tag t-emr">EMR</span> 6주 트렌드</div>`;
+  h+=`<div class="chart-row">`;
+  h+=`<div class="chart-card"><div class="cc-title">체중</div><div class="cc-sub">기준 ${p.emr.wt0}kg</div>${chart(p.tr.wt,cw/2,100,parseFloat(wd)<0?'#4ade80':'#f87171',{baseline:p.emr.wt0,blLabel:p.emr.wt0+''})}</div>`;
+  h+=`<div class="chart-card"><div class="cc-title">혈압</div><div class="cc-legend"><div class="ll"><span class="ll-bar" style="background:#f87171"></span>SBP</div><div class="ll"><span class="ll-bar" style="background:#60a5fa"></span>DBP</div></div>${dualChart(p.tr.sbp,p.tr.dbp,cw/2,100,'#f87171','#60a5fa')}</div>`;
+  h+=`</div></div>`;
+
+  // Wearable Charts
+  h+=`<div class="pc-section"><div class="pc-section-title"><span class="src-tag t-wear">웨어러블</span> 7일</div>`;
+  h+=`<div class="chart-row">`;
+  h+=`<div class="chart-card"><div class="cc-title">심박수</div><div class="cc-sub">평균 ${p.wear.hr} bpm</div>${chart(p.dy.hr,cw/2,90,'#60a5fa')}</div>`;
+  h+=`<div class="chart-card"><div class="cc-title">걸음수</div><div class="cc-sub">일 평균 ${p.wear.steps.toLocaleString()}보</div>${barChart(p.dy.steps,cw/2,90,'#4ade80',DY)}</div>`;
+  h+=`</div>`;
+  h+=`<div class="chart-row">`;
+  h+=`<div class="chart-card"><div class="cc-title">수면</div><div class="cc-sub">${p.wear.sleep}h · 깊은 ${p.wear.deep}h</div>${chart(p.dy.sleep,cw/2,90,'#818cf8')}</div>`;
+  h+=`<div class="chart-card"><div class="cc-title">EMA 응답률</div><div class="cc-sub">${p.ema.diet}% · ${p.ema.done}/${p.ema.tot}</div>${barChart(p.tr.ema,cw/2,90,'#a78bfa',WK)}</div>`;
+  h+=`</div></div>`;
+
+  // Collection heatmap
+  h+=`<div class="pc-section"><div class="pc-section-title">수집 현황 (이번 주)</div>`;
+  h+=`<div class="chart-card"><div class="cm">`;
+  h+=`<div class="cm-lbl"></div>${DY.map(d=>`<div class="cm-day">${d}</div>`).join('')}`;
+  h+=`<div class="cm-lbl">EMR</div>${p.dy.col.emr.map(v=>`<div class="cm-c ${v?'on':'off'}" style="${v?'background:#60a5fa':''}"></div>`).join('')}`;
+  h+=`<div class="cm-lbl">웨어러블</div>${p.dy.col.wear.map(v=>`<div class="cm-c ${v?'on':'off'}" style="${v?'background:#4ade80':''}"></div>`).join('')}`;
+  h+=`<div class="cm-lbl">EMA</div>${p.dy.col.ema.map(v=>`<div class="cm-c ${v?'on':'off'}" style="${v?'background:#a78bfa':''}"></div>`).join('')}`;
+  h+=`<div class="cm-lbl">외부</div>${p.dy.col.ext.map(v=>`<div class="cm-c ${v?'on':'off'}" style="${v?'background:#fb923c':''}"></div>`).join('')}`;
+  h+=`</div></div></div>`;
+
+  // Detail numbers
+  h+=`<div class="pc-section"><div class="pc-section-title">상세 수치</div>`;
+  h+=`<div class="chart-card"><table class="dtl-table">
+    <tr><td>다음 방문</td><td>${p.emr.next}</td><td>LDL</td><td>${p.emr.ldl} <span style="color:${p.emr.ldl<p.emr.ldl0?'#4ade80':'#f87171'};font-size:9px">(${p.emr.ldl-p.emr.ldl0})</span></td></tr>
+    <tr><td>ALT</td><td style="color:${p.emr.alt>35?'#f87171':'#e2e8f0'}">${p.emr.alt}</td><td>eGFR</td><td style="color:${p.emr.egfr<70?'#fbbf24':'#e2e8f0'}">${p.emr.egfr}</td></tr>
+    <tr><td>SpO2</td><td>${p.wear.spo2}%</td><td>수집률</td><td style="color:${p.wear.rate>=90?'#4ade80':'#fbbf24'}">${p.wear.rate}%</td></tr>
+    <tr><td>기분</td><td>${p.ema.mood}/5</td><td>투약</td><td style="color:${p.ema.med?'#4ade80':'#f87171'}">${p.ema.med?'✓ 복용':'✗ 미복용'}</td></tr>
+    <tr><td>외부앱</td><td style="color:${p.ext?'#fb923c':'#475569'}">${p.ext?p.ext.app+'분/일':'미연결'}</td><td>목표</td><td style="color:${p.ext?'#fb923c':'#475569'}">${p.ext?p.ext.goal+'%':'—'}</td></tr>
+  </table></div></div>`;
+
+  document.getElementById('dpBody').innerHTML=h;
+  renderRawTable(idx);
+  // Reset to chart view on new patient
+  switchView('chart');
+  document.querySelector('.detail-inner').scrollTop=0;
+}
+
+// ===== VIEW TOGGLE =====
+let currentView='chart';
+function switchView(v){
+  currentView=v;
+  document.querySelectorAll('.dp-toggle button').forEach((b,i)=>{
+    b.classList.toggle('active', (i===0&&v==='chart')||(i===1&&v==='raw'));
+  });
+  document.getElementById('viewChart').classList.toggle('active',v==='chart');
+  document.getElementById('viewRaw').classList.toggle('active',v==='raw');
+}
+
+// ===== RAW DATA TABLE =====
+function renderRawTable(idx){
+  const p=P[idx];if(!p)return;
+  // Build weekly longitudinal data: rows=W1~W6, columns=all metrics
+  const weeks=WK; // W1~W6
+  let h=`<table class="raw-table"><thead>`;
+  // Group header
+  h+=`<tr><th rowspan="2" style="background:#0f1525;min-width:48px;border-bottom:1px solid #1e293b">주차</th>`;
+  h+=`<th colspan="4" class="rg" style="border-color:#60a5fa;color:#60a5fa">EMR</th>`;
+  h+=`<th colspan="3" class="rg" style="border-color:#4ade80;color:#4ade80">웨어러블</th>`;
+  h+=`<th colspan="1" class="rg" style="border-color:#a78bfa;color:#a78bfa">EMA</th>`;
+  h+=`</tr><tr>`;
+  h+=`<th>체중</th><th>SBP</th><th>DBP</th><th>LDL*</th>`;
+  h+=`<th>심박수</th><th>걸음수</th><th>수면</th>`;
+  h+=`<th>순응률</th>`;
+  h+=`</tr></thead><tbody>`;
+
+  // Weekly data from trends (6 weeks)
+  for(let w=0;w<6;w++){
+    const isLast=w===5;
+    const wtD=w>0?(p.tr.wt[w]-p.tr.wt[w-1]).toFixed(1):'-';
+    const sbpD=w>0?(p.tr.sbp[w]-p.tr.sbp[w-1]):'-';
+    const dbpD=w>0?(p.tr.dbp[w]-p.tr.dbp[w-1]):'-';
+    const stD=w>0?(p.tr.steps[w]-p.tr.steps[w-1]):'-';
+    const hrD=w>0?(p.tr.hr[w]-p.tr.hr[w-1]):'-';
+    const slD=w>0?(p.tr.sleep[w]-p.tr.sleep[w-1]).toFixed(1):'-';
+    const emaD=w>0?(p.tr.ema[w]-p.tr.ema[w-1]):'-';
+
+    const vc=v=>typeof v==='number'?(v<0?'v-g':v>0?'v-r':'v-m'):'v-m';
+    const fd=v=>typeof v==='number'?(v>0?'+'+v:v):'';
+
+    h+=`<tr>`;
+    h+=`<td>${weeks[w]}${isLast?' <span style="color:#60a5fa;font-size:9px">현재</span>':''}</td>`;
+    // EMR
+    h+=`<td><span class="${vc(parseFloat(wtD))}">${p.tr.wt[w]}</span><span class="rd">${fd(parseFloat(wtD))}</span></td>`;
+    h+=`<td><span class="${vc(sbpD)}">${p.tr.sbp[w]}</span><span class="rd">${fd(sbpD)}</span></td>`;
+    h+=`<td><span class="${vc(dbpD)}">${p.tr.dbp[w]}</span><span class="rd">${fd(dbpD)}</span></td>`;
+    h+=`<td style="color:#64748b">${w===0?p.emr.ldl0:w===5?p.emr.ldl:'—'}</td>`;
+    // Wearable
+    h+=`<td><span class="${vc(hrD)}">${p.tr.hr[w]}</span><span class="rd">${fd(hrD)}</span></td>`;
+    h+=`<td>${p.tr.steps[w].toLocaleString()}<span class="rd">${typeof stD==='number'?(stD>0?'+':'')+stD.toLocaleString():''}</span></td>`;
+    h+=`<td>${p.tr.sleep[w]}h<span class="rd">${fd(parseFloat(slD))}</span></td>`;
+    // EMA
+    h+=`<td><span class="${p.tr.ema[w]>=80?'v-g':'v-y'}">${p.tr.ema[w]}%</span><span class="rd">${fd(emaD)}</span></td>`;
+    h+=`</tr>`;
+  }
+  h+=`</tbody></table>`;
+
+  // Daily detail below
+  h+=`<div style="padding:16px 20px 8px;font-size:10px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:0.5px">이번 주 일별 (W6)</div>`;
+  h+=`<table class="raw-table"><thead><tr>`;
+  h+=`<th style="background:#0f1525;min-width:48px">요일</th>`;
+  h+=`<th>심박수</th><th>걸음수</th><th>수면</th>`;
+  h+=`<th>EMR</th><th>웨어러블</th><th>EMA</th><th>외부</th>`;
+  h+=`</tr></thead><tbody>`;
+
+  for(let d=0;d<7;d++){
+    const isToday=d===6;
+    h+=`<tr>`;
+    h+=`<td>${DY[d]}${isToday?' <span style="color:#60a5fa;font-size:9px">오늘</span>':''}</td>`;
+    h+=`<td>${p.dy.hr[d]} <span style="color:#475569;font-size:9px">bpm</span></td>`;
+    h+=`<td>${p.dy.steps[d].toLocaleString()}</td>`;
+    h+=`<td>${p.dy.sleep[d]}h</td>`;
+    // Collection status
+    h+=`<td>${p.dy.col.emr[d]?'<span style="color:#60a5fa">●</span>':'<span style="color:#334155">○</span>'}</td>`;
+    h+=`<td>${p.dy.col.wear[d]?'<span style="color:#4ade80">●</span>':'<span style="color:#334155">○</span>'}</td>`;
+    h+=`<td>${p.dy.col.ema[d]?'<span style="color:#a78bfa">●</span>':'<span style="color:#334155">○</span>'}</td>`;
+    h+=`<td>${p.dy.col.ext[d]?'<span style="color:#fb923c">●</span>':'<span style="color:#334155">○</span>'}</td>`;
+    h+=`</tr>`;
+  }
+  h+=`</tbody></table>`;
+
+  // Summary row
+  h+=`<div style="padding:16px 20px 8px;font-size:10px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:0.5px">기타 수치</div>`;
+  h+=`<table class="raw-table"><tbody>`;
+  h+=`<tr><td style="color:#64748b;font-family:-apple-system,sans-serif">ALT</td><td>${p.emr.alt} <span style="color:#475569;font-size:9px">(기준 ${p.emr.alt0})</span></td><td style="color:#64748b;font-family:-apple-system,sans-serif">eGFR</td><td>${p.emr.egfr}</td></tr>`;
+  h+=`<tr><td style="color:#64748b;font-family:-apple-system,sans-serif">SpO2</td><td>${p.wear.spo2}%</td><td style="color:#64748b;font-family:-apple-system,sans-serif">수집률</td><td>${p.wear.rate}%</td></tr>`;
+  h+=`<tr><td style="color:#64748b;font-family:-apple-system,sans-serif">기분</td><td>${p.ema.mood}/5</td><td style="color:#64748b;font-family:-apple-system,sans-serif">투약</td><td style="color:${p.ema.med?'#4ade80':'#f87171'}">${p.ema.med?'✓':'✗'}</td></tr>`;
+  if(p.ext){
+    h+=`<tr><td style="color:#64748b;font-family:-apple-system,sans-serif">앱사용</td><td>${p.ext.app}분/일</td><td style="color:#64748b;font-family:-apple-system,sans-serif">목표달성</td><td>${p.ext.goal}%</td></tr>`;
+  }
+  h+=`</tbody></table>`;
+
+  document.getElementById('dpRaw').innerHTML=h;
+}
+
+function closePanel(){
+  document.getElementById('tableArea').classList.remove('shrunk');
+  document.getElementById('detailPanel').classList.remove('open');
+  currentIdx=-1;
+  renderTable();
+}
+
+function navPatient(dir){
+  if(currentIdx<0)return;
+  const next=currentIdx+dir;
+  if(next>=0&&next<P.length)showDetail(next);
+}
+
+// Keyboard nav
+document.addEventListener('keydown',e=>{
+  if(currentIdx<0)return;
+  if(e.key==='Escape')closePanel();
+  if(e.key==='ArrowUp'){e.preventDefault();navPatient(-1);}
+  if(e.key==='ArrowDown'){e.preventDefault();navPatient(1);}
+});
+
+// Init
+renderTable();
+</script>
+</body>
+</html>

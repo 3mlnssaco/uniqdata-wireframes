@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UniQdata — 기술부채 맵 & 해결 계획</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f8fafc;color:#1e293b;line-height:1.6;}
+.container{max-width:1200px;margin:0 auto;padding:32px 24px;}
+
+/* Header */
+.doc-header{margin-bottom:32px;border-bottom:2px solid #e2e8f0;padding-bottom:20px;}
+.doc-title{font-size:28px;font-weight:800;color:#0f172a;margin-bottom:4px;}
+.doc-sub{font-size:14px;color:#64748b;}
+.doc-meta{display:flex;gap:16px;margin-top:12px;font-size:12px;color:#94a3b8;}
+.doc-meta span{display:flex;align-items:center;gap:4px;}
+
+/* Navigation */
+.nav-bar{position:sticky;top:0;background:rgba(248,250,252,.95);backdrop-filter:blur(8px);border-bottom:1px solid #e2e8f0;padding:12px 0;margin-bottom:24px;z-index:100;display:flex;gap:8px;flex-wrap:wrap;}
+.nav-btn{padding:6px 14px;border:1px solid #e2e8f0;border-radius:6px;background:white;font-size:12px;color:#64748b;cursor:pointer;transition:all .15s;text-decoration:none;}
+.nav-btn:hover{border-color:#3b82f6;color:#3b82f6;}
+.nav-btn.active{background:#3b82f6;color:white;border-color:#3b82f6;}
+
+/* Section */
+.section{margin-bottom:40px;}
+.section-title{font-size:20px;font-weight:700;color:#0f172a;margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+.section-title .num{background:#3b82f6;color:white;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;}
+
+/* Heat Map Table */
+.heat-map{width:100%;border-collapse:collapse;font-size:11px;margin-bottom:16px;background:white;border-radius:8px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.06);}
+.heat-map th{background:#f1f5f9;padding:8px 10px;text-align:left;font-weight:600;color:#475569;border-bottom:1px solid #e2e8f0;position:sticky;top:0;}
+.heat-map th.rotate{writing-mode:vertical-lr;text-orientation:mixed;transform:rotate(180deg);min-width:36px;text-align:center;padding:10px 4px;height:120px;}
+.heat-map td{padding:6px 10px;border-bottom:1px solid #f1f5f9;vertical-align:middle;}
+.heat-map tr:hover{background:#f8fafc;}
+.heat-map .scenario-name{font-weight:600;color:#1e293b;white-space:nowrap;}
+.heat-map .scenario-type{font-size:10px;color:#94a3b8;display:block;}
+
+/* Impact cells */
+.impact{width:32px;height:32px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:10px;margin:0 auto;}
+.impact.critical{background:#fecaca;color:#991b1b;}
+.impact.high{background:#fed7aa;color:#9a3412;}
+.impact.medium{background:#fef08a;color:#854d0e;}
+.impact.low{background:#d1fae5;color:#065f46;}
+.impact.none{background:#f1f5f9;color:#cbd5e1;}
+
+/* Debt Cards */
+.debt-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:16px;margin-bottom:16px;}
+.debt-card{background:white;border:1px solid #e2e8f0;border-radius:10px;padding:20px;position:relative;overflow:hidden;}
+.debt-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+.debt-card.p1::before{background:#ef4444;}
+.debt-card.p2::before{background:#f97316;}
+.debt-card.p3::before{background:#eab308;}
+.debt-card.p4::before{background:#22c55e;}
+.debt-id{font-size:10px;color:#94a3b8;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;}
+.debt-name{font-size:16px;font-weight:700;color:#0f172a;margin-bottom:8px;}
+.debt-desc{font-size:13px;color:#64748b;margin-bottom:12px;}
+.debt-stats{display:flex;gap:16px;margin-bottom:12px;}
+.debt-stat{text-align:center;}
+.debt-stat .val{font-size:18px;font-weight:700;color:#0f172a;}
+.debt-stat .label{font-size:10px;color:#94a3b8;}
+.debt-tags{display:flex;flex-wrap:wrap;gap:4px;}
+.debt-tag{font-size:10px;padding:2px 8px;border-radius:4px;background:#f1f5f9;color:#64748b;}
+.debt-tag.affected{background:#fef2f2;color:#991b1b;}
+
+/* Solution blocks */
+.solution-block{background:white;border:1px solid #e2e8f0;border-radius:10px;padding:20px;margin-bottom:16px;}
+.sol-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;}
+.sol-title{font-size:15px;font-weight:700;color:#0f172a;}
+.sol-priority{font-size:10px;font-weight:700;padding:3px 10px;border-radius:4px;}
+.sol-priority.p1{background:#fecaca;color:#991b1b;}
+.sol-priority.p2{background:#fed7aa;color:#9a3412;}
+.sol-priority.p3{background:#fef08a;color:#854d0e;}
+.sol-research{font-size:12px;color:#3b82f6;margin-bottom:8px;}
+.sol-problem{font-size:13px;color:#64748b;margin-bottom:12px;padding:10px;background:#f8fafc;border-radius:6px;border-left:3px solid #e2e8f0;}
+.sol-approach{margin-bottom:12px;}
+.sol-approach h4{font-size:12px;font-weight:700;color:#475569;margin-bottom:6px;}
+.sol-step{display:flex;gap:8px;margin-bottom:6px;font-size:12px;color:#334155;}
+.sol-step .step-num{background:#3b82f6;color:white;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0;margin-top:2px;}
+.sol-code{background:#1e293b;color:#e2e8f0;padding:12px 16px;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:11px;overflow-x:auto;margin:8px 0;line-height:1.5;}
+.sol-code .comment{color:#64748b;}
+.sol-code .keyword{color:#7dd3fc;}
+.sol-code .string{color:#86efac;}
+.sol-code .type{color:#fbbf24;}
+
+/* Wireframe impact */
+.wireframe-impact{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px;}
+.wf-card{background:white;border:1px solid #e2e8f0;border-radius:8px;padding:16px;text-align:center;}
+.wf-tab{font-size:11px;font-weight:700;color:#3b82f6;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;}
+.wf-changes{text-align:left;font-size:12px;color:#475569;}
+.wf-changes li{margin-bottom:4px;list-style:none;padding-left:16px;position:relative;}
+.wf-changes li::before{content:'→';position:absolute;left:0;color:#3b82f6;}
+
+/* Timeline / Roadmap */
+.roadmap{position:relative;padding-left:28px;margin-bottom:16px;}
+.roadmap::before{content:'';position:absolute;left:10px;top:0;bottom:0;width:2px;background:#e2e8f0;}
+.rm-phase{position:relative;margin-bottom:24px;}
+.rm-dot{position:absolute;left:-24px;top:2px;width:14px;height:14px;border-radius:50%;border:3px solid white;box-shadow:0 0 0 2px #e2e8f0;}
+.rm-dot.p1{background:#ef4444;box-shadow:0 0 0 2px #ef4444;}
+.rm-dot.p2{background:#f97316;box-shadow:0 0 0 2px #f97316;}
+.rm-dot.p3{background:#eab308;box-shadow:0 0 0 2px #eab308;}
+.rm-dot.p4{background:#22c55e;box-shadow:0 0 0 2px #22c55e;}
+.rm-title{font-size:14px;font-weight:700;color:#0f172a;margin-bottom:2px;}
+.rm-time{font-size:11px;color:#94a3b8;margin-bottom:8px;}
+.rm-items{font-size:12px;color:#475569;}
+.rm-items li{margin-bottom:3px;list-style:none;padding-left:14px;position:relative;}
+.rm-items li::before{content:'•';position:absolute;left:0;color:#94a3b8;}
+.rm-unlock{font-size:11px;color:#3b82f6;font-weight:600;margin-top:6px;padding-left:14px;}
+
+/* Intersection diagram */
+.intersection{background:white;border:1px solid #e2e8f0;border-radius:10px;padding:20px;margin-bottom:16px;}
+.int-row{display:flex;gap:12px;margin-bottom:8px;align-items:center;}
+.int-label{width:160px;font-size:12px;font-weight:600;color:#475569;text-align:right;flex-shrink:0;}
+.int-bar{flex:1;height:24px;background:#f1f5f9;border-radius:4px;position:relative;overflow:hidden;}
+.int-fill{height:100%;border-radius:4px;display:flex;align-items:center;padding-left:8px;font-size:10px;color:white;font-weight:600;}
+.int-fill.high{background:linear-gradient(90deg,#ef4444,#f97316);}
+.int-fill.med{background:linear-gradient(90deg,#f97316,#eab308);}
+.int-fill.low{background:linear-gradient(90deg,#22c55e,#10b981);}
+
+/* Legend */
+.legend{display:flex;gap:16px;margin-bottom:16px;font-size:11px;color:#64748b;}
+.legend-item{display:flex;align-items:center;gap:4px;}
+.legend-dot{width:12px;height:12px;border-radius:2px;}
+
+/* Summary box */
+.summary-box{background:linear-gradient(135deg,#eff6ff,#f0f9ff);border:1px solid #bfdbfe;border-radius:10px;padding:20px;margin-bottom:16px;}
+.summary-box h3{font-size:14px;font-weight:700;color:#1e40af;margin-bottom:8px;}
+.summary-box p{font-size:13px;color:#1e3a5f;}
+
+.print-only{display:none;}
+@media print{.nav-bar{display:none;}.print-only{display:block;}}
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- Header -->
+<div class="doc-header">
+  <div class="doc-title">UniQdata 기술부채 맵 & 해결 계획</div>
+  <div class="doc-sub">10개 연구 시나리오 × 6개 기술부채 카테고리 — 리서치 기반 솔루션</div>
+  <div class="doc-meta">
+    <span>📅 2026-02-16</span>
+    <span>📊 v9 3-tab 통합 데모 기준</span>
+    <span>🔬 4개 심층 리서치 결과 반영</span>
+  </div>
+</div>
+
+<!-- Navigation -->
+<div class="nav-bar" id="nav">
+  <a class="nav-btn active" href="#overview" onclick="scrollToSection('overview')">요약</a>
+  <a class="nav-btn" href="#heatmap" onclick="scrollToSection('heatmap')">히트맵</a>
+  <a class="nav-btn" href="#debts" onclick="scrollToSection('debts')">6대 부채</a>
+  <a class="nav-btn" href="#solutions" onclick="scrollToSection('solutions')">솔루션</a>
+  <a class="nav-btn" href="#wireframe" onclick="scrollToSection('wireframe')">와이어프레임 영향</a>
+  <a class="nav-btn" href="#roadmap" onclick="scrollToSection('roadmap')">로드맵</a>
+</div>
+
+<!-- ============================================================ -->
+<!-- 1. EXECUTIVE SUMMARY -->
+<!-- ============================================================ -->
+<div class="section" id="overview">
+  <div class="section-title"><span class="num">1</span> 핵심 요약</div>
+
+  <div class="summary-box">
+    <h3>현재 v9 와이어프레임의 한계</h3>
+    <p>현재 v9은 <strong>"GLP-1 체중감량 24주 RCT"</strong>라는 단일 시나리오에 최적화되어 있습니다.
+    10개 연구 시나리오로 확장 테스트한 결과, <strong>6개 구조적 기술부채</strong>가 발견되었으며,
+    이 중 <strong>시간축 경직성</strong>이 가장 광범위한 영향(8/10 시나리오)을 미칩니다.</p>
+  </div>
+
+  <!-- Intersection bars -->
+  <div class="intersection">
+    <div style="font-size:13px;font-weight:700;color:#0f172a;margin-bottom:12px;">기술부채별 영향 범위 (10개 시나리오 중)</div>
+    <div class="int-row">
+      <div class="int-label">TD-1 시간축 경직성</div>
+      <div class="int-bar"><div class="int-fill high" style="width:80%;">8 / 10</div></div>
+    </div>
+    <div class="int-row">
+      <div class="int-label">TD-2 2-arm RCT 전제</div>
+      <div class="int-bar"><div class="int-fill high" style="width:70%;">7 / 10</div></div>
+    </div>
+    <div class="int-row">
+      <div class="int-label">TD-3 숫자 전용 데이터</div>
+      <div class="int-bar"><div class="int-fill med" style="width:50%;">5 / 10</div></div>
+    </div>
+    <div class="int-row">
+      <div class="int-label">TD-4 고정 측정 빈도</div>
+      <div class="int-bar"><div class="int-fill high" style="width:60%;">6 / 10</div></div>
+    </div>
+    <div class="int-row">
+      <div class="int-label">TD-5 유효성 전용 프레임</div>
+      <div class="int-bar"><div class="int-fill med" style="width:40%;">4 / 10</div></div>
+    </div>
+    <div class="int-row">
+      <div class="int-label">TD-6 파생 지표 미지원</div>
+      <div class="int-bar"><div class="int-fill med" style="width:50%;">5 / 10</div></div>
+    </div>
+  </div>
+
+  <div class="summary-box" style="background:linear-gradient(135deg,#fef2f2,#fff1f2);border-color:#fecaca;">
+    <h3 style="color:#991b1b;">핵심 발견: "접점"은 시간축이다</h3>
+    <p>10개 시나리오 모두 <strong>시간(time)</strong>을 X축으로 공유합니다. 차이는 단위(분/일/주/월/분기)와 의미(Study Day vs Calendar vs Visit Window)뿐입니다.
+    시간축을 <strong>semantic zoom + CDISC visit window</strong>로 일반화하면, 나머지 5개 부채의 해결 기반도 함께 마련됩니다.</p>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- 2. HEAT MAP -->
+<!-- ============================================================ -->
+<div class="section" id="heatmap">
+  <div class="section-title"><span class="num">2</span> 시나리오 × 부채 히트맵</div>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#fecaca;"></div> Critical — 기능 불가</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#fed7aa;"></div> High — 심각한 제약</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#fef08a;"></div> Medium — 우회 가능</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#d1fae5;"></div> Low — 경미한 불편</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#f1f5f9;"></div> N/A</div>
+  </div>
+
+  <table class="heat-map">
+    <thead>
+      <tr>
+        <th style="min-width:200px;">시나리오</th>
+        <th class="rotate">TD-1<br>시간축</th>
+        <th class="rotate">TD-2<br>연구설계</th>
+        <th class="rotate">TD-3<br>데이터타입</th>
+        <th class="rotate">TD-4<br>측정빈도</th>
+        <th class="rotate">TD-5<br>안전성프레임</th>
+        <th class="rotate">TD-6<br>파생지표</th>
+        <th style="min-width:80px;">총점</th>
+      </tr>
+    </thead>
+    <tbody id="heatmapBody"></tbody>
+  </table>
+</div>
+
+<!-- ============================================================ -->
+<!-- 3. SIX DEBTS -->
+<!-- ============================================================ -->
+<div class="section" id="debts">
+  <div class="section-title"><span class="num">3</span> 6대 기술부채 상세</div>
+  <div class="debt-grid" id="debtGrid"></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- 4. SOLUTIONS -->
+<!-- ============================================================ -->
+<div class="section" id="solutions">
+  <div class="section-title"><span class="num">4</span> 리서치 기반 솔루션</div>
+  <div id="solutionsContainer"></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- 5. WIREFRAME IMPACT -->
+<!-- ============================================================ -->
+<div class="section" id="wireframe">
+  <div class="section-title"><span class="num">5</span> v9 → v10 와이어프레임 변경점</div>
+
+  <div class="wireframe-impact">
+    <div class="wf-card">
+      <div class="wf-tab">📊 개요 탭</div>
+      <ul class="wf-changes">
+        <li>타임라인: Study Day 기반 → semantic zoom (epoch/month/week/day)</li>
+        <li>Verdict strip: RCT 전용 → study_type 기반 조건부 질문</li>
+        <li>지표 카드: numeric-only → 사진 갤러리, severity zone, AGP 트랙 추가</li>
+        <li>기간 단위: W1~W12 하드코딩 → 연구 메타데이터에서 동적 계산</li>
+        <li>안전성 패널: 없음 → AE timeline + DLT boundary 위젯</li>
+      </ul>
+    </div>
+    <div class="wf-card">
+      <div class="wf-tab">🔍 테이블 탭</div>
+      <ul class="wf-changes">
+        <li>미니 차트: 주간 그리드 → visit-based 가변 그리드</li>
+        <li>상세 패널: 단일 metric line → multi-track 타임라인</li>
+        <li>이미지 열: 없음 → 썸네일 + before/after 비교</li>
+        <li>상태 배지: Verified/Query → + Missing Visit, Protocol Deviation</li>
+        <li>정렬: 고정 열 → metric direction 인식 정렬 (↑ up, ↓ down)</li>
+      </ul>
+    </div>
+    <div class="wf-card">
+      <div class="wf-tab">🔒 클린룸 탭</div>
+      <ul class="wf-changes">
+        <li>ERD: 고정 12 테이블 → study_config 기반 동적 스키마</li>
+        <li>시계열 쿼리: raw 단일 레벨 → 계층 집계 (raw→hourly→daily)</li>
+        <li>이미지/파일: 미지원 → BLOB 참조 + 썸네일 미리보기</li>
+        <li>가명처리: ID만 → 시간 재매핑(date shifting) 옵션</li>
+        <li>쿼리 빌더: 없음 → smart query router (해상도 자동 선택)</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- 6. ROADMAP -->
+<!-- ============================================================ -->
+<div class="section" id="roadmap">
+  <div class="section-title"><span class="num">6</span> 구현 로드맵</div>
+
+  <div class="summary-box">
+    <h3>접근 전략: "시간축 먼저, 나머지는 플러그인"</h3>
+    <p>시간축(TD-1)을 먼저 일반화하면 나머지 부채(TD-2~6)를 해결할 <strong>기반 인프라</strong>가 만들어집니다.
+    이후 연구설계 어댑터, 데이터타입 렌더러, 안전성 프레임을 순차적으로 플러그인하는 전략입니다.</p>
+  </div>
+
+  <div class="roadmap">
+    <div class="rm-phase">
+      <div class="rm-dot p1"></div>
+      <div class="rm-title">Phase 1 — 시간축 일반화 (TD-1 + TD-4)</div>
+      <div class="rm-time">우선순위: Critical · v10에 반드시 반영</div>
+      <ul class="rm-items">
+        <li><strong>study_config.timeline</strong> 도입 — duration_days, phases[], visit_windows[]</li>
+        <li>W1~W12 하드코딩 제거 → visit window 기반 동적 라벨</li>
+        <li>Semantic zoom UI: 핀치/버튼으로 epoch↔month↔week↔day 전환</li>
+        <li>Hierarchical aggregation: raw → hourly → daily → visit 4계층</li>
+        <li>미니 차트 X축: 고정 그리드 → proportional study day 스케일</li>
+      </ul>
+      <div class="rm-unlock">→ 해금: 디지털 CBT(일별), CGM(5분), 심장재활(혼합), EMA(시간별), 희귀질환(2년) 시나리오</div>
+    </div>
+
+    <div class="rm-phase">
+      <div class="rm-dot p2"></div>
+      <div class="rm-title">Phase 2 — 연구설계 어댑터 (TD-2 + TD-5)</div>
+      <div class="rm-time">우선순위: High · Phase 1 완료 후</div>
+      <ul class="rm-items">
+        <li><strong>study_config.design</strong> — study_type, has_control_arm, num_arms, primary_endpoint_type</li>
+        <li>Verdict strip 어댑터: RCT("치료가 나은가?"), single-arm("기준 충족?"), safety("DLT 범위 내?")</li>
+        <li>MetricTemplate 레지스트리: 지표별 direction, comparison_type, threshold 정의</li>
+        <li>안전성 프레임: AE timeline, stopping boundary, DSMB alert 위젯</li>
+        <li>Single-arm 모드: 대조군 제거 → 목표값 기준선(threshold line) 표시</li>
+      </ul>
+      <div class="rm-unlock">→ 해금: 단일군 스트레스앱, 금연 RCT, 노인 낙상방지, 유전자치료 안전성 시나리오</div>
+    </div>
+
+    <div class="rm-phase">
+      <div class="rm-dot p3"></div>
+      <div class="rm-title">Phase 3 — 데이터타입 확장 (TD-3 + TD-6)</div>
+      <div class="rm-time">우선순위: Medium · Phase 2와 병행 가능</div>
+      <ul class="rm-items">
+        <li><strong>Modular metric renderers</strong>: numeric_line, image_gallery, severity_zone, agp_strip, heatmap</li>
+        <li>이미지 결과 변수: before/after 갤러리 + SCORAD/EASI 중첩</li>
+        <li>PRO/EMA: 일중 히트맵 + 심각도 구간 (green/yellow/red zones)</li>
+        <li>파생 지표 엔진: TIR(CGM 범위내시간), Shannon diversity, composite endpoint 계산</li>
+        <li>마이크로바이옴: stacked bar(문/과) + alpha diversity line + PCA scatter</li>
+      </ul>
+      <div class="rm-unlock">→ 해금: AI 피부진단(사진), CGM+식이(TIR), 마이크로바이옴(다양성 지수) 시나리오</div>
+    </div>
+
+    <div class="rm-phase">
+      <div class="rm-dot p4"></div>
+      <div class="rm-title">Phase 4 — 고급 분석 & 클린룸 강화</div>
+      <div class="rm-time">우선순위: Enhancement · Phase 3 이후</div>
+      <ul class="rm-items">
+        <li>Smart query router: 줌 레벨에 따라 집계 티어 자동 선택</li>
+        <li>동적 ERD: study_config에 따라 스키마 자동 생성/표시</li>
+        <li>날짜 재매핑(date shifting): 클린룸 가명처리 강화</li>
+        <li>Focus+context: 전체 타임라인(context) + 확대 구간(focus) 동시 표시</li>
+        <li>Adaptive trial 지원: interim analysis + sample size re-estimation 위젯</li>
+      </ul>
+      <div class="rm-unlock">→ 해금: 전체 10개 시나리오의 완전한 지원</div>
+    </div>
+
+    <div class="rm-phase">
+      <div class="rm-dot" style="background:#94a3b8;box-shadow:0 0 0 2px #94a3b8;"></div>
+      <div class="rm-title">Phase 5 — 의료 영상 연동 (파트너 연동)</div>
+      <div class="rm-time">우선순위: Future · 파트너 통합 · UniQdata 자체 구현 범위 밖</div>
+      <ul class="rm-items">
+        <li><strong>CT/MRI/PET 영상:</strong> 자체 DICOM 뷰어 X → OHIF/3D Slicer 딥링크 연동</li>
+        <li><strong>dicom_reference 렌더러:</strong> 대표 슬라이스 썸네일 + 정량 지표(종양 크기 mm, SUV값, 뇌부피 mL) + 외부 뷰어 링크</li>
+        <li><strong>가명처리 확장:</strong> DICOM 헤더 PHI 스트리핑 (환자명, 생년월일, 기관명 제거)</li>
+        <li><strong>정량 지표 트렌드:</strong> 영상에서 추출된 수치를 시계열로 추적 (V1: 32mm → V3: 18mm)</li>
+        <li><strong>FDA 규제 고려:</strong> 진단용 뷰어는 510(k) 대상 → UniQdata는 "표시/추적" 역할만</li>
+        <li><strong>파트너 후보:</strong> OHIF Viewer(오픈소스), Cornerstone.js, Google Cloud Healthcare API</li>
+      </ul>
+      <div class="rm-unlock" style="color:#94a3b8;">→ 범위: UniQdata = 정량 지표 추적 + 썸네일 · PACS/뷰어 = 전문 파트너</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- 7. CONCLUSION -->
+<!-- ============================================================ -->
+<div class="section" id="conclusion">
+  <div class="section-title"><span class="num">7</span> 결론</div>
+  <div class="summary-box" style="background:linear-gradient(135deg,#f0fdf4,#ecfdf5);border-color:#86efac;">
+    <h3 style="color:#166534;">v10 핵심 설계 원칙</h3>
+    <p>
+      <strong>1. 시간은 의미 단위로</strong> — 주간(W1-W12)이 아닌, 연구가 정의한 visit window와 study day로 표현<br>
+      <strong>2. 연구가 스스로 설명하게</strong> — study_config 메타데이터가 대시보드 레이아웃을 결정<br>
+      <strong>3. 렌더러는 플러그인</strong> — 숫자 라인, 이미지 갤러리, AGP, 히트맵은 교체 가능한 모듈<br>
+      <strong>4. 해상도는 자동으로</strong> — 사용자가 줌하면 시스템이 적절한 집계 수준을 선택<br>
+      <strong>5. 안전성은 유효성과 동등하게</strong> — AE/SAE 타임라인이 모든 연구에 기본 포함
+    </p>
+  </div>
+</div>
+
+<div style="text-align:center;padding:20px;color:#94a3b8;font-size:11px;">
+  UniQdata Technical Debt Map v1.0 · Generated from 4 deep research sessions · 2026-02-16
+</div>
+
+</div><!-- /container -->
+
+<script>
+// ====== DATA ======
+
+const SCENARIOS = [
+  {id:'S1', name:'GLP-1 체중감량 RCT', type:'2-arm RCT · 24주 · 주간', scores:[0,0,0,0,0,0]},
+  {id:'S2', name:'디지털 CBT 불면증 앱', type:'2-arm RCT · 8주 · 일별', scores:[3,1,1,3,0,1]},
+  {id:'S3', name:'CGM + 식이코칭 당뇨전단계', type:'2-arm RCT · 12주 · 5분 간격', scores:[3,1,2,4,0,4]},
+  {id:'S4', name:'원격 심장재활', type:'2-arm RCT · 12주 · 혼합빈도', scores:[3,1,1,4,2,2]},
+  {id:'S5', name:'마이크로바이옴 IBS', type:'2-arm RCT · 16주 · 분기+일별', scores:[3,1,4,3,0,4]},
+  {id:'S6', name:'AI 피부진단 아토피', type:'2-arm RCT · 12주 · 사진+점수', scores:[2,1,4,2,0,3]},
+  {id:'S7', name:'직장인 스트레스 관리 앱', type:'단일군 · 8주 · 일별', scores:[3,4,2,3,0,2]},
+  {id:'S8', name:'노인 낙상방지 운동', type:'cluster RCT · 12개월 · 월별', scores:[4,3,1,2,1,2]},
+  {id:'S9', name:'전자담배 금연 RCT', type:'3-arm RCT · 24주 · EMA', scores:[2,2,2,4,2,2]},
+  {id:'S10', name:'유전자치료 희귀질환', type:'단일군 · 2년 · 안전성', scores:[4,4,2,3,4,3]}
+];
+
+const DEBT_LABELS = ['시간축 경직성','2-arm RCT 전제','숫자 전용 데이터','고정 측정 빈도','유효성 전용 프레임','파생 지표 미지원'];
+
+const DEBTS = [
+  {
+    id:'TD-1', name:'시간축 경직성', priority:'P1', pClass:'p1',
+    desc:'W1~W12 하드코딩 · 모든 지표가 동일한 주간 그리드를 공유 · Study Day/Calendar Date 개념 없음',
+    affected:8, total:10, effort:'High',
+    scenarios:['S2','S3','S4','S5','S7','S8','S9','S10'],
+    tags:['CDISC ADaM','visit window','semantic zoom','hierarchical aggregation']
+  },
+  {
+    id:'TD-2', name:'2-arm RCT 전제', priority:'P2', pClass:'p2',
+    desc:'실험군/대조군 2개 라인만 존재 · 단일군, 3-arm, crossover, cluster 모두 미지원 · Verdict가 "군간 비교"만 표시',
+    affected:7, total:10, effort:'High',
+    scenarios:['S2','S5','S7','S8','S9','S10'],
+    tags:['study_config','MetricTemplate','verdict adapter','conditional layout']
+  },
+  {
+    id:'TD-3', name:'숫자 전용 데이터', priority:'P3', pClass:'p3',
+    desc:'사진, 텍스트, 범주형, 마이크로바이옴 조성 등 비숫자 데이터 렌더링 불가',
+    affected:5, total:10, effort:'Medium',
+    scenarios:['S5','S6','S7','S9','S3'],
+    tags:['image gallery','severity zone','stacked bar','AGP strip']
+  },
+  {
+    id:'TD-4', name:'고정 측정 빈도', priority:'P1', pClass:'p1',
+    desc:'모든 지표가 동일한 측정 간격(주간) 가정 · 5분(CGM), 일별(수면), 월별(체력) 공존 불가',
+    affected:6, total:10, effort:'High',
+    scenarios:['S2','S3','S4','S5','S8','S9'],
+    tags:['async measurement','hierarchical storage','smart query router','scatter overlay']
+  },
+  {
+    id:'TD-5', name:'유효성 전용 프레임', priority:'P2', pClass:'p2',
+    desc:'Verdict/차트가 "치료 효과"만 표현 · 안전성 모니터링(DLT, AE, SAE) 프레임 없음',
+    affected:4, total:10, effort:'Medium',
+    scenarios:['S4','S8','S9','S10'],
+    tags:['AE timeline','stopping boundary','DSMB','safety-first']
+  },
+  {
+    id:'TD-6', name:'파생 지표 미지원', priority:'P3', pClass:'p3',
+    desc:'TIR(범위내시간), Shannon diversity, composite endpoint 등 원시값에서 계산되는 지표 표현 불가',
+    affected:5, total:10, effort:'Medium',
+    scenarios:['S3','S4','S5','S6','S10'],
+    tags:['derived metric engine','TIR','diversity index','composite endpoint']
+  }
+];
+
+const SOLUTIONS = [
+  {
+    id:'SOL-1', debt:'TD-1 + TD-4', title:'시간축 일반화 — CDISC Visit Window + Semantic Zoom',
+    priority:'P1', pClass:'p1',
+    research:'리서치 #1 (Flexible Time Axes) + 리서치 #4 (Async Measurement)',
+    problem:'현재 타임라인은 W1~W12 하드코딩입니다. CGM은 5분, 수면일지는 일별, 체력측정은 월별인데, 이 모두를 주간 그리드에 억지로 맞추고 있습니다. "난 주간으로 툴 치는게 조심스러워" — 맞습니다.',
+    steps:[
+      '<strong>study_config.timeline</strong> 객체 도입: { duration_days, phases: [{name, start_day, end_day}], visit_windows: [{visit_id, target_day, window_min, window_max}] }',
+      '<strong>Semantic zoom 5단계</strong>: Study(전체) → Epoch(스크리닝/치료/추적) → Month → Week → Day. 사용자가 핀치/버튼으로 전환하면 차트가 해당 해상도로 재렌더링',
+      '<strong>Visit window 알고리즘</strong>: 개별 측정값을 (target_day ± window) 범위에 매핑. REDCap scheduling module 패턴 — 실측일이 윈도우 밖이면 "protocol deviation" 플래그',
+      '<strong>Hierarchical aggregation 4계층</strong>: raw(원본) → hourly → daily → visit. 저장 시 pre-aggregate, 줌 레벨에 따라 smart query router가 적절한 계층 선택',
+      '<strong>미니 차트 리팩터</strong>: canvas X축을 study_day 비례 스케일로 변경. 빈 구간은 gap으로 표시(선 끊김), 미래 구간은 dashed'
+    ],
+    code:`<span class="comment">// study_config.timeline 예시</span>
+<span class="keyword">const</span> timeline = {
+  duration_days: <span class="type">168</span>,
+  phases: [
+    { name: <span class="string">'스크리닝'</span>, start: <span class="type">-57</span>, end: <span class="type">-1</span> },
+    { name: <span class="string">'치료'</span>,     start: <span class="type">0</span>,   end: <span class="type">84</span> },
+    { name: <span class="string">'추적'</span>,     start: <span class="type">85</span>,  end: <span class="type">168</span> }
+  ],
+  visit_windows: [
+    { id: <span class="string">'V1'</span>, target_day: <span class="type">0</span>,  min: <span class="type">-3</span>, max: <span class="type">3</span> },
+    { id: <span class="string">'V2'</span>, target_day: <span class="type">14</span>, min: <span class="type">-5</span>, max: <span class="type">5</span> },
+    { id: <span class="string">'V3'</span>, target_day: <span class="type">28</span>, min: <span class="type">-5</span>, max: <span class="type">5</span> },
+    <span class="comment">// ... 연구별로 다른 visit 간격</span>
+  ],
+  zoom_levels: [<span class="string">'study'</span>,<span class="string">'epoch'</span>,<span class="string">'month'</span>,<span class="string">'week'</span>,<span class="string">'day'</span>]
+};`
+  },
+  {
+    id:'SOL-2', debt:'TD-2 + TD-5', title:'연구설계 어댑터 — Study Config → 조건부 대시보드',
+    priority:'P2', pClass:'p2',
+    research:'리서치 #2 (Multi-Study-Design)',
+    problem:'현재 Verdict strip은 "p<0.001, d=0.82"처럼 두 군 비교만 표시합니다. 단일군 코호트에서는 비교 대상이 없고, 안전성 연구에서는 "DLT가 boundary 안인가?"가 핵심 질문입니다.',
+    steps:[
+      '<strong>study_config.design</strong> 확장: { study_type: "rct"|"single_arm"|"crossover"|"cluster"|..., has_control_arm: bool, num_arms: int, primary_endpoint_type: "efficacy"|"safety"|"equivalence" }',
+      '<strong>Verdict adapter</strong>: study_type에 따라 verdict 질문 변경 — RCT: "치료 > 대조?", single-arm: "목표값 달성?", safety: "DLT ≤ boundary?", crossover: "A vs B 개인내 차이?"',
+      '<strong>MetricTemplate registry</strong>: 각 지표에 { direction: "up"|"down"|"monitor", comparison: "between_group"|"vs_threshold"|"within_subject", threshold: number } 정의',
+      '<strong>조건부 레이아웃</strong>: study_type이 safety이면 AE timeline + stopping boundary 위젯이 verdict strip 상단에 배치. 대조군 없으면 2-line 차트 대신 1-line + threshold 표시',
+      '<strong>Safety overlay</strong>: 모든 연구 유형에 AE/SAE 타임라인 기본 포함 (숨김 가능). 유전자치료처럼 safety-first이면 기본 펼침'
+    ],
+    code:`<span class="comment">// Verdict adapter pattern</span>
+<span class="keyword">const</span> verdictAdapters = {
+  rct: (data) => ({
+    question: <span class="string">'치료가 대조보다 나은가?'</span>,
+    metric: <span class="string">'between-group difference'</span>,
+    display: <span class="string">'p-value + effect size'</span>
+  }),
+  single_arm: (data) => ({
+    question: <span class="string">'목표 기준을 충족하는가?'</span>,
+    metric: <span class="string">'vs threshold'</span>,
+    display: <span class="string">'observed vs target + CI'</span>
+  }),
+  safety: (data) => ({
+    question: <span class="string">'독성이 허용 범위 내인가?'</span>,
+    metric: <span class="string">'DLT rate vs boundary'</span>,
+    display: <span class="string">'AE count + stopping rule'</span>
+  })
+};`
+  },
+  {
+    id:'SOL-3', debt:'TD-3 + TD-6', title:'모듈러 렌더러 — 데이터타입별 시각화 플러그인',
+    priority:'P3', pClass:'p3',
+    research:'리서치 #3 (Mixed Data Types)',
+    problem:'현재 모든 지표가 "두 줄짜리 line chart"로 그려집니다. 사진(피부 상태), 마이크로바이옴(문/과 비율), CGM(AGP), EMA(일중 패턴)은 각각 고유한 시각화가 필요합니다.',
+    steps:[
+      '<strong>Renderer interface</strong> 정의: render(container, data, timeScale) → 모든 렌더러가 동일한 시간축 받아서 그림',
+      '<strong>6개 기본 렌더러</strong>: numeric_line (현재), image_gallery (before/after + 타임라인 스크러버), severity_zone (PRO + green/yellow/red 배경), agp_strip (CGM 중앙값+IQR+범위), stacked_bar (마이크로바이옴 조성), event_timeline (AE/이벤트 아이콘)',
+      '<strong>파생 지표 엔진</strong>: raw 데이터에서 자동 계산 — TIR(target_min~target_max 내 %), Shannon diversity(H=-Σp·ln(p)), composite endpoint(first event time)',
+      '<strong>MetricTemplate에 renderer 매핑</strong>: { metric_id: "skin_photo", renderer: "image_gallery", derive_from: null } vs { metric_id: "tir", renderer: "numeric_line", derive_from: {source: "cgm", fn: "time_in_range", params: {min:70, max:180}} }',
+      '<strong>상세 패널 multi-track</strong>: 환자 상세에서 여러 렌더러를 시간축 정렬하여 세로 스택 — 사진+점수+증상 일지를 한눈에 비교'
+    ],
+    code:`<span class="comment">// Renderer registry</span>
+<span class="keyword">const</span> renderers = {
+  numeric_line:  { render: drawLineChart,    minHeight: <span class="type">80</span> },
+  image_gallery: { render: drawImageStrip,   minHeight: <span class="type">120</span> },
+  severity_zone: { render: drawSeverityChart, minHeight: <span class="type">80</span> },
+  agp_strip:     { render: drawAGP,          minHeight: <span class="type">100</span> },
+  stacked_bar:   { render: drawStackedBar,   minHeight: <span class="type">90</span> },
+  event_timeline:{ render: drawEventIcons,   minHeight: <span class="type">40</span> },
+};
+
+<span class="comment">// Derived metric engine</span>
+<span class="keyword">const</span> deriveFns = {
+  time_in_range: (readings, {min, max}) =>
+    readings.filter(r => r >= min && r <= max).length
+    / readings.length * <span class="type">100</span>,
+  shannon_diversity: (abundances) => {
+    <span class="keyword">const</span> total = abundances.reduce((s,v) => s+v, <span class="type">0</span>);
+    <span class="keyword">return</span> -abundances.reduce((h,v) => {
+      <span class="keyword">const</span> p = v/total;
+      <span class="keyword">return</span> p > <span class="type">0</span> ? h + p * Math.log(p) : h;
+    }, <span class="type">0</span>);
+  }
+};`
+  }
+];
+
+// ====== RENDER FUNCTIONS ======
+
+function renderHeatmap(){
+  const tbody = document.getElementById('heatmapBody');
+  const impactLabels = ['','low','medium','high','critical'];
+  tbody.innerHTML = SCENARIOS.map(s => {
+    const total = s.scores.reduce((a,b)=>a+b,0);
+    const maxScore = s.scores.length * 4;
+    const pct = Math.round(total/maxScore*100);
+    return `<tr>
+      <td><span class="scenario-name">${s.id} ${s.name}</span><span class="scenario-type">${s.type}</span></td>
+      ${s.scores.map(sc => {
+        const cls = sc===0?'none':sc===1?'low':sc===2?'medium':sc===3?'high':'critical';
+        const label = sc===0?'—':sc===1?'L':sc===2?'M':sc===3?'H':'C';
+        return `<td><div class="impact ${cls}">${label}</div></td>`;
+      }).join('')}
+      <td><strong>${total}</strong>/24 <span style="color:#94a3b8;font-size:10px;">(${pct}%)</span></td>
+    </tr>`;
+  }).join('');
+}
+
+function renderDebts(){
+  const grid = document.getElementById('debtGrid');
+  grid.innerHTML = DEBTS.map(d => `
+    <div class="debt-card ${d.pClass}">
+      <div class="debt-id">${d.id} · ${d.priority}</div>
+      <div class="debt-name">${d.name}</div>
+      <div class="debt-desc">${d.desc}</div>
+      <div class="debt-stats">
+        <div class="debt-stat"><div class="val">${d.affected}/${d.total}</div><div class="label">시나리오 영향</div></div>
+        <div class="debt-stat"><div class="val">${d.effort}</div><div class="label">해결 노력</div></div>
+        <div class="debt-stat"><div class="val">${d.priority}</div><div class="label">우선순위</div></div>
+      </div>
+      <div class="debt-tags">
+        ${d.tags.map(t => `<span class="debt-tag">${t}</span>`).join('')}
+        ${d.scenarios.map(s => `<span class="debt-tag affected">${s}</span>`).join('')}
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderSolutions(){
+  const container = document.getElementById('solutionsContainer');
+  container.innerHTML = SOLUTIONS.map(s => `
+    <div class="solution-block">
+      <div class="sol-header">
+        <div>
+          <div class="sol-title">${s.id}: ${s.title}</div>
+          <div class="sol-research">📚 근거: ${s.research}</div>
+        </div>
+        <div class="sol-priority ${s.pClass}">${s.priority} · ${s.debt}</div>
+      </div>
+      <div class="sol-problem">${s.problem}</div>
+      <div class="sol-approach">
+        <h4>구현 단계</h4>
+        ${s.steps.map((step,i) => `
+          <div class="sol-step">
+            <div class="step-num">${i+1}</div>
+            <div>${step}</div>
+          </div>
+        `).join('')}
+      </div>
+      <div class="sol-code">${s.code}</div>
+    </div>
+  `).join('');
+}
+
+function scrollToSection(id){
+  document.getElementById(id)?.scrollIntoView({behavior:'smooth'});
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  event?.target?.classList.add('active');
+}
+
+// Init
+renderHeatmap();
+renderDebts();
+renderSolutions();
+</script>
+</body>
+</html>

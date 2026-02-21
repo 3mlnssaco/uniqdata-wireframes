@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>테이블 탭 v2 데모 — 역할 분리</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f5; color: #1f2937; }
+    .layout { display: flex; min-height: 100vh; }
+
+    /* ===== SIDEBAR 240px ===== */
+    .sidebar {
+      width: 240px; background: linear-gradient(180deg, #0f172a, #1e293b);
+      color: white; display: flex; flex-direction: column; flex-shrink: 0;
+    }
+    .logo { padding: 20px 24px; font-size: 20px; font-weight: 700; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; gap: 10px; }
+    .logo-icon { width: 32px; height: 32px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+    .nav-section { padding: 16px 12px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    .nav-section-title { font-size: 11px; text-transform: uppercase; color: #64748b; padding: 8px 12px; letter-spacing: 0.5px; }
+    .nav-item { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 8px; color: #94a3b8; cursor: pointer; font-size: 14px; text-decoration: none; }
+    .nav-item:hover { background: rgba(255,255,255,0.05); color: #e2e8f0; }
+    .research-nav-header { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 8px; font-size: 13px; color: #60a5fa; background: rgba(59,130,246,0.1); cursor: pointer; }
+    .research-title { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .status-dot { width: 7px; height: 7px; border-radius: 50%; background: #22c55e; flex-shrink: 0; }
+    .research-nav-sub { padding-left: 20px; margin-top: 4px; border-left: 2px solid rgba(255,255,255,0.1); margin-left: 18px; }
+    .nav-sub-item { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 6px; color: #94a3b8; font-size: 12px; cursor: pointer; text-decoration: none; margin-bottom: 2px; }
+    .nav-sub-item:hover { background: rgba(255,255,255,0.05); color: #e2e8f0; }
+    .nav-sub-item.active { background: rgba(59,130,246,0.15); color: #60a5fa; border-left: 2px solid #3b82f6; margin-left: -2px; padding-left: 14px; }
+    .nav-sub-item .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; opacity: 0.5; }
+    .nav-sub-item.active .dot { background: #3b82f6; opacity: 1; }
+    .sidebar-footer { margin-top: auto; padding: 16px; border-top: 1px solid rgba(255,255,255,0.05); }
+    .user-info { display: flex; align-items: center; gap: 12px; padding: 8px; }
+    .user-avatar { width: 36px; height: 36px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+
+    /* ===== MAIN ===== */
+    .main { flex: 1; overflow-y: auto; }
+    .content { padding: 24px; max-width: 100%; }
+
+    .breadcrumb { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; font-size: 14px; color: #6b7280; }
+    .breadcrumb a { color: #3b82f6; text-decoration: none; }
+    .title-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 24px; margin-bottom: 20px; }
+    .page-title { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+    .page-sub { color: #6b7280; font-size: 13px; }
+
+    /* 탭 */
+    .tabs { display: flex; gap: 0; border-bottom: 2px solid #e5e7eb; margin-bottom: 20px; }
+    .tab { padding: 12px 24px; font-size: 14px; color: #6b7280; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px; text-decoration: none; font-weight: 500; }
+    .tab.active { color: #3b82f6; border-bottom-color: #3b82f6; }
+    .tab:hover { color: #374151; }
+
+    /* ===== 컨트롤 (간소화) ===== */
+    .controls-section { background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 14px 20px; margin-bottom: 16px; }
+    .controls-row { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+    .control-group { display: flex; align-items: center; gap: 8px; }
+    .control-group label { font-size: 12px; color: #6b7280; font-weight: 600; }
+    .toggle-btn { padding: 6px 12px; border: 1px solid #e5e7eb; border-radius: 6px; background: white; color: #6b7280; cursor: pointer; font-size: 12px; }
+    .toggle-btn.active { background: #3b82f6; color: white; border-color: #3b82f6; }
+    .select-small { padding: 6px 10px; border: 1px solid #e5e7eb; border-radius: 6px; font-size: 12px; color: #374151; background: white; cursor: pointer; }
+    .date-nav { display: flex; align-items: center; gap: 8px; padding: 6px 12px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 6px; font-size: 12px; color: #374151; }
+    .date-nav button { background: none; border: none; cursor: pointer; font-size: 14px; color: #3b82f6; padding: 0 4px; }
+    .search-input { padding: 6px 10px; border: 1px solid #e5e7eb; border-radius: 6px; font-size: 12px; width: 160px; }
+    .search-input::placeholder { color: #9ca3af; }
+
+    /* ===== 소스 범례 (축약) ===== */
+    .source-legend { display: flex; gap: 14px; align-items: center; margin-bottom: 12px; font-size: 11px; color: #6b7280; }
+    .source-dot { width: 8px; height: 8px; border-radius: 2px; display: inline-block; }
+    .source-dot.emr { background: #3b82f6; }
+    .source-dot.wear { background: #22c55e; }
+    .source-dot.ema { background: #a855f7; }
+    .source-dot.ext { background: #f97316; }
+
+    /* ===== 테이블 ===== */
+    .table-section { background: white; border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden; margin-bottom: 16px; }
+    .table-wrapper { overflow-x: auto; }
+    table.patient-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    table.patient-table thead th {
+      text-align: left; font-size: 11px; color: #6b7280; font-weight: 600;
+      padding: 10px 8px; border-bottom: 2px solid #e5e7eb; background: #f9fafb;
+      position: sticky; top: 0; z-index: 10; white-space: nowrap; cursor: pointer;
+    }
+    table.patient-table thead th .col-source {
+      display: inline-block; width: 6px; height: 6px; border-radius: 2px; margin-right: 4px; vertical-align: middle;
+    }
+    table.patient-table tbody td { padding: 10px 8px; border-bottom: 1px solid #f1f5f9; font-size: 12px; }
+    table.patient-table tbody tr { cursor: pointer; transition: background 0.1s; }
+    table.patient-table tbody tr:hover { background: #f8fafc; }
+    table.patient-table tbody tr.selected { background: #eff6ff; }
+    table.patient-table tbody tr.alert-row { background: #fffbeb; }
+    table.patient-table tbody tr.alert-row:hover { background: #fef3c7; }
+
+    /* 환자 ID 셀 */
+    .patient-id { font-weight: 600; color: #374151; white-space: nowrap; }
+    .group-badge { display: inline-block; padding: 1px 6px; border-radius: 4px; font-size: 10px; font-weight: 600; margin-left: 6px; }
+    .group-badge.exp { background: #dbeafe; color: #1d4ed8; }
+    .group-badge.ctrl { background: #fce7f3; color: #be185d; }
+    .severity-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; margin-right: 6px; }
+    .severity-dot.good { background: #22c55e; }
+    .severity-dot.warn { background: #f59e0b; }
+    .severity-dot.bad { background: #ef4444; }
+
+    /* 델타 셀 */
+    .cell-delta { font-weight: 700; font-family: 'SF Mono', Monaco, monospace; font-size: 12px; }
+    .cell-delta.good { color: #16a34a; }
+    .cell-delta.bad { color: #dc2626; }
+    .cell-delta.neutral { color: #6b7280; }
+    .cell-raw { font-size: 11px; color: #9ca3af; display: block; margin-top: 1px; }
+    .cell-empty { color: #d1d5db; font-style: italic; }
+
+    /* ===== 인라인 확장 (아코디언) ===== */
+    tr.expand-row { display: none; }
+    tr.expand-row.open { display: table-row; }
+    tr.expand-row td { padding: 0; border-bottom: 2px solid #e5e7eb; background: #f9fafb; }
+    .expand-content {
+      padding: 20px; display: flex; gap: 20px; flex-wrap: wrap;
+    }
+    .expand-chart-card {
+      flex: 1; min-width: 280px; background: white; border: 1px solid #e5e7eb;
+      border-radius: 10px; padding: 16px;
+    }
+    .expand-chart-title { font-size: 12px; font-weight: 600; color: #374151; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
+    .expand-chart-title .col-source { display: inline-block; width: 6px; height: 6px; border-radius: 2px; }
+    .chart-area { position: relative; height: 120px; }
+    .chart-area svg { width: 100%; height: 100%; }
+    .chart-x-labels { display: flex; justify-content: space-between; font-size: 10px; color: #9ca3af; margin-top: 4px; padding: 0 2px; }
+    .expand-summary { display: flex; gap: 16px; margin-top: 10px; font-size: 11px; }
+    .expand-summary-item { display: flex; align-items: center; gap: 4px; color: #6b7280; }
+    .expand-summary-item strong { color: #374151; }
+
+    /* 플로우시트 미니 (확장 내) */
+    .flowsheet-mini { width: 100%; border-collapse: collapse; font-size: 11px; margin-top: 12px; }
+    .flowsheet-mini th { font-size: 10px; color: #9ca3af; font-weight: 600; padding: 4px 6px; border-bottom: 1px solid #e5e7eb; text-align: center; }
+    .flowsheet-mini th:first-child { text-align: left; }
+    .flowsheet-mini td { padding: 5px 6px; text-align: center; border-bottom: 1px solid #f1f5f9; font-family: 'SF Mono', Monaco, monospace; }
+    .flowsheet-mini td:first-child { text-align: left; font-weight: 600; color: #374151; font-family: -apple-system, sans-serif; }
+    .fm-good { color: #16a34a; background: rgba(34,197,94,0.06); }
+    .fm-warn { color: #d97706; background: rgba(245,158,11,0.06); }
+    .fm-bad { color: #dc2626; background: rgba(239,68,68,0.06); }
+    .fm-current { font-weight: 700; border: 1.5px solid #3b82f6; border-radius: 4px; }
+
+    /* ===== 페이지네이션 ===== */
+    .pagination-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; background: white; border: 1px solid #e5e7eb; border-radius: 12px; font-size: 12px; color: #6b7280; }
+    .pagination-buttons { display: flex; gap: 4px; }
+    .page-btn { padding: 5px 9px; border: 1px solid #e5e7eb; border-radius: 4px; background: white; color: #6b7280; cursor: pointer; font-size: 11px; }
+    .page-btn.active { background: #3b82f6; color: white; border-color: #3b82f6; }
+
+    /* ===== 디자이너 노트 ===== */
+    .designer-notes { margin-top: 32px; }
+    .designer-notes summary { cursor: pointer; font-size: 14px; font-weight: 600; color: #6b7280; padding: 12px 16px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; }
+    .notes-content { margin-top: 12px; padding: 20px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 12px; font-size: 12px; line-height: 1.8; color: #374151; }
+    .notes-content h4 { font-size: 13px; margin: 16px 0 8px; color: #1f2937; font-weight: 600; }
+    .notes-content h4:first-child { margin-top: 0; }
+    .notes-content code { background: #0f172a; color: #a5b4fc; padding: 10px; border-radius: 6px; display: block; margin: 8px 0; font-size: 11px; font-family: 'SF Mono', Monaco, monospace; white-space: pre-wrap; }
+
+    .step-nav { display: flex; gap: 10px; margin-top: 24px; }
+    .step-nav a { padding: 8px 16px; background: #eee; border-radius: 6px; text-decoration: none; color: #333; font-size: 14px; }
+
+    /* 반응형 */
+    @media (max-width: 1200px) {
+      .controls-row { flex-direction: column; align-items: flex-start; }
+      .expand-content { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+<div class="layout">
+
+  <!-- ===== SIDEBAR ===== -->
+  <nav class="sidebar">
+    <div class="logo"><div class="logo-icon">U</div> UniQdata</div>
+    <div class="nav-section">
+      <a class="nav-item"><span class="icon">🏠</span> 연구 허브</a>
+    </div>
+    <div class="nav-section" style="flex:1; overflow-y:auto;">
+      <div class="nav-section-title">내 연구</div>
+      <div style="margin-bottom:2px;">
+        <div class="research-nav-header">
+          <span style="font-size:14px;">📁</span>
+          <span class="research-title">대사개선 약물 연구</span>
+          <span class="status-dot"></span>
+        </div>
+        <div class="research-nav-sub">
+          <a class="nav-sub-item"><span class="dot"></span> 개요</a>
+          <a class="nav-sub-item active"><span class="dot"></span> 테이블</a>
+          <a class="nav-sub-item"><span class="dot"></span> 🔒 클린룸</a>
+        </div>
+      </div>
+    </div>
+    <div class="sidebar-footer">
+      <div class="user-info">
+        <div class="user-avatar">김</div>
+        <div>
+          <div style="font-size:14px; color:#e2e8f0;">김연구</div>
+          <div style="font-size:12px; color:#64748b;">서울대학교병원</div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ===== MAIN ===== -->
+  <main class="main">
+    <div class="content">
+
+      <div class="breadcrumb">
+        <a href="#">연구 관리</a> / <a href="#">대사개선 약물 연구</a> / <span>테이블</span>
+      </div>
+
+      <div class="title-row">
+        <div>
+          <div class="page-title">연구 데이터</div>
+          <div class="page-sub">처방 약물(2.4mg) 대사개선 연구 · OMOP CDM 기반 · 다중 소스 통합</div>
+        </div>
+      </div>
+
+      <div class="tabs">
+        <a class="tab">개요</a>
+        <a class="tab active">테이블</a>
+        <a class="tab">🔒 클린룸</a>
+      </div>
+
+      <!-- ===== 컨트롤 (간소화: p값 스트립 제거, 뷰 토글 제거) ===== -->
+      <div class="controls-section">
+        <div class="controls-row">
+          <div class="control-group">
+            <label>시간</label>
+            <div style="display:flex; gap:4px;">
+              <button class="toggle-btn">일간</button>
+              <button class="toggle-btn active">주간</button>
+              <button class="toggle-btn">월간</button>
+            </div>
+          </div>
+          <div class="control-group">
+            <label>소스</label>
+            <select class="select-small">
+              <option>전체</option>
+              <option>[EMR]</option>
+              <option>[웨어러블]</option>
+              <option>[EMA]</option>
+            </select>
+          </div>
+          <div class="control-group">
+            <div class="date-nav">
+              <button>◀</button>
+              <span>2월 2주차 (W6)</span>
+              <button>▶</button>
+            </div>
+          </div>
+          <div class="control-group" style="margin-left:auto;">
+            <input type="text" class="search-input" placeholder="환자 검색 (ID, 이름)">
+          </div>
+        </div>
+      </div>
+
+      <!-- 소스 범례 (축약) -->
+      <div class="source-legend">
+        <span><span class="source-dot emr"></span> EMR</span>
+        <span><span class="source-dot wear"></span> 웨어러블</span>
+        <span><span class="source-dot ema"></span> EMA</span>
+        <span><span class="source-dot ext"></span> 외부</span>
+        <span style="margin-left:auto; color:#9ca3af;">행 클릭 → 시계열 상세</span>
+      </div>
+
+      <!-- ===== 테이블 (단일 리스트, 군 뱃지로 구분) ===== -->
+      <div class="table-section">
+        <div class="table-wrapper">
+          <table class="patient-table">
+            <thead>
+              <tr>
+                <th style="width:14%;">환자</th>
+                <th><span class="col-source" style="background:#3b82f6;"></span>체중 (kg)</th>
+                <th><span class="col-source" style="background:#3b82f6;"></span>SBP</th>
+                <th><span class="col-source" style="background:#22c55e;"></span>심박수</th>
+                <th><span class="col-source" style="background:#22c55e;"></span>걸음수</th>
+                <th><span class="col-source" style="background:#22c55e;"></span>수면 (h)</th>
+                <th><span class="col-source" style="background:#a855f7;"></span>순응도</th>
+                <th><span class="col-source" style="background:#f97316;"></span>앱사용</th>
+              </tr>
+            </thead>
+            <tbody id="tableBody">
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 페이지네이션 -->
+      <div class="pagination-row">
+        <span>1-10 / 80명</span>
+        <div class="pagination-buttons">
+          <button class="page-btn">◀</button>
+          <button class="page-btn active">1</button>
+          <button class="page-btn">2</button>
+          <button class="page-btn">3</button>
+          <button class="page-btn">…</button>
+          <button class="page-btn">8</button>
+          <button class="page-btn">▶</button>
+        </div>
+      </div>
+
+      <div class="step-nav">
+        <a href="#">← 개요</a>
+        <a href="#">클린룸 →</a>
+      </div>
+
+      <!-- ===== 디자이너 노트 ===== -->
+      <div class="designer-notes">
+        <details>
+          <summary>디자이너 노트 — v2 전략 변경사항</summary>
+          <div class="notes-content">
+
+            <h4>0. 핵심 변경: 역할 분리</h4>
+            <strong>제거한 것들 (→ 개요 탭이 담당):</strong><br>
+            - ❌ p값 스트립 → 개요의 군간 비교 테이블이 p값 포함<br>
+            - ❌ 뷰 토글 (개인/군비교) → 이 탭은 항상 개인 뷰<br>
+            - ❌ 실험군/대조군 나란히 배치 → 단일 리스트, 군 뱃지로 구분<br>
+            - ❌ 군 평균행 → 개요의 비교 테이블이 커버<br>
+            <br>
+            <strong>유지한 것들:</strong><br>
+            - ✅ 시간 윈도우 (일/주/월)<br>
+            - ✅ 소스 필터<br>
+            - ✅ 날짜 네비게이션 (◀ W6 ▶)<br>
+            - ✅ delta + raw 셀 (배경색으로 good/bad 구분)<br>
+            - ✅ alert 행 (⚠️)<br>
+            - ✅ 페이지네이션<br>
+            <br>
+            <strong>추가한 것:</strong><br>
+            - 🆕 행 클릭 → 인라인 확장 (아코디언)<br>
+            - 🆕 확장 내용: 주차별 차트 2~3개 + 미니 플로우시트<br>
+            - 🆕 환자 검색<br>
+            - 🆕 상태 도트 (green/amber/red)<br>
+
+            <h4>1. 3축 커버리지</h4>
+            <code>축1: 환자 (Patient)  → 테이블 행
+축2: 지표 (Metric)   → 테이블 열
+축3: 시간 (Time)     → ◀W6▶ 날짜 네비 + 행 확장 시 차트
+
+추가 차원:
+소스 (Source)        → 열 헤더 컬러 도트
+군 (Group)          → 행 뱃지 (실험/대조)
+통계 (p값)          → 개요 탭 전담</code>
+
+            <h4>2. 셀 구조</h4>
+            셀 안에 그래프 NO. delta + raw값만.<br>
+            배경색으로 상태 표시 (연녹/연빨/투명).<br>
+            시간 추세는 행 확장에서만 차트로 제공.<br>
+
+            <h4>3. 인라인 확장 패턴</h4>
+            - 행 클릭 → 바로 아래에 확장 행 열림<br>
+            - 확장 내용: 핵심 지표 2~3개의 6주 추세 차트 + 미니 플로우시트<br>
+            - 사이드 패널 아님 → 레이아웃 안 깨짐<br>
+            - 한 번에 하나만 열림 (다른 것 클릭하면 이전 것 닫힘)<br>
+
+            <h4>4. 개요↔테이블 역할 분리</h4>
+            <code>개요 = "이 연구 괜찮아?"
+  → KPI, 타임라인 그래프, 군간 비교+p값, AI 인사이트, 운영현황
+
+테이블 = "이 환자 괜찮아?"
+  → 환자 리스트, 현재 시점 값, 클릭→시계열 상세
+
+겹치는 것 = 없음</code>
+
+          </div>
+        </details>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<script>
+// ===== 환자 데이터 =====
+const PATIENTS = [
+  { id:'P001', name:'김민수', group:'exp', severity:'good',
+    wt:[87.3,85.8,84.2,82.5,80.8,79.2], sbp:[134,132,128,126,124,122], hr:[72,71,69,68,67,66],
+    steps:[7340,7800,8200,8600,8900,9104], sleep:[6.2,6.5,6.8,7.0,7.1,7.3], comp:[86,88,90,92,93,94], app:[40,42,48,52,56,62] },
+  { id:'P005', name:'이수진', group:'exp', severity:'good',
+    wt:[88.3,87.1,85.8,84.5,83.2,82.1], sbp:[132.5,131,129,127,125.5,124], hr:[72,71,70,70,69,69],
+    steps:[6800,7100,7400,7600,7800,7812], sleep:[6.0,6.2,6.5,6.7,6.9,7.0], comp:[85,87,88,89,90,90], app:[32,35,38,40,42,45] },
+  { id:'P011', name:'박지훈', group:'exp', severity:'good',
+    wt:[88.3,86.8,85.2,83.5,82.0,80.8], sbp:[134.2,132,130,128,126.5,125], hr:[72,71,69,68,68,67],
+    steps:[7000,7500,7800,8100,8300,8512], sleep:[6.5,6.6,6.8,7.0,7.2,7.4], comp:[86,88,90,91,92,92], app:[36,40,44,48,52,54] },
+  { id:'P018', name:'최예린', group:'exp', severity:'warn', alert:true,
+    wt:[87.4,86.2,85.0,83.8,82.6,81.6], sbp:[137.9,136,135,138,139,140], hr:[70,69,null,null,68,null],
+    steps:[5800,6000,6100,6200,6200,6234], sleep:[5.8,6.0,6.2,6.0,5.9,5.8], comp:[82,84,86,88,89,89], app:[28,30,34,36,40,42] },
+  { id:'P023', name:'정하늘', group:'exp', severity:'good',
+    wt:[87.6,86.4,85.0,83.6,82.4,81.2], sbp:[134.1,132,130,129,128,127], hr:[72,71,70,69,68,68],
+    steps:[6900,7200,7500,7800,8000,8234], sleep:[6.3,6.5,6.7,6.9,7.1,7.2], comp:[85,87,89,90,91,91], app:[34,36,40,44,46,48] },
+  { id:'P002', name:'윤서연', group:'ctrl', severity:'warn',
+    wt:[87.7,87.8,87.9,88.0,88.1,88.2], sbp:[135.9,136,136.5,137,137.5,138], hr:[72,72,71,71,70,70],
+    steps:[4600,4650,4700,4750,4800,4821], sleep:[6.1,6.0,6.0,5.9,5.9,5.8], comp:[85,86,86,87,87,88], app:[null,null,null,null,null,null] },
+  { id:'P008', name:'한도윤', group:'ctrl', severity:'good',
+    wt:[87.9,87.8,87.6,87.4,87.2,87.1], sbp:[133.1,133.5,133.8,134,134.2,134], hr:[72,72,72,72,72,72],
+    steps:[4200,4200,4180,4190,4200,4201], sleep:[6.5,6.4,6.4,6.3,6.3,6.2], comp:[85,85,86,86,86,86], app:[40,39,38,38,38,38] },
+  { id:'P014', name:'송지아', group:'ctrl', severity:'good',
+    wt:[87.9,87.8,87.8,87.8,87.8,87.8], sbp:[134.5,134.5,135,135,135,135], hr:[72,72,71,71,71,71],
+    steps:[4500,4520,4550,4580,4600,4621], sleep:[6.2,6.2,6.1,6.1,6.0,6.0], comp:[85,85,86,86,87,87], app:[34,34,33,33,32,32] },
+  { id:'P031', name:'임채원', group:'ctrl', severity:'bad', alert:true,
+    wt:[87.9,88.0,88.3,88.5,88.8,89.1], sbp:[134.2,135,136,137,137.5,138], hr:[73,73,74,74,75,75],
+    steps:[4100,4000,3900,3850,3820,3821], sleep:[5.8,5.7,5.5,5.4,5.3,5.2], comp:[84,82,80,78,75,72], app:[28,26,25,24,23,22] },
+  { id:'P036', name:'강시우', group:'ctrl', severity:'good',
+    wt:[87.0,87.0,86.9,86.9,86.8,86.8], sbp:[131.8,132,132.5,132.8,133,133], hr:[74,74,73,73,72,72],
+    steps:[4400,4420,4450,4480,4500,4521], sleep:[6.4,6.3,6.3,6.2,6.2,6.1], comp:[85,86,86,87,88,88], app:[40,39,38,38,38,38] },
+];
+
+const WEEKS = ['W1','W2','W3','W4','W5','W6'];
+const METRICS = [
+  { key:'wt', name:'체중', unit:'kg', dir:'down', th:[82,90], src:'emr', srcColor:'#3b82f6' },
+  { key:'sbp', name:'SBP', unit:'mmHg', dir:'down', th:[130,140], src:'emr', srcColor:'#3b82f6' },
+  { key:'hr', name:'심박수', unit:'bpm', dir:'down', th:[65,80], src:'wear', srcColor:'#22c55e' },
+  { key:'steps', name:'걸음수', unit:'보', dir:'up', th:[5000,8000], src:'wear', srcColor:'#22c55e' },
+  { key:'sleep', name:'수면', unit:'h', dir:'up', th:[6,8], src:'wear', srcColor:'#22c55e' },
+  { key:'comp', name:'순응도', unit:'%', dir:'up', th:[80,95], src:'ema', srcColor:'#a855f7' },
+  { key:'app', name:'앱사용', unit:'분', dir:'up', th:[20,50], src:'ext', srcColor:'#f97316' },
+];
+
+function getVal(p, key, week) {
+  return p[key] ? p[key][week] : null;
+}
+
+function delta(arr) {
+  if (!arr || arr[0]==null || arr[5]==null) return null;
+  return arr[5] - arr[0];
+}
+
+function fmtDelta(d, m) {
+  if (d==null) return '<span class="cell-empty">—</span>';
+  const isGood = (m.dir==='down' && d<0) || (m.dir==='up' && d>0);
+  const isBad = (m.dir==='down' && d>2) || (m.dir==='up' && d<-2);
+  const arrow = d>0?'↑':d<0?'↓':'';
+  const cls = isGood?'good':isBad?'bad':'neutral';
+  const val = m.key==='steps'? (d>0?'+':'')+Math.round(d).toLocaleString() :
+              m.key==='comp'||m.key==='app'? (d>0?'+':'')+d.toFixed(0)+'%' :
+              (d>0?'+':'')+d.toFixed(1);
+  return `<span class="cell-delta ${cls}">${arrow}${val}</span>`;
+}
+
+function fmtRaw(v, m) {
+  if (v==null) return '';
+  if (m.key==='steps') return `<span class="cell-raw">${Math.round(v).toLocaleString()}</span>`;
+  if (m.key==='comp'||m.key==='app') return `<span class="cell-raw">${v.toFixed(0)}${m.unit}</span>`;
+  return `<span class="cell-raw">${v.toFixed(1)}${m.unit}</span>`;
+}
+
+function cellBg(d, m) {
+  if (d==null) return '';
+  const isGood = (m.dir==='down' && d<-2) || (m.dir==='up' && d>2);
+  const isBad = (m.dir==='down' && d>2) || (m.dir==='up' && d<-5);
+  if (isGood) return 'background:rgba(34,197,94,0.06);';
+  if (isBad) return 'background:rgba(239,68,68,0.06);';
+  return '';
+}
+
+// ===== 차트 SVG 생성 =====
+function sparkSVG(arr, color, w, h) {
+  const valid = arr.map((v,i)=>v!=null?{v,i}:null).filter(Boolean);
+  if (valid.length < 2) return `<svg width="${w}" height="${h}"><text x="${w/2}" y="${h/2+4}" text-anchor="middle" fill="#d1d5db" font-size="10">데이터 없음</text></svg>`;
+  const min = Math.min(...valid.map(d=>d.v));
+  const max = Math.max(...valid.map(d=>d.v));
+  const range = max-min || 1;
+  const pad = 8;
+  const pts = valid.map(d => {
+    const x = pad + (d.i/(arr.length-1))*(w-pad*2);
+    const y = pad + (1-(d.v-min)/range)*(h-pad*2);
+    return `${x},${y}`;
+  });
+  const areaStart = `${pad},${h-pad}`;
+  const areaEnd = `${pad+(valid[valid.length-1].i/(arr.length-1))*(w-pad*2)},${h-pad}`;
+  return `<svg width="${w}" height="${h}">
+    <polygon points="${areaStart} ${pts.join(' ')} ${areaEnd}" fill="${color}" opacity="0.08"/>
+    <polyline points="${pts.join(' ')}" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    ${valid.map(d=>{
+      const x = pad + (d.i/(arr.length-1))*(w-pad*2);
+      const y = pad + (1-(d.v-min)/range)*(h-pad*2);
+      return `<circle cx="${x}" cy="${y}" r="3" fill="white" stroke="${color}" stroke-width="1.5"/>`;
+    }).join('')}
+  </svg>`;
+}
+
+// ===== 테이블 렌더 =====
+const tbody = document.getElementById('tableBody');
+let openRow = null;
+
+PATIENTS.forEach((p, pi) => {
+  // 데이터 행
+  const tr = document.createElement('tr');
+  if (p.alert) tr.className = 'alert-row';
+
+  // 환자 ID 셀
+  let idHtml = `<td class="patient-id">
+    <span class="severity-dot ${p.severity}"></span>
+    ${p.id}${p.alert?'⚠️':''}
+    <span class="group-badge ${p.group}">${p.group==='exp'?'실험':'대조'}</span>
+  </td>`;
+
+  // 지표 셀들
+  let cellsHtml = '';
+  METRICS.forEach(m => {
+    const d = delta(p[m.key]);
+    const cur = getVal(p, m.key, 5);
+    cellsHtml += `<td style="${cellBg(d,m)}">${fmtDelta(d,m)}${fmtRaw(cur,m)}</td>`;
+  });
+
+  tr.innerHTML = idHtml + cellsHtml;
+  tr.addEventListener('click', () => toggleExpand(pi));
+  tbody.appendChild(tr);
+
+  // 확장 행
+  const expandTr = document.createElement('tr');
+  expandTr.className = 'expand-row';
+  expandTr.id = `expand-${pi}`;
+  const expandTd = document.createElement('td');
+  expandTd.colSpan = 8;
+  expandTr.appendChild(expandTd);
+  tbody.appendChild(expandTr);
+});
+
+function toggleExpand(pi) {
+  const expandEl = document.getElementById(`expand-${pi}`);
+  const dataRow = expandEl.previousElementSibling;
+
+  // 다른 열려있는 것 닫기
+  if (openRow !== null && openRow !== pi) {
+    const prev = document.getElementById(`expand-${openRow}`);
+    prev.classList.remove('open');
+    prev.previousElementSibling.classList.remove('selected');
+  }
+
+  if (expandEl.classList.contains('open')) {
+    expandEl.classList.remove('open');
+    dataRow.classList.remove('selected');
+    openRow = null;
+    return;
+  }
+
+  // 열기
+  const p = PATIENTS[pi];
+  const td = expandEl.querySelector('td');
+
+  // 핵심 차트 3개 선택 (체중, 걸음수, 순응도)
+  const chartMetrics = [
+    METRICS.find(m=>m.key==='wt'),
+    METRICS.find(m=>m.key==='steps'),
+    METRICS.find(m=>m.key==='comp'),
+  ];
+
+  let chartsHtml = chartMetrics.map(m => {
+    const arr = p[m.key] || [];
+    const d = delta(arr);
+    const dStr = d!=null ? (d>0?'+':'')+( m.key==='steps'? Math.round(d).toLocaleString() : m.key==='comp'? d.toFixed(0)+'%' : d.toFixed(1)+m.unit ) : '—';
+    return `<div class="expand-chart-card">
+      <div class="expand-chart-title">
+        <span class="col-source" style="background:${m.srcColor};"></span>
+        ${m.name} (${m.unit}) — W1→W6
+      </div>
+      <div class="chart-area">${sparkSVG(arr, m.srcColor, 260, 120)}</div>
+      <div class="chart-x-labels">${WEEKS.map(w=>`<span>${w}</span>`).join('')}</div>
+      <div class="expand-summary">
+        <div class="expand-summary-item">W1: <strong>${arr[0]!=null?(m.key==='steps'?Math.round(arr[0]).toLocaleString():arr[0].toFixed(1)):'—'}</strong></div>
+        <div class="expand-summary-item">W6: <strong>${arr[5]!=null?(m.key==='steps'?Math.round(arr[5]).toLocaleString():arr[5].toFixed(1)):'—'}</strong></div>
+        <div class="expand-summary-item">Δ: <strong>${dStr}</strong></div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // 미니 플로우시트
+  let fsHtml = '<table class="flowsheet-mini"><thead><tr><th>지표</th>';
+  WEEKS.forEach(w => fsHtml += `<th>${w}</th>`);
+  fsHtml += '</tr></thead><tbody>';
+
+  METRICS.forEach(m => {
+    const arr = p[m.key] || [];
+    fsHtml += `<tr><td><span style="display:inline-block;width:6px;height:6px;border-radius:2px;background:${m.srcColor};margin-right:4px;vertical-align:middle;"></span>${m.name}</td>`;
+    arr.forEach((v,i) => {
+      if (v == null) { fsHtml += '<td class="cell-empty">—</td>'; return; }
+      const fmt = m.key==='steps'? Math.round(v).toLocaleString() : m.key==='comp'||m.key==='app'? v.toFixed(0) : v.toFixed(1);
+      // 히트맵 색상
+      let cls = '';
+      if (i > 0 && arr[0] != null) {
+        const dd = v - arr[0];
+        const isG = (m.dir==='down'&&dd<-1)||(m.dir==='up'&&dd>1);
+        const isB = (m.dir==='down'&&dd>1)||(m.dir==='up'&&dd<-1);
+        cls = isG?'fm-good':isB?'fm-bad':'';
+      }
+      if (i===5) cls += ' fm-current';
+      fsHtml += `<td class="${cls}">${fmt}</td>`;
+    });
+    fsHtml += '</tr>';
+  });
+  fsHtml += '</tbody></table>';
+
+  td.innerHTML = `<div class="expand-content">
+    ${chartsHtml}
+  </div>
+  <div style="padding:0 20px 20px;">
+    <div style="font-size:12px; font-weight:600; color:#374151; margin-bottom:8px;">📋 전체 지표 플로우시트 (W1~W6)</div>
+    ${fsHtml}
+  </div>`;
+
+  expandEl.classList.add('open');
+  dataRow.classList.add('selected');
+  openRow = pi;
+}
+</script>
+</body>
+</html>

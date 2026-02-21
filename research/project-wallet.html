@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>프로젝트 지갑 — 대사개선 약물 연구</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f5f5f5;
+      --card: #ffffff;
+      --ink: #111827;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --primary: #2563eb;
+      --success: #16a34a;
+      --warning: #d97706;
+      --danger: #dc2626;
+      --shadow: 0 12px 24px rgba(15, 23, 42, 0.08);
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:'Noto Sans KR',-apple-system,sans-serif; background:var(--bg); color:var(--ink); font-size:13px; }
+
+    /* ===== Layout ===== */
+    .layout { display:flex; height:100vh; overflow:hidden; }
+    .sidebar { width:210px; background:linear-gradient(180deg,#0f172a,#1e293b); color:white; display:flex; flex-direction:column; flex-shrink:0; }
+    .logo { padding:14px 18px; font-size:17px; font-weight:700; border-bottom:1px solid rgba(255,255,255,.1); display:flex; align-items:center; gap:8px; }
+    .logo-icon { width:26px; height:26px; background:linear-gradient(135deg,#3b82f6,#8b5cf6); border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:13px; }
+    .nav-section { padding:10px; border-bottom:1px solid rgba(255,255,255,.05); }
+    .nav-item { display:flex; align-items:center; gap:8px; padding:7px 10px; border-radius:5px; color:#94a3b8; cursor:pointer; font-size:12px; text-decoration:none; }
+    .nav-item:hover { background:rgba(255,255,255,.05); }
+    .nav-item.active { background:rgba(59,130,246,.15); color:#60a5fa; }
+    .sidebar-footer { margin-top:auto; padding:10px; border-top:1px solid rgba(255,255,255,.05); }
+    .u-av { width:28px; height:28px; background:linear-gradient(135deg,#3b82f6,#8b5cf6); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:11px; color:white; }
+
+    /* Sidebar v11 studies */
+    .rn-header { display:flex; align-items:center; gap:5px; padding:5px 8px; border-radius:5px; font-size:11px; color:#94a3b8; cursor:pointer; transition:all .12s; }
+    .rn-header:hover { background:rgba(255,255,255,.05); }
+    .rn-header.active { color:#60a5fa; background:rgba(59,130,246,.1); }
+    .rn-sub { padding-left:14px; margin-top:2px; border-left:2px solid rgba(255,255,255,.1); margin-left:12px; display:none; }
+    .rn-sub.active { display:block; }
+    .ns-item { display:flex; align-items:center; gap:5px; padding:5px 8px; border-radius:4px; color:#94a3b8; font-size:10px; cursor:pointer; margin-bottom:1px; text-decoration:none; }
+    .ns-item:hover { background:rgba(255,255,255,.05); }
+    .ns-item.active { background:rgba(59,130,246,.15); color:#60a5fa; }
+    .rtype-chip { font-size:8px; padding:1px 5px; border-radius:3px; font-weight:600; margin-left:auto; }
+    .rtype-chip.prospective { background:rgba(0,114,178,.15); color:#60a5fa; }
+    .rtype-chip.hybrid { background:rgba(139,92,246,.15); color:#c4b5fd; }
+    .rtype-chip.retrospective { background:rgba(99,102,241,.15); color:#a5b4fc; }
+    .draft-section { padding:4px 0 8px; border-bottom:1px solid rgba(255,255,255,.05); margin-bottom:4px; }
+    .draft-label { font-size:9px; color:#64748b; padding:4px 8px; display:flex; align-items:center; gap:4px; }
+    .draft-item { display:flex; align-items:center; gap:4px; padding:3px 8px; font-size:10px; color:#94a3b8; cursor:pointer; border-radius:3px; }
+    .draft-item:hover { background:rgba(255,255,255,.05); }
+    .nav-wallet { display:flex; align-items:center; gap:5px; padding:5px 8px; border-radius:4px; color:#60a5fa; font-size:11px; cursor:pointer; text-decoration:none; font-weight:600; }
+
+    /* ===== Main Content ===== */
+    .main { flex:1; overflow:hidden; display:flex; flex-direction:column; }
+    .content { padding:20px; flex:1; overflow-y:auto; }
+    .page-header { display:flex; justify-content:space-between; align-items:flex-end; gap:16px; flex-wrap:wrap; margin-bottom:16px; }
+    .page-title { font-size:22px; font-weight:700; margin-bottom:4px; }
+    .page-subtitle { font-size:13px; color:var(--muted); }
+    .toolbar { display:flex; flex-wrap:wrap; gap:8px; }
+    .input,.select { height:32px; border-radius:6px; border:1px solid var(--border); padding:0 10px; font-size:12px; background:white; }
+    .btn { height:32px; border-radius:6px; border:none; padding:0 12px; font-size:12px; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; }
+    .btn-dark { background:#111827; color:white; }
+    .btn-primary { background:var(--primary); color:white; }
+    .btn-warning { background:#f59e0b; color:white; }
+    .btn-outline { background:white; border:1px solid var(--border); color:var(--ink); }
+    .btn-danger { background:#fee2e2; color:#991b1b; }
+
+    /* ===== Mode Tabs ===== */
+    .mode-tabs { display:flex; gap:0; margin-bottom:16px; background:#f1f5f9; border-radius:10px; padding:3px; }
+    .mode-tab { flex:1; padding:8px 14px; font-size:12px; font-weight:600; color:#64748b; cursor:pointer; border-radius:8px; border:none; background:none; text-align:center; transition:all .15s; }
+    .mode-tab:hover { color:#374151; background:rgba(255,255,255,.5); }
+    .mode-tab.active { color:#fff; background:#1e293b; box-shadow:0 1px 3px rgba(0,0,0,.12); }
+    .mode-content { display:none; }
+    .mode-content.active { display:block; }
+
+    /* ===== Cards ===== */
+    .card { background:var(--card); border:1px solid var(--border); border-radius:12px; box-shadow:var(--shadow); }
+    .card-header { padding:14px 18px; border-bottom:1px solid var(--border); font-weight:600; font-size:13px; }
+    .card-body { padding:14px 18px; }
+
+    /* ===== Wallet Card (billing style) ===== */
+    .wallet-card { background:linear-gradient(135deg,#1f2937,#0f172a); color:white; padding:20px; border-radius:14px; box-shadow:var(--shadow); }
+    .wallet-card.enterprise { background:linear-gradient(135deg,#064e3b,#065f46); }
+    .wallet-label { font-size:11px; color:#9ca3af; }
+    .wallet-balance { font-size:28px; font-weight:bold; margin:6px 0; }
+    .wallet-usd { font-size:12px; color:#9ca3af; }
+    .wallet-address { font-family:monospace; font-size:12px; color:#9ca3af; margin-top:12px; display:flex; align-items:center; gap:8px; }
+    .wallet-status { display:flex; align-items:center; gap:6px; margin-top:6px; font-size:12px; }
+    .status-dot { width:7px; height:7px; background:#4ade80; border-radius:50%; }
+    .copy-btn { background:rgba(255,255,255,.1); border:none; color:white; padding:3px 8px; border-radius:4px; font-size:10px; cursor:pointer; }
+
+    /* ===== Grid Layouts ===== */
+    .grid-top { display:grid; grid-template-columns:1.6fr 1fr 1fr; gap:12px; margin-bottom:14px; }
+    .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:14px; }
+    .grid-32 { display:grid; grid-template-columns:1.2fr 0.8fr; gap:12px; margin-bottom:14px; }
+    .grid-split { display:grid; grid-template-columns:2fr 1fr; gap:12px; margin-bottom:14px; }
+
+    /* ===== Summary Items ===== */
+    .summary-item { display:flex; justify-content:space-between; margin-bottom:8px; font-size:13px; }
+    .summary-item span:last-child { font-weight:600; }
+
+    /* ===== Progress ===== */
+    .progress { background:#e5e7eb; height:8px; border-radius:999px; overflow:hidden; margin:8px 0 10px; position:relative; }
+    .progress .fill { height:100%; border-radius:999px; position:absolute; left:0; }
+
+    /* ===== Actions Grid ===== */
+    .actions-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:14px; }
+    .action-btn { background:white; border:1px solid var(--border); border-radius:10px; padding:14px; cursor:pointer; text-align:left; display:block; text-decoration:none; color:inherit; transition:border-color .15s; }
+    .action-btn:hover { border-color:var(--primary); }
+    .action-icon { width:36px; height:36px; border-radius:8px; margin-bottom:10px; }
+    .action-title { font-weight:600; font-size:13px; }
+    .action-desc { font-size:11px; color:var(--muted); margin-top:3px; }
+    .action-tag { display:inline-block; margin-top:6px; font-size:10px; padding:2px 7px; border-radius:999px; background:#fee2e2; color:#991b1b; }
+
+    /* ===== Table ===== */
+    .table { width:100%; border-collapse:collapse; font-size:12px; }
+    .table th { text-align:left; color:var(--muted); font-weight:500; padding:8px 6px; border-bottom:1px solid var(--border); font-size:11px; }
+    .table td { padding:10px 6px; border-bottom:1px solid #f3f4f6; vertical-align:middle; }
+    .table tbody tr:hover { background:#f9fafb; }
+    .badge { display:inline-block; padding:2px 7px; border-radius:999px; font-size:10px; font-weight:600; }
+    .badge.success { background:#dcfce7; color:#166534; }
+    .badge.warn { background:#fef3c7; color:#92400e; }
+    .badge.fail { background:#fee2e2; color:#991b1b; }
+    .badge.neutral { background:#e2e8f0; color:#334155; }
+
+    /* ===== Alerts ===== */
+    .alert { display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid #f3f4f6; font-size:12px; }
+    .alert:last-child { border:none; }
+    .alert button { border:1px solid var(--border); background:#f8fafc; padding:4px 8px; border-radius:5px; font-size:11px; cursor:pointer; }
+
+    /* ===== Contributors ===== */
+    .contributor-row { display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid #f3f4f6; }
+    .contributor-row:last-child { border-bottom:none; }
+    .contributor-avatar { width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:11px; color:white; font-weight:600; flex-shrink:0; }
+    .contributor-info { flex:1; }
+    .contributor-name { font-size:12px; font-weight:600; }
+    .contributor-role { font-size:10px; color:var(--muted); }
+    .contributor-amount { text-align:right; }
+
+    /* ===== Role Badge ===== */
+    .role-badge { display:inline-block; padding:1px 6px; border-radius:4px; font-size:9px; font-weight:600; }
+    .role-badge.pi { background:#dbeafe; color:#1e40af; }
+    .role-badge.co-pi { background:#e0e7ff; color:#4338ca; }
+    .role-badge.ra { background:#fef3c7; color:#92400e; }
+    .role-badge.member { background:#f3f4f6; color:#6b7280; }
+    .role-badge.enterprise { background:#dcfce7; color:#166534; }
+
+    /* ===== Fund Legend ===== */
+    .fund-legend { display:flex; gap:12px; flex-wrap:wrap; margin-top:6px; }
+    .fund-legend-item { display:flex; align-items:center; gap:4px; font-size:10px; color:var(--muted); }
+    .fund-legend-dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+
+    /* ===== Withdraw Card ===== */
+    .withdraw-card { background:#fffbeb; border:1px solid #fde68a; border-radius:10px; padding:14px 16px; }
+    .withdraw-title { font-size:12px; font-weight:700; color:#92400e; margin-bottom:6px; }
+    .withdraw-info { font-size:11px; color:#78350f; line-height:1.5; }
+    .withdraw-calc { display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:10px; font-size:11px; }
+    .withdraw-calc-item { background:rgba(255,255,255,.6); padding:6px 10px; border-radius:5px; }
+    .withdraw-calc-label { color:var(--muted); font-size:10px; }
+    .withdraw-calc-value { font-weight:700; color:var(--ink); font-size:13px; margin-top:2px; }
+
+    /* ===== Enterprise Banner ===== */
+    .enterprise-banner { background:linear-gradient(135deg,#059669,#047857); color:white; border-radius:10px; padding:14px 18px; margin-bottom:14px; }
+    .enterprise-banner-title { font-size:13px; font-weight:700; margin-bottom:3px; }
+    .enterprise-banner-sub { font-size:11px; opacity:.8; }
+
+    /* ===== IRB Card ===== */
+    .irb-card { background:white; border:1px solid var(--border); border-left:3px solid var(--success); border-radius:10px; padding:12px 16px; }
+    .irb-badge { display:inline-block; background:#dcfce7; color:#166534; padding:2px 8px; border-radius:5px; font-size:10px; font-weight:600; margin-bottom:6px; }
+    .irb-restrictions { display:flex; flex-direction:column; gap:3px; margin-top:6px; }
+    .irb-tag { display:inline-flex; align-items:center; gap:3px; padding:2px 6px; border-radius:4px; font-size:9px; font-weight:600; }
+    .irb-tag.red { background:#fef2f2; color:#991b1b; }
+    .irb-tag.amber { background:#fffbeb; color:#92400e; }
+
+    /* ===== Popup Flow ===== */
+    .popup-flow { background:white; border:1px solid var(--border); border-radius:10px; padding:14px 16px; }
+    .popup-step { display:flex; justify-content:space-between; font-size:12px; margin-bottom:6px; }
+
+    /* ===== Responsive ===== */
+    @media (max-width:1100px) {
+      .grid-top { grid-template-columns:1fr; }
+      .actions-grid { grid-template-columns:repeat(2,1fr); }
+      .grid-split { grid-template-columns:1fr; }
+    }
+    @media (max-width:900px) {
+      .grid-2,.grid-32 { grid-template-columns:1fr; }
+      .layout { flex-direction:column; }
+      .sidebar { width:100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <!-- ===== Sidebar (v11 style) ===== -->
+    <nav class="sidebar">
+      <div class="logo"><div class="logo-icon">U</div>UniQdata</div>
+      <div class="nav-section">
+        <a class="nav-item" href="list.html">🏠 연구 허브</a>
+        <a class="nav-item" href="create.html">➕ 새 연구</a>
+        <a class="nav-item" style="position:relative;">🔔 알림 <span style="margin-left:auto;background:#ef4444;color:white;font-size:9px;padding:1px 5px;border-radius:8px;">3</span></a>
+      </div>
+      <div class="nav-section" style="flex:1;overflow-y:auto;">
+        <div class="draft-section">
+          <div class="draft-label">📝 임시저장 <span style="background:rgba(239,68,68,.15);color:#fca5a5;padding:0 4px;border-radius:3px;font-size:8px;font-weight:600;">2</span></div>
+          <div class="draft-item"><span style="width:5px;height:5px;border-radius:50%;background:#ef4444;flex-shrink:0;"></span>당뇨 환자 관찰 연구</div>
+          <div class="draft-item"><span style="width:5px;height:5px;border-radius:50%;background:#eab308;flex-shrink:0;"></span>간기능 바이오마커</div>
+        </div>
+        <div style="font-size:9px;color:#64748b;padding:5px 8px;">내 연구</div>
+        <div class="rn-header active" onclick="this.nextElementSibling.classList.toggle('active');this.classList.toggle('active')">
+          <span style="color:#0072B2;">●</span> <span>대사개선 약물 연구</span>
+          <span class="rtype-chip prospective">전향적</span>
+        </div>
+        <div class="rn-sub active">
+          <a class="ns-item" href="data-overview.html">개요</a>
+          <a class="ns-item" href="data-table.html">테이블</a>
+          <a class="ns-item" href="clean-room.html">🔒 클린룸</a>
+          <a class="ns-item active" href="project-wallet.html">💰 프로젝트 지갑</a>
+        </div>
+        <div class="rn-header" onclick="this.nextElementSibling.classList.toggle('active');this.classList.toggle('active')">
+          <span style="color:#8b5cf6;">●</span> <span>약물안전성 하이브리드</span>
+          <span class="rtype-chip hybrid">하이브리드</span>
+        </div>
+        <div class="rn-sub">
+          <a class="ns-item" href="data-overview.html">개요</a>
+          <a class="ns-item" href="data-table.html">테이블</a>
+          <a class="ns-item" href="clean-room.html">🔒 클린룸</a>
+          <a class="ns-item" href="project-wallet.html">💰 프로젝트 지갑</a>
+        </div>
+        <div class="rn-header" onclick="this.nextElementSibling.classList.toggle('active');this.classList.toggle('active')">
+          <span style="color:#6366f1;">●</span> <span>CDM 후향적 코호트</span>
+          <span class="rtype-chip retrospective">후향적</span>
+        </div>
+        <div class="rn-sub">
+          <a class="ns-item" href="data-overview.html">개요</a>
+          <a class="ns-item" href="data-table.html">테이블</a>
+          <a class="ns-item" href="clean-room.html">🔒 클린룸</a>
+          <a class="ns-item" href="project-wallet.html">💰 프로젝트 지갑</a>
+        </div>
+      </div>
+      <div class="nav-section" style="padding:6px 10px;border-top:1px solid rgba(255,255,255,.05);">
+        <a class="nav-item" style="font-size:11px;color:#64748b;">👥 팀</a>
+        <a class="nav-wallet" href="../billing.html">💳 내 지갑</a>
+        <a class="nav-item" style="font-size:11px;color:#64748b;">⚙️ 설정</a>
+      </div>
+      <div class="sidebar-footer"><div style="display:flex;align-items:center;gap:8px;padding:4px;"><div class="u-av">김</div><div><div style="font-size:12px;color:#e2e8f0;">김연구</div><div style="font-size:10px;color:#64748b;">서울대학교병원</div></div></div></div>
+    </nav>
+
+    <!-- ===== Main ===== -->
+    <main class="main">
+      <div class="content">
+        <div class="page-header">
+          <div>
+            <div class="page-title">💰 프로젝트 지갑 — 대사개선 약물 연구</div>
+            <div class="page-subtitle">연구 유형에 따라 펀딩 구조가 달라집니다</div>
+          </div>
+          <div class="toolbar">
+            <select class="select"><option>최근 30일</option><option>최근 90일</option><option>전체</option></select>
+            <select class="select"><option>전체 상태</option><option>검증 완료</option><option>불일치</option></select>
+            <button class="btn btn-dark">CSV 내보내기</button>
+          </div>
+        </div>
+
+        <!-- ===== Mode Tabs ===== -->
+        <div class="mode-tabs">
+          <button class="mode-tab active" data-mode="solo" onclick="switchMode('solo')">👤 개인 연구</button>
+          <button class="mode-tab" data-mode="team" onclick="switchMode('team')">👥 팀 연구 (공동 출자)</button>
+          <button class="mode-tab" data-mode="enterprise" onclick="switchMode('enterprise')">🏛️ 기관 팀 연구</button>
+        </div>
+
+        <!-- ================================================ -->
+        <!-- MODE 1: 개인 연구 (PI 단독) -->
+        <!-- ================================================ -->
+        <div class="mode-content active" id="mode-solo">
+
+          <!-- 상단 3열: 지갑 + 에스크로 + 검증 -->
+          <div class="grid-top">
+            <div class="wallet-card">
+              <div class="wallet-label">프로젝트 지갑 (XRPL)</div>
+              <div class="wallet-balance">4,900 XRP</div>
+              <div class="wallet-usd">≈ $2,450 USD · 목표 6,400 XRP</div>
+              <div style="font-size:11px;color:#fca5a5;margin-top:4px;">⚠ 부족 1,500 XRP</div>
+              <div class="wallet-address"><span>0x7a3F...b82E</span> <button class="copy-btn">복사</button></div>
+              <div class="wallet-status"><span class="status-dot"></span> 연결됨</div>
+            </div>
+            <div class="card">
+              <div class="card-header">에스크로 예치</div>
+              <div class="card-body">
+                <div class="summary-item"><span>잠금 중 (수집 1차)</span><span>2,400 XRP</span></div>
+                <div class="summary-item"><span>정산 대기</span><span>500 XRP</span></div>
+                <div class="summary-item"><span>환불 예정</span><span>0 XRP</span></div>
+                <div class="summary-item" style="font-weight:600;border-top:1px solid var(--border);padding-top:8px;"><span>사용 가능</span><span style="color:var(--success);">2,000 XRP</span></div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-header">온체인 검증</div>
+              <div class="card-body">
+                <div style="font-size:11px;color:var(--muted);">내부 원장 vs XRPL 대사</div>
+                <div class="progress"><div class="fill" style="width:96%;background:#22c55e;"></div></div>
+                <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted);">
+                  <span>매칭률 96%</span><span>불일치 1건</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 액션 4버튼 -->
+          <div class="actions-grid">
+            <div class="action-btn">
+              <div class="action-icon" style="background:#dcfce7;"></div>
+              <div class="action-title">내 지갑에서 이체</div>
+              <div class="action-desc">개인 → 프로젝트 충전</div>
+            </div>
+            <div class="action-btn">
+              <div class="action-icon" style="background:#dbeafe;"></div>
+              <div class="action-title">에스크로 예치</div>
+              <div class="action-desc">단계별 예산 잠금</div>
+            </div>
+            <div class="action-btn">
+              <div class="action-icon" style="background:#fef3c7;"></div>
+              <div class="action-title">참여자 정산</div>
+              <div class="action-desc">지급 배치 실행</div>
+              <div class="action-tag">검증 후 실행</div>
+            </div>
+            <div class="action-btn">
+              <div class="action-icon" style="background:#e0e7ff;"></div>
+              <div class="action-title">잔액 회수</div>
+              <div class="action-desc">프로젝트 → 내 지갑</div>
+              <div class="action-tag">PI만 가능</div>
+            </div>
+          </div>
+
+          <!-- 원장 + 검증 알림 -->
+          <div class="grid-split">
+            <div class="card">
+              <div class="card-header">프로젝트 지출/정산 원장</div>
+              <div class="card-body">
+                <table class="table">
+                  <thead><tr><th>유형</th><th>금액</th><th>검증</th><th>TX</th><th>일시</th></tr></thead>
+                  <tbody>
+                    <tr><td><span class="badge success">예치</span></td><td style="color:var(--success);font-weight:600;">+2,400 XRP</td><td><span class="badge success">매칭</span></td><td style="font-family:monospace;font-size:11px;">9A3F...2C1</td><td style="color:var(--muted);">01-15</td></tr>
+                    <tr><td><span class="badge success">예치</span></td><td style="color:var(--success);font-weight:600;">+2,500 XRP</td><td><span class="badge success">매칭</span></td><td style="font-family:monospace;font-size:11px;">B41E...7F9</td><td style="color:var(--muted);">02-01</td></tr>
+                    <tr style="background:#fef2f2;"><td><span class="badge warn">정산</span></td><td style="color:var(--danger);font-weight:600;">-2,400 XRP</td><td><span class="badge success">매칭</span></td><td style="font-family:monospace;font-size:11px;">C72D...1A8</td><td style="color:var(--muted);">02-10</td></tr>
+                    <tr style="background:#fef2f2;"><td><span class="badge neutral">수수료</span></td><td style="color:var(--danger);font-weight:600;">-100 XRP</td><td><span class="badge fail">불일치</span></td><td style="font-family:monospace;font-size:11px;">E9F1...3B2</td><td style="color:var(--muted);">02-10</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div>
+              <div class="card" style="margin-bottom:12px;">
+                <div class="card-header">검증/대사 알림</div>
+                <div class="card-body">
+                  <div class="alert"><div><div style="font-weight:600;">TX E9F1...3B2</div><div style="color:var(--muted);font-size:11px;">수수료 불일치</div></div><button>재검증</button></div>
+                  <div class="alert"><div><div style="font-weight:600;">정산 배치 #03</div><div style="color:var(--muted);font-size:11px;">승인 대기</div></div><button>승인</button></div>
+                </div>
+              </div>
+              <div class="irb-card">
+                <div class="irb-badge">IRB 승인 완료</div>
+                <div style="font-size:11px;color:var(--muted);">IRB-2026-0142 · 서울대병원</div>
+                <div class="irb-restrictions">
+                  <span class="irb-tag red">🔒 팀원 추가 제한</span>
+                  <span class="irb-tag red">🚫 원본 반출 차단</span>
+                  <span class="irb-tag amber">📋 클린룸만 허용</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================================================ -->
+        <!-- MODE 2: 팀 연구 (공동 출자) -->
+        <!-- ================================================ -->
+        <div class="mode-content" id="mode-team">
+
+          <!-- 상단 3열: 공동 지갑 + 에스크로 + 검증 -->
+          <div class="grid-top">
+            <div class="wallet-card">
+              <div class="wallet-label">공동 프로젝트 지갑 (XRPL)</div>
+              <div class="wallet-balance">10,000 XRP</div>
+              <div class="wallet-usd">≈ $5,000 USD · 5명 공동 출자</div>
+              <div style="font-size:11px;color:#86efac;margin-top:4px;">✓ 모금 완료 · 목표 10,000 XRP</div>
+              <div class="wallet-address"><span>0x9B2E...c41A</span> <button class="copy-btn">복사</button></div>
+              <div class="wallet-status"><span class="status-dot"></span> 연결됨</div>
+            </div>
+            <div class="card">
+              <div class="card-header">에스크로 예치</div>
+              <div class="card-body">
+                <div class="summary-item"><span>잠금 중 (수집 1·2차)</span><span>8,000 XRP</span></div>
+                <div class="summary-item"><span>정산 대기</span><span>500 XRP</span></div>
+                <div class="summary-item"><span>환불 예정</span><span>0 XRP</span></div>
+                <div class="summary-item" style="font-weight:600;border-top:1px solid var(--border);padding-top:8px;"><span>사용 가능</span><span style="color:var(--success);">1,500 XRP</span></div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-header">온체인 검증</div>
+              <div class="card-body">
+                <div style="font-size:11px;color:var(--muted);">5건 출자 + 정산 TX 대사</div>
+                <div class="progress"><div class="fill" style="width:100%;background:#22c55e;"></div></div>
+                <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted);">
+                  <span>매칭률 100%</span><span>불일치 0건</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 출자 현황 + 팀원 & 역할 -->
+          <div class="grid-2">
+            <div class="card">
+              <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;"><span>출자 현황</span><span style="font-size:11px;color:var(--success);font-weight:600;">100% 달성</span></div>
+              <div class="card-body">
+                <div class="progress" style="position:relative;">
+                  <div class="fill" style="width:20%;background:#3b82f6;"></div>
+                  <div class="fill" style="width:20%;background:#8b5cf6;left:20%;"></div>
+                  <div class="fill" style="width:20%;background:#06b6d4;left:40%;"></div>
+                  <div class="fill" style="width:20%;background:#f59e0b;left:60%;"></div>
+                  <div class="fill" style="width:20%;background:#10b981;left:80%;"></div>
+                </div>
+                <div class="fund-legend">
+                  <div class="fund-legend-item"><div class="fund-legend-dot" style="background:#3b82f6;"></div>김연구 2,000</div>
+                  <div class="fund-legend-item"><div class="fund-legend-dot" style="background:#8b5cf6;"></div>박데이터 2,000</div>
+                  <div class="fund-legend-item"><div class="fund-legend-dot" style="background:#06b6d4;"></div>이분석 2,000</div>
+                  <div class="fund-legend-item"><div class="fund-legend-dot" style="background:#f59e0b;"></div>최통계 2,000</div>
+                  <div class="fund-legend-item"><div class="fund-legend-dot" style="background:#10b981;"></div>정의료 2,000</div>
+                </div>
+                <div style="display:flex;gap:6px;margin-top:10px;">
+                  <button class="btn btn-primary" style="flex:1;">출자</button>
+                  <button class="btn btn-outline" style="flex:1;">출자 요청</button>
+                </div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-header">팀원 & 역할</div>
+              <div class="card-body" style="padding:6px 14px;">
+                <div class="contributor-row"><div class="contributor-avatar" style="background:#3b82f6;">김</div><div class="contributor-info"><div class="contributor-name">김연구 <span class="role-badge pi">PI</span></div><div class="contributor-role">서울대병원</div></div><div class="contributor-amount"><div style="font-size:12px;font-weight:700;">2,000 XRP</div><div style="font-size:10px;color:var(--muted);">20%</div></div></div>
+                <div class="contributor-row"><div class="contributor-avatar" style="background:#8b5cf6;">박</div><div class="contributor-info"><div class="contributor-name">박데이터 <span class="role-badge co-pi">Co-PI</span></div><div class="contributor-role">연세대</div></div><div class="contributor-amount"><div style="font-size:12px;font-weight:700;">2,000 XRP</div><div style="font-size:10px;color:var(--muted);">20%</div></div></div>
+                <div class="contributor-row"><div class="contributor-avatar" style="background:#06b6d4;">이</div><div class="contributor-info"><div class="contributor-name">이분석 <span class="role-badge ra">RA</span></div><div class="contributor-role">서울대병원</div></div><div class="contributor-amount"><div style="font-size:12px;font-weight:700;">2,000 XRP</div><div style="font-size:10px;color:var(--muted);">20%</div></div></div>
+                <div class="contributor-row"><div class="contributor-avatar" style="background:#f59e0b;">최</div><div class="contributor-info"><div class="contributor-name">최통계 <span class="role-badge member">통계</span></div><div class="contributor-role">고려대</div></div><div class="contributor-amount"><div style="font-size:12px;font-weight:700;">2,000 XRP</div><div style="font-size:10px;color:var(--muted);">20%</div></div></div>
+                <div class="contributor-row"><div class="contributor-avatar" style="background:#10b981;">정</div><div class="contributor-info"><div class="contributor-name">정의료 <span class="role-badge member">DM</span></div><div class="contributor-role">삼성서울</div></div><div class="contributor-amount"><div style="font-size:12px;font-weight:700;">2,000 XRP</div><div style="font-size:10px;color:var(--muted);">20%</div></div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 중도 탈퇴 + IRB -->
+          <div class="grid-32">
+            <div class="withdraw-card">
+              <div class="withdraw-title">⚠ 중도 탈퇴 환불 규칙</div>
+              <div class="withdraw-info">총 10,000 XRP 중 5,000 XRP 사용 (50%). 탈퇴 시 출자 비율에서 소진분 차감.</div>
+              <div class="withdraw-calc">
+                <div class="withdraw-calc-item"><div class="withdraw-calc-label">1인 출자</div><div class="withdraw-calc-value">2,000 XRP</div></div>
+                <div class="withdraw-calc-item"><div class="withdraw-calc-label">소진 비율</div><div class="withdraw-calc-value">50%</div></div>
+                <div class="withdraw-calc-item"><div class="withdraw-calc-label">이미 소진</div><div class="withdraw-calc-value">1,000 XRP</div></div>
+                <div class="withdraw-calc-item"><div class="withdraw-calc-label">탈퇴 시 환불</div><div class="withdraw-calc-value" style="color:var(--success);">1,000 XRP</div></div>
+              </div>
+              <button class="btn btn-warning" style="width:100%;margin-top:10px;">중도 탈퇴 신청</button>
+              <div style="font-size:9px;color:#92400e;margin-top:4px;">PI 승인 필요 · 비율 재분배 · 이메일+Passkey 인증</div>
+            </div>
+            <div>
+              <div class="irb-card" style="margin-bottom:10px;">
+                <div class="irb-badge">IRB 승인 완료</div>
+                <div style="font-size:11px;color:var(--muted);">IRB-2026-0142 · 서울대병원</div>
+                <div class="irb-restrictions">
+                  <span class="irb-tag red">🔒 팀원 추가 제한</span>
+                  <span class="irb-tag red">🚫 원본 반출 차단</span>
+                  <span class="irb-tag amber">📋 클린룸만 허용</span>
+                </div>
+              </div>
+              <div class="card">
+                <div class="card-header">검증/대사 알림</div>
+                <div class="card-body">
+                  <div class="alert"><div><div style="font-weight:600;">정산 배치 #05</div><div style="color:var(--muted);font-size:11px;">승인 대기 · 5건</div></div><button>승인</button></div>
+                  <div class="alert"><div><div style="font-weight:600;">출자 입금 확인</div><div style="color:var(--muted);font-size:11px;">5건 전체 온체인 매칭</div></div><button>확인</button></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 원장 (full width) -->
+          <div class="card">
+            <div class="card-header">프로젝트 지출/정산 원장</div>
+            <div class="card-body">
+              <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;">
+                <span class="badge neutral">출자자: 전체</span>
+                <span class="badge neutral">유형: 전체</span>
+              </div>
+              <table class="table">
+                <thead><tr><th>일시</th><th>유형</th><th>출자자</th><th>금액</th><th>검증</th><th>TX</th><th style="text-align:right;">잔액</th></tr></thead>
+                <tbody>
+                  <tr><td style="color:var(--muted);">01-10</td><td><span class="badge success">출자</span></td><td>김연구</td><td style="color:var(--success);font-weight:600;">+2,000</td><td><span class="badge success">매칭</span></td><td style="font-family:monospace;font-size:10px;">A1B2...C3D</td><td style="text-align:right;">2,000</td></tr>
+                  <tr><td style="color:var(--muted);">01-10</td><td><span class="badge success">출자</span></td><td>박데이터</td><td style="color:var(--success);font-weight:600;">+2,000</td><td><span class="badge success">매칭</span></td><td style="font-family:monospace;font-size:10px;">D4E5...F6G</td><td style="text-align:right;">4,000</td></tr>
+                  <tr><td style="color:var(--muted);">01-11</td><td><span class="badge success">출자</span></td><td>이분석</td><td style="color:var(--success);font-weight:600;">+2,000</td><td><span class="badge success">매칭</span></td><td style="font-family:monospace;font-size:10px;">H7I8...J9K</td><td style="text-align:right;">6,000</td></tr>
+                  <tr><td style="color:var(--muted);">01-11</td><td><span class="badge success">출자</span></td><td>최통계</td><td style="color:var(--success);font-weight:600;">+2,000</td><td><span class="badge success">매칭</span></td><td style="font-family:monospace;font-size:10px;">L0M1...N2O</td><td style="text-align:right;">8,000</td></tr>
+                  <tr><td style="color:var(--muted);">01-12</td><td><span class="badge success">출자</span></td><td>정의료</td><td style="color:var(--success);font-weight:600;">+2,000</td><td><span class="badge success">매칭</span></td><td style="font-family:monospace;font-size:10px;">P3Q4...R5S</td><td style="text-align:right;">10,000</td></tr>
+                  <tr style="background:#fef2f2;"><td style="color:var(--muted);">02-01</td><td><span class="badge warn">정산</span></td><td>참여자 보상</td><td style="color:var(--danger);font-weight:600;">-4,000</td><td><span class="badge success">매칭</span></td><td style="font-family:monospace;font-size:10px;">T6U7...V8W</td><td style="text-align:right;">6,000</td></tr>
+                  <tr style="background:#fef2f2;"><td style="color:var(--muted);">02-10</td><td><span class="badge neutral">수수료</span></td><td>플랫폼</td><td style="color:var(--danger);font-weight:600;">-1,000</td><td><span class="badge success">매칭</span></td><td style="font-family:monospace;font-size:10px;">X9Y0...Z1A</td><td style="text-align:right;">5,000</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================================================ -->
+        <!-- MODE 3: 기관 팀 연구 -->
+        <!-- ================================================ -->
+        <div class="mode-content" id="mode-enterprise">
+
+          <div class="enterprise-banner">
+            <div class="enterprise-banner-title">🏛️ 서울대학교병원 · 연구지원부 예산 배정</div>
+            <div class="enterprise-banner-sub">기관 관리자가 프로젝트에 예산을 예치합니다. 개별 팀원의 출자가 아닌 기관 예산에서 집행됩니다.</div>
+          </div>
+
+          <!-- 상단 3열: 기관 지갑 + 에스크로 + 검증 -->
+          <div class="grid-top">
+            <div class="wallet-card enterprise">
+              <div class="wallet-label">기관 프로젝트 예산 (XRPL)</div>
+              <div class="wallet-balance">24,000 XRP</div>
+              <div class="wallet-usd">≈ $12,000 USD · 연구지원부 배정</div>
+              <div style="font-size:11px;color:#86efac;margin-top:4px;">✓ 연구지원부 승인 · 2026-01-05</div>
+              <div class="wallet-address"><span>0xENT1...7F2B (기관)</span></div>
+              <div class="wallet-status"><span class="status-dot"></span> 연결됨</div>
+              <div style="display:flex;justify-content:space-between;margin-top:10px;padding-top:8px;border-top:1px solid rgba(255,255,255,.1);font-size:11px;">
+                <span style="color:#9ca3af;">기관 지갑 총 잔액</span><span style="color:#86efac;font-weight:600;">97,000 XRP</span>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-header">에스크로 예치</div>
+              <div class="card-body">
+                <div class="summary-item"><span>잠금 중 (수집 1차)</span><span>8,400 XRP</span></div>
+                <div class="summary-item"><span>예정 (수집 2차)</span><span>10,000 XRP</span></div>
+                <div class="summary-item"><span>미예치 (분석+OH)</span><span>5,600 XRP</span></div>
+                <div class="summary-item" style="font-weight:600;border-top:1px solid var(--border);padding-top:8px;"><span>집행 잔여</span><span style="color:var(--success);">15,600 XRP</span></div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-header">예산 집행률</div>
+              <div class="card-body">
+                <div style="font-size:11px;color:var(--muted);">기관 예산 대비 집행</div>
+                <div class="progress"><div class="fill" style="width:35%;background:linear-gradient(90deg,#059669,#10b981);"></div></div>
+                <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted);">
+                  <span>집행 8,400</span><span>잔여 15,600</span><span>35%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 팀 역할 + IRB -->
+          <div class="grid-32">
+            <div class="card">
+              <div class="card-header">프로젝트 팀 & 역할 (기관 배정)</div>
+              <div class="card-body" style="padding:6px 14px;">
+                <div class="contributor-row"><div class="contributor-avatar" style="background:#059669;">서</div><div class="contributor-info"><div class="contributor-name">서울대학교병원 <span class="role-badge enterprise">기관</span></div><div class="contributor-role">연구지원부 · 예산 배정</div></div><div class="contributor-amount"><div style="font-size:12px;font-weight:700;">24,000 XRP</div><div style="font-size:10px;color:var(--muted);">기관 100%</div></div></div>
+                <div style="border-top:1px solid var(--border);margin:2px 0;"></div>
+                <div class="contributor-row"><div class="contributor-avatar" style="background:#3b82f6;">김</div><div class="contributor-info"><div class="contributor-name">김연구 <span class="role-badge pi">PI</span></div><div class="contributor-role">연구 책임자</div></div><div class="contributor-amount"><div style="font-size:10px;color:var(--primary);">집행 권한</div></div></div>
+                <div class="contributor-row"><div class="contributor-avatar" style="background:#8b5cf6;">박</div><div class="contributor-info"><div class="contributor-name">박데이터 <span class="role-badge co-pi">Co-PI</span></div><div class="contributor-role">데이터 관리</div></div><div class="contributor-amount"><div style="font-size:10px;color:var(--muted);">열람 전용</div></div></div>
+                <div class="contributor-row"><div class="contributor-avatar" style="background:#06b6d4;">이</div><div class="contributor-info"><div class="contributor-name">이분석 <span class="role-badge ra">RA</span></div><div class="contributor-role">연구보조원</div></div><div class="contributor-amount"><div style="font-size:10px;color:var(--muted);">열람 전용</div></div></div>
+              </div>
+            </div>
+            <div>
+              <div class="irb-card" style="margin-bottom:10px;">
+                <div class="irb-badge">IRB 승인 완료</div>
+                <div style="font-size:11px;color:var(--muted);">IRB-2026-0142 · 기관 심의</div>
+                <div class="irb-restrictions">
+                  <span class="irb-tag red">🔒 팀원 추가 제한</span>
+                  <span class="irb-tag red">🚫 원본 반출 차단</span>
+                  <span class="irb-tag amber">📋 클린룸만 허용</span>
+                </div>
+              </div>
+              <div class="card">
+                <div class="card-header">검증/대사 알림</div>
+                <div class="card-body">
+                  <div class="alert"><div><div style="font-weight:600;">기관 예치 TX</div><div style="color:var(--muted);font-size:11px;">24,000 XRP 온체인 확인</div></div><button>확인</button></div>
+                  <div class="alert"><div><div style="font-weight:600;">정산 배치 #08</div><div style="color:var(--muted);font-size:11px;">PI 승인 대기</div></div><button>승인</button></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 원장 (full width) -->
+          <div class="card">
+            <div class="card-header">기관 예산 지출 원장</div>
+            <div class="card-body">
+              <table class="table">
+                <thead><tr><th>일시</th><th>유형</th><th>출처</th><th>승인자</th><th>검증</th><th>TX</th><th style="text-align:right;">금액</th><th style="text-align:right;">잔액</th></tr></thead>
+                <tbody>
+                  <tr><td style="color:var(--muted);">01-05</td><td><span class="badge success">기관 예치</span></td><td>연구지원부</td><td>행정팀장</td><td><span class="badge success">매칭</span></td><td style="font-family:monospace;font-size:10px;">ENT1...7F2B</td><td style="color:var(--success);font-weight:600;text-align:right;">+24,000</td><td style="text-align:right;">24,000</td></tr>
+                  <tr style="background:#fef2f2;"><td style="color:var(--muted);">02-01</td><td><span class="badge warn">정산</span></td><td>참여자 보상</td><td>김연구 (PI)</td><td><span class="badge success">매칭</span></td><td style="font-family:monospace;font-size:10px;">S3T4...U5V</td><td style="color:var(--danger);font-weight:600;text-align:right;">-6,000</td><td style="text-align:right;">18,000</td></tr>
+                  <tr style="background:#fef2f2;"><td style="color:var(--muted);">02-10</td><td><span class="badge neutral">수수료</span></td><td>플랫폼</td><td>자동</td><td><span class="badge success">매칭</span></td><td style="font-family:monospace;font-size:10px;">W6X7...Y8Z</td><td style="color:var(--danger);font-weight:600;text-align:right;">-2,400</td><td style="text-align:right;">15,600</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <script>
+    function switchMode(mode) {
+      document.querySelectorAll('.mode-tab').forEach(t => t.classList.toggle('active', t.dataset.mode === mode));
+      document.querySelectorAll('.mode-content').forEach(c => c.classList.toggle('active', c.id === 'mode-' + mode));
+    }
+  </script>
+</body>
+</html>

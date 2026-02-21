@@ -1,0 +1,2039 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UniQdata — v10 Config-Driven Demo</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f5;color:#1f2937;font-size:13px;}
+.layout{display:flex;height:100vh;overflow:hidden;}
+
+/* Sidebar */
+.sidebar{width:210px;background:linear-gradient(180deg,#0f172a,#1e293b);color:white;display:flex;flex-direction:column;flex-shrink:0;}
+.logo{padding:14px 18px;font-size:17px;font-weight:700;border-bottom:1px solid rgba(255,255,255,.1);display:flex;align-items:center;gap:8px;}
+.logo-icon{width:26px;height:26px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13px;}
+.nav-section{padding:10px;border-bottom:1px solid rgba(255,255,255,.05);}
+.nav-item{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:5px;color:#94a3b8;cursor:pointer;font-size:12px;}
+.rn-header{display:flex;align-items:center;gap:5px;padding:5px 8px;border-radius:5px;font-size:11px;color:#60a5fa;background:rgba(59,130,246,.1);}
+.rn-sub{padding-left:14px;margin-top:2px;border-left:2px solid rgba(255,255,255,.1);margin-left:12px;}
+.ns-item{display:flex;align-items:center;gap:5px;padding:5px 8px;border-radius:4px;color:#94a3b8;font-size:10px;cursor:pointer;margin-bottom:1px;}
+.ns-item:hover{background:rgba(255,255,255,.05);}
+.ns-item.active{background:rgba(59,130,246,.15);color:#60a5fa;}
+.sidebar-footer{margin-top:auto;padding:10px;border-top:1px solid rgba(255,255,255,.05);}
+.u-av{width:28px;height:28px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;}
+
+.main{flex:1;overflow:hidden;display:flex;flex-direction:column;}
+.content{padding:16px 20px;flex:1;display:flex;flex-direction:column;overflow:hidden;min-height:0;}
+.page-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-shrink:0;padding-bottom:8px;border-bottom:1px solid #e5e7eb;}
+.page-title{font-size:18px;font-weight:700;color:#111827;}
+.page-sub{color:#6b7280;font-size:11px;margin-top:3px;letter-spacing:-0.1px;}
+.study-status{display:flex;align-items:center;gap:6px;padding:5px 10px;background:white;border:1px solid #e5e7eb;border-radius:6px;font-size:11px;}
+.st-dot{width:8px;height:8px;border-radius:50%;}.st-dot.active{background:#22c55e;}
+
+/* Tabs */
+.tabs{display:flex;border-bottom:2px solid #e5e7eb;margin-bottom:12px;flex-shrink:0;gap:2px;}
+.tab{padding:8px 20px;font-size:12px;color:#6b7280;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;font-weight:600;user-select:none;transition:all .15s;border-radius:6px 6px 0 0;}
+.tab:hover{color:#374151;background:#f9fafb;}.tab.active{color:#0072B2;border-bottom-color:#0072B2;background:rgba(0,114,178,.03);}
+.tab-content{display:none;flex:1;min-height:0;overflow:hidden;}
+.tab-content.active{display:flex;flex-direction:column;flex:1;min-height:0;}
+
+/* Overview */
+.ov-scroll{flex:1;overflow-y:auto;overflow-x:hidden;}
+
+/* Verdict Strip — TD-2 해결: study_type 기반 어댑터 */
+.verdict-strip{display:flex;gap:10px;margin-bottom:12px;}
+.verdict-card{flex:1;background:white;border:1px solid #e5e7eb;border-radius:10px;padding:12px 16px;position:relative;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.04);}
+.verdict-card.primary{border-left:3px solid #0072B2;}
+.verdict-card.warn{border-left:3px solid #E69F00;}
+.verdict-card.ok{border-left:3px solid #009E73;}
+.verdict-card.safety{border-left:3px solid #D55E00;}
+.vc-label{font-size:9px;color:#6b7280;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px;}
+.vc-value{font-size:16px;font-weight:700;}
+.vc-sub{font-size:10px;color:#6b7280;margin-top:2px;}
+.vc-bar{height:3px;background:#f3f4f6;border-radius:2px;margin-top:6px;overflow:hidden;}
+.vc-fill{height:100%;border-radius:2px;}
+.vc-interim{font-size:8px;color:#9ca3af;font-style:italic;margin-top:3px;}
+
+/* Timeline — TD-1 해결: semantic zoom + visit window */
+.timeline-section{background:white;border:1px solid #e5e7eb;border-radius:10px;padding:16px 20px;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,.04);}
+.tl-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px;}
+.tl-title{font-size:13px;font-weight:700;color:#111827;}
+.tl-controls{display:flex;gap:8px;align-items:center;}
+.tl-toggle{display:flex;gap:3px;font-size:10px;}
+.tl-toggle button{padding:2px 8px;border:1px solid #e5e7eb;border-radius:4px;background:white;color:#6b7280;cursor:pointer;font-size:10px;min-width:24px;min-height:24px;}
+.tl-toggle button.active{background:#0072B2;color:white;border-color:#0072B2;}
+.zoom-ctrl{display:flex;align-items:center;gap:2px;padding:2px 4px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:4px;}
+.zoom-ctrl button{background:none;border:none;cursor:pointer;font-size:12px;color:#0072B2;min-width:24px;min-height:24px;display:flex;align-items:center;justify-content:center;}
+.zoom-ctrl .zoom-label{font-size:9px;color:#6b7280;min-width:50px;text-align:center;}
+.tl-bar{position:relative;height:36px;background:#f9fafb;border-radius:6px;overflow:visible;margin-bottom:6px;}
+.tl-phase{position:absolute;top:0;height:100%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;color:white;border-radius:4px;transition:all .2s;}
+.tl-phase.screening{background:#94a3b8;}.tl-phase.enrollment{background:#6366f1;}
+.tl-phase.baseline{background:#0072B2;}.tl-phase.treatment{background:#0ea5e9;}
+.tl-phase.followup{background:#009E73;}.tl-phase.analysis{background:#8b5cf6;}
+.tl-phase.future{opacity:.4;border:2px dashed;background:transparent;color:#6b7280;}
+.tl-phase.future.treatment{border-color:#0ea5e9;}
+.tl-phase.future.followup{border-color:#009E73;}
+.tl-phase.future.analysis{border-color:#8b5cf6;}
+.tl-bar{cursor:pointer;}
+.tl-now{position:absolute;top:-4px;height:calc(100% + 8px);width:2px;background:#D55E00;z-index:10;pointer-events:none;}
+.tl-now::after{content:'오늘';position:absolute;top:-14px;left:50%;transform:translateX(-50%);font-size:8px;color:#D55E00;font-weight:600;white-space:nowrap;}
+/* 드래그 핸들 */
+.tl-handle{position:absolute;top:-8px;width:16px;height:calc(100% + 16px);z-index:20;cursor:ew-resize;display:flex;align-items:center;justify-content:center;transform:translateX(-50%);}
+.tl-handle-grip{width:10px;height:22px;background:#D55E00;border-radius:5px;border:2px solid white;box-shadow:0 1px 4px rgba(213,94,0,.4);transition:transform .1s;}
+.tl-handle:hover .tl-handle-grip,.tl-handle.dragging .tl-handle-grip{transform:scale(1.2);box-shadow:0 2px 8px rgba(213,94,0,.5);}
+.tl-handle .tl-day-tooltip{position:absolute;top:-26px;left:50%;transform:translateX(-50%);background:#1f2937;color:white;font-size:9px;padding:2px 6px;border-radius:4px;white-space:nowrap;opacity:0;transition:opacity .15s;pointer-events:none;}
+.tl-handle:hover .tl-day-tooltip,.tl-handle.dragging .tl-day-tooltip{opacity:1;}
+/* Visit 마커 */
+.tl-visit-dots{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:5;}
+.tl-vdot{position:absolute;top:50%;width:6px;height:6px;border-radius:50%;background:white;border:1.5px solid #0072B2;transform:translate(-50%,-50%);opacity:.7;z-index:6;}
+.tl-vdot.future{opacity:.3;border-color:#9ca3af;}
+.tl-vwindow{position:absolute;top:2px;height:calc(100% - 4px);background:rgba(0,114,178,.08);border-radius:3px;pointer-events:none;z-index:3;}
+.tl-vwindow.future{background:rgba(0,0,0,.02);}
+.tl-labels{display:flex;justify-content:space-between;font-size:9px;color:#9ca3af;padding:0 2px;}
+.tl-milestones{display:flex;gap:16px;margin-top:8px;flex-wrap:wrap;}
+.ms{display:flex;align-items:center;gap:4px;font-size:10px;color:#6b7280;}
+.ms-dot{width:6px;height:6px;border-radius:50%;}
+.ms-dot.done{background:#009E73;}.ms-dot.now{background:#D55E00;}.ms-dot.future{background:#d1d5db;}
+
+/* Safety Panel — TD-5 해결 */
+.safety-strip{background:white;border:1px solid #e5e7eb;border-radius:10px;padding:12px 16px;margin-bottom:12px;border-left:3px solid #D55E00;box-shadow:0 1px 3px rgba(0,0,0,.04);}
+.safety-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+.safety-title{font-size:10px;font-weight:600;color:#D55E00;text-transform:uppercase;letter-spacing:.5px;}
+.safety-toggle{font-size:9px;color:#9ca3af;cursor:pointer;}
+.safety-body{display:flex;gap:12px;flex-wrap:wrap;}
+.safety-stat{text-align:center;min-width:80px;}
+.safety-stat .sv{font-size:18px;font-weight:700;}.safety-stat .sl{font-size:9px;color:#6b7280;}
+.ae-timeline{display:flex;gap:4px;align-items:end;height:24px;margin-top:6px;}
+.ae-bar{width:16px;border-radius:2px 2px 0 0;background:#fed7aa;min-height:2px;}
+.ae-bar.serious{background:#fecaca;}
+
+/* Metrics Grid — TD-3 해결: 렌더러 타입 표시 */
+.metrics-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px;}
+.metric-card{background:white;border:1px solid #e5e7eb;border-radius:10px;padding:14px;position:relative;cursor:pointer;transition:all .2s;min-height:130px;box-shadow:0 1px 3px rgba(0,0,0,.04);}
+.metric-card:hover{border-color:#0072B2;box-shadow:0 2px 8px rgba(0,114,178,.1);}
+.metric-card .expand-hint{position:absolute;top:6px;right:6px;font-size:8px;color:#d1d5db;transition:color .2s;}
+.metric-card:hover .expand-hint{color:#0072B2;}
+.mc-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;}
+.mc-name{font-size:11px;font-weight:600;color:#374151;display:flex;align-items:center;gap:4px;}
+.mc-name .dot{width:5px;height:5px;border-radius:50%;}
+.mc-badge{font-size:8px;font-weight:600;padding:1px 5px;border-radius:3px;min-width:24px;min-height:24px;display:flex;align-items:center;justify-content:center;}
+.mc-badge.sig{background:#dcfce7;color:#166534;}
+.mc-badge.ns{background:#f3f4f6;color:#6b7280;}
+.mc-badge.alert{background:#fef3c7;color:#92400e;}
+.mc-badge.derived{background:#ede9fe;color:#5b21b6;}
+.mc-renderer{font-size:7px;color:#9ca3af;position:absolute;bottom:4px;right:8px;font-family:'SF Mono',Monaco,monospace;}
+.mc-chart{height:80px;position:relative;}
+.mc-chart canvas{width:100%;height:100%;}
+.mc-footer{display:flex;justify-content:space-between;align-items:center;margin-top:4px;}
+.mc-delta{font-size:11px;font-weight:700;font-family:'SF Mono',Monaco,monospace;}
+.mc-delta.good{color:#009E73;}.mc-delta.bad{color:#D55E00;}.mc-delta.neutral{color:#6b7280;}
+.mc-range{font-size:9px;color:#9ca3af;}
+
+/* Chart Modal */
+.chart-modal-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.4);z-index:100;align-items:center;justify-content:center;}
+.chart-modal-overlay.open{display:flex;}
+.chart-modal{background:white;border-radius:12px;padding:20px;width:700px;max-width:90vw;max-height:85vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3);}
+.cm-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
+.cm-title{font-size:15px;font-weight:700;color:#1f2937;display:flex;align-items:center;gap:6px;}
+.cm-close{padding:4px 10px;border:1px solid #e5e7eb;border-radius:6px;background:white;cursor:pointer;font-size:13px;color:#6b7280;min-width:24px;min-height:24px;}
+.cm-chart{height:250px;position:relative;margin-bottom:12px;}
+.cm-chart canvas{width:100%;height:100%;}
+.cm-legend{display:flex;gap:16px;font-size:11px;color:#6b7280;margin-bottom:8px;flex-wrap:wrap;}
+.cm-legend span{display:flex;align-items:center;gap:4px;}
+.cm-legend .ln{width:20px;height:2px;border-radius:1px;}
+.cm-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+.cm-stat{background:#f9fafb;border:1px solid #f3f4f6;border-radius:6px;padding:8px 10px;}
+.cm-stat-label{font-size:9px;color:#6b7280;margin-bottom:2px;}
+.cm-stat-value{font-size:14px;font-weight:700;color:#1f2937;}
+
+/* Chart Guide — 모달 하단 해석 가이드 */
+.cm-guide{margin-top:12px;display:flex;flex-direction:column;gap:8px;}
+.cm-guide-section{background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:10px 14px;}
+.cm-guide-section.interpret{border-left:3px solid #0072B2;}
+.cm-guide-section.reading{border-left:3px solid #94a3b8;}
+.cm-guide-section.action{border-left:3px solid #009E73;}
+.cm-guide-section.caution{border-left:3px solid #E69F00;}
+.cm-guide-title{font-size:10px;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:.3px;margin-bottom:4px;display:flex;align-items:center;gap:5px;}
+.cm-guide-text{font-size:11px;color:#4b5563;line-height:1.5;}
+
+/* TD-3: 비숫자 렌더러 스타일 */
+.img-strip{display:flex;gap:4px;height:100%;align-items:end;padding:2px 0;}
+.img-thumb{flex:1;border-radius:4px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:2px;position:relative;}
+.img-thumb .ph{width:100%;aspect-ratio:1;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:16px;border:1px solid #e5e7eb;}
+.img-thumb .ph-label{font-size:7px;color:#9ca3af;}
+.severity-strip{display:flex;gap:2px;height:100%;align-items:end;}
+.sev-col{flex:1;display:flex;flex-direction:column;justify-content:flex-end;gap:1px;height:100%;}
+.sev-seg{border-radius:2px;min-height:2px;transition:height .2s;}
+.sev-legend{display:flex;gap:8px;font-size:8px;color:#6b7280;margin-top:2px;}
+.sev-legend span{display:flex;align-items:center;gap:3px;}
+.sev-legend .sq{width:6px;height:6px;border-radius:1px;}
+
+/* TD-6: 파생 지표 뱃지 */
+.mc-derived{position:absolute;top:6px;left:8px;font-size:7px;color:#7c3aed;background:#ede9fe;padding:1px 4px;border-radius:3px;font-weight:600;}
+.cm-guide-text b{color:#111827;}
+.cm-guide-chips{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;}
+.cm-guide-chip{font-size:9px;padding:2px 8px;border-radius:10px;background:white;border:1px solid #e5e7eb;color:#6b7280;}
+.cm-guide-chip.good{background:#ecfdf5;border-color:#86efac;color:#065f46;}
+.cm-guide-chip.warn{background:#fffbeb;border-color:#fcd34d;color:#92400e;}
+.cm-guide-chip.info{background:#eff6ff;border-color:#93c5fd;color:#1e40af;}
+
+/* AI Insights */
+/* Action Center — 연구자 액션 레이어 */
+.action-center{background:white;border:1px solid #e5e7eb;border-radius:10px;padding:14px 18px;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,.04);}
+.ac-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.ac-title{font-size:10px;font-weight:600;color:#374151;text-transform:uppercase;letter-spacing:.5px;display:flex;align-items:center;gap:5px;}
+.ac-title .ac-icon{font-size:12px;}
+.ac-badge{font-size:9px;background:#fef3c7;color:#92400e;padding:1px 6px;border-radius:3px;font-weight:500;}
+.ac-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+.ac-card{border:1px solid #e5e7eb;border-radius:8px;padding:10px 12px;cursor:pointer;transition:all .15s;position:relative;}
+.ac-card:hover{border-color:#0072B2;box-shadow:0 2px 8px rgba(0,114,178,.08);}
+.ac-card.urgent{border-left:3px solid #D55E00;}
+.ac-card.warning{border-left:3px solid #E69F00;}
+.ac-card.info{border-left:3px solid #0072B2;}
+.ac-card.success{border-left:3px solid #009E73;}
+.ac-card-icon{font-size:14px;margin-bottom:4px;}
+.ac-card-title{font-size:10px;font-weight:600;color:#1f2937;margin-bottom:2px;}
+.ac-card-desc{font-size:9px;color:#6b7280;line-height:1.3;}
+.ac-card-count{position:absolute;top:6px;right:8px;font-size:8px;font-weight:700;background:#fef3c7;color:#92400e;padding:1px 5px;border-radius:8px;}
+.ac-card-count.zero{background:#f3f4f6;color:#9ca3af;}
+.ac-sub{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;}
+.ac-quick{display:flex;align-items:center;gap:4px;padding:4px 10px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:5px;font-size:9px;color:#374151;cursor:pointer;transition:all .12s;}
+.ac-quick:hover{background:#eff6ff;border-color:#93c5fd;color:#1d4ed8;}
+.ac-quick .aq-icon{font-size:11px;}
+
+.ai-strip{background:white;border:1px solid #e5e7eb;border-radius:8px;padding:10px 14px;margin-bottom:10px;}
+.ai-title{font-size:10px;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;}
+.ai-items{display:flex;flex-direction:column;gap:4px;}
+.ai-item{display:flex;align-items:flex-start;gap:8px;padding:6px 10px;border-radius:6px;font-size:11px;line-height:1.4;cursor:pointer;transition:all .15s;min-height:24px;}
+.ai-item:hover{filter:brightness(.95);}
+.ai-item.alert{background:#fef3c7;color:#92400e;}
+.ai-item.finding{background:#f0fdf4;color:#166534;}
+.ai-item.info{background:#eff6ff;color:#1e40af;}
+.ai-item.safety-alert{background:#fef2f2;color:#991b1b;}
+.ai-icon{font-size:13px;flex-shrink:0;margin-top:1px;}
+.ai-text b{font-weight:600;}
+.ai-time{font-size:9px;color:#9ca3af;margin-left:auto;flex-shrink:0;white-space:nowrap;}
+.ai-action{font-size:9px;margin-left:auto;flex-shrink:0;opacity:.6;white-space:nowrap;}
+
+/* Table Tab */
+.table-area-wrap{display:flex;flex:1;min-height:0;overflow:hidden;}
+.table-area{flex:1;min-width:0;overflow-y:auto;overflow-x:auto;display:flex;flex-direction:column;transition:flex .3s ease;}
+.table-area.shrunk{flex:0 0 62%;}
+.ctrl-section{background:white;border:1px solid #e5e7eb;border-radius:8px;padding:8px 14px;margin-bottom:6px;flex-shrink:0;}
+.ctrl-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+.ctrl-group{display:flex;align-items:center;gap:5px;}
+.ctrl-group label{font-size:10px;color:#6b7280;font-weight:600;}
+.t-btn{padding:3px 7px;border:1px solid #e5e7eb;border-radius:4px;background:white;color:#6b7280;cursor:pointer;font-size:10px;min-width:24px;min-height:24px;display:flex;align-items:center;justify-content:center;}
+.t-btn.active{background:#0072B2;color:white;border-color:#0072B2;}
+.sel-sm{padding:3px 5px;border:1px solid #e5e7eb;border-radius:4px;font-size:10px;background:white;min-height:24px;}
+.dn-ctrl{display:flex;align-items:center;gap:4px;padding:3px 6px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:4px;font-size:10px;}
+.dn-ctrl button{background:none;border:none;cursor:pointer;font-size:11px;color:#0072B2;min-width:24px;min-height:24px;}
+.search-in{padding:3px 5px;border:1px solid #e5e7eb;border-radius:4px;font-size:10px;width:110px;min-height:24px;}
+.src-legend{display:flex;gap:8px;align-items:center;margin-bottom:3px;font-size:9px;color:#6b7280;flex-shrink:0;}
+.sd{width:6px;height:6px;border-radius:2px;display:inline-block;}
+.sd.emr{background:#0072B2;}.sd.wear{background:#009E73;}.sd.ema{background:#CC79A7;}
+.tbl-section{background:white;border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;flex:1;display:flex;flex-direction:column;min-height:0;}
+.tbl-wrap{overflow-y:auto;overflow-x:auto;flex:1;min-height:0;}
+table.pt-tbl{width:100%;border-collapse:collapse;font-size:11px;}
+table.pt-tbl thead th{text-align:left;font-size:9px;color:#6b7280;font-weight:600;padding:6px 5px;border-bottom:2px solid #e5e7eb;background:#f9fafb;position:sticky;top:0;z-index:10;white-space:nowrap;}
+table.pt-tbl thead th:first-child{position:sticky;left:0;z-index:11;background:#f9fafb;}
+table.pt-tbl thead th .cs{display:inline-block;width:4px;height:4px;border-radius:2px;margin-right:2px;vertical-align:middle;}
+table.pt-tbl thead th .sort-icon{font-size:8px;color:#d1d5db;margin-left:2px;}
+table.pt-tbl tbody td{padding:6px 5px;border-bottom:1px solid #f1f5f9;font-size:10px;}
+table.pt-tbl tbody td:first-child{position:sticky;left:0;background:white;z-index:5;}
+table.pt-tbl tbody tr{cursor:pointer;transition:background .1s;}
+table.pt-tbl tbody tr:hover{background:#f8fafc;}
+table.pt-tbl tbody tr:hover td:first-child{background:#f8fafc;}
+table.pt-tbl tbody tr.selected{background:#eff6ff;}
+table.pt-tbl tbody tr.selected td:first-child{background:#eff6ff;}
+table.pt-tbl tbody tr.alert-row{background:#fffbeb;}
+table.pt-tbl tbody tr.alert-row td:first-child{background:#fffbeb;}
+.pid{font-weight:600;color:#374151;white-space:nowrap;}
+.gb{display:inline-block;padding:1px 3px;border-radius:3px;font-size:8px;font-weight:600;margin-left:3px;}
+.gb.exp{background:#dbeafe;color:#0072B2;}.gb.ctrl{background:#fce7f3;color:#CC79A7;}
+.sv{display:inline-block;width:4px;height:4px;border-radius:50%;margin-right:3px;}
+.sv.good{background:#009E73;}.sv.warn{background:#E69F00;}.sv.bad{background:#D55E00;}
+.status-badge{font-size:7px;padding:1px 4px;border-radius:3px;font-weight:600;margin-left:4px;}
+.status-badge.verified{background:#dcfce7;color:#166534;}
+.status-badge.query{background:#fef3c7;color:#92400e;}
+.status-badge.review{background:#dbeafe;color:#1d4ed8;}
+.status-badge.missing-visit{background:#fef2f2;color:#991b1b;}
+.cd{font-weight:700;font-family:'SF Mono',Monaco,monospace;font-size:10px;}
+.cd.good{color:#009E73;}.cd.bad{color:#D55E00;}.cd.neutral{color:#6b7280;}
+.cr-cell{font-size:9px;color:#9ca3af;display:block;}.ce{color:#d1d5db;font-style:italic;}
+.pag-row{display:flex;align-items:center;justify-content:space-between;padding:6px 12px;background:white;border:1px solid #e5e7eb;border-radius:8px;font-size:10px;color:#6b7280;flex-shrink:0;margin-top:6px;}
+
+/* Detail Panel */
+.detail-panel{width:0;overflow:hidden;border-left:1px solid #e5e7eb;background:white;transition:width .3s ease;flex-shrink:0;display:flex;flex-direction:column;max-height:100%;}
+.detail-panel.open{width:38%;}
+.dp-header{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid #e5e7eb;background:#f9fafb;flex-shrink:0;}
+.dp-title{font-size:13px;font-weight:700;color:#374151;display:flex;align-items:center;gap:4px;}
+.dp-close{padding:3px 7px;border:1px solid #e5e7eb;border-radius:4px;background:white;cursor:pointer;font-size:11px;color:#6b7280;min-width:24px;min-height:24px;}
+.dp-nav{display:flex;gap:3px;}
+.dp-nav button{padding:2px 5px;border:1px solid #e5e7eb;border-radius:4px;background:white;cursor:pointer;font-size:10px;min-width:24px;min-height:24px;}
+.dp-body{flex:1;overflow-y:auto;padding:12px;}
+.chart-card{background:#f9fafb;border:1px solid #e5e7eb;border-radius:6px;padding:10px;margin-bottom:10px;}
+.chart-card-title{font-size:10px;font-weight:600;color:#374151;margin-bottom:4px;}
+.mini-chart{height:75px;position:relative;}
+.mini-chart canvas{width:100%;height:100%;}
+.chart-x{display:flex;justify-content:space-between;font-size:7px;color:#9ca3af;margin-top:1px;}
+.chart-sum{display:flex;gap:8px;margin-top:3px;font-size:9px;color:#6b7280;}
+.chart-sum strong{color:#374151;}
+.fs-title{font-size:10px;font-weight:600;color:#374151;margin:10px 0 4px;}
+.fs-table{width:100%;border-collapse:collapse;font-size:9px;}
+.fs-table th{font-size:8px;color:#9ca3af;font-weight:600;padding:3px;border-bottom:1px solid #e5e7eb;text-align:center;}
+.fs-table th:first-child{text-align:left;}
+.fs-table td{padding:3px;text-align:center;border-bottom:1px solid #f1f5f9;font-family:'SF Mono',Monaco,monospace;font-size:8px;}
+.fs-table td:first-child{text-align:left;font-weight:600;color:#374151;font-family:-apple-system,sans-serif;}
+.fg{color:#009E73;background:rgba(0,158,115,.05);}.fb{color:#D55E00;background:rgba(213,94,0,.05);}.fc{font-weight:700;outline:1.5px solid #0072B2;border-radius:2px;}
+
+/* Clean Room Tab */
+.cr-session{display:flex;align-items:center;gap:12px;padding:6px 14px;background:#0f172a;border-radius:8px;margin-bottom:8px;flex-shrink:0;flex-wrap:wrap;}
+.cr-live{display:flex;align-items:center;gap:4px;}
+.cr-dot{width:6px;height:6px;background:#009E73;border-radius:50%;animation:crpulse 2s infinite;}
+@keyframes crpulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+.cr-live-label{font-size:10px;color:#009E73;font-weight:600;}
+.cr-meta{font-size:10px;color:#64748b;}.cr-meta b{color:#94a3b8;}
+.cr-chip{padding:2px 6px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:4px;font-size:9px;color:#94a3b8;}
+.cr-chip.privacy{color:#009E73;border-color:rgba(0,158,115,.3);}
+.cr-right{margin-left:auto;display:flex;align-items:center;gap:8px;}
+.cr-audit{font-size:9px;color:#E69F00;display:flex;align-items:center;gap:3px;}
+.cr-body{display:flex;flex:1;min-height:0;gap:8px;overflow:hidden;}
+.schema-panel{width:220px;background:white;border:1px solid #e5e7eb;border-radius:8px;display:flex;flex-direction:column;flex-shrink:0;overflow:hidden;}
+.sp-header{padding:8px 12px;border-bottom:1px solid #e5e7eb;font-size:10px;font-weight:600;color:#374151;display:flex;justify-content:space-between;align-items:center;}
+.sp-search{width:100%;padding:4px 8px;border:1px solid #e5e7eb;border-radius:4px;font-size:10px;margin:6px 8px;width:calc(100% - 16px);}
+.sp-list{flex:1;overflow-y:auto;padding:4px;}
+.sp-server{padding:4px 8px;font-size:9px;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:.5px;margin-top:6px;}
+.sp-table{display:flex;align-items:center;gap:6px;padding:5px 10px;border-radius:4px;font-size:11px;color:#374151;cursor:pointer;margin-bottom:1px;}
+.sp-table:hover{background:#f3f4f6;}
+.sp-table.active{background:#eff6ff;color:#0072B2;font-weight:600;}
+.sp-table .sp-icon{font-size:12px;width:16px;text-align:center;}
+.sp-table .sp-count{margin-left:auto;font-size:9px;color:#9ca3af;font-family:'SF Mono',Monaco,monospace;}
+.data-grid{flex:1;display:flex;flex-direction:column;min-width:0;overflow:hidden;}
+.dg-toolbar{display:flex;align-items:center;gap:8px;padding:8px 12px;background:white;border:1px solid #e5e7eb;border-radius:8px;margin-bottom:6px;flex-shrink:0;flex-wrap:wrap;}
+.dg-title{font-size:12px;font-weight:700;color:#1f2937;display:flex;align-items:center;gap:6px;}
+.dg-title .t-icon{font-size:14px;}
+.dg-pills{display:flex;gap:4px;}
+.dg-pill{padding:2px 6px;border:1px solid #e5e7eb;border-radius:4px;font-size:9px;color:#6b7280;cursor:pointer;min-width:24px;min-height:24px;display:flex;align-items:center;}
+.dg-pill.active{background:#0072B2;color:white;border-color:#0072B2;}
+.dg-filter{display:flex;align-items:center;gap:4px;margin-left:auto;}
+.dg-privacy{display:flex;align-items:center;gap:4px;padding:3px 8px;background:rgba(0,158,115,.06);border:1px solid rgba(0,158,115,.2);border-radius:4px;font-size:9px;color:#166534;}
+/* TD-4 해결: 계층 집계 티어 선택 */
+.agg-tier{display:flex;gap:2px;margin-left:8px;}
+.agg-tier button{padding:2px 6px;border:1px solid #e5e7eb;border-radius:3px;background:white;font-size:8px;color:#6b7280;cursor:pointer;}
+.agg-tier button.active{background:#6366f1;color:white;border-color:#6366f1;}
+.dg-table-wrap{flex:1;overflow:auto;background:white;border:1px solid #e5e7eb;border-radius:8px;}
+table.dg-tbl{width:100%;border-collapse:collapse;font-size:10px;}
+table.dg-tbl thead th{position:sticky;top:0;z-index:10;background:#f9fafb;border-bottom:2px solid #e5e7eb;padding:6px 8px;text-align:left;font-size:9px;color:#6b7280;font-weight:600;white-space:nowrap;}
+table.dg-tbl thead th .col-type{font-size:8px;color:#9ca3af;font-weight:400;font-family:'SF Mono',Monaco,monospace;display:block;}
+table.dg-tbl tbody td{padding:5px 8px;border-bottom:1px solid #f1f5f9;font-family:'SF Mono',Monaco,monospace;font-size:9px;white-space:nowrap;}
+table.dg-tbl tbody tr:hover{background:#f8fafc;}
+.masked{color:#d1d5db;font-style:italic;letter-spacing:1px;}
+.pseudo{color:#8b5cf6;font-weight:600;}
+.hash-val{color:#9ca3af;font-size:8px;max-width:80px;overflow:hidden;text-overflow:ellipsis;display:inline-block;}
+.json-val{color:#0ea5e9;cursor:pointer;max-width:180px;overflow:hidden;text-overflow:ellipsis;display:inline-block;}
+.json-val:hover{text-decoration:underline;}
+.ts-val{color:#374151;}.null-val{color:#d1d5db;font-style:italic;}
+.bool-val.true{color:#009E73;}.bool-val.false{color:#D55E00;}
+.num-val{color:#0072B2;}
+.dg-footer{display:flex;align-items:center;justify-content:space-between;padding:6px 12px;background:white;border:1px solid #e5e7eb;border-radius:8px;font-size:10px;color:#6b7280;flex-shrink:0;margin-top:6px;}
+.dg-footer-privacy{display:flex;align-items:center;gap:10px;}
+.privacy-badge{display:flex;align-items:center;gap:3px;font-size:9px;}
+.privacy-badge.ok{color:#009E73;}.privacy-badge.warn{color:#E69F00;}
+.json-modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:200;align-items:center;justify-content:center;}
+.json-modal.open{display:flex;}
+.json-box{background:#1e293b;border-radius:10px;padding:16px;max-width:500px;width:90%;max-height:60vh;overflow-y:auto;}
+.json-box-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.json-box-title{color:#e2e8f0;font-size:12px;font-weight:600;}
+.json-box-close{color:#94a3b8;cursor:pointer;font-size:13px;padding:2px 6px;border:1px solid #334155;border-radius:4px;background:transparent;min-width:24px;min-height:24px;}
+.json-box pre{font-family:'SF Mono',Monaco,monospace;font-size:10px;color:#94a3b8;line-height:1.5;white-space:pre-wrap;}
+.json-box .jk{color:#7dd3fc;}.json-box .js{color:#86efac;}.json-box .jn{color:#fbbf24;}.json-box .jb{color:#f472b6;}
+
+/* Study Scenario Switcher — 사이드바에서 연구 전환 (모드 아님!) */
+.study-scenarios{padding:8px;border-top:1px solid rgba(255,255,255,.05);margin-top:4px;}
+.study-scenarios .sc-label{font-size:8px;color:#64748b;padding:3px 8px;text-transform:uppercase;letter-spacing:.5px;}
+.sc-item{display:flex;align-items:center;gap:6px;padding:5px 8px;border-radius:4px;color:#94a3b8;font-size:10px;cursor:pointer;margin-bottom:1px;transition:all .12s;}
+.sc-item:hover{background:rgba(255,255,255,.05);}
+.sc-item.active{background:rgba(59,130,246,.15);color:#60a5fa;}
+.sc-item .sc-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;}
+.sc-item .sc-type{font-size:8px;color:#64748b;margin-left:auto;}
+/* 타임라인 자동 컨텍스트 배지 */
+.tl-auto-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;background:rgba(0,114,178,.06);border:1px solid rgba(0,114,178,.15);border-radius:4px;font-size:9px;color:#0072B2;font-weight:500;}
+.tl-auto-badge .ab-icon{font-size:10px;}
+.tl-config-info{font-size:9px;color:#9ca3af;white-space:nowrap;}
+
+.version-tag{position:fixed;bottom:4px;right:8px;font-size:9px;color:#d1d5db;z-index:1;}
+</style>
+</head>
+<body>
+
+<!-- v10 HTML Structure — Part 1 complete, JS in Part 2 -->
+<div class="layout">
+  <nav class="sidebar">
+    <div class="logo"><div class="logo-icon">U</div>UniQdata</div>
+    <div class="nav-section"><a class="nav-item">🏠 연구 허브</a></div>
+    <div class="nav-section" style="flex:1;overflow-y:auto;">
+      <div style="font-size:9px;color:#64748b;padding:5px 8px;">내 연구</div>
+      <div class="rn-header">📁 <span id="sidebarStudyName">대사개선 약물 연구</span></div>
+      <div class="rn-sub">
+        <a class="ns-item active" id="nav-ov">개요</a>
+        <a class="ns-item" id="nav-tb">테이블</a>
+        <a class="ns-item" id="nav-cr">🔒 클린룸</a>
+      </div>
+    </div>
+    <div class="study-scenarios" id="studyScenarios">
+      <div class="sc-label">데모 시나리오</div>
+      <div class="sc-item active" data-scenario="visit"><span class="sc-dot" style="background:#0072B2;"></span>대사개선 약물<span class="sc-type">RCT</span></div>
+      <div class="sc-item" data-scenario="week"><span class="sc-dot" style="background:#009E73;"></span>체중관리 코호트<span class="sc-type">코호트</span></div>
+      <div class="sc-item" data-scenario="phase"><span class="sc-dot" style="background:#8b5cf6;"></span>항암 용량탐색<span class="sc-type">Phase I/II</span></div>
+      <div class="sc-item" data-scenario="day"><span class="sc-dot" style="background:#D55E00;"></span>ICU 모니터링<span class="sc-type">관찰</span></div>
+    </div>
+    <div class="sidebar-footer"><div style="display:flex;align-items:center;gap:8px;padding:4px;"><div class="u-av">김</div><div><div style="font-size:12px;color:#e2e8f0;">김연구</div><div style="font-size:10px;color:#64748b;">서울대학교병원</div></div></div></div>
+  </nav>
+
+  <main class="main">
+    <div class="content">
+      <div class="page-header">
+        <div>
+          <div class="page-title" id="pageTitle">대사개선 약물 연구</div>
+          <div class="page-sub" id="pageSub">처방 약물(2.4mg) · RCT · 실험 40 / 대조 40 · 12주(84일) · IRB 2025-0847</div>
+        </div>
+        <div class="study-status"><span class="st-dot active"></span><b id="statusText">진행 중</b> · <span id="statusDetail">V3 / V7</span></div>
+      </div>
+
+      <div class="tabs">
+        <div class="tab active" data-tab="overview" id="tab-ov">개요</div>
+        <div class="tab" data-tab="table" id="tab-tb">테이블</div>
+        <div class="tab" data-tab="cleanroom" id="tab-cr">🔒 클린룸</div>
+      </div>
+
+      <!-- ===== 개요 탭 ===== -->
+      <div class="tab-content active" id="tc-ov">
+        <div class="ov-scroll">
+          <div class="verdict-strip" id="verdictStrip"></div>
+          <div class="safety-strip" id="safetyStrip"></div>
+          <div class="timeline-section">
+            <div class="tl-header">
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div class="tl-title">연구 타임라인</div>
+                <div class="tl-auto-badge" id="tlAutoBadge"><span class="ab-icon">⏱</span><span id="tlAutoLabel">방문 기반</span></div>
+              </div>
+              <div class="tl-controls">
+                <span class="tl-config-info" id="tlConfigInfo"></span>
+                <div class="zoom-ctrl">
+                  <button id="zoomOut">−</button>
+                  <span class="zoom-label" id="zoomLabel">Epoch</span>
+                  <button id="zoomIn">+</button>
+                </div>
+                <div class="tl-toggle">
+                  <button class="active" id="tlCal">캘린더</button>
+                  <button id="tlDay">Study Day</button>
+                </div>
+              </div>
+            </div>
+            <div class="tl-bar" id="tlBar"></div>
+            <div class="tl-labels" id="tlLabels"></div>
+            <div class="tl-milestones" id="tlMilestones"></div>
+            <div id="densityStrip" style="margin-top:10px;padding-top:10px;border-top:1px solid #f3f4f6;"></div>
+          </div>
+          <div class="metrics-grid" id="metricsGrid"></div>
+          <div class="action-center" id="actionCenter"></div>
+          <div class="ai-strip" id="aiStrip"></div>
+        </div>
+      </div>
+
+      <!-- ===== 테이블 탭 ===== -->
+      <div class="tab-content" id="tc-tb">
+        <div class="ctrl-section">
+          <div class="ctrl-row">
+            <div class="ctrl-group"><label>시점</label><div id="visitSelector" style="display:flex;gap:2px;"></div></div>
+            <div class="ctrl-group"><label>소스</label><select class="sel-sm"><option>전체</option></select></div>
+            <div class="ctrl-group" style="margin-left:auto;"><input type="text" class="search-in" placeholder="환자 검색..."></div>
+          </div>
+        </div>
+        <div class="src-legend">
+          <span><span class="sd emr"></span> EMR</span>
+          <span><span class="sd wear"></span> 웨어러블</span>
+          <span><span class="sd ema"></span> EMA</span>
+          <span style="margin-left:auto;color:#9ca3af;">행 클릭 → 상세</span>
+        </div>
+        <div class="table-area-wrap">
+          <div class="table-area" id="tableArea">
+            <div class="tbl-section"><div class="tbl-wrap">
+              <table class="pt-tbl"><thead><tr id="tHead"></tr></thead><tbody id="tBody"></tbody></table>
+            </div></div>
+            <div class="pag-row"><span id="pagInfo"></span><div style="display:flex;gap:2px;"><button class="t-btn active" style="padding:2px 5px;">1</button></div></div>
+          </div>
+          <div class="detail-panel" id="detailPanel">
+            <div class="dp-header">
+              <div class="dp-title" id="dpTitle"></div>
+              <div style="display:flex;gap:3px;align-items:center;">
+                <div class="dp-nav"><button id="dpPrev">▲</button><button id="dpNext">▼</button></div>
+                <button class="dp-close" id="dpClose">✕</button>
+              </div>
+            </div>
+            <div class="dp-body" id="dpBody"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== 클린룸 탭 ===== -->
+      <div class="tab-content" id="tc-cr">
+        <div class="cr-session">
+          <div class="cr-live"><span class="cr-dot"></span><span class="cr-live-label">세션</span></div>
+          <span class="cr-meta"><b id="crElapsed">00:00</b> / 4h 00m</span>
+          <span class="cr-chip" id="crIrb">IRB-2025-0847</span>
+          <span class="cr-chip privacy">🛡️ k≥5 · ε 0.98 잔여</span>
+          <span class="cr-chip">가명화 적용</span>
+          <div class="cr-right"><span class="cr-audit">📝 감사 로그 기록 중</span></div>
+        </div>
+        <div class="cr-body">
+          <div class="schema-panel">
+            <div class="sp-header"><span>스키마 탐색기</span><span style="font-size:9px;color:#9ca3af;" id="spCount">12 테이블</span></div>
+            <input type="text" class="sp-search" placeholder="테이블 검색..." id="spSearch">
+            <div class="sp-list" id="spList"></div>
+          </div>
+          <div class="data-grid">
+            <div class="dg-toolbar" id="dgToolbar"></div>
+            <div class="dg-table-wrap" id="dgTableWrap">
+              <table class="dg-tbl" id="dgTable"><thead id="dgHead"></thead><tbody id="dgBody"></tbody></table>
+            </div>
+            <div class="dg-footer">
+              <span id="dgRowInfo">50 rows · 10 columns</span>
+              <div class="dg-footer-privacy">
+                <span class="privacy-badge ok">🛡️ k-익명성: 5 이상</span>
+                <span class="privacy-badge ok">🔒 user_id: 가명 처리</span>
+                <span class="privacy-badge ok" id="dgQueryBadge">📝 쿼리 #0 기록됨</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Config Badge (숨김 — 인라인으로 이동) -->
+<span id="configBadge" style="display:none;"><span id="cbType"></span></span>
+
+<!-- Chart Modal -->
+<div class="chart-modal-overlay" id="chartModal">
+  <div class="chart-modal">
+    <div class="cm-header"><div class="cm-title" id="cmTitle"></div><button class="cm-close" id="cmClose">✕ 닫기</button></div>
+    <div class="cm-legend" id="cmLegend"></div>
+    <div class="cm-chart"><canvas id="cmCanvas"></canvas></div>
+    <div class="cm-stats" id="cmStats"></div>
+    <div class="cm-guide" id="cmGuide"></div>
+  </div>
+</div>
+
+<!-- JSON Modal -->
+<div class="json-modal" id="jsonModal">
+  <div class="json-box">
+    <div class="json-box-header"><span class="json-box-title" id="jmTitle">JSONB 값</span><button class="json-box-close" id="jmClose">✕</button></div>
+    <pre id="jmContent"></pre>
+  </div>
+</div>
+
+<div class="version-tag">v10 · CDISC multi-axis · time_unit 일반화</div>
+
+<!-- Part 2: JavaScript will be appended -->
+<script>
+// ===============================================
+// v10 CORE ENGINE — study_config drives everything
+// ===============================================
+
+// === Okabe-Ito Colorblind-Safe Palette ===
+const C={blue:'#0072B2',vermillion:'#D55E00',green:'#009E73',amber:'#E69F00',pink:'#CC79A7',skyblue:'#56B4E9',yellow:'#F0E442'};
+
+// ===============================================
+// TD-1+TD-2 해결: STUDY_CONFIG — 모든 것의 근원
+// ===============================================
+const STUDY_CONFIG = {
+  // 연구 기본 정보
+  title: '대사개선 약물 연구',
+  subtitle: '처방 약물(2.4mg)',
+  // IRB는 옵셔널 — IRB면제/해당없음/해외 Ethics Committee 모두 지원
+  regulatory: {
+    type: 'irb',                 // irb | irb_exempt | ethics_committee | none
+    number: 'IRB-2025-0847',     // nullable — 없으면 null
+    status: 'approved',          // approved | exempt | not_required | pending
+  },
+
+  // TD-2: 연구설계 어댑터
+  design: {
+    study_type: 'rct',           // rct | single_arm | crossover | cluster | safety
+    has_control_arm: true,
+    num_arms: 2,
+    arm_labels: ['실험군','대조군'],
+    arm_colors: [C.blue, C.vermillion],
+    primary_endpoint_type: 'efficacy',  // efficacy | safety | equivalence
+    n_per_arm: 40,
+  },
+
+  // ==========================================================
+  // TD-1 해결: 시간축 일반화 — CDISC 다중 축 패턴
+  //
+  // time_unit : 'visit'|'week'|'phase'|'day'|'cycle'
+  //   → UI의 X축 라벨, 테이블 컬럼, 줌 단위 결정
+  // reference_point : Day 0 기준 정의 (CDISC RFSTDTC)
+  // timing_behavior : 지연 시 후속 일정 이동 여부
+  // points[] : 시간축 포인트 (time_unit에 무관한 통일 구조)
+  //   visit→V1,V2  week→W1,W2  phase→P1,P2  day→D1,D2
+  // analysis_rule : 실제 관측 → 분석 시점 매핑 (CDISC AVISIT)
+  // ==========================================================
+  timeline: {
+    time_unit: 'visit',        // visit | week | phase | day | cycle
+    reference_point: {
+      type: 'first_dose',      // first_dose | randomization | enrollment | screening_start | custom
+      label: '첫 투약일',      // UI에 표시할 기준점 이름
+    },
+    timing_behavior: 'participant-relative', // participant-relative | calendar-fixed
+    analysis_rule: 'nearest-in-window',      // nearest-in-window | nearest-after | last-before
+
+    duration_days: 227,
+    current_day: 42,
+
+    // Epochs — 구조적 단계 (CDISC EPOCH)
+    phases: [
+      {name:'스크리닝',key:'screening',start:-57,end:-43,color:'#94a3b8'},
+      {name:'등록',key:'enrollment',start:-42,end:-15,color:'#6366f1'},
+      {name:'베이스라인',key:'baseline',start:-14,end:-1,color:C.blue},
+      {name:'치료',key:'treatment',start:0,end:84,color:'#0ea5e9'},
+      {name:'추적',key:'followup',start:85,end:168,color:C.green},
+      {name:'분석',key:'analysis',start:169,end:227,color:'#8b5cf6'},
+    ],
+
+    // 시간축 포인트 — time_unit 무관 통일 구조
+    // id/label 형식만 time_unit에 맞춰 변경
+    points: [
+      {id:'V1',label:'V1 (BL)',target_day:0,window:[-3,3],epoch:'baseline',planned:true},
+      {id:'V2',label:'V2 (2주)',target_day:14,window:[-5,5],epoch:'treatment',planned:true},
+      {id:'V3',label:'V3 (4주)',target_day:28,window:[-5,5],epoch:'treatment',planned:true},
+      {id:'V4',label:'V4 (6주)',target_day:42,window:[-5,5],epoch:'treatment',planned:true},
+      {id:'V5',label:'V5 (8주)',target_day:56,window:[-5,5],epoch:'treatment',planned:true},
+      {id:'V6',label:'V6 (10주)',target_day:70,window:[-5,5],epoch:'treatment',planned:true},
+      {id:'V7',label:'V7 (12주)',target_day:84,window:[-7,7],epoch:'treatment',planned:true},
+    ],
+
+    milestones: [
+      {label:'IRB 승인',day:-57,date:'2025-11-01',status:'done',regulatory_only:true},
+      {label:'첫 참여자 등록',day:-42,date:'2025-11-15',status:'done'},
+      {label:'등록 완료',day:-14,date:'2025-12-15',status:'done'},
+      {label:'베이스라인 완료',day:0,date:'2025-12-27',status:'done'},
+      {label:'중간분석 (V4)',day:42,date:'2026-02-07',status:'now'},
+      {label:'치료 종료 (V7)',day:84,date:'2026-03-21',status:'future'},
+      {label:'추적 종료',day:168,date:'2026-06-13',status:'future'},
+      {label:'데이터 잠금',day:210,date:'2026-07-25',status:'future'},
+    ],
+    zoom_levels: ['study','epoch','visit','week','day'],
+    current_zoom: 1,
+    base_date: '2025-12-27', // Day 0 = reference_point
+  },
+
+  // TD-3+TD-6: 지표 정의 — 렌더러 타입 + 파생 지표
+  metrics: [
+    // TD-4: measurement_freq — 지표별 독립 측정 빈도
+    {k:'wt',name:'체중',unit:'kg',direction:'down',source:'EMR',renderer:'numeric_line',color:C.blue,p_value:0.0001,measurement_freq:'per_visit'},
+    {k:'sbp',name:'SBP',unit:'mmHg',direction:'down',source:'EMR',renderer:'numeric_line',color:'#6366f1',p_value:0.012,measurement_freq:'per_visit'},
+    {k:'hr',name:'심박수',unit:'bpm',direction:'down',source:'웨어',renderer:'numeric_line',color:C.green,p_value:0.034,measurement_freq:'continuous',agg_rule:'visit_mean'},
+    {k:'steps',name:'걸음수',unit:'보',direction:'up',source:'웨어',renderer:'numeric_line',color:'#14b8a6',p_value:0.008,measurement_freq:'daily',agg_rule:'visit_sum'},
+    {k:'comp',name:'순응도',unit:'%',direction:'monitor',source:'EMA',renderer:'numeric_line',color:C.pink,p_value:0.342,measurement_freq:'daily',agg_rule:'visit_mean'},
+    {k:'sleep',name:'수면',unit:'h',direction:'up',source:'웨어',renderer:'numeric_line',color:C.amber,p_value:0.028,measurement_freq:'daily',agg_rule:'visit_mean'},
+    // TD-3: 비숫자 렌더러
+    {k:'skin',name:'피부 상태',unit:'점',direction:'down',source:'사진+AI',renderer:'image_gallery',color:'#a855f7',p_value:0.003,measurement_freq:'per_visit'},
+    // TD-6: 파생 지표 (CGM raw → TIR 자동 계산)
+    {k:'tir',name:'TIR',unit:'%',direction:'up',source:'CGM→파생',renderer:'severity_zone',color:'#10b981',p_value:0.019,measurement_freq:'continuous',agg_rule:'visit_pct',derived:{from:'cgm',fn:'time_in_range',params:{min:70,max:180}}},
+  ],
+
+  // TD-5: 안전성 프레임
+  safety: {
+    enabled: true,
+    ae_summary: {total:12,serious:1,related:4,discontinued:0},
+    ae_by_visit: [2,3,2,5,0,0,0], // V1~V7
+    stopping_rule: 'O\'Brien-Fleming boundary',
+    dsmb_next: '2026-03-01',
+  },
+
+  // TD-2: Verdict adapter
+  verdict_adapter: 'rct', // rct | single_arm | safety | crossover
+};
+
+// ===============================================
+// TD-1: Semantic Zoom Levels
+// ===============================================
+const ZOOM_NAMES = ['전체','에포크','방문','주간','일별'];
+let currentZoom = STUDY_CONFIG.timeline.current_zoom;
+
+function updateZoom(dir){
+  currentZoom = Math.max(0, Math.min(4, currentZoom + dir));
+  document.getElementById('zoomLabel').textContent = ZOOM_NAMES[currentZoom];
+  buildTimeline();
+}
+document.getElementById('zoomIn').addEventListener('click',()=>updateZoom(1));
+document.getElementById('zoomOut').addEventListener('click',()=>updateZoom(-1));
+
+// ===============================================
+// TD-1 해결: 시간축 포인트 (time_unit 무관 통일 API)
+// points[] → VISITS 로 런타임 매핑
+// time_unit_label() → UI 표시명 동적 생성
+// ===============================================
+let TIME_UNIT = STUDY_CONFIG.timeline.time_unit;
+const VISITS = STUDY_CONFIG.timeline.points;   // ← visits→points 일반화 (배열 내용만 교체)
+const PAST_VISITS = VISITS.filter(v => v.target_day <= STUDY_CONFIG.timeline.current_day);
+const FUTURE_VISITS = VISITS.filter(v => v.target_day > STUDY_CONFIG.timeline.current_day);
+const VISIT_LABELS = VISITS.map(v => v.id);
+const PAST_LABELS = PAST_VISITS.map(v => v.id);
+
+// time_unit 기반 UI 라벨 유틸
+const TIME_UNIT_LABELS = {
+  visit: {singular:'방문', plural:'방문', prefix:'V', axis:'방문 기반'},
+  week:  {singular:'주차', plural:'주간', prefix:'W', axis:'주간 기반'},
+  phase: {singular:'단계', plural:'단계', prefix:'P', axis:'단계 기반'},
+  day:   {singular:'일차', plural:'일별', prefix:'D', axis:'일별 기반'},
+  cycle: {singular:'주기', plural:'주기', prefix:'C', axis:'주기 기반'},
+};
+function tuLabel(key){return TIME_UNIT_LABELS[TIME_UNIT]?.[key]||key;}
+function tuRefLabel(){return STUDY_CONFIG.timeline.reference_point?.label||'Day 0';}
+function tuBehaviorLabel(){return STUDY_CONFIG.timeline.timing_behavior==='participant-relative'?'참여자 상대':'캘린더 고정';}
+
+// ===============================================
+// 동적 데이터 생성 엔진 — points[] 길이에 맞춤
+// n = PAST_VISITS.length (현재까지 수집된 시점 수)
+// ===============================================
+function seededRandom(seed){let s=seed;return function(){s=(s*16807+0)%2147483647;return(s-1)/2147483646;};}
+
+// 환자별 시계열 생성: start 값에서 slope/point 씩 변화 + noise
+function genTimeSeries(n, start, slopePerPoint, noise, seed, nullIdx){
+  const rng=seededRandom(seed);
+  return Array.from({length:n},(_,i)=>{
+    if(nullIdx!=null && i===nullIdx) return null;
+    return Math.round((start + slopePerPoint*i + (rng()-0.5)*noise*2)*10)/10;
+  });
+}
+
+// 참여자 프로필 정의 (시드값으로 재현성 보장)
+const PATIENT_PROFILES = {
+  exp: [
+    {id:'P001',nm:'김민수',sv:'good',st:'verified', seeds:{wt:{s:87.3,sl:-1.6,n:0.3},sbp:{s:134,sl:-2.5,n:1},hr:{s:72,sl:-1.2,n:0.5},steps:{s:7340,sl:400,n:100},comp:{s:86,sl:2,n:1},sleep:{s:6.2,sl:0.25,n:0.1},skin:{s:7.2,sl:-0.8,n:0.3},tir:{s:62,sl:4,n:2}}},
+    {id:'P005',nm:'이수진',sv:'good',st:'verified', seeds:{wt:{s:88.3,sl:-1.3,n:0.4},sbp:{s:132.5,sl:-1.8,n:1.2},hr:{s:72,sl:-0.8,n:0.3},steps:{s:6800,sl:280,n:120},comp:{s:85,sl:1.5,n:1},sleep:{s:6,sl:0.22,n:0.1},skin:{s:6.8,sl:-0.7,n:0.4},tir:{s:65,sl:3.5,n:1.5}}},
+    {id:'P011',nm:'박지훈',sv:'good',st:'verified', seeds:{wt:{s:88.3,sl:-1.5,n:0.2},sbp:{s:134.2,sl:-2.0,n:0.8},hr:{s:72,sl:-1.3,n:0.4},steps:{s:7000,sl:360,n:80},comp:{s:86,sl:1.8,n:0.8},sleep:{s:6.5,sl:0.18,n:0.08},skin:{s:7.0,sl:-0.9,n:0.2},tir:{s:58,sl:5,n:2}}},
+    {id:'P018',nm:'최예린',sv:'warn',st:'query',al:true, seeds:{wt:{s:87.4,sl:-1.2,n:0.5},sbp:{s:137.9,sl:-0.5,n:2.5},hr:{s:70,sl:-0.5,n:0.8,nullAt:2},steps:{s:5800,sl:140,n:150},comp:{s:82,sl:2,n:1.5},sleep:{s:5.8,sl:0.12,n:0.2},skin:{s:8.1,sl:-0.3,n:0.6},tir:{s:48,sl:2,n:3}}},
+    {id:'P023',nm:'정하늘',sv:'good',st:'verified', seeds:{wt:{s:87.6,sl:-1.4,n:0.3},sbp:{s:134.1,sl:-1.5,n:0.6},hr:{s:72,sl:-1.0,n:0.3},steps:{s:6900,sl:300,n:90},comp:{s:85,sl:1.6,n:0.7},sleep:{s:6.3,sl:0.2,n:0.1},skin:{s:6.5,sl:-0.85,n:0.3},tir:{s:64,sl:3.8,n:1.8}}},
+  ],
+  ctrl: [
+    {id:'P002',nm:'윤서연',sv:'warn',st:'review', seeds:{wt:{s:87.7,sl:0.1,n:0.2},sbp:{s:135.9,sl:0.4,n:0.5},hr:{s:72,sl:-0.2,n:0.3},steps:{s:4600,sl:50,n:60},comp:{s:85,sl:0.5,n:0.5},sleep:{s:6.1,sl:-0.05,n:0.1},skin:{s:7.1,sl:-0.1,n:0.3},tir:{s:61,sl:0.5,n:2}}},
+    {id:'P008',nm:'한도윤',sv:'good',st:'verified', seeds:{wt:{s:87.9,sl:-0.15,n:0.1},sbp:{s:133.1,sl:0.3,n:0.4},hr:{s:72,sl:0,n:0.2},steps:{s:4200,sl:-5,n:30},comp:{s:85,sl:0.3,n:0.3},sleep:{s:6.5,sl:-0.05,n:0.08},skin:{s:6.9,sl:-0.05,n:0.2},tir:{s:63,sl:0.3,n:1.5}}},
+    {id:'P014',nm:'송지아',sv:'good',st:'verified', seeds:{wt:{s:87.9,sl:-0.03,n:0.1},sbp:{s:134.5,sl:0.2,n:0.3},hr:{s:72,sl:-0.2,n:0.2},steps:{s:4500,sl:25,n:40},comp:{s:85,sl:0.3,n:0.3},sleep:{s:6.2,sl:-0.03,n:0.05},skin:{s:7.3,sl:-0.08,n:0.25},tir:{s:59,sl:0.4,n:1.8}}},
+    {id:'P031',nm:'임채원',sv:'bad',st:'query',al:true, seeds:{wt:{s:87.9,sl:0.2,n:0.3},sbp:{s:134.2,sl:0.9,n:0.8},hr:{s:73,sl:0.3,n:0.4},steps:{s:4100,sl:-80,n:70},comp:{s:84,sl:-2,n:1},sleep:{s:5.8,sl:-0.12,n:0.1},skin:{s:7.5,sl:0.2,n:0.4},tir:{s:55,sl:-1,n:2.5}}},
+    {id:'P036',nm:'강시우',sv:'good',st:'verified', seeds:{wt:{s:87,sl:-0.03,n:0.1},sbp:{s:131.8,sl:0.3,n:0.3},hr:{s:74,sl:-0.3,n:0.2},steps:{s:4400,sl:25,n:35},comp:{s:85,sl:0.5,n:0.4},sleep:{s:6.4,sl:-0.05,n:0.06},skin:{s:6.7,sl:-0.06,n:0.2},tir:{s:62,sl:0.2,n:1.2}}},
+  ],
+};
+
+function generatePatientData(profiles, n){
+  return profiles.map((p,pi)=>{
+    const past = {};
+    Object.entries(p.seeds).forEach(([k,cfg])=>{
+      past[k] = genTimeSeries(n, cfg.s, cfg.sl, cfg.n, (pi+1)*1000+k.charCodeAt(0), cfg.nullAt);
+    });
+    return {id:p.id, past};
+  });
+}
+
+function generateALL(n){
+  const metrics = ['wt','sbp','hr','steps','sleep','comp','skin','tir'];
+  return [...PATIENT_PROFILES.exp,...PATIENT_PROFILES.ctrl].map(p=>{
+    const row = {id:p.id, nm:p.nm, g:PATIENT_PROFILES.exp.includes(p)?'exp':'ctrl', sv:p.sv, st:p.st, al:p.al};
+    metrics.forEach(k=>{
+      const cfg=p.seeds[k]; if(!cfg)return;
+      row[k] = genTimeSeries(n, cfg.s, cfg.sl, cfg.n, p.id.charCodeAt(1)*100+k.charCodeAt(0), cfg.nullAt);
+    });
+    // app 데이터 (실험군만)
+    if(PATIENT_PROFILES.exp.includes(p)){
+      row.app = genTimeSeries(n, 30+Math.random()*15, 4, 3, p.id.charCodeAt(2)*50);
+    } else {
+      row.app = Array(n).fill(null);
+    }
+    return row;
+  });
+}
+
+// 초기 데이터 생성 — PAST_VISITS.length 기준
+let EXP_DATA = generatePatientData(PATIENT_PROFILES.exp, PAST_VISITS.length);
+let CTRL_DATA = generatePatientData(PATIENT_PROFILES.ctrl, PAST_VISITS.length);
+
+// ===============================================
+// UTILITY FUNCTIONS
+// ===============================================
+function groupAvg(patients,k){
+  return PAST_VISITS.map((_,i)=>{
+    const vs=patients.map(p=>p.past[k]?p.past[k][i]:null).filter(v=>v!=null);
+    return vs.length?vs.reduce((a,b)=>a+b,0)/vs.length:null;
+  });
+}
+function project(past,n){
+  const l=past.length;if(l<2)return Array(n).fill(null);
+  const slope=(past[l-1]-past[l-2]);
+  return Array.from({length:n},(_,i)=>Math.round((past[l-1]+slope*(i+1))*10)/10);
+}
+function groupSE(patients,k){
+  return PAST_VISITS.map((_,i)=>{
+    const vs=patients.map(p=>p.past[k]?p.past[k][i]:null).filter(v=>v!=null);
+    if(vs.length<2)return 0;
+    const mean=vs.reduce((a,b)=>a+b,0)/vs.length;
+    const variance=vs.reduce((a,b)=>a+(b-mean)**2,0)/(vs.length-1);
+    return Math.sqrt(variance/vs.length)*1.96;
+  });
+}
+function projectCI(sePast,n){
+  const last=sePast[sePast.length-1];
+  return Array.from({length:n},(_,i)=>last*(1+0.15*(i+1)));
+}
+function pStr(p){if(p<0.001)return'p<0.001***';if(p<0.01)return'p='+p.toFixed(3)+'**';if(p<0.05)return'p='+p.toFixed(3)+'*';return'p='+p.toFixed(3);}
+function pCls(p){return p<0.05?'sig':'ns';}
+
+// ===============================================
+// TD-2: VERDICT ADAPTER — study_type 기반
+// ===============================================
+const VERDICT_ADAPTERS = {
+  rct: function(){
+    const cfg = STUDY_CONFIG;
+    const expWt=groupAvg(EXP_DATA,'wt'), ctrlWt=groupAvg(CTRL_DATA,'wt');
+    const li=PAST_VISITS.length-1;
+    const expChange=expWt[li]-expWt[0], ctrlChange=ctrlWt[li]-ctrlWt[0];
+    const betweenDiff=expChange-ctrlChange;
+    const warnings=[];
+    EXP_DATA.forEach(p=>{const s=p.past.sbp;if(s[li]>s[li-1]&&s[li]>s[li-2])warnings.push(p.id+' SBP 반등');});
+    CTRL_DATA.forEach(p=>{const c=p.past.comp;if(c[li]<c[0]-10)warnings.push(p.id+' 순응도 급락');});
+    let total=0,missing=0;
+    [...EXP_DATA,...CTRL_DATA].forEach(p=>{
+      cfg.metrics.forEach(m=>{if(p.past[m.k])p.past[m.k].forEach(v=>{total++;if(v==null)missing++;});});
+    });
+    const completeness=((total-missing)/total*100).toFixed(1);
+    const nActive=[...EXP_DATA,...CTRL_DATA].filter(p=>{const c=p.past.comp;return c[li]>=60;}).length;
+    const nTotal=EXP_DATA.length+CTRL_DATA.length;
+    const power=Math.round(nActive/nTotal*100);
+    const curVisit=PAST_VISITS[li].id;
+
+    return `
+      <div class="verdict-card primary">
+        <div class="vc-label">검정력 (Power)</div>
+        <div class="vc-value">${power>=80?power+'% <span style="font-size:11px;color:'+C.green+';">✓ 충분</span>':power+'% <span style="font-size:11px;color:'+C.vermillion+';">✗ 부족</span>'}</div>
+        <div class="vc-sub">활성 ${nActive}명 / 전체 ${nTotal}명 (${curVisit} 기준)</div>
+        <div class="vc-bar"><div class="vc-fill" style="width:${power}%;background:${power>=80?C.blue:C.vermillion};"></div></div>
+      </div>
+      <div class="verdict-card ${cfg.metrics[0].p_value<0.05?'ok':'warn'}">
+        <div class="vc-label">1차 결과변수: 치료 > 대조?</div>
+        <div class="vc-value" style="color:${cfg.metrics[0].p_value<0.05?C.green:'#6b7280'};">${expChange>0?'+':''}${expChange.toFixed(1)}kg <span style="font-size:11px;">${pStr(cfg.metrics[0].p_value)}</span></div>
+        <div class="vc-sub">실험군 Δ${expChange.toFixed(1)}kg vs 대조군 Δ${ctrlChange>0?'+':''}${ctrlChange.toFixed(1)}kg · 군간차 ${betweenDiff.toFixed(1)}kg</div>
+        <div class="vc-interim">⚠ 중간분석 (${curVisit}) · α 미조정 · ${cfg.safety.stopping_rule} 적용 전</div>
+      </div>
+      <div class="verdict-card ${warnings.length>0?'warn':'ok'}">
+        <div class="vc-label">주의 필요</div>
+        <div class="vc-value" style="color:${warnings.length>0?C.amber:C.green};">${warnings.length}건</div>
+        <div class="vc-sub">${warnings.length>0?warnings.join(' · '):'이상 없음'}</div>
+      </div>
+      <div class="verdict-card ${completeness>=90?'ok':'warn'}">
+        <div class="vc-label">데이터 완성도</div>
+        <div class="vc-value">${completeness}%</div>
+        <div class="vc-sub">결측 ${(100-completeness).toFixed(1)}% · 전체 ${total}셀 중 ${missing}셀</div>
+        <div class="vc-bar"><div class="vc-fill" style="width:${completeness}%;background:${completeness>=90?C.green:C.amber};"></div></div>
+      </div>`;
+  },
+  single_arm: function(){
+    return `<div class="verdict-card primary"><div class="vc-label">목표 기준 충족?</div><div class="vc-value">— (single-arm adapter)</div></div>`;
+  },
+  safety: function(){
+    return `<div class="verdict-card safety"><div class="vc-label">독성 허용 범위 내?</div><div class="vc-value">— (safety adapter)</div></div>`;
+  },
+};
+
+function buildVerdictStrip(){
+  const adapter = VERDICT_ADAPTERS[STUDY_CONFIG.verdict_adapter] || VERDICT_ADAPTERS.rct;
+  document.getElementById('verdictStrip').innerHTML = adapter();
+}
+
+// ===============================================
+// TD-5: SAFETY PANEL
+// ===============================================
+function buildSafetyStrip(){
+  const s = STUDY_CONFIG.safety;
+  if(!s.enabled){document.getElementById('safetyStrip').style.display='none';return;}
+  const maxAE = Math.max(...s.ae_by_visit,1);
+  const bars = s.ae_by_visit.map((v,i)=>{
+    const h = Math.max(2, (v/maxAE)*24);
+    const cls = i<PAST_VISITS.length ? (v>3?'serious':'') : '';
+    const opacity = i<PAST_VISITS.length ? 1 : 0.3;
+    return `<div class="ae-bar ${cls}" style="height:${h}px;opacity:${opacity};" title="${VISITS[i]?.id||'V'+(i+1)}: ${v}건"></div>`;
+  }).join('');
+
+  document.getElementById('safetyStrip').innerHTML=`
+    <div class="safety-header">
+      <div class="safety-title">🛡️ 안전성 모니터링</div>
+      <div class="safety-toggle">DSMB 다음: ${s.dsmb_next}</div>
+    </div>
+    <div class="safety-body">
+      <div class="safety-stat"><div class="sv" style="color:#374151;">${s.ae_summary.total}</div><div class="sl">총 AE</div></div>
+      <div class="safety-stat"><div class="sv" style="color:${C.vermillion};">${s.ae_summary.serious}</div><div class="sl">중대 (SAE)</div></div>
+      <div class="safety-stat"><div class="sv" style="color:${C.amber};">${s.ae_summary.related}</div><div class="sl">약물 관련</div></div>
+      <div class="safety-stat"><div class="sv" style="color:${s.ae_summary.discontinued>0?C.vermillion:C.green};">${s.ae_summary.discontinued}</div><div class="sl">중단</div></div>
+      <div style="flex:1;min-width:120px;">
+        <div style="font-size:9px;color:#6b7280;margin-bottom:2px;">방문별 AE 발생 (${VISITS.map(v=>v.id).join(' ')})</div>
+        <div class="ae-timeline">${bars}</div>
+      </div>
+    </div>`;
+}
+
+// ===============================================
+// TD-1: TIMELINE — config-driven + semantic zoom
+// ===============================================
+function buildTimeline(){
+  const tl = STUDY_CONFIG.timeline;
+  const bar = document.getElementById('tlBar');
+  const labels = document.getElementById('tlLabels');
+  const milestones = document.getElementById('tlMilestones');
+  const totalSpan = tl.phases[tl.phases.length-1].end - tl.phases[0].start;
+  const offset = -tl.phases[0].start;
+
+  // Phase bars
+  let barHTML = '';
+  tl.phases.forEach(p=>{
+    const left = ((p.start + offset)/totalSpan*100).toFixed(1);
+    const width = ((p.end - p.start)/totalSpan*100).toFixed(1);
+    const isFuture = p.start > tl.current_day;
+    const isPartialFuture = p.end > tl.current_day && p.start <= tl.current_day;
+    if(isFuture){
+      barHTML += `<div class="tl-phase future ${p.key}" style="left:${left}%;width:${width}%;">${p.name}</div>`;
+    } else if(isPartialFuture){
+      const pastW = ((tl.current_day - p.start)/(p.end - p.start)*parseFloat(width)).toFixed(1);
+      const futW = (parseFloat(width) - parseFloat(pastW)).toFixed(1);
+      const futLeft = (parseFloat(left) + parseFloat(pastW)).toFixed(1);
+      barHTML += `<div class="tl-phase ${p.key}" style="left:${left}%;width:${pastW}%;">${p.name}</div>`;
+      barHTML += `<div class="tl-phase future ${p.key}" style="left:${futLeft}%;width:${futW}%;"></div>`;
+    } else {
+      barHTML += `<div class="tl-phase ${p.key}" style="left:${left}%;width:${width}%;">${p.name}</div>`;
+    }
+  });
+
+  // Visit windows + dots on bar
+  VISITS.forEach(v=>{
+    if(v.window){
+      const wStart = v.target_day + v.window[0];
+      const wEnd = v.target_day + v.window[1];
+      const wLeft = ((wStart + offset)/totalSpan*100).toFixed(2);
+      const wWidth = ((wEnd - wStart)/totalSpan*100).toFixed(2);
+      const cls = v.target_day > tl.current_day ? 'future' : '';
+      barHTML += `<div class="tl-vwindow ${cls}" style="left:${wLeft}%;width:${wWidth}%;" title="${v.id} window: D${wStart}~D${wEnd}"></div>`;
+    }
+  });
+  barHTML += '<div class="tl-visit-dots">';
+  VISITS.forEach(v=>{
+    const vl = ((v.target_day + offset)/totalSpan*100).toFixed(1);
+    const cls = v.target_day > tl.current_day ? 'future' : '';
+    barHTML += `<div class="tl-vdot ${cls}" style="left:${vl}%;" title="${v.id} (D${v.target_day})"></div>`;
+  });
+  barHTML += '</div>';
+
+  // Now line + drag handle
+  const nowLeft = ((tl.current_day + offset)/totalSpan*100).toFixed(1);
+  barHTML += `<div class="tl-now" style="left:${nowLeft}%;"></div>`;
+  const isStudyDayMode = document.getElementById('tlDay').classList.contains('active');
+  const dayLabel = isStudyDayMode ? `D${tl.current_day}` : dayToDate(tl.current_day);
+  barHTML += `<div class="tl-handle" id="tlHandle" style="left:${nowLeft}%;"><span class="tl-day-tooltip">${dayLabel} (Day ${tl.current_day})</span><div class="tl-handle-grip"></div></div>`;
+  bar.innerHTML = barHTML;
+
+  // Attach drag behavior
+  requestAnimationFrame(()=>attachTimelineDrag());
+
+  // Labels based on zoom
+  const isStudyDay = document.getElementById('tlDay').classList.contains('active');
+  if(currentZoom <= 1){
+    // Epoch/Study level — show phase boundaries
+    const pts = tl.phases.map(p => ({day:p.start, label: isStudyDay ? 'D'+p.start : dayToDate(p.start)}));
+    pts.push({day:tl.phases[tl.phases.length-1].end, label: isStudyDay ? 'D'+tl.phases[tl.phases.length-1].end : dayToDate(tl.phases[tl.phases.length-1].end)});
+    // Add now
+    const nowIdx = pts.findIndex(p=>p.day > tl.current_day);
+    pts.splice(nowIdx,0,{day:tl.current_day, label: isStudyDay ? `D${tl.current_day} (오늘)` : dayToDate(tl.current_day)+' (오늘)', isNow:true});
+    labels.innerHTML = pts.map(p=>`<span${p.isNow?' style="color:'+C.vermillion+';font-weight:600;"':''}>${p.label}</span>`).join('');
+  } else {
+    // Visit level — show visits
+    const pts = VISITS.map(v => ({day:v.target_day, label: isStudyDay ? v.id+' D'+v.target_day : v.id}));
+    labels.innerHTML = pts.map(v=>{
+      const isCurrent = v.day === tl.current_day;
+      return `<span${isCurrent?' style="color:'+C.vermillion+';font-weight:600;"':v.day>tl.current_day?' style="color:#d1d5db;"':''}>${v.label}</span>`;
+    }).join('');
+  }
+
+  // Milestones — regulatory_only 마일스톤 조건부 표시
+  const regType = STUDY_CONFIG.regulatory.type;
+  const filteredMs = tl.milestones.filter(m=>{
+    if(!m.regulatory_only) return true;
+    if(regType==='none') return false; // 규제 해당없음 → 생략
+    return true;
+  }).map(m=>{
+    if(!m.regulatory_only) return m;
+    // regulatory type에 따라 라벨 동적 변경
+    const label = regType==='irb'?'IRB 승인':regType==='irb_exempt'?'IRB 면제 확인':regType==='ethics_committee'?'윤리위 승인':m.label;
+    return {...m, label};
+  });
+  milestones.innerHTML = filteredMs.map(m=>`<div class="ms"><span class="ms-dot ${m.status}"></span>${m.label} (${m.date.slice(5)})</div>`).join('');
+}
+
+// ===============================================
+// TIMELINE DRAG SCRUBBER — 시간 여행
+// ===============================================
+let _tlDragActive = false;
+// 데이터 밀도 상수 — measurement_freq별 하루당 예상 측정 횟수
+const FREQ_DENSITY = {continuous:288,daily:1,per_visit:0.07,weekly:0.14};
+
+function attachTimelineDrag(){
+  const bar = document.getElementById('tlBar');
+  const handle = document.getElementById('tlHandle');
+  if(!bar || !handle) return;
+
+  const tl = STUDY_CONFIG.timeline;
+  const totalSpan = tl.phases[tl.phases.length-1].end - tl.phases[0].start;
+  const phaseStart = tl.phases[0].start;
+  const minDay = VISITS[0].target_day;
+  const maxDay = VISITS[VISITS.length-1].target_day;
+
+  function pctToDay(pct){
+    const raw = phaseStart + pct * totalSpan;
+    // day 단위 (정수) — visit에 스냅하지 않음
+    return Math.max(minDay, Math.min(maxDay, Math.round(raw)));
+  }
+  function getPct(e){
+    const rect = bar.getBoundingClientRect();
+    return Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+  }
+  // 현재 day가 어느 visit window에 있는지 (또는 사이인지) 표시
+  function dayContext(day){
+    // 이 day가 속한 visit window 찾기
+    for(const v of VISITS){
+      if(day >= v.target_day + (v.window?.[0]||0) && day <= v.target_day + (v.window?.[1]||0)){
+        return {in_window:v.id, msg:`${v.id} window 내`};
+      }
+    }
+    // 두 visit 사이
+    const prev = [...VISITS].reverse().find(v=>v.target_day<=day);
+    const next = VISITS.find(v=>v.target_day>day);
+    if(prev && next) return {between:[prev.id,next.id], msg:`${prev.id}↔${next.id} 사이`};
+    return {msg:''};
+  }
+
+  let rafId = null;
+  function onMove(e){
+    e.preventDefault();
+    if(rafId) return;
+    rafId = requestAnimationFrame(()=>{
+      rafId = null;
+      const pct = getPct(e.touches ? e.touches[0] : e);
+      const rawDay = pctToDay(pct);
+      const nowPct = ((rawDay - phaseStart)/totalSpan*100).toFixed(1);
+      handle.style.left = nowPct + '%';
+      const nowLine = bar.querySelector('.tl-now');
+      if(nowLine) nowLine.style.left = nowPct + '%';
+      // 툴팁: day + visit context
+      const tooltip = handle.querySelector('.tl-day-tooltip');
+      const isSD = document.getElementById('tlDay').classList.contains('active');
+      const ctx = dayContext(rawDay);
+      if(tooltip) tooltip.textContent = (isSD ? 'D'+rawDay : dayToDate(rawDay)) + (ctx.msg ? ' · '+ctx.msg : '');
+    });
+  }
+
+  let _lastScrubDay = tl.current_day;
+  function onEnd(e){
+    handle.classList.remove('dragging');
+    document.removeEventListener('mousemove', onMove);
+    document.removeEventListener('mouseup', onEnd);
+    document.removeEventListener('touchmove', onMove);
+    document.removeEventListener('touchend', onEnd);
+    _tlDragActive = false;
+
+    const pct = getPct(e.changedTouches ? e.changedTouches[0] : e);
+    const rawDay = pctToDay(pct);
+    if(rawDay === _lastScrubDay) return;
+    _lastScrubDay = rawDay;
+    scrubToDay(rawDay);
+  }
+
+  handle.addEventListener('mousedown', (e)=>{
+    e.preventDefault(); _tlDragActive = true;
+    handle.classList.add('dragging');
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onEnd);
+  });
+  handle.addEventListener('touchstart', (e)=>{
+    _tlDragActive = true;
+    handle.classList.add('dragging');
+    document.addEventListener('touchmove', onMove, {passive:false});
+    document.addEventListener('touchend', onEnd);
+  });
+
+  // Click on bar → day-level jump (no visit snap)
+  bar.addEventListener('click', (e)=>{
+    if(_tlDragActive) return;
+    if(e.target.closest('.tl-handle')) return;
+    const pct = getPct(e);
+    const rawDay = pctToDay(pct);
+    if(rawDay === tl.current_day) return;
+    scrubToDay(rawDay);
+  });
+}
+
+// ===============================================
+// SCRUB TO DAY — day 단위 시간 이동
+// visit point 기준 PAST/FUTURE 분할 + 전체 리빌드
+// ===============================================
+function scrubToDay(newDay){
+  const tl = STUDY_CONFIG.timeline;
+  tl.current_day = newDay;
+
+  // PAST/FUTURE 재분할 — day가 visit window 사이에 있으면
+  // "마지막으로 지난 visit"까지를 past로 계산
+  PAST_VISITS.length = 0;
+  VISITS.filter(v=>v.target_day<=newDay).forEach(p=>PAST_VISITS.push(p));
+  FUTURE_VISITS.length = 0;
+  VISITS.filter(v=>v.target_day>newDay).forEach(p=>FUTURE_VISITS.push(p));
+  PAST_LABELS.length = 0;
+  PAST_VISITS.forEach(v=>PAST_LABELS.push(v.id));
+
+  const nPast = PAST_VISITS.length;
+  if(nPast < 1) return;
+
+  // 데이터 재생성
+  EXP_DATA = generatePatientData(PATIENT_PROFILES.exp, nPast);
+  CTRL_DATA = generatePatientData(PATIENT_PROFILES.ctrl, nPast);
+  ALL = generateALL(nPast);
+  STUDY_CONFIG.safety.ae_by_visit = VISITS.map((_,i)=>i<nPast?Math.floor(seededRandom(i*7+1)()*5+1):0);
+
+  // 마일스톤 상태 업데이트
+  tl.milestones.forEach(m=>{
+    m.status = m.day<=newDay ? 'done' : 'future';
+  });
+  const nowMs = tl.milestones.filter(m=>m.day<=newDay).pop();
+  if(nowMs) nowMs.status = 'now';
+
+  // 전체 UI 리빌드
+  initPageHeader();
+  buildVerdictStrip();
+  buildSafetyStrip();
+  buildTimeline();
+  buildMetricsGrid();
+  buildActionCenter();
+  rebuildTable();
+  buildAIStrip();
+  updateDensityStrip(newDay);
+}
+
+// ===============================================
+// 데이터 밀도 스트립 — metric별 해당 day에서의 데이터 해상도 표시
+// "이 시점에서 각 지표는 몇 건의 raw 측정이 존재하는가"
+// ===============================================
+function updateDensityStrip(day){
+  const el = document.getElementById('densityStrip');
+  if(!el) return;
+  // 가장 가까운 past visit 구간 계산
+  const prevVisit = [...PAST_VISITS].pop();
+  const nextVisit = FUTURE_VISITS[0];
+  const daysFromLast = prevVisit ? day - prevVisit.target_day : 0;
+  const windowInfo = prevVisit ? `${prevVisit.id}+${daysFromLast}일` : 'D'+day;
+
+  let html = `<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
+    <span style="font-size:10px;font-weight:600;color:#374151;">📡 현재 위치 Day ${day} (${windowInfo})</span>
+    <span style="font-size:9px;color:#9ca3af;">각 지표별 수집 밀도</span>
+  </div><div style="display:flex;gap:6px;flex-wrap:wrap;">`;
+
+  STUDY_CONFIG.metrics.forEach(m=>{
+    const freq = m.measurement_freq || 'per_visit';
+    const density = FREQ_DENSITY[freq] || 0;
+    const dailyPts = density >= 1 ? Math.round(density)+'건/일' : density > 0 ? Math.round(1/density)+'일/1건' : '—';
+    // 집계 레벨 표시
+    const aggLabel = m.agg_rule ? ({visit_mean:'방문 평균',visit_sum:'방문 합계',visit_pct:'방문 %'}[m.agg_rule]||m.agg_rule) : '직접 측정';
+    // 밀도 바 (log 스케일)
+    const barW = Math.min(100, Math.max(5, Math.log2(density+1)/Math.log2(289)*100));
+    const barColor = density>=24 ? '#0072B2' : density>=1 ? '#009E73' : '#E69F00';
+
+    html += `<div style="background:#f9fafb;border:1px solid #f3f4f6;border-radius:6px;padding:4px 8px;min-width:100px;">
+      <div style="font-size:9px;font-weight:600;color:${m.color};">${m.name}</div>
+      <div style="display:flex;align-items:center;gap:4px;margin-top:2px;">
+        <div style="height:3px;background:#e5e7eb;border-radius:2px;flex:1;overflow:hidden;"><div style="height:100%;width:${barW}%;background:${barColor};border-radius:2px;"></div></div>
+        <span style="font-size:8px;color:#6b7280;white-space:nowrap;">${dailyPts}</span>
+      </div>
+      <div style="font-size:7px;color:#9ca3af;margin-top:1px;">${aggLabel} → ${tuLabel('singular')} 집계</div>
+    </div>`;
+  });
+  html += '</div>';
+  el.innerHTML = html;
+}
+
+function dayToDate(day){
+  const base = new Date(STUDY_CONFIG.timeline.base_date);
+  base.setDate(base.getDate() + day);
+  return (base.getMonth()+1)+'/'+ base.getDate();
+}
+
+document.getElementById('tlCal').addEventListener('click',function(){
+  this.classList.add('active');document.getElementById('tlDay').classList.remove('active');buildTimeline();
+});
+document.getElementById('tlDay').addEventListener('click',function(){
+  this.classList.add('active');document.getElementById('tlCal').classList.remove('active');buildTimeline();
+});
+
+// ===============================================
+// CHART DRAWING (reused from v9, adapted for visits)
+// ===============================================
+let metricData={};
+
+function drawChart(ctx,W,H,m,expPast,ctrlPast,expFuture,ctrlFuture,expSE,ctrlSE,expFutureSE,ctrlFutureSE,large){
+  const nPast=expPast.length, nFuture=expFuture.length, nTotal=nPast+nFuture;
+  const pad=large?{t:10,b:16,l:10,r:10}:{t:4,b:4,l:4,r:4};
+  const cw=W-pad.l-pad.r,ch=H-pad.t-pad.b;
+  const allV=[...expPast,...ctrlPast,...expFuture,...ctrlFuture].filter(v=>v!=null);
+  let mn=Math.min(...allV),mx=Math.max(...allV);
+  const mg=(mx-mn)*0.15||5;mn-=mg;mx+=mg;
+  function xP(i){return pad.l+(i/(nTotal-1||1))*cw;}
+  function yP(v){return pad.t+(1-(v-mn)/(mx-mn))*ch;}
+
+  ctx.clearRect(0,0,W,H);
+  const nowX = xP(nPast-0.5);
+  ctx.fillStyle='rgba(0,114,178,.02)';ctx.fillRect(pad.l,pad.t,nowX-pad.l,ch);
+  ctx.fillStyle='rgba(0,0,0,.01)';ctx.fillRect(nowX,pad.t,cw-(nowX-pad.l),ch);
+
+  // Now line
+  ctx.strokeStyle=C.vermillion;ctx.lineWidth=large?1.5:1;ctx.globalAlpha=0.3;
+  ctx.beginPath();ctx.moveTo(nowX,pad.t);ctx.lineTo(nowX,pad.t+ch);ctx.stroke();ctx.globalAlpha=1;
+
+  // CI bands
+  if(expFutureSE&&ctrlFutureSE&&expFutureSE.length>0){
+    ctx.globalAlpha=0.1;
+    ctx.fillStyle=C.blue;ctx.beginPath();
+    if(expPast[nPast-1]!=null)ctx.moveTo(xP(nPast-1),yP(expPast[nPast-1]));
+    expFuture.forEach((v,i)=>{if(v!=null)ctx.lineTo(xP(nPast+i),yP(v+expFutureSE[i]));});
+    for(let i=expFuture.length-1;i>=0;i--){if(expFuture[i]!=null)ctx.lineTo(xP(nPast+i),yP(expFuture[i]-expFutureSE[i]));}
+    if(expPast[nPast-1]!=null)ctx.lineTo(xP(nPast-1),yP(expPast[nPast-1]));
+    ctx.closePath();ctx.fill();
+    ctx.fillStyle=C.vermillion;ctx.beginPath();
+    if(ctrlPast[nPast-1]!=null)ctx.moveTo(xP(nPast-1),yP(ctrlPast[nPast-1]));
+    ctrlFuture.forEach((v,i)=>{if(v!=null)ctx.lineTo(xP(nPast+i),yP(v+ctrlFutureSE[i]));});
+    for(let i=ctrlFuture.length-1;i>=0;i--){if(ctrlFuture[i]!=null)ctx.lineTo(xP(nPast+i),yP(ctrlFuture[i]-ctrlFutureSE[i]));}
+    if(ctrlPast[nPast-1]!=null)ctx.lineTo(xP(nPast-1),yP(ctrlPast[nPast-1]));
+    ctx.closePath();ctx.fill();ctx.globalAlpha=1;
+  }
+
+  // Individual patients (large only)
+  if(large){
+    [EXP_DATA,CTRL_DATA].forEach((group,gi)=>{
+      group.forEach(p=>{const a=p.past[m.k];if(!a)return;
+        ctx.beginPath();ctx.strokeStyle=gi===0?C.skyblue:C.pink;ctx.lineWidth=0.8;ctx.globalAlpha=0.35;
+        let s=false;a.forEach((v,i)=>{if(v==null)return;if(!s){ctx.moveTo(xP(i),yP(v));s=true;}else ctx.lineTo(xP(i),yP(v));});
+        ctx.stroke();ctx.globalAlpha=1;
+      });
+    });
+  }
+
+  // Group mean lines
+  function drawGroupLine(past,future,color){
+    ctx.beginPath();ctx.strokeStyle=color;ctx.lineWidth=large?2.5:1.8;ctx.lineJoin='round';ctx.lineCap='round';
+    let s=false;
+    past.forEach((v,i)=>{if(v==null)return;if(!s){ctx.moveTo(xP(i),yP(v));s=true;}else ctx.lineTo(xP(i),yP(v));});
+    ctx.stroke();
+    if(future&&future.length>0){
+      ctx.setLineDash([large?5:3,large?4:3]);ctx.globalAlpha=0.5;
+      ctx.beginPath();
+      if(past[nPast-1]!=null)ctx.moveTo(xP(nPast-1),yP(past[nPast-1]));
+      future.forEach((v,i)=>{if(v!=null)ctx.lineTo(xP(nPast+i),yP(v));});
+      ctx.stroke();ctx.setLineDash([]);ctx.globalAlpha=1;
+    }
+  }
+  drawGroupLine(expPast,expFuture,C.blue);
+  if(STUDY_CONFIG.design.has_control_arm) drawGroupLine(ctrlPast,ctrlFuture,C.vermillion);
+
+  // Visit labels (large)
+  if(large){
+    ctx.fillStyle='#9ca3af';ctx.font='10px -apple-system,sans-serif';ctx.textAlign='center';
+    VISIT_LABELS.forEach((l,i)=>{ctx.fillText(l,xP(i),H-2);});
+    ctx.fillStyle=C.vermillion;ctx.font='bold 10px -apple-system,sans-serif';
+    ctx.fillText('오늘',nowX,pad.t-2);
+  }
+}
+
+// ===============================================
+// METRICS GRID — TD-3: renderer 타입 표시
+// ===============================================
+function buildMetricsGrid(){
+  const grid=document.getElementById('metricsGrid');grid.innerHTML='';
+  const nPast=PAST_VISITS.length, nFuture=FUTURE_VISITS.length;
+
+  STUDY_CONFIG.metrics.forEach(m=>{
+    const expPast=groupAvg(EXP_DATA,m.k);
+    const ctrlPast=groupAvg(CTRL_DATA,m.k);
+    const expFuture=project(expPast,nFuture);
+    const ctrlFuture=project(ctrlPast,nFuture);
+    const expSE=groupSE(EXP_DATA,m.k);
+    const ctrlSE=groupSE(CTRL_DATA,m.k);
+    const expFutureSE=projectCI(expSE,nFuture);
+    const ctrlFutureSE=projectCI(ctrlSE,nFuture);
+    metricData[m.k]={expPast,ctrlPast,expFuture,ctrlFuture,expSE,ctrlSE,expFutureSE,ctrlFutureSE};
+
+    const li=nPast-1;
+    const d=expPast[li]!=null&&expPast[0]!=null?expPast[li]-expPast[0]:0;
+    const isGood=m.direction==='monitor'?true:(m.direction==='down'&&d<0)||(m.direction==='up'&&d>0);
+    const dStr=m.k==='steps'?(d>0?'+':'')+Math.round(d).toLocaleString():(d>0?'+':'')+d.toFixed(1)+m.unit;
+    const badgeText=m.direction==='monitor'?'모니터링':pStr(m.p_value);
+    const badgeCls=m.direction==='monitor'?'ns':pCls(m.p_value);
+
+    const card=document.createElement('div');card.className='metric-card';
+    const derivedBadge = m.derived ? '<span class="mc-derived">파생</span>' : '';
+
+    // TD-3: 렌더러별 차트 영역 분기
+    let chartHTML = '';
+    if(m.renderer === 'image_gallery'){
+      // 피부 사진 갤러리 — 방문별 썸네일 + 점수
+      const scores = expPast.map(v => v != null ? v.toFixed(1) : '—');
+      const emojis = ['🔴','🟠','🟡','🟢'];
+      chartHTML = `<div class="img-strip" id="mc-${m.k}">` +
+        PAST_VISITS.map((v,vi) => {
+          const sc = expPast[vi];
+          const ei = sc != null ? Math.min(3, Math.floor((10 - sc) / 2.5)) : 0;
+          const bg = sc != null ? `hsl(${ei*40},70%,95%)` : '#f3f4f6';
+          return `<div class="img-thumb"><div class="ph" style="background:${bg};">${sc!=null?emojis[ei]:'—'}</div><div class="ph-label">${v.id} ${sc!=null?sc.toFixed(1):''}</div></div>`;
+        }).join('') + '</div>';
+    } else if(m.renderer === 'severity_zone'){
+      // TIR severity zone — 스택드 바 (green=범위내, amber=위, red=아래)
+      chartHTML = `<div class="severity-strip" id="mc-${m.k}">` +
+        PAST_VISITS.map((v,vi) => {
+          const tir = expPast[vi] || 0;
+          const above = Math.min(100-tir, (100-tir)*0.6);
+          const below = 100 - tir - above;
+          return `<div class="sev-col">
+            <div class="sev-seg" style="height:${above*0.7}px;background:#fbbf24;"></div>
+            <div class="sev-seg" style="height:${tir*0.7}px;background:#10b981;"></div>
+            <div class="sev-seg" style="height:${below*0.7}px;background:#ef4444;"></div>
+          </div>`;
+        }).join('') +
+        '</div><div class="sev-legend"><span><span class="sq" style="background:#10b981;"></span>범위 내</span><span><span class="sq" style="background:#fbbf24;"></span>고혈당</span><span><span class="sq" style="background:#ef4444;"></span>저혈당</span></div>';
+    } else {
+      chartHTML = `<div class="mc-chart"><canvas id="mc-${m.k}"></canvas></div>`;
+    }
+
+    card.innerHTML=`
+      ${derivedBadge}
+      <span class="expand-hint">🔍 클릭</span>
+      <div class="mc-header">
+        <div class="mc-name"><span class="dot" style="background:${m.color};"></span>${m.name} <span style="font-size:8px;color:#9ca3af;">[${m.source}${m.measurement_freq&&m.measurement_freq!=='per_visit'?' · '+({continuous:'연속',daily:'일별',weekly:'주별'}[m.measurement_freq]||m.measurement_freq)+(m.agg_rule?' → '+({visit_mean:'평균',visit_sum:'합계',visit_pct:'%'}[m.agg_rule]||m.agg_rule):''):''}]</span></div>
+        <span class="mc-badge ${badgeCls}">${badgeText}</span>
+      </div>
+      ${chartHTML}
+      <div class="mc-footer">
+        <span class="mc-delta ${isGood?'good':m.direction==='monitor'?'neutral':'bad'}">${dStr}</span>
+        <span class="mc-range">${PAST_VISITS[0].id}~${PAST_VISITS[li].id} 실증 · ${FUTURE_VISITS.length>0?FUTURE_VISITS[0].id+'~'+FUTURE_VISITS[FUTURE_VISITS.length-1].id+' 예측':'완료'}</span>
+      </div>
+      <div class="mc-renderer">${m.renderer}</div>`;
+    card.addEventListener('click',()=>openChartModal(m));
+    grid.appendChild(card);
+
+    // Canvas 기반 렌더러만 setTimeout으로 그림
+    if(m.renderer === 'numeric_line'){
+      setTimeout(()=>{
+        const cv=document.getElementById('mc-'+m.k);if(!cv)return;
+        const ctx=cv.getContext('2d');const dpr=window.devicePixelRatio||1;
+        const rect=cv.parentElement.getBoundingClientRect();if(rect.width<10)return;
+        cv.width=rect.width*dpr;cv.height=rect.height*dpr;
+        cv.style.width=rect.width+'px';cv.style.height=rect.height+'px';
+        ctx.setTransform(1,0,0,1,0,0);ctx.scale(dpr,dpr);
+        drawChart(ctx,rect.width,rect.height,m,expPast,ctrlPast,expFuture,ctrlFuture,expSE,ctrlSE,expFutureSE,ctrlFutureSE,false);
+      },80);
+    }
+  });
+}
+
+// ===============================================
+// CHART MODAL
+// ===============================================
+function openChartModal(m){
+  const modal=document.getElementById('chartModal');modal.classList.add('open');
+  const d=metricData[m.k];const li=PAST_VISITS.length-1;
+  document.getElementById('cmTitle').innerHTML=`<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${m.color};"></span> ${m.name} (${m.unit}) — 상세 뷰`;
+  const armLabels = STUDY_CONFIG.design.arm_labels;
+  document.getElementById('cmLegend').innerHTML=`
+    <span><span class="ln" style="background:${C.blue};"></span>${armLabels[0]} 평균</span>
+    ${STUDY_CONFIG.design.has_control_arm?`<span><span class="ln" style="background:${C.vermillion};"></span>${armLabels[1]} 평균</span>`:''}
+    <span><span class="ln" style="background:${C.skyblue};"></span>${armLabels[0]} 개별</span>
+    <span style="color:#9ca3af;">점선 = 예측 · 음영 = 95% CI</span>`;
+  const expD=d.expPast[li]-d.expPast[0], ctrlD=d.ctrlPast[li]-d.ctrlPast[0];
+  const fmt=v=>m.k==='steps'?Math.round(v).toLocaleString():v.toFixed(1);
+  document.getElementById('cmStats').innerHTML=`
+    <div class="cm-stat"><div class="cm-stat-label">${armLabels[0]} Δ (${PAST_VISITS[0].id}→${PAST_VISITS[li].id})</div><div class="cm-stat-value" style="color:${expD<0&&m.direction==='down'||expD>0&&m.direction==='up'?C.green:C.vermillion};">${expD>0?'+':''}${fmt(expD)}${m.unit}</div></div>
+    <div class="cm-stat"><div class="cm-stat-label">${armLabels[1]} Δ</div><div class="cm-stat-value" style="color:#6b7280;">${ctrlD>0?'+':''}${fmt(ctrlD)}${m.unit}</div></div>
+    <div class="cm-stat"><div class="cm-stat-label">군간 차이</div><div class="cm-stat-value">${fmt(expD-ctrlD)}${m.unit}</div></div>
+    <div class="cm-stat"><div class="cm-stat-label">${m.direction==='monitor'?'모니터링 지표':'유의성 (interim)'}</div><div class="cm-stat-value">${m.direction==='monitor'?'—':pStr(m.p_value)}</div></div>`;
+  // 가이드 생성 — 지표별 맥락 해석 + 차트 읽기 + 행동 제안
+  buildChartGuide(m, d, expD, ctrlD, li);
+
+  setTimeout(()=>{
+    const cv=document.getElementById('cmCanvas');const ctx=cv.getContext('2d');const dpr=window.devicePixelRatio||1;
+    const rect=cv.parentElement.getBoundingClientRect();
+    cv.width=rect.width*dpr;cv.height=rect.height*dpr;
+    cv.style.width=rect.width+'px';cv.style.height=rect.height+'px';
+    ctx.setTransform(1,0,0,1,0,0);ctx.scale(dpr,dpr);
+    drawChart(ctx,rect.width,rect.height,m,d.expPast,d.ctrlPast,d.expFuture,d.ctrlFuture,d.expSE,d.ctrlSE,d.expFutureSE,d.ctrlFutureSE,true);
+  },50);
+}
+
+// ===============================================
+// CHART GUIDE — 맥락 해석 + 차트 읽는 법 + 행동 제안
+// ===============================================
+function buildChartGuide(m, d, expD, ctrlD, li){
+  const guide = document.getElementById('cmGuide');
+  const betweenDiff = expD - ctrlD;
+  const isGood = m.direction==='monitor' ? null : (m.direction==='down'&&expD<0)||(m.direction==='up'&&expD>0);
+  const isSig = m.p_value < 0.05;
+  const armLabels = STUDY_CONFIG.design.arm_labels;
+
+  // 1) 해석 — 이 지표가 뭘 의미하는지
+  let interpretHTML = '';
+  if(m.direction === 'monitor'){
+    interpretHTML = `<b>${m.name}</b>은 직접적 결과변수가 아닌 <b>모니터링 지표</b>입니다. 참여자의 상태 변화를 추적하며, 극단적 이탈이 없는지 확인하는 데 사용됩니다.`;
+  } else {
+    const dirWord = m.direction==='down' ? '감소' : '증가';
+    const goodBad = isGood ? '기대 방향으로 변화' : '기대와 반대 방향';
+    interpretHTML = `<b>${armLabels[0]}</b>에서 ${m.name}이 <b>${Math.abs(expD).toFixed(1)}${m.unit} ${dirWord}</b>했습니다 (${goodBad}). `;
+    if(STUDY_CONFIG.design.has_control_arm){
+      interpretHTML += `<b>${armLabels[1]}</b>은 ${Math.abs(ctrlD).toFixed(1)}${m.unit} ${ctrlD<0?'감소':'증가'}로, 군간 차이는 <b>${Math.abs(betweenDiff).toFixed(1)}${m.unit}</b>입니다.`;
+    }
+    if(isSig){
+      interpretHTML += ` 현재 중간분석에서 <b>통계적 유의</b> (${pStr(m.p_value)}).`;
+    } else {
+      interpretHTML += ` 아직 통계적 유의 수준에 도달하지 않았습니다 (${pStr(m.p_value)}).`;
+    }
+  }
+
+  // 2) 차트 읽는 법
+  const readingHTML = `<b>실선</b> = 실측 평균 추이 · <b>점선</b> = 선형 예측 (95% CI 음영) · <b>얇은 선</b> = 개별 참여자 · <b>빨간 세로선</b> = 현재 시점 (${PAST_VISITS[li].id}). 왼쪽 영역은 실증 데이터, 오른쪽은 모델 예측입니다.`;
+
+  // 3) 주의사항
+  let cautionHTML = '';
+  const cautions = [];
+  if(isSig) cautions.push('중간분석 결과이며, 다중비교 보정(α 조정) 전입니다');
+  if(STUDY_CONFIG.safety.stopping_rule) cautions.push(`${STUDY_CONFIG.safety.stopping_rule} 적용 전 — DSMB 검토 필요`);
+  // 개별 환자 이상 체크
+  const outliers = [];
+  EXP_DATA.forEach(p=>{
+    const a=p.past[m.k]; if(!a||a.length<2)return;
+    if(m.direction==='down'&&a[li]>a[li-1]) outliers.push(`${p.id}: 최근 반등`);
+    if(m.direction==='up'&&a[li]<a[li-1]) outliers.push(`${p.id}: 최근 감소`);
+  });
+  if(outliers.length>0) cautions.push(`개별 참여자 주의: ${outliers.join(', ')}`);
+  if(cautions.length>0) cautionHTML = cautions.join('. ') + '.';
+
+  // 4) 행동 제안
+  let actionHTML = '';
+  const actions = [];
+  if(isGood && isSig){
+    actions.push({text:'현재 추세 유지 확인 — 다음 방문까지 모니터링 지속', cls:'good'});
+    actions.push({text:`DSMB 보고 준비 (다음: ${STUDY_CONFIG.safety.dsmb_next})`, cls:'info'});
+  } else if(isGood && !isSig){
+    actions.push({text:'표본 수 충분성 재검토 — 검정력 분석 업데이트', cls:'info'});
+    actions.push({text:'추가 방문 데이터 수집 후 재분석', cls:'info'});
+  } else if(!isGood){
+    actions.push({text:'프로토콜 위반 또는 외부 요인 검토', cls:'warn'});
+    actions.push({text:'해당 참여자 개별 데이터 확인 (테이블 탭)', cls:'warn'});
+  }
+  if(m.direction==='monitor'){
+    actions.push({text:'극단값 또는 추세 변화 모니터링 — 임계치 초과 시 알림 설정', cls:'info'});
+  }
+
+  guide.innerHTML = `
+    <div class="cm-guide-section interpret">
+      <div class="cm-guide-title">💡 해석</div>
+      <div class="cm-guide-text">${interpretHTML}</div>
+    </div>
+    <div class="cm-guide-section reading">
+      <div class="cm-guide-title">📖 차트 읽는 법</div>
+      <div class="cm-guide-text">${readingHTML}</div>
+    </div>
+    ${cautionHTML ? `<div class="cm-guide-section caution">
+      <div class="cm-guide-title">⚠️ 주의</div>
+      <div class="cm-guide-text">${cautionHTML}</div>
+    </div>` : ''}
+    ${actions.length>0 ? `<div class="cm-guide-section action">
+      <div class="cm-guide-title">→ 다음 행동</div>
+      <div class="cm-guide-chips">${actions.map(a=>`<span class="cm-guide-chip ${a.cls}">${a.text}</span>`).join('')}</div>
+    </div>` : ''}`;
+}
+
+document.getElementById('cmClose').addEventListener('click',()=>document.getElementById('chartModal').classList.remove('open'));
+document.getElementById('chartModal').addEventListener('click',e=>{if(e.target===e.currentTarget)e.currentTarget.classList.remove('open');});
+
+// ===============================================
+// AI INSIGHTS
+// ===============================================
+function buildAIStrip(){
+  const strip=document.getElementById('aiStrip');
+  const li=PAST_VISITS.length-1;
+  strip.innerHTML=`
+    <div class="ai-title">AI 발견 사항</div>
+    <div class="ai-items">
+      <div class="ai-item safety-alert" data-pid="P018">
+        <span class="ai-icon">🛡️</span>
+        <span class="ai-text"><b>P018 최예린:</b> SBP ${PAST_VISITS[li].id}에서 반등 (135→138mmHg). 약물 내성 가능성. 프로토콜 4.2조 확인 필요.</span>
+        <span class="ai-action">▶ 상세보기</span><span class="ai-time">2시간 전</span>
+      </div>
+      <div class="ai-item alert" data-pid="P031">
+        <span class="ai-icon">📉</span>
+        <span class="ai-text"><b>P031 임채원:</b> 순응도 V1부터 지속 하락 (${CTRL_DATA[3].past.comp[0]}%→${CTRL_DATA[3].past.comp[li]}%). 탈락 위험.</span>
+        <span class="ai-action">▶ 상세보기</span><span class="ai-time">1일 전</span>
+      </div>
+      <div class="ai-item finding">
+        <span class="ai-icon">✅</span>
+        <span class="ai-text"><b>1차 결과변수 유의 (interim):</b> 체중 감소 군간 차이 ${Math.abs(metricData.wt.expPast[li]-metricData.wt.expPast[0]-(metricData.wt.ctrlPast[li]-metricData.wt.ctrlPast[0])).toFixed(1)}kg. ⚠ ${STUDY_CONFIG.safety.stopping_rule} 적용 전.</span>
+        <span class="ai-time">오늘</span>
+      </div>
+      <div class="ai-item info">
+        <span class="ai-icon">📊</span>
+        <span class="ai-text"><b>걸음수 2차 결과:</b> 실험군 +${Math.round(metricData.steps.expPast[li]-metricData.steps.expPast[0])}보 증가. ${pStr(STUDY_CONFIG.metrics[3].p_value)}</span>
+        <span class="ai-time">오늘</span>
+      </div>
+    </div>`;
+  strip.querySelectorAll('[data-pid]').forEach(el=>{
+    el.addEventListener('click',()=>{switchTab('table');setTimeout(()=>{const idx=ALL.findIndex(p=>p.id===el.dataset.pid);if(idx>=0)openDetail(idx);},100);});
+  });
+}
+
+// ===============================================
+// ACTION CENTER — 연구자 액션 레이어
+// 리서치 결과 기반: 환자 레벨, 연구 레벨, 데이터 관리, 안전성, 커뮤니케이션
+// ===============================================
+function buildActionCenter(){
+  const ac = document.getElementById('actionCenter');
+  const li = PAST_VISITS.length - 1;
+  const curVisit = PAST_VISITS[li];
+
+  // 데이터 기반 동적 카운트
+  const alertPatients = ALL.filter(p=>p.al).length;
+  const queryCount = ALL.filter(p=>p.st==='query').length;
+  const missingCount = ALL.filter(p=>p.st==='missing-visit').length;
+  const lowCompCount = ALL.filter(p=>{const c=p.comp;return c&&c[li]!=null&&c[li]<70;}).length;
+
+  // 안전성 AE 카운트
+  const totalAE = STUDY_CONFIG.safety.ae_by_visit.reduce((a,b)=>a+b,0);
+  const saeCount = STUDY_CONFIG.safety.sae_count || 0;
+
+  // 중간분석 진행률
+  const progressPct = Math.round(PAST_VISITS.length / VISITS.length * 100);
+
+  // 액션 카드 어셈블리
+  const pendingActions = alertPatients + queryCount + missingCount;
+
+  ac.innerHTML = `
+    <div class="ac-header">
+      <div class="ac-title"><span class="ac-icon">⚡</span>조치 필요 항목</div>
+      ${pendingActions > 0 ? `<span class="ac-badge">${pendingActions}건 대기</span>` : '<span style="font-size:9px;color:#009E73;">✓ 모두 처리됨</span>'}
+    </div>
+    <div class="ac-grid">
+      <div class="ac-card ${alertPatients>0?'urgent':'info'}">
+        <div class="ac-card-icon">👤</div>
+        <div class="ac-card-title">환자 조치</div>
+        <div class="ac-card-desc">용량 조절 · 연락 · 조기종료 검토</div>
+        <span class="ac-card-count ${alertPatients===0?'zero':''}">${alertPatients}</span>
+      </div>
+      <div class="ac-card ${queryCount>0?'warning':'info'}">
+        <div class="ac-card-icon">📋</div>
+        <div class="ac-card-title">데이터 쿼리</div>
+        <div class="ac-card-desc">SDV · 이상치 확인 · 누락값 처리</div>
+        <span class="ac-card-count ${queryCount===0?'zero':''}">${queryCount + missingCount}</span>
+      </div>
+      <div class="ac-card ${saeCount>0?'urgent':'success'}">
+        <div class="ac-card-icon">🛡️</div>
+        <div class="ac-card-title">안전성 보고</div>
+        <div class="ac-card-desc">SAE ${saeCount}건 · AE 누적 ${totalAE}건</div>
+        <span class="ac-card-count ${saeCount===0?'zero':''}">${saeCount}</span>
+      </div>
+      <div class="ac-card ${progressPct>=50?'info':'info'}">
+        <div class="ac-card-icon">📊</div>
+        <div class="ac-card-title">연구 진행</div>
+        <div class="ac-card-desc">${curVisit.id} 완료 · ${progressPct}% 진행 · ${lowCompCount>0?lowCompCount+'명 저순응':'순응도 양호'}</div>
+        <span class="ac-card-count zero">${progressPct}%</span>
+      </div>
+    </div>
+    <div class="ac-sub">
+      <div class="ac-quick" data-action="contact"><span class="aq-icon">📞</span>경고 환자 일괄 연락</div>
+      <div class="ac-quick" data-action="dose-hold"><span class="aq-icon">💊</span>용량 보류 검토</div>
+      <div class="ac-quick" data-action="query-resolve"><span class="aq-icon">✏️</span>미해결 쿼리 처리</div>
+      <div class="ac-quick" data-action="interim"><span class="aq-icon">📈</span>${progressPct>=50?'중간분석 실행':'중간분석 대기'}</div>
+      <div class="ac-quick" data-action="export"><span class="aq-icon">📤</span>DSMB 보고서 생성</div>
+    </div>
+  `;
+
+  // Quick action 클릭 → 미래에 연결될 기능 힌트
+  ac.querySelectorAll('.ac-quick').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const action = btn.dataset.action;
+      if(action==='contact'){
+        // 경고 환자 목록으로 이동
+        switchTab('table');
+      } else if(action==='query-resolve'){
+        switchTab('table');
+      }
+    });
+  });
+
+  // 환자 조치 카드 클릭 → 테이블로 이동
+  ac.querySelectorAll('.ac-card').forEach(card=>{
+    card.addEventListener('click',()=>switchTab('table'));
+  });
+}
+
+// ===============================================
+// TAB SWITCHING
+// ===============================================
+function switchTab(n){
+  document.querySelectorAll('.tab[data-tab]').forEach(t=>t.classList.toggle('active',t.dataset.tab===n));
+  ['ov','tb','cr'].forEach(x=>{
+    const key={ov:'overview',tb:'table',cr:'cleanroom'}[x];
+    document.getElementById('tc-'+x).classList.toggle('active',key===n);
+    document.getElementById('nav-'+x).classList.toggle('active',key===n);
+  });
+  if(n==='overview')setTimeout(buildMetricsGrid,50);
+}
+document.querySelectorAll('.tab[data-tab]').forEach(t=>t.addEventListener('click',()=>switchTab(t.dataset.tab)));
+document.getElementById('nav-ov').addEventListener('click',()=>switchTab('overview'));
+document.getElementById('nav-tb').addEventListener('click',()=>switchTab('table'));
+document.getElementById('nav-cr').addEventListener('click',()=>switchTab('cleanroom'));
+
+// ===============================================
+// TABLE TAB — TD-1: Visit-based columns
+// ===============================================
+// ALL = 테이블용 통합 배열 — PAST_VISITS.length 기준 동적 생성
+let ALL = generateALL(PAST_VISITS.length);
+const TMET=[{k:'wt',n:'체중',u:'kg',d:'down',sc:C.blue},{k:'sbp',n:'SBP',u:'mmHg',d:'down',sc:C.blue},{k:'hr',n:'심박수',u:'bpm',d:'down',sc:C.green},{k:'steps',n:'걸음수',u:'보',d:'up',sc:C.green},{k:'sleep',n:'수면',u:'h',d:'up',sc:C.green},{k:'comp',n:'순응도',u:'%',d:'up',sc:C.pink},{k:'skin',n:'피부',u:'점',d:'down',sc:'#a855f7'},{k:'tir',n:'TIR',u:'%',d:'up',sc:'#10b981'},{k:'app',n:'앱',u:'분',d:'up',sc:C.amber}];
+const ST_LABELS={verified:'Verified',query:'Query',review:'Review','missing-visit':'Missing Visit'};
+
+// Table body + visit selector
+function dl(a){const li=PAST_VISITS.length-1;if(!a||a[0]==null||a[li]==null)return null;return a[li]-a[0];}
+const tBody=document.getElementById('tBody');
+const tHead=document.getElementById('tHead');
+let selIdx=null;
+
+function rebuildTable(){
+  // Visit selector 재빌드
+  const visitSel=document.getElementById('visitSelector');
+  visitSel.innerHTML='';
+  PAST_VISITS.forEach((v,i)=>{
+    const btn=document.createElement('button');
+    btn.className='t-btn'+(i===PAST_VISITS.length-1?' active':'');
+    btn.textContent=v.id;
+    btn.addEventListener('click',()=>{visitSel.querySelectorAll('.t-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');});
+    visitSel.appendChild(btn);
+  });
+
+  // Table header
+  tHead.innerHTML=`<th style="width:14%;">참여자</th>${TMET.map(m=>`<th><span class="cs" style="background:${m.sc};"></span>${m.n}<span class="sort-icon">▼</span></th>`).join('')}`;
+
+  // Table body 재빌드
+  tBody.innerHTML='';
+  ALL.forEach((p,i)=>{
+    const tr=document.createElement('tr');if(p.al)tr.className='alert-row';
+    const stBadge=p.st?`<span class="status-badge ${p.st}">${ST_LABELS[p.st]||p.st}</span>`:'';
+    let h=`<td class="pid"><span class="sv ${p.sv}"></span>${p.id}${p.al?'⚠️':''}<span class="gb ${p.g}">${p.g==='exp'?STUDY_CONFIG.design.arm_labels[0]:STUDY_CONFIG.design.arm_labels[1]}</span>${stBadge}<br><span style="font-size:9px;color:#9ca3af;font-weight:400;">${p.nm}</span></td>`;
+    const li=PAST_VISITS.length-1;
+    TMET.forEach(m=>{const d=dl(p[m.k]);const v=p[m.k]?p[m.k][li]:null;
+      if(d==null||v==null){h+='<td><span class="ce">—</span></td>';return;}
+      const g=(m.d==='down'&&d<0)||(m.d==='up'&&d>0);const b=(m.d==='down'&&d>2)||(m.d==='up'&&d<-2);
+      const ar=d>0?'↑':d<0?'↓':'';const c=g?'good':b?'bad':'neutral';
+      const vs=m.k==='steps'?(d>0?'+':'')+Math.round(d).toLocaleString():m.k==='comp'||m.k==='app'?(d>0?'+':'')+d.toFixed(0)+'%':(d>0?'+':'')+d.toFixed(1);
+      const bg=g?'background:rgba(0,158,115,.04);':b?'background:rgba(213,94,0,.04);':'';
+      const rv=m.k==='steps'?Math.round(v).toLocaleString():m.k==='comp'||m.k==='app'?v.toFixed(0)+'%':v.toFixed(1)+m.u;
+      h+=`<td style="${bg}"><span class="cd ${c}">${ar}${vs}</span><span class="cr-cell">${rv}</span></td>`;
+    });
+    tr.innerHTML=h;tr.addEventListener('click',()=>openDetail(i));tBody.appendChild(tr);
+  });
+  document.getElementById('pagInfo').textContent=`1-${ALL.length} / ${ALL.length}명`;
+}
+rebuildTable();
+
+// Detail Panel
+const panel=document.getElementById('detailPanel'),tableArea=document.getElementById('tableArea'),dpTitle=document.getElementById('dpTitle'),dpBody=document.getElementById('dpBody');
+
+function openDetail(i){
+  selIdx=i;const p=ALL[i];const li=PAST_VISITS.length-1;
+  tBody.querySelectorAll('tr').forEach((r,ri)=>r.classList.toggle('selected',ri===i));
+  tableArea.classList.add('shrunk');panel.classList.add('open');
+  const stBadge=p.st?`<span class="status-badge ${p.st}">${ST_LABELS[p.st]||p.st}</span>`:'';
+  dpTitle.innerHTML=`<span class="sv ${p.sv}"></span>${p.id} ${p.nm} <span class="gb ${p.g}">${p.g==='exp'?STUDY_CONFIG.design.arm_labels[0]:STUDY_CONFIG.design.arm_labels[1]}</span>${stBadge}`;
+
+  const dpMetrics=TMET.slice(0,3);
+  let ch='';
+  dpMetrics.forEach(m=>{
+    const a=p[m.k]||[];const d=dl(a);
+    const ds=d!=null?(d>0?'+':'')+(m.k==='steps'?Math.round(d).toLocaleString():d.toFixed(1)+m.u):'—';
+    ch+=`<div class="chart-card">
+      <div class="chart-card-title">${m.n} (${PAST_VISITS[0].id}→${PAST_VISITS[li].id}: ${ds})</div>
+      <div class="mini-chart"><canvas id="dp-${m.k}-${i}"></canvas></div>
+      <div class="chart-x">${VISIT_LABELS.map((l,vi)=>'<span'+(vi===li?' style="color:'+C.vermillion+';font-weight:600;"':vi>li?' style="color:#d1d5db;"':'')+'>'+l+'</span>').join('')}</div>
+    </div>`;
+  });
+
+  let fs=`<div class="fs-title">📋 플로우시트 (${PAST_VISITS[0].id}~${PAST_VISITS[li].id})</div><table class="fs-table"><thead><tr><th>지표</th>`;
+  PAST_VISITS.forEach(v=>fs+=`<th>${v.id}</th>`);fs+='</tr></thead><tbody>';
+  TMET.forEach(m=>{const a=p[m.k]||[];fs+='<tr><td>'+m.n+'</td>';
+    for(let j=0;j<=li;j++){const v=a[j];
+      if(v==null){fs+='<td class="ce">—</td>';continue;}
+      const fmt=m.k==='steps'?Math.round(v).toLocaleString():m.k==='comp'||m.k==='app'?v.toFixed(0):v.toFixed(1);
+      let cls='';if(j>0&&a[0]!=null){const dd=v-a[0];const ig=(m.d==='down'&&dd<-1)||(m.d==='up'&&dd>1);const ib=(m.d==='down'&&dd>1)||(m.d==='up'&&dd<-1);cls=ig?'fg':ib?'fb':'';}
+      if(j===li)cls+=' fc';
+      fs+=`<td class="${cls}">${fmt}</td>`;
+    }
+    fs+='</tr>';
+  });
+  fs+='</tbody></table>';
+  dpBody.innerHTML=ch+fs;
+
+  setTimeout(()=>{
+    dpMetrics.forEach(m=>{
+      const cv=document.getElementById(`dp-${m.k}-${i}`);if(!cv)return;
+      const ctx=cv.getContext('2d');const dpr=window.devicePixelRatio||1;
+      const rect=cv.parentElement.getBoundingClientRect();if(rect.width<10)return;
+      cv.width=rect.width*dpr;cv.height=rect.height*dpr;
+      cv.style.width=rect.width+'px';cv.style.height=rect.height+'px';
+      ctx.setTransform(1,0,0,1,0,0);ctx.scale(dpr,dpr);
+      const a=p[m.k]||[];
+      let future=[];
+      if(a.length>1&&a[li]!=null&&a[li-1]!=null){
+        const slope=a[li]-a[li-1];
+        future=Array.from({length:FUTURE_VISITS.length},(_,fi)=>Math.round((a[li]+slope*(fi+1))*10)/10);
+      }
+      const allV=[...a,...future].filter(v=>v!=null);if(allV.length<2)return;
+      let mn=Math.min(...allV),mx=Math.max(...allV);const mg=(mx-mn)*0.15||5;mn-=mg;mx+=mg;
+      const W=rect.width,H=rect.height,pad={t:4,b:4,l:4,r:4};
+      const cw=W-pad.l-pad.r,ch2=H-pad.t-pad.b;
+      const nTotal=a.length+future.length;
+      function xP(ii){return pad.l+(ii/(nTotal-1||1))*cw;}
+      function yP(v){return pad.t+(1-(v-mn)/(mx-mn))*ch2;}
+      ctx.clearRect(0,0,W,H);
+      const nowX=xP(li+0.5);
+      ctx.fillStyle='rgba(0,114,178,.02)';ctx.fillRect(pad.l,pad.t,nowX-pad.l,ch2);
+      ctx.strokeStyle=C.vermillion;ctx.lineWidth=1;ctx.globalAlpha=0.3;
+      ctx.beginPath();ctx.moveTo(nowX,pad.t);ctx.lineTo(nowX,pad.t+ch2);ctx.stroke();ctx.globalAlpha=1;
+      ctx.beginPath();ctx.strokeStyle=m.sc;ctx.lineWidth=1.5;ctx.lineJoin='round';
+      let s=false;a.forEach((v,ii)=>{if(v==null)return;if(!s){ctx.moveTo(xP(ii),yP(v));s=true;}else ctx.lineTo(xP(ii),yP(v));});ctx.stroke();
+      if(future.length>0){
+        ctx.setLineDash([3,3]);ctx.globalAlpha=0.5;ctx.beginPath();
+        if(a[li]!=null)ctx.moveTo(xP(li),yP(a[li]));
+        future.forEach((v,fi)=>{if(v!=null)ctx.lineTo(xP(a.length+fi),yP(v));});
+        ctx.stroke();ctx.setLineDash([]);ctx.globalAlpha=1;
+      }
+    });
+  },50);
+}
+document.getElementById('dpClose').addEventListener('click',()=>{panel.classList.remove('open');tableArea.classList.remove('shrunk');tBody.querySelectorAll('tr').forEach(r=>r.classList.remove('selected'));selIdx=null;});
+document.getElementById('dpPrev').addEventListener('click',()=>{if(selIdx>0)openDetail(selIdx-1);});
+document.getElementById('dpNext').addEventListener('click',()=>{if(selIdx<ALL.length-1)openDetail(selIdx+1);});
+
+// ===============================================
+// CLEAN ROOM TAB (carried from v9, enhanced)
+// ===============================================
+const CR_SCHEMA=[
+  {name:'data_points',domain:'health',server:'health_db',icon:'📊',cols:[{n:'id',t:'uuid',pk:true},{n:'user_id',t:'uuid',fk:'users'},{n:'category',t:'varchar'},{n:'sub_category',t:'varchar'},{n:'value',t:'jsonb'},{n:'source',t:'varchar'},{n:'measured_at',t:'ts'},{n:'visit_id',t:'varchar'},{n:'data_hash',t:'varchar'},{n:'xrpl_anchored',t:'bool'},{n:'quality_score',t:'decimal'}]},
+  {name:'users',domain:'auth',server:'health_db',icon:'👤',cols:[{n:'id',t:'uuid',pk:true},{n:'email',t:'varchar'},{n:'display_name',t:'varchar'},{n:'role',t:'enum'},{n:'status',t:'varchar'},{n:'created_at',t:'ts'}]},
+  {name:'user_profiles',domain:'auth',server:'health_db',icon:'📋',cols:[{n:'id',t:'uuid',pk:true},{n:'user_id',t:'uuid',fk:'users'},{n:'birth_date',t:'date'},{n:'gender',t:'varchar'},{n:'height_cm',t:'decimal'},{n:'weight_kg',t:'decimal'},{n:'medications',t:'jsonb'}]},
+  {name:'consents',domain:'consent',server:'health_db',icon:'✅',cols:[{n:'id',t:'uuid',pk:true},{n:'user_id',t:'uuid',fk:'users'},{n:'consent_type',t:'varchar'},{n:'status',t:'varchar'},{n:'project_id',t:'uuid'},{n:'irb_number',t:'varchar'},{n:'version',t:'int'}]},
+  {name:'study_config',domain:'research',server:'uniqdata_db',icon:'⚙️',cols:[{n:'id',t:'uuid',pk:true},{n:'project_id',t:'uuid',fk:'projects'},{n:'study_type',t:'enum'},{n:'has_control_arm',t:'bool'},{n:'num_arms',t:'int'},{n:'duration_days',t:'int'},{n:'visit_windows',t:'jsonb'},{n:'metric_templates',t:'jsonb'}]},
+  {name:'visit_windows',domain:'research',server:'uniqdata_db',icon:'📅',cols:[{n:'id',t:'uuid',pk:true},{n:'study_config_id',t:'uuid',fk:'study_config'},{n:'visit_id',t:'varchar'},{n:'target_day',t:'int'},{n:'window_min',t:'int'},{n:'window_max',t:'int'},{n:'label',t:'varchar'}]},
+  {name:'projects',domain:'research',server:'uniqdata_db',icon:'🔬',cols:[{n:'id',t:'uuid',pk:true},{n:'title',t:'varchar'},{n:'project_type',t:'enum'},{n:'status',t:'varchar'},{n:'pi_user_id',t:'uuid'},{n:'irb_number',t:'varchar'},{n:'target_participant_count',t:'int'}]},
+  {name:'participants',domain:'research',server:'uniqdata_db',icon:'🧑‍🔬',cols:[{n:'id',t:'uuid',pk:true},{n:'project_id',t:'uuid',fk:'projects'},{n:'user_id',t:'uuid'},{n:'status',t:'varchar'},{n:'group_assignment',t:'varchar'},{n:'reward_earned',t:'decimal'}]},
+  {name:'adverse_events',domain:'safety',server:'health_db',icon:'🛡️',cols:[{n:'id',t:'uuid',pk:true},{n:'participant_id',t:'uuid',fk:'participants'},{n:'visit_id',t:'varchar'},{n:'ae_term',t:'varchar'},{n:'severity',t:'enum'},{n:'related',t:'bool'},{n:'serious',t:'bool'},{n:'outcome',t:'varchar'},{n:'reported_at',t:'ts'}]},
+  {name:'metric_templates',domain:'research',server:'uniqdata_db',icon:'📐',cols:[{n:'id',t:'uuid',pk:true},{n:'study_config_id',t:'uuid',fk:'study_config'},{n:'metric_key',t:'varchar'},{n:'name',t:'varchar'},{n:'unit',t:'varchar'},{n:'direction',t:'enum'},{n:'renderer',t:'varchar'},{n:'derive_from',t:'jsonb'}]},
+  {name:'project_milestones',domain:'research',server:'uniqdata_db',icon:'🎯',cols:[{n:'id',t:'uuid',pk:true},{n:'project_id',t:'uuid',fk:'projects'},{n:'milestone_type',t:'varchar'},{n:'status',t:'varchar'},{n:'target_date',t:'date'},{n:'completed_at',t:'ts'}]},
+  {name:'data_access_logs',domain:'health',server:'health_db',icon:'📝',cols:[{n:'id',t:'uuid',pk:true},{n:'accessor_id',t:'uuid'},{n:'project_id',t:'uuid'},{n:'record_count',t:'int'},{n:'pseudonymized',t:'bool'},{n:'agg_tier',t:'varchar'}]},
+];
+
+const PSEUDO_MAP={};let pseudoCounter=1;
+function pseudonymize(uid){if(!PSEUDO_MAP[uid])PSEUDO_MAP[uid]='SUB-'+String(pseudoCounter++).padStart(3,'0');return PSEUDO_MAP[uid];}
+function fakeUUID(){return'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,c=>{const r=Math.random()*16|0;return(c==='x'?r:r&0x3|0x8).toString(16);});}
+function fakeHash(){return'0x'+Array.from({length:12},()=>Math.random().toString(16)[2]).join('');}
+function fakeDate(base,off){const d=new Date(base);d.setDate(d.getDate()+off+Math.random()*3);return d.toISOString().replace('T',' ').slice(0,19);}
+
+const CR_PATIENT_IDS=Array.from({length:10},()=>fakeUUID());
+const CR_PROJECT_ID=fakeUUID();
+const CR_CATEGORIES=['weight','sbp','dbp','heart_rate','steps','sleep_duration','compliance','app_usage'];
+const CR_SOURCES=['EMR_SNUH','Fitbit_Charge5','EMA_App','Manual_Input'];
+
+function crGenDataPoints(count){
+  const rows=[];const visitIds=VISITS.map(v=>v.id);
+  for(let i=0;i<count;i++){
+    const uid=CR_PATIENT_IDS[Math.floor(Math.random()*CR_PATIENT_IDS.length)];
+    const cat=CR_CATEGORIES[Math.floor(Math.random()*CR_CATEGORIES.length)];
+    const src=cat==='weight'||cat==='sbp'||cat==='dbp'?'EMR_SNUH':cat==='heart_rate'||cat==='steps'||cat==='sleep_duration'?'Fitbit_Charge5':'EMA_App';
+    const dayOff=Math.floor(Math.random()*42);
+    const vid=visitIds[Math.min(Math.floor(dayOff/14),visitIds.length-1)];
+    let val;
+    switch(cat){
+      case'weight':val={value:75+Math.random()*20,unit:'kg'};break;
+      case'sbp':val={value:110+Math.random()*35,unit:'mmHg'};break;
+      case'dbp':val={value:65+Math.random()*20,unit:'mmHg'};break;
+      case'heart_rate':val={value:58+Math.random()*25,unit:'bpm'};break;
+      case'steps':val={value:Math.round(2000+Math.random()*10000),unit:'steps'};break;
+      case'sleep_duration':val={value:Math.round((4+Math.random()*5)*10)/10,unit:'hours'};break;
+      case'compliance':val={value:Math.round(Math.random()*100),type:'medication_adherence'};break;
+      case'app_usage':val={value:Math.round(Math.random()*120),unit:'minutes'};break;
+    }
+    rows.push({id:fakeUUID(),user_id:uid,category:cat,sub_category:cat,value:val,source:src,measured_at:fakeDate(STUDY_CONFIG.timeline.base_date,dayOff),visit_id:vid,data_hash:fakeHash(),xrpl_anchored:Math.random()>0.3,quality_score:Math.round((0.7+Math.random()*0.3)*100)/100});
+  }
+  return rows.sort((a,b)=>b.measured_at.localeCompare(a.measured_at));
+}
+const CR_DATA_CACHE={data_points:crGenDataPoints(50),participants:ALL.map(p=>({id:fakeUUID(),project_id:CR_PROJECT_ID,user_id:CR_PATIENT_IDS[ALL.indexOf(p)%10],status:p.id==='P031'?'at_risk':'active',group_assignment:p.g==='exp'?'experimental':'control',reward_earned:Math.round(Math.random()*50000)}))};
+let crQueryCount=0,crCurrentTable='data_points';
+
+function buildSchemaPanel(){
+  const list=document.getElementById('spList');let html='',curServer='';
+  document.getElementById('spCount').textContent=CR_SCHEMA.length+' 테이블';
+  CR_SCHEMA.forEach(s=>{
+    if(s.server!==curServer){curServer=s.server;html+=`<div class="sp-server">${curServer==='health_db'?'🗄️ health_db':'🗄️ uniqdata_db'}</div>`;}
+    const rc=CR_DATA_CACHE[s.name]?CR_DATA_CACHE[s.name].length:'—';
+    html+=`<div class="sp-table${s.name===crCurrentTable?' active':''}" data-table="${s.name}"><span class="sp-icon">${s.icon}</span><span>${s.name}</span><span class="sp-count">${rc}</span></div>`;
+  });
+  list.innerHTML=html;
+  list.querySelectorAll('.sp-table').forEach(el=>{
+    el.addEventListener('click',()=>{crCurrentTable=el.dataset.table;list.querySelectorAll('.sp-table').forEach(e=>e.classList.remove('active'));el.classList.add('active');crRenderTable(crCurrentTable);});
+  });
+}
+
+function crRenderTable(tableName){
+  crQueryCount++;
+  const schema=CR_SCHEMA.find(s=>s.name===tableName);if(!schema)return;
+  const data=CR_DATA_CACHE[tableName]||[];
+  document.getElementById('dgToolbar').innerHTML=`
+    <div class="dg-title"><span class="t-icon">${schema.icon}</span>${schema.name}</div>
+    <div class="dg-pills"><span class="dg-pill active">전체</span>${tableName==='data_points'?'<span class="dg-pill" data-cat="weight">weight</span><span class="dg-pill" data-cat="sbp">sbp</span>':''}</div>
+    <div class="dg-privacy">🛡️ 가명화 · user_id → SUB-XXX</div>
+    <div class="agg-tier"><button class="active">raw</button><button>hourly</button><button>daily</button><button>visit</button></div>
+    <div class="dg-filter"><span style="font-size:9px;color:#9ca3af;">${schema.server} · ${schema.domain}</span></div>`;
+  document.getElementById('dgToolbar').querySelectorAll('.dg-pill').forEach(p=>{
+    p.addEventListener('click',()=>{document.getElementById('dgToolbar').querySelectorAll('.dg-pill').forEach(pp=>pp.classList.remove('active'));p.classList.add('active');const cat=p.dataset.cat;crRenderRows(schema,cat?data.filter(r=>r.category===cat):data);});
+  });
+  document.getElementById('dgHead').innerHTML='<tr>'+schema.cols.map(c=>{
+    let badge='';if(c.pk)badge='<span style="color:#E69F00;font-size:7px;">PK</span>';if(c.fk)badge='<span style="color:#0072B2;font-size:7px;">FK→'+c.fk+'</span>';
+    return`<th>${c.n}${badge?'<br>'+badge:''}<span class="col-type">${c.t}</span></th>`;
+  }).join('')+'</tr>';
+  crRenderRows(schema,data);
+}
+
+function crRenderRows(schema,data){
+  const body=document.getElementById('dgBody');
+  if(!data.length){body.innerHTML=`<tr><td colspan="${schema.cols.length}" style="text-align:center;padding:40px;color:#9ca3af;">데이터 없음</td></tr>`;return;}
+  body.innerHTML=data.map(row=>'<tr>'+schema.cols.map(c=>{
+    const v=row[c.n];
+    if(v===undefined||v===null)return'<td><span class="null-val">NULL</span></td>';
+    if((c.n==='user_id'||c.n==='pi_user_id'||c.n==='accessor_id')&&c.t==='uuid')return`<td><span class="pseudo">${pseudonymize(v)}</span></td>`;
+    if(c.t==='uuid')return`<td><span class="hash-val" title="${v}">${v.slice(0,8)}…</span></td>`;
+    if(c.t==='jsonb'){const pre=JSON.stringify(v).slice(0,40);return`<td><span class="json-val" onclick="showJSON('${c.n}',this)" data-json='${JSON.stringify(v).replace(/'/g,"&#39;")}'>${pre}${JSON.stringify(v).length>40?'…':''}</span></td>`;}
+    if(c.t==='bool')return`<td><span class="bool-val ${v?'true':'false'}">${v}</span></td>`;
+    if(c.t==='ts')return`<td><span class="ts-val">${v||'—'}</span></td>`;
+    if(c.t==='decimal'||c.t==='int')return`<td><span class="num-val">${typeof v==='number'?v.toFixed?v.toFixed(2):v:v}</span></td>`;
+    return`<td>${v}</td>`;
+  }).join('')+'</tr>').join('');
+  document.getElementById('dgRowInfo').textContent=`${data.length} rows · ${schema.cols.length} columns · 쿼리 #${crQueryCount}`;
+  document.getElementById('dgQueryBadge').textContent=`📝 쿼리 #${crQueryCount} 기록됨`;
+}
+
+function showJSON(colName,el){
+  const data=JSON.parse(el.dataset.json);
+  document.getElementById('jmTitle').textContent=colName+' (JSONB)';
+  document.getElementById('jmContent').innerHTML=JSON.stringify(data,null,2).replace(/"([^"]+)":/g,'<span class="jk">"$1"</span>:').replace(/: "([^"]+)"/g,': <span class="js">"$1"</span>').replace(/: (\d+\.?\d*)/g,': <span class="jn">$1</span>').replace(/: (true|false)/g,': <span class="jb">$1</span>');
+  document.getElementById('jsonModal').classList.add('open');
+}
+document.getElementById('jmClose').addEventListener('click',()=>document.getElementById('jsonModal').classList.remove('open'));
+document.getElementById('jsonModal').addEventListener('click',e=>{if(e.target===e.currentTarget)e.currentTarget.classList.remove('open');});
+document.getElementById('spSearch').addEventListener('input',function(){const q=this.value.toLowerCase();document.querySelectorAll('.sp-table').forEach(el=>{el.style.display=el.dataset.table.includes(q)?'':'none';});});
+
+// Session timer
+let crElapsed=0;
+setInterval(()=>{crElapsed++;const m=Math.floor(crElapsed/60);const s=crElapsed%60;document.getElementById('crElapsed').textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');},1000);
+
+// ===============================================
+// PAGE HEADER — config-driven
+// ===============================================
+function initPageHeader(){
+  const cfg=STUDY_CONFIG;
+  document.getElementById('pageTitle').textContent=cfg.title;
+  document.getElementById('sidebarStudyName').textContent=cfg.title;
+  const curPt=PAST_VISITS[PAST_VISITS.length-1];
+  const totalPts=VISITS.length;
+  // regulatory 조건부 표시
+  const regLabel = cfg.regulatory.type==='none'?'규제 해당없음':cfg.regulatory.type==='irb_exempt'?'IRB 면제':cfg.regulatory.number||'심사 대기';
+  document.getElementById('pageSub').textContent=`${cfg.subtitle} · ${cfg.design.study_type.toUpperCase()} · ${cfg.design.arm_labels.join(' / ')} · ${cfg.design.n_per_arm}명/군 · ${regLabel}`;
+  // 진행 상태: time_unit 포인트 기준
+  document.getElementById('statusDetail').textContent=`${curPt.id} / ${VISITS[totalPts-1].id}`;
+  // 타임라인 config info (인라인)
+  const tlInfo=document.getElementById('tlConfigInfo');
+  if(tlInfo) tlInfo.textContent=`기준: ${tuRefLabel()} · ${tuBehaviorLabel()} · 분석: ${cfg.timeline.analysis_rule}`;
+  // cbType (hidden badge 호환)
+  document.getElementById('cbType').textContent=`${cfg.design.study_type.toUpperCase()} · ${tuLabel('axis')}`;
+  // 클린룸 IRB 칩도 조건부
+  const irbChip=document.getElementById('crIrb');
+  if(cfg.regulatory.type==='none'){irbChip.textContent='규제 해당없음';irbChip.style.borderColor='#94a3b8';}
+  else if(cfg.regulatory.type==='irb_exempt'){irbChip.textContent='IRB 면제';irbChip.style.borderColor=C.amber;}
+  else{irbChip.textContent=cfg.regulatory.number||'심사 대기';}
+}
+
+// ===============================================
+// STUDY SCENARIOS — 시간축은 연구설계가 결정한다 (사용자 선택 아님!)
+// 사이드바 "데모 시나리오" = 다른 연구를 여는 것
+// 타임라인 내부에 V/W/P/D 버튼 없음 → NO MODES, NO TOGGLING
+// ===============================================
+
+// 타임라인 자동 배지 업데이트 — 기존 TIME_UNIT_LABELS.axis 활용
+function updateTimelineBadge(){
+  const tu = STUDY_CONFIG.timeline.time_unit;
+  const badge = document.getElementById('tlAutoLabel');
+  if(badge) badge.textContent = tuLabel('axis');
+}
+
+const TIME_PRESETS = {
+  visit: {
+    time_unit: 'visit',
+    reference_point: {type:'first_dose', label:'첫 투약일'},
+    timing_behavior: 'participant-relative',
+    analysis_rule: 'nearest-in-window',
+    subtitle: '처방 약물(2.4mg)',
+    study_type_label: 'RCT (방문 기반 임상시험)',
+    points: [
+      {id:'V1',label:'V1 (BL)',target_day:0,window:[-3,3],epoch:'baseline',planned:true},
+      {id:'V2',label:'V2 (2주)',target_day:14,window:[-5,5],epoch:'treatment',planned:true},
+      {id:'V3',label:'V3 (4주)',target_day:28,window:[-5,5],epoch:'treatment',planned:true},
+      {id:'V4',label:'V4 (6주)',target_day:42,window:[-5,5],epoch:'treatment',planned:true},
+      {id:'V5',label:'V5 (8주)',target_day:56,window:[-5,5],epoch:'treatment',planned:true},
+      {id:'V6',label:'V6 (10주)',target_day:70,window:[-5,5],epoch:'treatment',planned:true},
+      {id:'V7',label:'V7 (12주)',target_day:84,window:[-7,7],epoch:'treatment',planned:true},
+    ],
+  },
+  week: {
+    time_unit: 'week',
+    reference_point: {type:'enrollment', label:'등록일'},
+    timing_behavior: 'calendar-fixed',
+    analysis_rule: 'nearest-in-window',
+    subtitle: '12주 체중관리 코호트',
+    study_type_label: '코호트 (주간 기반 관찰연구)',
+    points: [
+      {id:'W0',label:'W0 (BL)',target_day:0,window:[-1,1],epoch:'baseline',planned:true},
+      {id:'W2',label:'W2',target_day:14,window:[-3,3],epoch:'treatment',planned:true},
+      {id:'W4',label:'W4',target_day:28,window:[-3,3],epoch:'treatment',planned:true},
+      {id:'W6',label:'W6',target_day:42,window:[-3,3],epoch:'treatment',planned:true},
+      {id:'W8',label:'W8',target_day:56,window:[-3,3],epoch:'treatment',planned:true},
+      {id:'W10',label:'W10',target_day:70,window:[-3,3],epoch:'treatment',planned:true},
+      {id:'W12',label:'W12 (종료)',target_day:84,window:[-3,3],epoch:'followup',planned:true},
+    ],
+  },
+  phase: {
+    time_unit: 'phase',
+    reference_point: {type:'first_dose', label:'첫 투약일'},
+    timing_behavior: 'participant-relative',
+    analysis_rule: 'nearest-after',
+    subtitle: '항암 Phase I/II 용량탐색',
+    study_type_label: 'Phase I/II (단계 기반 용량탐색)',
+    points: [
+      {id:'P1-D1',label:'P1 1일차',target_day:0,window:[0,0],epoch:'treatment',planned:true},
+      {id:'P1-D8',label:'P1 8일차',target_day:8,window:[-1,1],epoch:'treatment',planned:true},
+      {id:'P1-D15',label:'P1 15일차',target_day:15,window:[-1,1],epoch:'treatment',planned:true},
+      {id:'P2-D1',label:'P2 1일차',target_day:28,window:[-1,1],epoch:'treatment',planned:true},
+      {id:'P2-D8',label:'P2 8일차',target_day:36,window:[-1,1],epoch:'treatment',planned:true},
+      {id:'P2-D15',label:'P2 15일차',target_day:43,window:[-1,1],epoch:'treatment',planned:true},
+      {id:'P3-D1',label:'P3 1일차',target_day:56,window:[-1,1],epoch:'treatment',planned:true},
+    ],
+  },
+  day: {
+    time_unit: 'day',
+    reference_point: {type:'custom', label:'ICU 입실일'},
+    timing_behavior: 'participant-relative',
+    analysis_rule: 'last-before',
+    subtitle: 'ICU 급성기 모니터링',
+    study_type_label: '관찰 (일별 기반 집중 모니터링)',
+    points: [
+      {id:'D0',label:'D0 (입실)',target_day:0,window:[0,0],epoch:'baseline',planned:true},
+      {id:'D1',label:'D1',target_day:1,window:[0,0],epoch:'treatment',planned:true},
+      {id:'D3',label:'D3',target_day:3,window:[0,0],epoch:'treatment',planned:true},
+      {id:'D7',label:'D7',target_day:7,window:[-1,1],epoch:'treatment',planned:true},
+      {id:'D14',label:'D14',target_day:14,window:[-1,1],epoch:'treatment',planned:true},
+      {id:'D28',label:'D28',target_day:28,window:[-2,2],epoch:'followup',planned:true},
+      {id:'D42',label:'D42 (퇴원)',target_day:42,window:[-3,3],epoch:'followup',planned:true},
+    ],
+  },
+};
+
+// switchStudyScenario — "다른 연구를 여는" 행위 (모드 전환 아님)
+function switchStudyScenario(scenarioKey){
+  const preset = TIME_PRESETS[scenarioKey];
+  if(!preset) return;
+
+  // 사이드바 시나리오 활성 표시
+  document.querySelectorAll('.sc-item').forEach(b=>b.classList.toggle('active',b.dataset.scenario===scenarioKey));
+
+  // STUDY_CONFIG 업데이트 — 연구 설계가 시간축을 결정
+  STUDY_CONFIG.timeline.time_unit = preset.time_unit;
+  STUDY_CONFIG.timeline.reference_point = preset.reference_point;
+  STUDY_CONFIG.timeline.timing_behavior = preset.timing_behavior;
+  STUDY_CONFIG.timeline.analysis_rule = preset.analysis_rule;
+  STUDY_CONFIG.timeline.points = preset.points;
+  STUDY_CONFIG.subtitle = preset.subtitle;
+
+  // 런타임 상수 재계산
+  VISITS.length = 0;
+  preset.points.forEach(p=>VISITS.push(p));
+  PAST_VISITS.length = 0;
+  VISITS.filter(v=>v.target_day<=STUDY_CONFIG.timeline.current_day).forEach(p=>PAST_VISITS.push(p));
+  FUTURE_VISITS.length = 0;
+  VISITS.filter(v=>v.target_day>STUDY_CONFIG.timeline.current_day).forEach(p=>FUTURE_VISITS.push(p));
+  VISIT_LABELS.length = 0;
+  VISITS.forEach(v=>VISIT_LABELS.push(v.id));
+  PAST_LABELS.length = 0;
+  PAST_VISITS.forEach(v=>PAST_LABELS.push(v.id));
+  TIME_UNIT = preset.time_unit;
+
+  // 데이터 재생성
+  const nPast = PAST_VISITS.length;
+  EXP_DATA = generatePatientData(PATIENT_PROFILES.exp, nPast);
+  CTRL_DATA = generatePatientData(PATIENT_PROFILES.ctrl, nPast);
+  ALL = generateALL(nPast);
+
+  // safety
+  STUDY_CONFIG.safety.ae_by_visit = VISITS.map((_,i)=>i<nPast?Math.floor(Math.random()*5+1):0);
+
+  // 자동 배지 + 전체 UI 리빌드
+  updateTimelineBadge();
+  initPageHeader();
+  buildVerdictStrip();
+  buildSafetyStrip();
+  buildTimeline();
+  buildMetricsGrid();
+  buildActionCenter();
+  rebuildTable();
+  buildAIStrip();
+  updateDensityStrip(STUDY_CONFIG.timeline.current_day);
+}
+
+// 사이드바 시나리오 클릭 — "다른 연구 열기"
+document.querySelectorAll('.sc-item').forEach(btn=>{
+  btn.addEventListener('click',()=>switchStudyScenario(btn.dataset.scenario));
+});
+
+// ===============================================
+// INIT — 시간축은 STUDY_CONFIG에서 자동 결정
+// ===============================================
+updateTimelineBadge();
+initPageHeader();
+buildVerdictStrip();
+buildSafetyStrip();
+buildTimeline();
+buildMetricsGrid();
+buildActionCenter();
+buildAIStrip();
+updateDensityStrip(STUDY_CONFIG.timeline.current_day);
+buildSchemaPanel();
+crRenderTable('data_points');
+window.addEventListener('resize',()=>{if(document.getElementById('tc-ov').classList.contains('active'))buildMetricsGrid();});
+</script>
+</body>
+</html>

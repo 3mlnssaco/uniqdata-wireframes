@@ -201,11 +201,33 @@
 
     /* 경고 박스 */
     .warning-box { background: #fef3c7; border: 1px solid #fde68a; border-radius: 8px; padding: 14px 16px; font-size: 13px; color: #92400e; line-height: 1.6; margin-bottom: 16px; }
-  </style>
+
+    /* ===== COMMON INLINE STYLE CLASSES ===== */
+    .sidebar-badge-amend { background: #3b82f6; color: white; font-size: 11px; padding: 2px 8px; border-radius: 10px; font-weight: 600; }
+    .sidebar-saved-container { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 8px; text-decoration: none; margin-bottom: 4px; background: rgba(251,191,36,0.08); }
+    .sidebar-saved-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+    .sidebar-saved-dot.yellow { background: #fbbf24; }
+    .sidebar-saved-dot.gray { background: #64748b; }
+    .sidebar-saved-wrapper { flex: 1; min-width: 0; }
+    .sidebar-saved-title { font-size: 12px; color: #e2e8f0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .sidebar-saved-meta { font-size: 10px; color: #64748b; margin-top: 2px; }
+    .sidebar-saved-container-alt { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 8px; text-decoration: none; }
+    .sidebar-saved-container-alt:hover { background: rgba(255,255,255,0.05); }
+    .skip-link {
+      position: absolute; left: -9999px; top: auto;
+      width: 1px; height: 1px; overflow: hidden;
+    }
+    .skip-link:focus {
+      position: fixed; top: 10px; left: 10px; z-index: 10000;
+      padding: 8px 16px; background: #3b82f6; color: white;
+      border-radius: 4px; width: auto; height: auto;
+    }
+    </style>
 </head>
 <body>
+  <a href="#main-content" class="skip-link">본문으로 건너뛰기</a>
   <div class="layout">
-    <div class="sidebar">
+    <nav class="sidebar" role="navigation" aria-label="사이드바 내비게이션">
       <div class="logo">
         <div class="logo-icon">U</div>
         UniQdata
@@ -227,13 +249,13 @@
       <div class="nav-section" style="flex:1; overflow-y:auto;">
         <div class="nav-section-title" style="display:flex; align-items:center; justify-content:space-between;">
           내 연구
-          <span style="background:#3b82f6; color:white; font-size:11px; padding:2px 8px; border-radius:10px; font-weight:600;">3</span>
+          <span class="sidebar-badge-amend">3</span>
         </div>
 
         <div class="research-nav-item expanded">
           <div class="research-nav-header">
             <span style="font-size:14px;">&#x1F4C1;</span>
-            <span class="research-title">위고비 대사개선 연구</span>
+            <span class="research-title">대사개선 약물 연구</span>
             <span class="status-dot active"></span>
           </div>
           <div class="research-nav-sub">
@@ -274,18 +296,18 @@
             <span style="font-size:11px; font-weight:600; color:#64748b; text-transform:uppercase; letter-spacing:0.5px;">임시저장</span>
             <span style="background:#334155; color:#94a3b8; font-size:10px; padding:2px 6px; border-radius:8px;">2</span>
           </div>
-          <a href="#" style="display:flex; align-items:center; gap:10px; padding:8px 12px; border-radius:8px; text-decoration:none; margin-bottom:4px; background:rgba(251,191,36,0.08);">
-            <span style="width:6px; height:6px; background:#fbbf24; border-radius:50%; flex-shrink:0;"></span>
-            <div style="flex:1; min-width:0;">
-              <div style="font-size:12px; color:#e2e8f0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">소아 비만 개입 연구</div>
-              <div style="font-size:10px; color:#64748b; margin-top:2px;">Step 3 &middot; 2일 전</div>
+          <a href="#" class="sidebar-saved-container">
+            <span class="sidebar-saved-dot yellow"></span>
+            <div class="sidebar-saved-wrapper">
+              <div class="sidebar-saved-title">소아 비만 개입 연구</div>
+              <div class="sidebar-saved-meta">Step 3 &middot; 2일 전</div>
             </div>
           </a>
-          <a href="#" style="display:flex; align-items:center; gap:10px; padding:8px 12px; border-radius:8px; text-decoration:none;">
-            <span style="width:6px; height:6px; background:#64748b; border-radius:50%; flex-shrink:0;"></span>
-            <div style="flex:1; min-width:0;">
-              <div style="font-size:12px; color:#94a3b8; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">직장인 스트레스 코르티솔</div>
-              <div style="font-size:10px; color:#64748b; margin-top:2px;">Step 1 &middot; 5일 전</div>
+          <a href="#" class="sidebar-saved-container-alt">
+            <span class="sidebar-saved-dot gray"></span>
+            <div class="sidebar-saved-wrapper">
+              <div class="sidebar-saved-title">직장인 스트레스 코르티솔</div>
+              <div class="sidebar-saved-meta">Step 1 &middot; 5일 전</div>
             </div>
           </a>
         </div>
@@ -302,7 +324,7 @@
       </div>
     </div>
 
-    <div class="main">
+    <main class="main" id="main-content">
       <h1>연구 수정</h1>
       <p class="subtitle">진행 중인 연구를 수정하고 IRB 변경심의를 신청합니다</p>
 
@@ -311,7 +333,7 @@
       <!-- ============================================ -->
       <div class="research-info">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-          <div class="title">저탄수화물 식단의 혈당 변동 개선 효과 연구</div>
+          <div class="title">생활습관 개입의 건강 지표 개선 효과 연구</div>
           <span class="badge badge-green">🟢 진행중</span>
         </div>
         <div class="info-grid">
@@ -409,18 +431,18 @@
             <tbody>
               <tr>
                 <td class="col-field">패시브 데이터</td>
-                <td class="col-before">CGM, 심박수, 활동량, 수면</td>
+                <td class="col-before">지속혈당측정기, 심박수, 활동량, 수면</td>
                 <td class="col-after">
-                  <span>CGM, 심박수, 활동량, 수면, </span>
-                  <strong style="color: #16a34a;">+ 혈압 (BPM)</strong>
+                  <span>지속혈당측정기, 심박수, 활동량, 수면, </span>
+                  <strong style="color:#16a34a;">+ 혈압 (BPM)</strong>
                 </td>
               </tr>
               <tr>
                 <td class="col-field">능동 데이터</td>
-                <td class="col-before">식단, 복약, 기분</td>
+                <td class="col-before">식단, 약물, 기분</td>
                 <td class="col-after">
-                  <span>식단, 복약, 기분, </span>
-                  <strong style="color: #16a34a;">+ 스트레스 설문 (PSS-10)</strong>
+                  <span>식단, 약물, 기분, </span>
+                  <strong style="color:#16a34a;">+ 스트레스 설문 (PSS-10)</strong>
                 </td>
               </tr>
               <tr>
@@ -792,7 +814,7 @@ POST /enterprise/projects/:id/re-consent<br>
         </div>
       </div>
     </div>
-  </div>
+    </main>
   <script src="page-spec.js"></script>
   <link rel="stylesheet" href="../tooltip-spec.css">
   <script src="../tooltip-spec.js"></script>

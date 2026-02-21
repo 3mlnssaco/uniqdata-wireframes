@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>연구 생성 Step 3 - 데이터 구성 (v2) - Wireframe</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, 'Pretendard', sans-serif; background: #f5f5f5; }
+
+    /* ===== 레이아웃 ===== */
+    .layout { display: flex; min-height: 100vh; width: 100%; }
+
+    /* Nav (좌측 사이드바) */
+    .sidebar {
+      width: 240px;
+      background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+      color: white;
+      display: flex; flex-direction: column; flex-shrink: 0;
+    }
+    .logo {
+      padding: 20px 24px; font-size: 20px; font-weight: 700;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      display: flex; align-items: center; gap: 10px;
+    }
+    .logo-icon {
+      width: 32px; height: 32px;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      border-radius: 8px; display: flex; align-items: center; justify-content: center;
+      font-size: 16px; font-weight: bold;
+    }
+    .nav-section { padding: 16px 12px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    .nav-section-title { font-size: 11px; text-transform: uppercase; color: #64748b; padding: 8px 12px; letter-spacing: 0.5px; }
+    .nav-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 12px; border-radius: 8px; color: #94a3b8;
+      cursor: pointer; font-size: 14px; text-decoration: none; transition: all 0.15s;
+    }
+    .nav-item:hover { background: rgba(255,255,255,0.05); color: #e2e8f0; }
+    .nav-item.active { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
+    .nav-item .icon { width: 20px; text-align: center; }
+    .sidebar-footer {
+      margin-top: auto; padding: 16px; border-top: 1px solid rgba(255,255,255,0.05);
+    }
+    .user-info-sidebar { display: flex; align-items: center; gap: 12px; padding: 8px; }
+    .user-avatar-sidebar {
+      width: 36px; height: 36px;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-size: 14px; color: white;
+    }
+    .user-name-sidebar { font-size: 14px; color: #e2e8f0; }
+    .user-org-sidebar { font-size: 12px; color: #64748b; }
+
+    /* Workspace */
+    .workspace-wrap { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+    .workspace { flex: 1; display: flex; min-height: 0; }
+
+    /* Step Bar — 비선형 */
+    .step-bar {
+      background: #1e293b; border-bottom: 1px solid #334155;
+      padding: 10px 0; flex-shrink: 0;
+    }
+    .step-bar-inner {
+      display: flex; align-items: center; justify-content: center; gap: 0;
+      max-width: 700px; margin: 0 auto;
+    }
+    .sb-step {
+      display: flex; flex-direction: column; align-items: center; gap: 4px;
+      cursor: pointer; text-decoration: none; color: inherit;
+      position: relative;
+    }
+    .sb-step:hover .sb-num { transform: scale(1.1); }
+    .sb-step:hover .sb-label { color: #e2e8f0; }
+    .sb-num {
+      width: 28px; height: 28px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 600; transition: all 0.15s;
+    }
+    .sb-step.done .sb-num { background: #22c55e; color: white; }
+    .sb-step.active .sb-num { background: #8b5cf6; color: white; box-shadow: 0 0 0 3px rgba(139,92,246,0.3); }
+    .sb-step.available .sb-num { background: #475569; color: #e2e8f0; border: 2px dashed #64748b; }
+    .sb-step.pending .sb-num { background: #334155; color: #64748b; }
+    .sb-step.skipped .sb-num { background: #1e293b; color: #475569; border: 1px solid #475569; }
+    .sb-label { font-size: 10px; color: #64748b; white-space: nowrap; }
+    .sb-step.active .sb-label { color: #e2e8f0; font-weight: 600; }
+    .sb-step.done .sb-label { color: #86efac; }
+    .sb-line { width: 40px; height: 2px; background: #334155; margin: 0 4px; margin-bottom: 18px; }
+    .sb-line.done { background: #22c55e; }
+    /* 스킵된 스텝 라인 */
+    .sb-line.skipped { background: #475569; border-top: 2px dashed #475569; height: 0; }
+    /* 연구유형 뱃지 */
+    .research-type-badge {
+      position: absolute; top: -16px; left: 50%; transform: translateX(-50%);
+      font-size: 9px; padding: 1px 6px; border-radius: 4px;
+      white-space: nowrap;
+    }
+    .badge-retro { background: #164e63; color: #67e8f9; }
+    .badge-pro { background: #4c1d95; color: #c4b5fd; }
+    .badge-both { background: #713f12; color: #fde68a; }
+
+    /* 에디터 패널 */
+    .editor-panel { flex: 1; overflow-y: auto; padding: 28px 32px; background: #f8fafc; }
+
+    /* 상단 헤더 */
+    .page-header { margin-bottom: 24px; }
+    .page-header h2 { font-size: 22px; font-weight: 700; color: #0f172a; margin-bottom: 4px; }
+    .page-header p { font-size: 13px; color: #64748b; }
+
+    /* ===== 데이터 소스 토글 카드 ===== */
+    .source-cards { display: flex; gap: 16px; margin-bottom: 24px; }
+    .source-toggle {
+      flex: 1; padding: 20px; border-radius: 14px;
+      border: 2px solid #e2e8f0; background: white;
+      cursor: pointer; transition: all 0.25s; position: relative;
+    }
+    .source-toggle:hover { border-color: #cbd5e1; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+    .source-toggle.active-a { border-color: #06b6d4; background: linear-gradient(135deg, #ecfeff, #f0fdfa); }
+    .source-toggle.active-b { border-color: #8b5cf6; background: linear-gradient(135deg, #faf5ff, #f5f3ff); }
+    .source-toggle.active-a:hover { border-color: #0891b2; }
+    .source-toggle.active-b:hover { border-color: #7c3aed; }
+
+    .source-toggle-header { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+    .source-icon { font-size: 28px; }
+    .source-title { font-size: 16px; font-weight: 700; color: #0f172a; }
+    .source-subtitle { font-size: 12px; color: #64748b; }
+    .source-desc { font-size: 13px; color: #475569; line-height: 1.6; margin-bottom: 12px; }
+    .source-examples { display: flex; flex-wrap: wrap; gap: 6px; }
+    .source-example-tag {
+      font-size: 11px; padding: 3px 10px; border-radius: 20px;
+      background: #f1f5f9; color: #64748b;
+    }
+    .source-toggle.active-a .source-example-tag { background: #cffafe; color: #0e7490; }
+    .source-toggle.active-b .source-example-tag { background: #ede9fe; color: #6d28d9; }
+
+    /* 토글 스위치 */
+    .toggle-switch {
+      position: absolute; top: 16px; right: 16px;
+      width: 44px; height: 24px; border-radius: 12px;
+      background: #d1d5db; cursor: pointer; transition: all 0.25s;
+    }
+    .toggle-switch::after {
+      content: ''; position: absolute; top: 3px; left: 3px;
+      width: 18px; height: 18px; border-radius: 50%;
+      background: white; transition: all 0.25s;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+    .toggle-switch.on { background: #06b6d4; }
+    .toggle-switch.on-b { background: #8b5cf6; }
+    .toggle-switch.on::after, .toggle-switch.on-b::after { left: 23px; }
+
+    /* 모드 인디케이터 */
+    .mode-indicator {
+      text-align: center; padding: 10px 20px; border-radius: 10px;
+      margin-bottom: 24px; font-size: 13px; font-weight: 600;
+      transition: all 0.3s;
+    }
+    .mode-retro { background: #ecfeff; color: #0891b2; border: 1px solid #a5f3fc; }
+    .mode-pro { background: #faf5ff; color: #7c3aed; border: 1px solid #ddd6fe; }
+    .mode-mixed { background: #fffbeb; color: #b45309; border: 1px solid #fde68a; }
+    .mode-none { background: #f1f5f9; color: #94a3b8; border: 1px solid #e2e8f0; }
+
+    /* ===== 패널 콘텐츠 ===== */
+    .panel-content { transition: all 0.3s; }
+    .panel-content.hidden { display: none; }
+
+    /* 카드 공통 */
+    .card {
+      background: white; border: 1px solid #e5e7eb; border-radius: 12px;
+      margin-bottom: 20px; overflow: hidden;
+    }
+    .card-header {
+      padding: 16px 20px; border-bottom: 1px solid #e5e7eb;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .card-header h3 { font-size: 16px; font-weight: 600; }
+    .card-body { padding: 20px; }
+    .card-header-a { background: #ecfeff; }
+    .card-header-b { background: #faf5ff; }
+    .ai-badge { font-size: 11px; color: #7c3aed; background: #f3e8ff; padding: 4px 10px; border-radius: 12px; }
+    .cdm-badge { font-size: 11px; color: #0891b2; background: #cffafe; padding: 4px 10px; border-radius: 12px; }
+
+    /* ===== 카드 A: 기존 데이터 ===== */
+    .cdm-table-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+    .cdm-table-item {
+      padding: 14px; border: 2px solid #e5e7eb; border-radius: 10px;
+      cursor: pointer; transition: all 0.2s; text-align: center;
+    }
+    .cdm-table-item:hover { border-color: #67e8f9; }
+    .cdm-table-item.selected { border-color: #06b6d4; background: #ecfeff; }
+    .cdm-table-item .tbl-icon { font-size: 24px; margin-bottom: 6px; }
+    .cdm-table-item .tbl-name { font-size: 13px; font-weight: 600; color: #0f172a; }
+    .cdm-table-item .tbl-desc { font-size: 11px; color: #64748b; margin-top: 2px; }
+    .cdm-table-item .tbl-count { font-size: 10px; color: #0891b2; margin-top: 4px; font-weight: 600; }
+
+    /* 기간 선택 */
+    .date-range { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+    .date-input {
+      padding: 10px 14px; border: 1px solid #d1d5db; border-radius: 8px;
+      font-size: 13px; color: #374151; background: white; width: 160px;
+    }
+    .date-sep { color: #94a3b8; font-size: 14px; }
+
+    /* 코호트 필터 */
+    .filter-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 14px; background: #f8fafc; border-radius: 8px;
+      margin-bottom: 8px;
+    }
+    .filter-field {
+      padding: 6px 12px; border: 1px solid #d1d5db; border-radius: 6px;
+      font-size: 13px; background: white; min-width: 140px;
+    }
+    .filter-op {
+      padding: 6px 10px; border: 1px solid #d1d5db; border-radius: 6px;
+      font-size: 12px; background: white; color: #6b7280;
+    }
+    .filter-val {
+      padding: 6px 12px; border: 1px solid #d1d5db; border-radius: 6px;
+      font-size: 13px; background: white; flex: 1;
+    }
+    .filter-remove { cursor: pointer; color: #ef4444; font-size: 16px; padding: 4px; }
+    .add-filter-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 8px 14px; border: 1px dashed #94a3b8; border-radius: 8px;
+      font-size: 13px; color: #64748b; cursor: pointer; background: none;
+      margin-top: 4px;
+    }
+    .add-filter-btn:hover { border-color: #06b6d4; color: #06b6d4; }
+
+    /* 데이터 프리뷰 */
+    .data-preview {
+      background: #f0fdfa; border: 1px solid #99f6e4; border-radius: 10px;
+      padding: 16px 20px; display: flex; align-items: center; gap: 16px;
+    }
+    .preview-stat { text-align: center; }
+    .preview-num { font-size: 28px; font-weight: 800; color: #0891b2; }
+    .preview-label { font-size: 11px; color: #64748b; }
+    .preview-divider { width: 1px; height: 40px; background: #99f6e4; }
+    .preview-chart {
+      flex: 1; height: 60px; background: #ccfbf1; border-radius: 8px;
+      display: flex; align-items: flex-end; padding: 0 8px; gap: 3px;
+    }
+    .preview-bar {
+      flex: 1; background: #14b8a6; border-radius: 3px 3px 0 0;
+      min-height: 4px; transition: height 0.3s;
+    }
+
+    /* ===== 카드 B: 신규 수집 ===== */
+    .data-category { margin-bottom: 24px; }
+    .data-category-title {
+      font-size: 14px; font-weight: 600; color: #374151;
+      margin-bottom: 12px; display: flex; align-items: center; gap: 8px;
+    }
+    .data-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .data-item {
+      padding: 14px 16px; border: 2px solid #e5e7eb; border-radius: 10px;
+      cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 12px;
+    }
+    .data-item:hover { border-color: #c4b5fd; }
+    .data-item.selected { border-color: #8b5cf6; background: #faf5ff; }
+    .data-item .icon { font-size: 20px; }
+    .data-item .info { flex: 1; }
+    .data-item .name { font-size: 14px; font-weight: 500; margin-bottom: 2px; }
+    .data-item .desc { font-size: 11px; color: #6b7280; }
+
+    /* EMA 설정 */
+    .ema-section { background: #faf5ff; border-radius: 10px; padding: 16px; margin-top: 16px; }
+    .ema-row {
+      display: flex; align-items: center; gap: 12px;
+      padding: 8px 0; border-bottom: 1px solid #ede9fe;
+    }
+    .ema-row:last-child { border-bottom: none; }
+    .ema-name { width: 120px; font-size: 13px; font-weight: 500; }
+    .ema-freq {
+      padding: 6px 10px; border: 1px solid #ddd6fe; border-radius: 6px;
+      font-size: 12px; background: white; width: 100px; text-align: center;
+    }
+    .ema-timing { font-size: 11px; color: #7c3aed; }
+
+    /* 참여자 부담도 */
+    .burden-meter {
+      background: white; border: 1px solid #e5e7eb; border-radius: 10px;
+      padding: 16px 20px; margin-top: 16px;
+    }
+    .burden-bar-bg {
+      height: 8px; background: #f1f5f9; border-radius: 4px;
+      margin: 10px 0 6px; overflow: hidden;
+    }
+    .burden-bar-fill {
+      height: 100%; border-radius: 4px; transition: width 0.3s;
+    }
+    .burden-low { background: #22c55e; }
+    .burden-mid { background: #f59e0b; }
+    .burden-high { background: #ef4444; }
+    .burden-label { display: flex; justify-content: space-between; font-size: 11px; color: #6b7280; }
+
+    /* ===== 하단 요약 ===== */
+    .summary-bar {
+      background: white; border-top: 1px solid #e2e8f0;
+      padding: 16px 32px; display: flex; align-items: center; justify-content: space-between;
+    }
+    .summary-chips { display: flex; gap: 8px; flex-wrap: wrap; }
+    .summary-chip {
+      padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 500;
+    }
+    .chip-a { background: #ecfeff; color: #0891b2; border: 1px solid #a5f3fc; }
+    .chip-b { background: #faf5ff; color: #7c3aed; border: 1px solid #ddd6fe; }
+    .chip-neutral { background: #f1f5f9; color: #64748b; border: 1px solid #e2e8f0; }
+    .nav-buttons { display: flex; gap: 10px; }
+    .btn-secondary {
+      padding: 10px 20px; border: 1px solid #d1d5db; border-radius: 8px;
+      background: white; font-size: 14px; color: #374151; cursor: pointer;
+    }
+    .btn-primary {
+      padding: 10px 24px; border: none; border-radius: 8px;
+      background: linear-gradient(135deg, #7c3aed, #6d28d9); color: white;
+      font-size: 14px; font-weight: 600; cursor: pointer;
+    }
+    .btn-primary:hover { background: linear-gradient(135deg, #6d28d9, #5b21b6); }
+
+    /* 우측 AI 패널 */
+    .ai-panel {
+      width: 300px; background: #f9fafb; border-left: 1px solid #e5e7eb;
+      padding: 20px; overflow-y: auto; flex-shrink: 0;
+    }
+    .ai-panel-title { font-size: 14px; font-weight: 600; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+    .ai-suggestion {
+      background: white; border: 1px solid #e5e7eb; border-radius: 10px;
+      padding: 14px; margin-bottom: 12px;
+    }
+    .ai-suggestion-title { font-size: 12px; font-weight: 600; color: #374151; margin-bottom: 6px; }
+    .ai-suggestion-text { font-size: 12px; color: #6b7280; line-height: 1.6; }
+    .ai-suggestion .highlight { color: #7c3aed; font-weight: 500; }
+    .ai-impact {
+      margin-top: 8px; padding: 8px 10px; border-radius: 6px;
+      font-size: 11px; display: flex; align-items: center; gap: 6px;
+    }
+    .impact-green { background: #f0fdf4; color: #16a34a; }
+    .impact-yellow { background: #fffbeb; color: #d97706; }
+    .impact-blue { background: #eff6ff; color: #2563eb; }
+
+    /* 다크 라벨 */
+    .section-label {
+      font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;
+      color: #94a3b8; margin-bottom: 8px; font-weight: 600;
+    }
+
+    /* Mixed 표시 화살표 */
+    .flow-arrow {
+      text-align: center; padding: 8px; color: #d97706; font-size: 20px;
+    }
+    .flow-label {
+      text-align: center; font-size: 11px; color: #92400e;
+      background: #fef3c7; padding: 4px 12px; border-radius: 20px;
+      display: inline-block; margin: 0 auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <!-- 좌측 사이드바 -->
+    <nav class="sidebar">
+      <div class="logo">
+        <div class="logo-icon">U</div>
+        UniQdata
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-title">연구 관리</div>
+        <a class="nav-item" href="#"><span class="icon">📋</span> 연구 목록</a>
+        <a class="nav-item active" href="#"><span class="icon">➕</span> 새 연구</a>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-title">진행 중</div>
+        <a class="nav-item" href="#">
+          <span class="icon">🔬</span>
+          <div>
+            <div style="font-size:13px;">당뇨병 복약 순응도</div>
+            <div style="font-size:11px; color:#64748b;">Retrospective</div>
+          </div>
+        </a>
+        <a class="nav-item" href="#">
+          <span class="icon">🧪</span>
+          <div>
+            <div style="font-size:13px;">노인 수면 패턴 연구</div>
+            <div style="font-size:11px; color:#64748b;">Mixed</div>
+          </div>
+        </a>
+        <a class="nav-item" href="#">
+          <span class="icon">📝</span>
+          <div>
+            <div style="font-size:13px;">ADHD 생활습관 추적</div>
+            <div style="font-size:11px; color:#64748b;">Prospective</div>
+          </div>
+        </a>
+      </div>
+      <div class="sidebar-footer">
+        <div class="user-info-sidebar">
+          <div class="user-avatar-sidebar">이</div>
+          <div>
+            <div class="user-name-sidebar">이승헌</div>
+            <div class="user-org-sidebar">UniQdata</div>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <div class="workspace-wrap">
+      <!-- Step Bar (비선형) -->
+      <div class="step-bar">
+        <div class="step-bar-inner">
+          <a class="sb-step done" href="#">
+            <div class="sb-num">✓</div>
+            <div class="sb-label">AI 인터뷰</div>
+          </a>
+          <div class="sb-line done"></div>
+          <a class="sb-step done" href="#">
+            <div class="sb-num">✓</div>
+            <div class="sb-label">연구 설계</div>
+          </a>
+          <div class="sb-line done"></div>
+          <a class="sb-step active" href="#">
+            <div class="sb-num">3</div>
+            <div class="sb-label">데이터 구성</div>
+          </a>
+          <div class="sb-line"></div>
+          <a class="sb-step available" href="#" id="step4-link">
+            <div class="sb-num">4</div>
+            <div class="sb-label" id="step4-label">타겟 설정</div>
+          </a>
+          <div class="sb-line"></div>
+          <a class="sb-step available" href="#">
+            <div class="sb-num">5</div>
+            <div class="sb-label">IRB 심의</div>
+          </a>
+          <div class="sb-line"></div>
+          <a class="sb-step available" href="#">
+            <div class="sb-num">6</div>
+            <div class="sb-label">에스크로</div>
+          </a>
+        </div>
+      </div>
+
+      <div class="workspace">
+        <!-- 메인 에디터 -->
+        <div class="editor-panel" id="editor">
+          <div class="page-header">
+            <h2>Step 3. 데이터 구성</h2>
+            <p>연구에 필요한 데이터 소스를 선택하세요. 기존 데이터와 신규 수집을 자유롭게 조합할 수 있습니다.</p>
+          </div>
+
+          <!-- ===== 데이터 소스 토글 카드 ===== -->
+          <div class="source-cards">
+            <!-- 카드 A: 기존 데이터 -->
+            <div class="source-toggle active-a" id="card-a" onclick="toggleSource('a')">
+              <div class="toggle-switch on" id="toggle-a"></div>
+              <div class="source-toggle-header">
+                <div class="source-icon">🗄️</div>
+                <div>
+                  <div class="source-title">기존 데이터</div>
+                  <div class="source-subtitle">Existing Data</div>
+                </div>
+              </div>
+              <div class="source-desc">
+                이미 수집된 데이터를 가져와 분석합니다. 병원 EMR, CDM 데이터, 과거 웨어러블 기록 등.
+              </div>
+              <div class="source-examples">
+                <span class="source-example-tag">EMR/EHR</span>
+                <span class="source-example-tag">OMOP CDM</span>
+                <span class="source-example-tag">과거 웨어러블</span>
+                <span class="source-example-tag">건강보험</span>
+              </div>
+            </div>
+
+            <!-- 카드 B: 신규 수집 -->
+            <div class="source-toggle active-b" id="card-b" onclick="toggleSource('b')">
+              <div class="toggle-switch on-b" id="toggle-b"></div>
+              <div class="source-toggle-header">
+                <div class="source-icon">📱</div>
+                <div>
+                  <div class="source-title">신규 수집</div>
+                  <div class="source-subtitle">New Collection</div>
+                </div>
+              </div>
+              <div class="source-desc">
+                참여자로부터 새로운 데이터를 수집합니다. 웨어러블, 설문, 바이오마커 등.
+              </div>
+              <div class="source-examples">
+                <span class="source-example-tag">웨어러블</span>
+                <span class="source-example-tag">EMA/설문</span>
+                <span class="source-example-tag">바이오마커</span>
+                <span class="source-example-tag">참여자 입력</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 모드 인디케이터 -->
+          <div class="mode-indicator mode-mixed" id="mode-indicator">
+            🔄 Mixed-Methods — 기존 데이터 기반 + 추가 수집 (가장 풍부한 연구 설계)
+          </div>
+
+          <!-- ===== 패널 A: 기존 데이터 설정 ===== -->
+          <div class="panel-content" id="panel-a">
+            <div class="section-label" style="margin-bottom: 12px;">A. 기존 데이터 소스 설정</div>
+
+            <!-- CDM 테이블 선택 -->
+            <div class="card">
+              <div class="card-header card-header-a">
+                <h3>📊 데이터 테이블 선택</h3>
+                <span class="cdm-badge">OMOP CDM</span>
+              </div>
+              <div class="card-body">
+                <div class="cdm-table-grid">
+                  <div class="cdm-table-item selected" onclick="this.classList.toggle('selected')">
+                    <div class="tbl-icon">👤</div>
+                    <div class="tbl-name">Person</div>
+                    <div class="tbl-desc">인구통계 정보</div>
+                    <div class="tbl-count">124,500 records</div>
+                  </div>
+                  <div class="cdm-table-item selected" onclick="this.classList.toggle('selected')">
+                    <div class="tbl-icon">🩺</div>
+                    <div class="tbl-name">Condition</div>
+                    <div class="tbl-desc">진단/질환 기록</div>
+                    <div class="tbl-count">892,100 records</div>
+                  </div>
+                  <div class="cdm-table-item selected" onclick="this.classList.toggle('selected')">
+                    <div class="tbl-icon">💊</div>
+                    <div class="tbl-name">Drug</div>
+                    <div class="tbl-desc">처방/투약 기록</div>
+                    <div class="tbl-count">2,340,000 records</div>
+                  </div>
+                  <div class="cdm-table-item" onclick="this.classList.toggle('selected')">
+                    <div class="tbl-icon">🔬</div>
+                    <div class="tbl-name">Measurement</div>
+                    <div class="tbl-desc">검사 결과 (Lab)</div>
+                    <div class="tbl-count">5,120,000 records</div>
+                  </div>
+                  <div class="cdm-table-item" onclick="this.classList.toggle('selected')">
+                    <div class="tbl-icon">🏥</div>
+                    <div class="tbl-name">Visit</div>
+                    <div class="tbl-desc">내원/입원 기록</div>
+                    <div class="tbl-count">456,200 records</div>
+                  </div>
+                  <div class="cdm-table-item" onclick="this.classList.toggle('selected')">
+                    <div class="tbl-icon">📋</div>
+                    <div class="tbl-name">Observation</div>
+                    <div class="tbl-desc">관찰 데이터</div>
+                    <div class="tbl-count">1,890,000 records</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 기간 설정 -->
+            <div class="card">
+              <div class="card-header card-header-a">
+                <h3>📅 데이터 기간</h3>
+              </div>
+              <div class="card-body">
+                <div class="date-range">
+                  <input type="text" class="date-input" value="2020-01-01" />
+                  <span class="date-sep">~</span>
+                  <input type="text" class="date-input" value="2025-12-31" />
+                  <span style="font-size:12px; color:#64748b; margin-left:8px;">6년간</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- 코호트 필터 -->
+            <div class="card">
+              <div class="card-header card-header-a">
+                <h3>🎯 코호트 필터</h3>
+                <span class="ai-badge">AI 추천 조건</span>
+              </div>
+              <div class="card-body">
+                <div class="filter-row">
+                  <select class="filter-field">
+                    <option>Condition</option>
+                    <option>Drug</option>
+                    <option>Measurement</option>
+                    <option>Age</option>
+                  </select>
+                  <select class="filter-op">
+                    <option>contains</option>
+                    <option>=</option>
+                    <option>≥</option>
+                    <option>≤</option>
+                  </select>
+                  <input type="text" class="filter-val" value="Type 2 Diabetes Mellitus" />
+                  <span class="filter-remove" onclick="this.parentElement.remove()">✕</span>
+                </div>
+                <div class="filter-row">
+                  <select class="filter-field">
+                    <option>Age</option>
+                  </select>
+                  <select class="filter-op">
+                    <option>≥</option>
+                  </select>
+                  <input type="text" class="filter-val" value="30" />
+                  <span class="filter-remove" onclick="this.parentElement.remove()">✕</span>
+                </div>
+                <div class="filter-row">
+                  <select class="filter-field">
+                    <option selected>Drug</option>
+                  </select>
+                  <select class="filter-op">
+                    <option selected>contains</option>
+                  </select>
+                  <input type="text" class="filter-val" value="Metformin" />
+                  <span class="filter-remove" onclick="this.parentElement.remove()">✕</span>
+                </div>
+                <button class="add-filter-btn">+ 조건 추가</button>
+
+                <!-- 데이터 프리뷰 -->
+                <div class="data-preview" style="margin-top: 16px;">
+                  <div class="preview-stat">
+                    <div class="preview-num">2,340</div>
+                    <div class="preview-label">해당 환자 수</div>
+                  </div>
+                  <div class="preview-divider"></div>
+                  <div class="preview-stat">
+                    <div class="preview-num" style="font-size:22px;">186K</div>
+                    <div class="preview-label">총 레코드</div>
+                  </div>
+                  <div class="preview-divider"></div>
+                  <div class="preview-chart">
+                    <div class="preview-bar" style="height:20%"></div>
+                    <div class="preview-bar" style="height:35%"></div>
+                    <div class="preview-bar" style="height:45%"></div>
+                    <div class="preview-bar" style="height:60%"></div>
+                    <div class="preview-bar" style="height:80%"></div>
+                    <div class="preview-bar" style="height:100%"></div>
+                    <div class="preview-bar" style="height:95%"></div>
+                    <div class="preview-bar" style="height:85%"></div>
+                    <div class="preview-bar" style="height:70%"></div>
+                    <div class="preview-bar" style="height:55%"></div>
+                    <div class="preview-bar" style="height:40%"></div>
+                    <div class="preview-bar" style="height:30%"></div>
+                  </div>
+                  <div class="preview-stat">
+                    <div class="preview-label">연도별 분포</div>
+                    <div style="font-size:10px; color:#94a3b8;">2020–2025</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Mixed 모드일 때 연결 화살표 -->
+            <div id="flow-connector" class="flow-arrow">
+              ⬇️
+              <div style="text-align:center;">
+                <span class="flow-label">위 코호트에서 추가 수집 대상 선별</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- ===== 패널 B: 신규 수집 설정 ===== -->
+          <div class="panel-content" id="panel-b">
+            <div class="section-label" style="margin-bottom: 12px;">B. 신규 데이터 수집 설계</div>
+
+            <!-- 패시브 데이터 -->
+            <div class="card">
+              <div class="card-header card-header-b">
+                <h3>📡 패시브 데이터 (자동 수집)</h3>
+                <span class="ai-badge">AI 추천</span>
+              </div>
+              <div class="card-body">
+                <div class="data-grid">
+                  <div class="data-item selected" onclick="this.classList.toggle('selected'); updateBurden();">
+                    <div class="icon">⌚</div>
+                    <div class="info">
+                      <div class="name">웨어러블 디바이스</div>
+                      <div class="desc">심박수, 걸음수, 수면, 활동량</div>
+                    </div>
+                  </div>
+                  <div class="data-item selected" onclick="this.classList.toggle('selected'); updateBurden();">
+                    <div class="icon">📍</div>
+                    <div class="info">
+                      <div class="name">위치/환경 데이터</div>
+                      <div class="desc">이동패턴, 기온, 습도</div>
+                    </div>
+                  </div>
+                  <div class="data-item" onclick="this.classList.toggle('selected'); updateBurden();">
+                    <div class="icon">📱</div>
+                    <div class="info">
+                      <div class="name">앱 사용 패턴</div>
+                      <div class="desc">스크린타임, 앱 카테고리</div>
+                    </div>
+                  </div>
+                  <div class="data-item" onclick="this.classList.toggle('selected'); updateBurden();">
+                    <div class="icon">🩸</div>
+                    <div class="info">
+                      <div class="name">연속 측정 디바이스</div>
+                      <div class="desc">CGM, 혈압계, 체성분계 등</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 액티브 데이터 (EMA) -->
+            <div class="card">
+              <div class="card-header card-header-b">
+                <h3>✍️ 액티브 데이터 (참여자 입력)</h3>
+              </div>
+              <div class="card-body">
+                <div class="data-grid">
+                  <div class="data-item selected" onclick="this.classList.toggle('selected'); updateBurden();">
+                    <div class="icon">🍽️</div>
+                    <div class="info">
+                      <div class="name">식단 기록</div>
+                      <div class="desc">식사 사진, 영양 정보</div>
+                    </div>
+                  </div>
+                  <div class="data-item selected" onclick="this.classList.toggle('selected'); updateBurden();">
+                    <div class="icon">💊</div>
+                    <div class="info">
+                      <div class="name">복약 기록</div>
+                      <div class="desc">약명, 용량, 복용 시간</div>
+                    </div>
+                  </div>
+                  <div class="data-item" onclick="this.classList.toggle('selected'); updateBurden();">
+                    <div class="icon">😊</div>
+                    <div class="info">
+                      <div class="name">기분/증상 체크</div>
+                      <div class="desc">EMA 방식 반복 측정</div>
+                    </div>
+                  </div>
+                  <div class="data-item" onclick="this.classList.toggle('selected'); updateBurden();">
+                    <div class="icon">📓</div>
+                    <div class="info">
+                      <div class="name">일지/다이어리</div>
+                      <div class="desc">자유 텍스트, 음성 메모</div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- EMA 빈도 설정 -->
+                <div class="ema-section">
+                  <div style="font-size:13px; font-weight:600; margin-bottom:10px;">📊 수집 빈도 설정</div>
+                  <div class="ema-row">
+                    <div class="ema-name">🍽️ 식단 기록</div>
+                    <input type="text" class="ema-freq" value="3회/일" />
+                    <span class="ema-timing">매 식사 후</span>
+                  </div>
+                  <div class="ema-row">
+                    <div class="ema-name">💊 복약 기록</div>
+                    <input type="text" class="ema-freq" value="2회/일" />
+                    <span class="ema-timing">아침, 저녁</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 참여자 부담도 -->
+            <div class="burden-meter" id="burden-meter">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div style="font-size:13px; font-weight:600;">⚖️ 참여자 부담도</div>
+                <div style="font-size:20px; font-weight:800; color:#f59e0b;" id="burden-score">5.2/10</div>
+              </div>
+              <div class="burden-bar-bg">
+                <div class="burden-bar-fill burden-mid" id="burden-bar" style="width: 52%;"></div>
+              </div>
+              <div class="burden-label">
+                <span>낮음 (패시브 위주)</span>
+                <span>높음 (8+ 프롬프트/일)</span>
+              </div>
+              <div style="font-size:11px; color:#d97706; margin-top:6px;">
+                ⚠️ 하루 5회 입력 요구 — 탈락률 15-20% 예상
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- 우측 AI 패널 -->
+        <div class="ai-panel">
+          <div class="ai-panel-title">🤖 AI 데이터 어드바이저</div>
+
+          <div class="ai-suggestion" id="ai-suggestion-mode">
+            <div class="ai-suggestion-title">현재 모드 분석</div>
+            <div class="ai-suggestion-text" id="ai-mode-text">
+              <span class="highlight">Mixed-Methods</span> 설계입니다.
+              기존 EMR 코호트(2,340명)에서 조건에 맞는 대상자를 선별한 후,
+              추가 웨어러블+설문 데이터를 수집하는 구조입니다.
+            </div>
+            <div class="ai-impact impact-blue">
+              ℹ️ IRB: 일반 심의 필요 (신규 수집 포함)
+            </div>
+          </div>
+
+          <div class="ai-suggestion">
+            <div class="ai-suggestion-title">데이터 커버리지</div>
+            <div class="ai-suggestion-text">
+              Step 2에서 설정한 <span class="highlight">Primary Outcome</span>을 측정하기 위해
+              최소 Condition + Measurement 테이블이 필요합니다.
+              현재 3개 테이블 선택됨.
+            </div>
+            <div class="ai-impact impact-green">
+              ✅ 연구 설계 요구사항 충족
+            </div>
+          </div>
+
+          <div class="ai-suggestion">
+            <div class="ai-suggestion-title">IRB 넓게 잡기 팁</div>
+            <div class="ai-suggestion-text">
+              현재 데이터 항목 기준으로 IRB를 작성하되, 향후 추가 가능한 항목도 미리 포함하세요.
+              <span class="highlight">Measurement 테이블</span>을 지금 추가하면
+              Lab 데이터 분석도 IRB 재승인 없이 가능합니다.
+            </div>
+            <div class="ai-impact impact-yellow">
+              💡 추천: Measurement 테이블도 선택
+            </div>
+          </div>
+
+          <div class="ai-suggestion" id="ai-mixed-tip" style="border-left: 3px solid #f59e0b;">
+            <div class="ai-suggestion-title">Mixed-Methods 설계 참고</div>
+            <div class="ai-suggestion-text">
+              기존 코호트에서 추가 수집 대상을 선별할 때,
+              <span class="highlight">Step 4</span>에서 코호트 → 모집 대상 전환이 자동 연계됩니다.
+              현재 코호트 2,340명 중 추가 수집 조건에 맞는 대상을 필터링할 수 있습니다.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 하단 요약 바 -->
+      <div class="summary-bar">
+        <div class="summary-chips" id="summary-chips">
+          <span class="chip-a">🗄️ 기존: Person + Condition + Drug (2,340명)</span>
+          <span class="chip-b">📱 신규: 웨어러블 + 식단 + 복약 (5회/일)</span>
+          <span class="chip-neutral">🔄 Mixed-Methods</span>
+        </div>
+        <div class="nav-buttons">
+          <button class="btn-secondary">← 연구 설계</button>
+          <button class="btn-primary" id="next-btn">타겟 설정 →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let sourceA = true;
+    let sourceB = true;
+
+    function toggleSource(source) {
+      if (source === 'a') {
+        sourceA = !sourceA;
+      } else {
+        sourceB = !sourceB;
+      }
+      updateUI();
+    }
+
+    function updateUI() {
+      const cardA = document.getElementById('card-a');
+      const cardB = document.getElementById('card-b');
+      const toggleA = document.getElementById('toggle-a');
+      const toggleB = document.getElementById('toggle-b');
+      const panelA = document.getElementById('panel-a');
+      const panelB = document.getElementById('panel-b');
+      const modeIndicator = document.getElementById('mode-indicator');
+      const flowConnector = document.getElementById('flow-connector');
+      const summaryChips = document.getElementById('summary-chips');
+      const aiModeText = document.getElementById('ai-mode-text');
+      const aiMixedTip = document.getElementById('ai-mixed-tip');
+      const burdenMeter = document.getElementById('burden-meter');
+      const step4Label = document.getElementById('step4-label');
+      const nextBtn = document.getElementById('next-btn');
+
+      // Toggle visuals
+      cardA.className = sourceA ? 'source-toggle active-a' : 'source-toggle';
+      cardB.className = sourceB ? 'source-toggle active-b' : 'source-toggle';
+      toggleA.className = sourceA ? 'toggle-switch on' : 'toggle-switch';
+      toggleB.className = sourceB ? 'toggle-switch on-b' : 'toggle-switch';
+
+      // Panels
+      panelA.className = sourceA ? 'panel-content' : 'panel-content hidden';
+      panelB.className = sourceB ? 'panel-content' : 'panel-content hidden';
+      flowConnector.style.display = (sourceA && sourceB) ? 'block' : 'none';
+      burdenMeter.style.display = sourceB ? 'block' : 'none';
+      aiMixedTip.style.display = (sourceA && sourceB) ? 'block' : 'none';
+
+      // Mode indicator
+      if (sourceA && sourceB) {
+        modeIndicator.className = 'mode-indicator mode-mixed';
+        modeIndicator.innerHTML = '🔄 Mixed-Methods — 기존 데이터 기반 + 추가 수집 (가장 풍부한 연구 설계)';
+        summaryChips.innerHTML = `
+          <span class="chip-a">🗄️ 기존: Person + Condition + Drug (2,340명)</span>
+          <span class="chip-b">📱 신규: 웨어러블 + 식단 + 복약 (5회/일)</span>
+          <span class="chip-neutral">🔄 Mixed-Methods</span>
+        `;
+        aiModeText.innerHTML = '<span class="highlight">Mixed-Methods</span> 설계입니다. 기존 EMR 코호트(2,340명)에서 조건에 맞는 대상자를 선별한 후, 추가 웨어러블+설문 데이터를 수집하는 구조입니다.';
+        document.querySelector('#ai-suggestion-mode .ai-impact').className = 'ai-impact impact-blue';
+        document.querySelector('#ai-suggestion-mode .ai-impact').innerHTML = 'ℹ️ IRB: 일반 심의 필요 (신규 수집 포함)';
+        step4Label.textContent = '코호트→모집';
+        nextBtn.textContent = '코호트→모집 설정 →';
+      } else if (sourceA && !sourceB) {
+        modeIndicator.className = 'mode-indicator mode-retro';
+        modeIndicator.innerHTML = '🗄️ Retrospective — 기존 데이터만 사용 (참여자 모집 불필요, IRB 간소화)';
+        summaryChips.innerHTML = `
+          <span class="chip-a">🗄️ 기존: Person + Condition + Drug (2,340명)</span>
+          <span class="chip-neutral">🗄️ Retrospective</span>
+        `;
+        aiModeText.innerHTML = '<span class="highlight">Retrospective</span> 설계입니다. 기존 EMR 데이터만 사용하므로 참여자 모집이 불필요하며, IRB 면제 또는 간이 심의 가능성이 높습니다.';
+        document.querySelector('#ai-suggestion-mode .ai-impact').className = 'ai-impact impact-green';
+        document.querySelector('#ai-suggestion-mode .ai-impact').innerHTML = '✅ IRB: 면제/간이 가능성 높음';
+        step4Label.textContent = '코호트 정의';
+        nextBtn.textContent = '코호트 정의 →';
+      } else if (!sourceA && sourceB) {
+        modeIndicator.className = 'mode-indicator mode-pro';
+        modeIndicator.innerHTML = '📱 Prospective — 새 데이터 수집 (참여자 모집 + IRB 일반 심의 필요)';
+        summaryChips.innerHTML = `
+          <span class="chip-b">📱 신규: 웨어러블 + 식단 + 복약 (5회/일)</span>
+          <span class="chip-neutral">📱 Prospective</span>
+        `;
+        aiModeText.innerHTML = '<span class="highlight">Prospective</span> 설계입니다. 참여자를 새로 모집하여 데이터를 수집합니다. IRB 일반 심의가 필요하며, 참여자 보상 에스크로가 필요합니다.';
+        document.querySelector('#ai-suggestion-mode .ai-impact').className = 'ai-impact impact-yellow';
+        document.querySelector('#ai-suggestion-mode .ai-impact').innerHTML = '⚠️ IRB: 일반 심의 필요 + 참여자 보상';
+        step4Label.textContent = '참여자 모집';
+        nextBtn.textContent = '참여자 모집 →';
+      } else {
+        modeIndicator.className = 'mode-indicator mode-none';
+        modeIndicator.innerHTML = '⬜ 데이터 소스를 선택해주세요';
+        summaryChips.innerHTML = '<span class="chip-neutral">데이터 소스 미선택</span>';
+        aiModeText.innerHTML = '데이터 소스를 하나 이상 활성화해주세요.';
+        step4Label.textContent = '타겟 설정';
+        nextBtn.textContent = '다음 →';
+      }
+    }
+
+    function updateBurden() {
+      // Simple burden calculation
+      const selected = document.querySelectorAll('#panel-b .data-item.selected').length;
+      const score = Math.min(10, selected * 1.3 + 1.5).toFixed(1);
+      document.getElementById('burden-score').textContent = score + '/10';
+      const pct = (score / 10 * 100);
+      const bar = document.getElementById('burden-bar');
+      bar.style.width = pct + '%';
+      bar.className = 'burden-bar-fill ' + (pct < 40 ? 'burden-low' : pct < 70 ? 'burden-mid' : 'burden-high');
+    }
+  </script>
+</body>
+</html>

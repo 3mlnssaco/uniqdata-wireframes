@@ -563,6 +563,28 @@ table.dg-tbl tbody tr:hover{background:#f8fafc;}
 .ac-retro-card:hover{border-color:#6366f1;box-shadow:0 2px 8px rgba(99,102,241,.08);}
 
 .version-tag{position:fixed;bottom:4px;right:8px;font-size:9px;color:#d1d5db;z-index:1;}
+
+/* 임시저장 섹션 */
+.draft-section{padding:6px 10px;border-bottom:1px solid rgba(255,255,255,.05);}
+.draft-label{font-size:9px;color:#64748b;padding:2px 8px 4px;display:flex;align-items:center;gap:4px;}
+.draft-item{display:flex;align-items:center;gap:6px;padding:5px 8px;border-radius:4px;color:#94a3b8;font-size:10px;cursor:pointer;margin-bottom:1px;transition:all .12s;position:relative;}
+.draft-item:hover{background:rgba(255,255,255,.05);}
+.draft-item .draft-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.draft-item .draft-dot.red{background:#ef4444;box-shadow:0 0 4px rgba(239,68,68,.4);}
+.draft-item .draft-dot.yellow{background:#eab308;box-shadow:0 0 4px rgba(234,179,8,.4);}
+.draft-item .draft-status{font-size:8px;margin-left:auto;padding:1px 5px;border-radius:3px;font-weight:500;}
+.draft-item .draft-status.red{color:#fca5a5;background:rgba(239,68,68,.12);}
+.draft-item .draft-status.yellow{color:#fde68a;background:rgba(234,179,8,.12);}
+
+/* 연구 유형 칩 */
+.rtype-chip{display:inline-flex;align-items:center;padding:1px 6px;border-radius:3px;font-size:8px;font-weight:600;margin-left:auto;letter-spacing:-.2px;}
+.rtype-chip.prospective{color:#0ea5e9;background:rgba(14,165,233,.12);border:1px solid rgba(14,165,233,.2);}
+.rtype-chip.hybrid{color:#a78bfa;background:rgba(167,139,250,.12);border:1px solid rgba(167,139,250,.2);}
+.rtype-chip.retrospective{color:#818cf8;background:rgba(129,140,248,.12);border:1px solid rgba(129,140,248,.2);}
+
+/* 내 지갑 네비 */
+.nav-wallet{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:5px;color:#94a3b8;cursor:pointer;font-size:12px;transition:all .12s;}
+.nav-wallet:hover{background:rgba(255,255,255,.05);color:#e2e8f0;}
 </style>
 </head>
 <body>
@@ -573,36 +595,53 @@ table.dg-tbl tbody tr:hover{background:#f8fafc;}
     <div class="logo"><div class="logo-icon">U</div>UniQdata</div>
     <div class="nav-section"><a class="nav-item">🏠 연구 허브</a></div>
     <div class="nav-section" style="flex:1;overflow-y:auto;">
+      <!-- 임시저장 섹션 -->
+      <div class="draft-section" id="draftSection">
+        <div class="draft-label">📝 임시저장 <span style="background:rgba(239,68,68,.15);color:#fca5a5;padding:0 4px;border-radius:3px;font-size:8px;font-weight:600;" id="draftCount">2</span></div>
+        <div class="draft-item" data-draft="draft1">
+          <span class="draft-dot red"></span>
+          <span>당뇨 환자 관찰 연구</span>
+          <span class="draft-status red">미완료</span>
+        </div>
+        <div class="draft-item" data-draft="draft2">
+          <span class="draft-dot yellow"></span>
+          <span>간기능 바이오마커</span>
+          <span class="draft-status yellow">IRB 대기</span>
+        </div>
+      </div>
       <div style="font-size:9px;color:#64748b;padding:5px 8px;">내 연구</div>
       <!-- 전향적 연구 -->
       <div class="rn-header study-nav active" data-study="visit" id="studyNav-visit">
         <span style="color:#0072B2;">●</span> <span>대사개선 약물 연구</span>
-        <span class="sc-type" style="margin-left:auto;">전향적</span>
+        <span class="rtype-chip prospective">전향적</span>
       </div>
       <div class="rn-sub study-sub active" id="studySub-visit">
         <a class="ns-item active" data-nav="ov" data-study="visit">개요</a>
         <a class="ns-item" data-nav="tb" data-study="visit">테이블</a>
         <a class="ns-item" data-nav="cr" data-study="visit">🔒 클린룸</a>
+        <a class="ns-item" data-nav="wl" data-study="visit">💰 프로젝트 지갑</a>
       </div>
       <!-- 하이브리드 연구 -->
       <div class="rn-header study-nav" data-study="hybrid" id="studyNav-hybrid">
         <span style="color:#8b5cf6;">●</span> <span>약물안전성 하이브리드</span>
-        <span class="sc-type" style="margin-left:auto;">하이브리드</span>
+        <span class="rtype-chip hybrid">하이브리드</span>
       </div>
       <div class="rn-sub study-sub" id="studySub-hybrid" style="display:none;">
         <a class="ns-item" data-nav="ov" data-study="hybrid">개요</a>
         <a class="ns-item" data-nav="tb" data-study="hybrid">테이블</a>
         <a class="ns-item" data-nav="cr" data-study="hybrid">🔒 클린룸</a>
+        <a class="ns-item" data-nav="wl" data-study="hybrid">💰 프로젝트 지갑</a>
       </div>
       <!-- 후향적 연구 -->
       <div class="rn-header study-nav" data-study="retro_cdm" id="studyNav-retro_cdm">
         <span style="color:#6366f1;">●</span> <span>CDM 후향적 코호트</span>
-        <span class="sc-type" style="margin-left:auto;">후향적</span>
+        <span class="rtype-chip retrospective">후향적</span>
       </div>
       <div class="rn-sub study-sub" id="studySub-retro_cdm" style="display:none;">
         <a class="ns-item" data-nav="ov" data-study="retro_cdm">개요</a>
         <a class="ns-item" data-nav="tb" data-study="retro_cdm">테이블</a>
         <a class="ns-item" data-nav="cr" data-study="retro_cdm">🔒 클린룸</a>
+        <a class="ns-item" data-nav="wl" data-study="retro_cdm">💰 프로젝트 지갑</a>
       </div>
     </div>
     <div class="study-scenarios" id="studyScenarios" style="display:none;">
@@ -612,6 +651,10 @@ table.dg-tbl tbody tr:hover{background:#f8fafc;}
       <div class="sc-item" data-scenario="phase"><span class="sc-dot" style="background:#8b5cf6;"></span>항암 용량탐색<span class="sc-type">Phase I/II</span></div>
       <div class="sc-item" data-scenario="day"><span class="sc-dot" style="background:#D55E00;"></span>ICU 모니터링<span class="sc-type">관찰</span></div>
       <div class="sc-item" data-scenario="retro_cdm"><span class="sc-dot" style="background:#6366f1;"></span>CDM 후향적 분석<span class="sc-type">Retro</span></div>
+    </div>
+    <div class="nav-section" style="padding:6px 10px;border-top:1px solid rgba(255,255,255,.05);">
+      <a class="nav-wallet" id="navMyWallet">💳 내 지갑</a>
+      <a class="nav-item" style="font-size:11px;color:#64748b;">⚙️ 설정</a>
     </div>
     <div class="sidebar-footer"><div style="display:flex;align-items:center;gap:8px;padding:4px;"><div class="u-av">김</div><div><div style="font-size:12px;color:#e2e8f0;">김연구</div><div style="font-size:10px;color:#64748b;">서울대학교병원</div></div></div></div>
   </nav>
@@ -630,6 +673,7 @@ table.dg-tbl tbody tr:hover{background:#f8fafc;}
         <div class="tab active" data-tab="overview" id="tab-ov">개요</div>
         <div class="tab" data-tab="table" id="tab-tb">테이블</div>
         <div class="tab" data-tab="cleanroom" id="tab-cr">🔒 클린룸</div>
+        <div class="tab" data-tab="wallet" id="tab-wl">💰 프로젝트 지갑</div>
       </div>
 
       <!-- ===== 개요 탭 ===== -->
@@ -781,6 +825,95 @@ table.dg-tbl tbody tr:hover{background:#f8fafc;}
           </div>
         </div>
       </div>
+
+      <!-- ===== 프로젝트 지갑 탭 ===== -->
+      <div class="tab-content" id="tc-wl" style="display:none;">
+        <div style="padding:16px;display:flex;flex-direction:column;gap:12px;">
+          <!-- 지갑 잔액 카드 -->
+          <div style="background:linear-gradient(135deg,#1a5276 0%,#2e86c1 100%);border-radius:12px;padding:20px 24px;color:white;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+              <div>
+                <div style="font-size:11px;opacity:.7;margin-bottom:4px;">프로젝트 지갑 잔액</div>
+                <div style="font-size:28px;font-weight:800;letter-spacing:-1px;" id="wlBalance">2,450,000 <span style="font-size:14px;font-weight:500;">KRW</span></div>
+              </div>
+              <div style="text-align:right;">
+                <div style="font-size:10px;opacity:.6;">필요 금액</div>
+                <div style="font-size:16px;font-weight:600;" id="wlRequired">3,200,000 KRW</div>
+                <div style="font-size:10px;opacity:.7;margin-top:2px;" id="wlGap">⚠ 부족: 750,000 KRW</div>
+              </div>
+            </div>
+            <div style="display:flex;gap:8px;margin-top:12px;">
+              <div style="background:rgba(255,255,255,.15);border-radius:6px;padding:6px 12px;font-size:11px;display:flex;align-items:center;gap:6px;cursor:pointer;" id="wlAddr">
+                <span style="font-family:monospace;font-size:10px;" id="wlAddrText">0x7a3F...b82E</span>
+                <span style="opacity:.7;">📋 복사</span>
+              </div>
+              <button style="background:white;color:#1a5276;border:none;border-radius:6px;padding:6px 16px;font-size:11px;font-weight:700;cursor:pointer;" id="wlTransfer">이체하기 →</button>
+            </div>
+          </div>
+
+          <!-- 에스크로 상태 -->
+          <div style="background:white;border:1px solid #e5e7eb;border-radius:10px;padding:16px;">
+            <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:10px;">에스크로 예치 현황</div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;" id="wlEscrowCards">
+              <div style="flex:1;min-width:120px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:10px;">
+                <div style="font-size:9px;color:#15803d;">예치 완료</div>
+                <div style="font-size:18px;font-weight:700;color:#15803d;">1,200,000</div>
+                <div style="font-size:9px;color:#6b7280;margin-top:2px;">데이터 수집 1차</div>
+              </div>
+              <div style="flex:1;min-width:120px;background:#fefce8;border:1px solid #fde68a;border-radius:8px;padding:10px;">
+                <div style="font-size:9px;color:#a16207;">대기 중</div>
+                <div style="font-size:18px;font-weight:700;color:#a16207;">1,250,000</div>
+                <div style="font-size:9px;color:#6b7280;margin-top:2px;">데이터 수집 2차</div>
+              </div>
+              <div style="flex:1;min-width:120px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:10px;">
+                <div style="font-size:9px;color:#6b7280;">미예치</div>
+                <div style="font-size:18px;font-weight:700;color:#9ca3af;">750,000</div>
+                <div style="font-size:9px;color:#6b7280;margin-top:2px;">분석 비용</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- IRB 인증 상태 -->
+          <div style="background:white;border:1px solid #e5e7eb;border-radius:10px;padding:16px;" id="wlIrbSection">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+              <div style="font-size:12px;font-weight:700;color:#374151;">IRB 심의 인증</div>
+              <span style="font-size:10px;padding:3px 8px;border-radius:4px;font-weight:600;" id="wlIrbBadge"></span>
+            </div>
+            <div id="wlIrbContent" style="font-size:11px;color:#6b7280;"></div>
+          </div>
+
+          <!-- 견적 명세서 -->
+          <div style="background:white;border:1px solid #e5e7eb;border-radius:10px;padding:16px;">
+            <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:10px;">견적 명세서</div>
+            <table style="width:100%;font-size:11px;border-collapse:collapse;" id="wlEstimate">
+              <tr style="border-bottom:1px solid #f3f4f6;"><td style="padding:6px 0;color:#6b7280;">데이터 수집 (1차)</td><td style="text-align:right;font-weight:600;">1,200,000 KRW</td></tr>
+              <tr style="border-bottom:1px solid #f3f4f6;"><td style="padding:6px 0;color:#6b7280;">데이터 수집 (2차)</td><td style="text-align:right;font-weight:600;">1,250,000 KRW</td></tr>
+              <tr style="border-bottom:1px solid #f3f4f6;"><td style="padding:6px 0;color:#6b7280;">분석 비용</td><td style="text-align:right;font-weight:600;">750,000 KRW</td></tr>
+              <tr style="border-top:2px solid #374151;"><td style="padding:8px 0;font-weight:700;color:#374151;">합계</td><td style="text-align:right;font-weight:800;font-size:14px;color:#1a5276;">3,200,000 KRW</td></tr>
+            </table>
+          </div>
+
+          <!-- 지출 원장 -->
+          <div style="background:white;border:1px solid #e5e7eb;border-radius:10px;padding:16px;">
+            <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:10px;">지출 원장</div>
+            <div style="display:flex;flex-direction:column;gap:6px;" id="wlLedger">
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:#f9fafb;border-radius:6px;font-size:11px;">
+                <div><span style="color:#15803d;font-weight:600;">입금</span> · 에스크로 예치 1차</div>
+                <div style="display:flex;gap:12px;align-items:center;"><span style="font-weight:600;color:#15803d;">+1,200,000</span><span style="color:#9ca3af;font-size:10px;">2026-01-15</span></div>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:#f9fafb;border-radius:6px;font-size:11px;">
+                <div><span style="color:#15803d;font-weight:600;">입금</span> · 추가 충전</div>
+                <div style="display:flex;gap:12px;align-items:center;"><span style="font-weight:600;color:#15803d;">+1,250,000</span><span style="color:#9ca3af;font-size:10px;">2026-02-01</span></div>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:#f9fafb;border-radius:6px;font-size:11px;">
+                <div><span style="color:#dc2626;font-weight:600;">출금</span> · 데이터 수집 1차 정산</div>
+                <div style="display:flex;gap:12px;align-items:center;"><span style="font-weight:600;color:#dc2626;">-1,200,000</span><span style="color:#9ca3af;font-size:10px;">2026-02-10</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
   </main>
 </div>
@@ -1500,11 +1633,16 @@ function scrubToDay(newDay){
   const nPast = PAST_VISITS.length;
   if(nPast < 1) return;
 
-  // 데이터 재생성
-  EXP_DATA = generatePatientData(PATIENT_PROFILES.exp, nPast);
-  CTRL_DATA = generatePatientData(PATIENT_PROFILES.ctrl, nPast);
-  ALL = generateALL(nPast);
-  STUDY_CONFIG.safety.ae_by_visit = VISITS.map((_,i)=>i<nPast?Math.floor(seededRandom(i*7+1)()*5+1):0);
+  // 데이터 재생성 — today_day 기준 실제 수집된 visit까지만 데이터 생성
+  // scrub이 오늘 이후로 가더라도 수집 데이터는 오늘까지만 존재
+  const todayDay = tl.today_day;
+  const hasToday = todayDay !== null && todayDay !== undefined;
+  const nCollected = hasToday ? VISITS.filter(v=>v.target_day<=todayDay).length : nPast;
+  const nData = Math.min(nPast, nCollected); // 실제 데이터가 있는 visit 수
+  EXP_DATA = generatePatientData(PATIENT_PROFILES.exp, nData);
+  CTRL_DATA = generatePatientData(PATIENT_PROFILES.ctrl, nData);
+  ALL = generateALL(nData);
+  STUDY_CONFIG.safety.ae_by_visit = VISITS.map((_,i)=>i<nData?Math.floor(seededRandom(i*7+1)()*5+1):0);
 
   // 마일스톤 상태 업데이트
   tl.milestones.forEach(m=>{
@@ -2074,21 +2212,70 @@ function buildActionCenter(){
 }
 
 // ===============================================
+// 프로젝트 지갑 탭 — 연구별 동적 데이터
+// ===============================================
+function updateWalletTab(){
+  const cfg = STUDY_CONFIG;
+  const rt = cfg.research_type;
+  const isRetro = rt === 'retrospective';
+  // IRB 상태
+  const irbType = cfg.regulatory.type; // 'irb_required' | 'irb_exempt' | 'none'
+  const badge = document.getElementById('wlIrbBadge');
+  const content = document.getElementById('wlIrbContent');
+  if(badge && content){
+    if(irbType === 'none'){
+      badge.style.background='#f0fdf4';badge.style.color='#15803d';badge.textContent='심의 불필요';
+      content.innerHTML='이 연구는 IRB 심의가 필요하지 않습니다. 에스크로 결제를 바로 진행할 수 있습니다.';
+    } else if(irbType === 'irb_exempt'){
+      badge.style.background='#eff6ff';badge.style.color='#1d4ed8';badge.textContent='면제';
+      content.innerHTML='IRB 심의 면제 대상 연구입니다. 면제 사유가 확인되었습니다.';
+    } else {
+      const hasNumber = cfg.regulatory.number && cfg.regulatory.number !== '심사 대기';
+      if(hasNumber){
+        badge.style.background='#f0fdf4';badge.style.color='#15803d';badge.textContent='인증 완료';
+        content.innerHTML='<span style="font-weight:600;">승인번호:</span> '+cfg.regulatory.number+' <span style="color:#15803d;">✓ 인증됨</span>';
+      } else {
+        badge.style.background='#fef3c7';badge.style.color='#92400e';badge.textContent='인증 대기';
+        content.innerHTML='IRB 심의가 필요합니다. 승인번호를 입력하거나 승인서를 업로드해주세요.<br><div style="margin-top:8px;display:flex;gap:8px;"><input type="text" placeholder="IRB 승인번호 입력" style="flex:1;padding:6px 10px;border:1px solid #d1d5db;border-radius:6px;font-size:11px;"><button style="padding:6px 12px;background:#1a5276;color:white;border:none;border-radius:6px;font-size:11px;cursor:pointer;">인증</button><button style="padding:6px 12px;background:#f3f4f6;border:1px solid #d1d5db;border-radius:6px;font-size:11px;cursor:pointer;">📎 이미지 업로드</button></div>';
+      }
+    }
+  }
+  // 지갑 잔액 연구별 차등
+  const balEl = document.getElementById('wlBalance');
+  const reqEl = document.getElementById('wlRequired');
+  const gapEl = document.getElementById('wlGap');
+  if(balEl){
+    const bal = isRetro ? 0 : (rt==='hybrid' ? 1800000 : 2450000);
+    const req = isRetro ? 0 : (rt==='hybrid' ? 2500000 : 3200000);
+    const gap = req - bal;
+    balEl.innerHTML = (isRetro ? '분석 완료' : bal.toLocaleString()+' <span style="font-size:14px;font-weight:500;">KRW</span>');
+    if(reqEl) reqEl.textContent = isRetro ? '— ' : req.toLocaleString()+' KRW';
+    if(gapEl) gapEl.textContent = isRetro ? '후향적 분석 — 에스크로 불필요' : (gap>0?'⚠ 부족: '+gap.toLocaleString()+' KRW':'✓ 잔액 충분');
+    if(gapEl && gap<=0) gapEl.style.color='#bbf7d0';
+  }
+}
+
+// ===============================================
 // TAB SWITCHING
 // ===============================================
 let _currentStudy = 'visit'; // 현재 활성 연구 key
 function switchTab(n){
   document.querySelectorAll('.tab[data-tab]').forEach(t=>t.classList.toggle('active',t.dataset.tab===n));
-  ['ov','tb','cr'].forEach(x=>{
-    const key={ov:'overview',tb:'table',cr:'cleanroom'}[x];
-    document.getElementById('tc-'+x).classList.toggle('active',key===n);
+  ['ov','tb','cr','wl'].forEach(x=>{
+    const key={ov:'overview',tb:'table',cr:'cleanroom',wl:'wallet'}[x];
+    const el=document.getElementById('tc-'+x);
+    if(el){
+      if(x==='wl'){el.style.display=key===n?'block':'none';}
+      else{el.classList.toggle('active',key===n);}
+    }
   });
   // 사이드바 ns-item 활성 표시 (현재 연구의 서브아이템만)
   document.querySelectorAll('.study-sub .ns-item').forEach(el=>{
-    const navKey = {ov:'overview',tb:'table',cr:'cleanroom'}[el.dataset.nav];
+    const navKey = {ov:'overview',tb:'table',cr:'cleanroom',wl:'wallet'}[el.dataset.nav];
     el.classList.toggle('active', el.dataset.study===_currentStudy && navKey===n);
   });
   if(n==='overview')setTimeout(buildMetricsGrid,50);
+  if(n==='wallet')updateWalletTab();
 }
 document.querySelectorAll('.tab[data-tab]').forEach(t=>t.addEventListener('click',()=>switchTab(t.dataset.tab)));
 
@@ -2121,7 +2308,7 @@ document.querySelectorAll('.study-sub .ns-item').forEach(el=>{
   el.addEventListener('click', ()=>{
     const studyKey = el.dataset.study;
     if(studyKey !== _currentStudy) switchStudy(studyKey);
-    const tabMap = {ov:'overview',tb:'table',cr:'cleanroom'};
+    const tabMap = {ov:'overview',tb:'table',cr:'cleanroom',wl:'wallet'};
     switchTab(tabMap[el.dataset.nav]);
   });
 });
@@ -2184,7 +2371,11 @@ function rebuildTable(){
     const stBadge=p.st?`<span class="status-badge ${p.st}">${ST_LABELS[p.st]||p.st}</span>`:'';
     const armLabel = p.g==='exp' ? STUDY_CONFIG.design.arm_labels[0] : (STUDY_CONFIG.design.arm_labels[1]||'대조군');
     let h=`<td class="pid"><span class="sv ${p.sv}"></span>${p.id}${p.al?'⚠️':''}<span class="gb ${p.g}">${armLabel}</span>${stBadge}<br><span style="font-size:9px;color:#9ca3af;font-weight:400;">${p.nm}</span></td>`;
-    const li=PAST_VISITS.length-1;
+    // 실제 데이터 길이 기준 (today_day 이후 visit은 데이터 없음)
+    const _td = STUDY_CONFIG.timeline.today_day;
+    const _htd = _td !== null && _td !== undefined;
+    const _nColl = _htd ? VISITS.filter(v=>v.target_day<=_td).length : PAST_VISITS.length;
+    const li = Math.min(PAST_VISITS.length, _nColl) - 1;
     allMetrics.forEach((m,mi)=>{
       const k=m.k;
       const d=dl(p[k]);const v=p[k]?p[k][li]:null;
@@ -2310,17 +2501,20 @@ function buildMiniTimeline(){
 
   bar.innerHTML = html;
 
-  // Info text — 현재 시점 정보
-  const li = PAST_VISITS.length - 1;
+  // Info text — today_day 기준 실제 수집 상태 표시
+  const collectedVs = hasToday ? VISITS.filter(v=>v.target_day<=todayDay) : PAST_VISITS;
+  const nCollectedInfo = collectedVs.length;
+  const lastCollectedV = collectedVs[nCollectedInfo-1];
+  const uncollectedN = VISITS.length - nCollectedInfo;
   if(isRetro){
     info.innerHTML = `<span style="color:#6366f1;">전체 ${VISITS.length}시점</span> · M0 기준 후향적 분석`;
   } else if(isHybrid){
     const retroPts = VISITS.filter(v=>v.target_day<0).length;
-    const prospPts = VISITS.filter(v=>v.target_day>0).length;
-    info.innerHTML = `<span style="color:#8b5cf6;">후향 ${retroPts} + 전향 ${prospPts}시점</span> · BL 기준 하이브리드`;
+    const prospPts = collectedVs.filter(v=>v.target_day>0).length;
+    info.innerHTML = `<span style="color:#8b5cf6;">후향 ${retroPts} + 전향 ${prospPts}시점 수집</span> · BL 기준 하이브리드`;
   } else {
-    const futureLabel = hasFutureVisits ? ` · 예측 ${FUTURE_VISITS.length}시점` : '';
-    info.innerHTML = `<span style="color:#0072B2;">${PAST_VISITS[li].id}</span> · D${tl.current_day}${futureLabel}`;
+    const futureLabel = uncollectedN > 0 ? ` · <span style="color:#9ca3af;">미수집 ${uncollectedN}시점</span>` : '';
+    info.innerHTML = `<span style="color:#0072B2;">${lastCollectedV.id} 수집완료</span> (${nCollectedInfo}/${VISITS.length})${futureLabel}`;
   }
 
   // === DRAG LOGIC — scrubToDay 연동 ===
@@ -2430,12 +2624,14 @@ function updateAggOptions(){
   if(!sel) return;
   const rt = STUDY_CONFIG.research_type;
   if(rt === 'retrospective'){
-    // 후향적: 일간/주간 무의미 → 월간/분기/연간/시점별
+    // 후향적: 모든 집계 단위 사용 가능
     sel.innerHTML = `
-      <button class="agg-btn active" data-agg="visit">시점별</button>
+      <button class="agg-btn" data-agg="day">일간</button>
+      <button class="agg-btn" data-agg="week">주간</button>
       <button class="agg-btn" data-agg="month">월간</button>
       <button class="agg-btn" data-agg="quarter">분기</button>
-      <button class="agg-btn" data-agg="year">연간</button>`;
+      <button class="agg-btn" data-agg="year">연간</button>
+      <button class="agg-btn active" data-agg="visit">시점별</button>`;
     _aggUnit = 'visit';
   } else if(rt === 'hybrid'){
     // 하이브리드: 후향 구간은 월간, 전향 구간은 일간/주간 가능
@@ -2488,7 +2684,7 @@ function getAggCells(){
       const isPast = isRetro ? true : d <= tl.current_day;
       const hasVisit = VISITS.some(v=>Math.abs(v.target_day-d)<=step/2);
       const epoch = isHybrid ? (d < 0 ? 'retro' : d === 0 ? 'boundary' : 'prosp') : null;
-      cells.push({label:'D'+d, day:d, start:d, end:d+step-1, isPast, hasData:isPast&&hasVisit, epoch});
+      cells.push({label:'D'+d, date:dayToDate(d,true), day:d, start:d, end:d+step-1, isPast, hasData:isPast&&hasVisit, epoch});
     }
   } else if(_aggUnit === 'week'){
     const weeks = Math.ceil((totalDays+1)/7);
@@ -2499,7 +2695,7 @@ function getAggCells(){
       const isPast = isRetro ? true : mid <= tl.current_day;
       const hasVisit = VISITS.some(v=>v.target_day>=wStart && v.target_day<=wEnd);
       const epoch = isHybrid ? (mid < 0 ? 'retro' : 'prosp') : null;
-      cells.push({label:'W'+(w+1), day:mid, start:wStart, end:wEnd, isPast, hasData:isPast&&hasVisit, epoch});
+      cells.push({label:'W'+(w+1), date:dayToDate(wStart,true)+'~'+dayToDate(wEnd,true), day:mid, start:wStart, end:wEnd, isPast, hasData:isPast&&hasVisit, epoch});
     }
   } else if(_aggUnit === 'month'){
     const months = Math.ceil((totalDays+1)/30);
@@ -2510,7 +2706,7 @@ function getAggCells(){
       const isPast = isRetro ? true : mid <= tl.current_day;
       const hasVisit = VISITS.some(v=>v.target_day>=mStart && v.target_day<=mEnd);
       const epoch = isHybrid ? (mid < 0 ? 'retro' : 'prosp') : null;
-      cells.push({label:'M'+(m+1), day:mid, start:mStart, end:mEnd, isPast, hasData:isPast&&hasVisit, epoch});
+      cells.push({label:'M'+(m+1), date:dayToDate(mStart,true)+'~'+dayToDate(mEnd,true), day:mid, start:mStart, end:mEnd, isPast, hasData:isPast&&hasVisit, epoch});
     }
   } else if(_aggUnit === 'quarter'){
     // 분기: 90일 단위
@@ -2520,7 +2716,7 @@ function getAggCells(){
       const qEnd = Math.min(qStart+89, lastDay);
       const mid = Math.floor((qStart+qEnd)/2);
       const hasVisit = VISITS.some(v=>v.target_day>=qStart && v.target_day<=qEnd);
-      cells.push({label:'Q'+(q+1), day:mid, start:qStart, end:qEnd, isPast:true, hasData:hasVisit});
+      cells.push({label:'Q'+(q+1), date:dayToDate(qStart,true)+'~'+dayToDate(qEnd,true), day:mid, start:qStart, end:qEnd, isPast:true, hasData:hasVisit});
     }
   } else if(_aggUnit === 'year'){
     // 연간: 365일 단위
@@ -2530,7 +2726,7 @@ function getAggCells(){
       const yEnd = Math.min(yStart+364, lastDay);
       const mid = Math.floor((yStart+yEnd)/2);
       const hasVisit = VISITS.some(v=>v.target_day>=yStart && v.target_day<=yEnd);
-      cells.push({label:'Y'+(y+1), day:mid, start:yStart, end:yEnd, isPast:true, hasData:hasVisit});
+      cells.push({label:'Y'+(y+1), date:dayToDate(yStart,true)+'~'+dayToDate(yEnd,true), day:mid, start:yStart, end:yEnd, isPast:true, hasData:hasVisit});
     }
   }
   return cells;
@@ -3165,12 +3361,17 @@ function initPageHeader(){
   const nTotal = PATIENT_PROFILES.exp.length + PATIENT_PROFILES.ctrl.length;
   const armInfo = cfg.design.has_control_arm ? `${cfg.design.arm_labels.join(' / ')} · ${PATIENT_PROFILES.exp.length}+${PATIENT_PROFILES.ctrl.length}명` : `${cfg.design.arm_labels[0]} · ${PATIENT_PROFILES.exp.length}명`;
   document.getElementById('pageSub').textContent=`${cfg.subtitle} · ${cfg.design.study_type.toUpperCase()} · ${armInfo} · ${regLabel}`;
-  // 진행 상태: time_unit 포인트 기준
+  // 진행 상태: today_day 기준 수집된 visit까지만 표시
   const isRetroHeader = STUDY_CONFIG.research_type === 'retrospective';
+  const _todayDayH = STUDY_CONFIG.timeline.today_day;
+  const _hasTodayH = _todayDayH !== null && _todayDayH !== undefined;
+  // 실제 수집 완료된 최신 visit (today_day 기준)
+  const collectedVisits = _hasTodayH ? VISITS.filter(v=>v.target_day<=_todayDayH) : PAST_VISITS;
+  const lastCollected = collectedVisits[collectedVisits.length-1] || curPt;
   document.getElementById('statusText').textContent = isRetroHeader ? '분석 완료' : '진행 중';
   document.getElementById('statusDetail').textContent = isRetroHeader
     ? `전체 ${totalPts}시점 수집완료`
-    : `${curPt.id} / ${VISITS[totalPts-1].id}`;
+    : `${lastCollected.id} / ${VISITS[totalPts-1].id}`;
   // 타임라인 config info (인라인)
   const tlInfo=document.getElementById('tlConfigInfo');
   if(tlInfo) tlInfo.textContent=`기준: ${tuRefLabel()} · ${tuBehaviorLabel()} · 분석: ${cfg.timeline.analysis_rule}`;

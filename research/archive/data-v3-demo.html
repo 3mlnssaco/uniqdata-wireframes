@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UniQdata — 개요+테이블 통합 데모 v3</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f5;color:#1f2937;}
+    .layout{display:flex;min-height:100vh;}
+
+    /* === SIDEBAR === */
+    .sidebar{width:240px;background:linear-gradient(180deg,#0f172a,#1e293b);color:white;display:flex;flex-direction:column;flex-shrink:0;}
+    .logo{padding:20px 24px;font-size:20px;font-weight:700;border-bottom:1px solid rgba(255,255,255,.1);display:flex;align-items:center;gap:10px;}
+    .logo-icon{width:32px;height:32px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;}
+    .nav-section{padding:16px 12px;border-bottom:1px solid rgba(255,255,255,.05);}
+    .nav-item{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:8px;color:#94a3b8;cursor:pointer;font-size:14px;text-decoration:none;}
+    .nav-item:hover{background:rgba(255,255,255,.05);color:#e2e8f0;}
+    .rn-header{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:8px;font-size:13px;color:#60a5fa;background:rgba(59,130,246,.1);cursor:pointer;}
+    .rn-sub{padding-left:20px;margin-top:4px;border-left:2px solid rgba(255,255,255,.1);margin-left:18px;}
+    .ns-item{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:6px;color:#94a3b8;font-size:12px;cursor:pointer;text-decoration:none;margin-bottom:2px;}
+    .ns-item:hover{background:rgba(255,255,255,.05);color:#e2e8f0;}
+    .ns-item.active{background:rgba(59,130,246,.15);color:#60a5fa;}
+    .status-dot{width:7px;height:7px;border-radius:50%;background:#22c55e;flex-shrink:0;}
+    .sidebar-footer{margin-top:auto;padding:16px;border-top:1px solid rgba(255,255,255,.05);}
+    .u-info{display:flex;align-items:center;gap:12px;padding:8px;}
+    .u-av{width:36px;height:36px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;}
+
+    /* === MAIN === */
+    .main{flex:1;overflow-y:auto;display:flex;flex-direction:column;}
+    .content{padding:24px;flex:1;display:flex;flex-direction:column;}
+    .breadcrumb{display:flex;align-items:center;gap:8px;margin-bottom:16px;font-size:14px;color:#6b7280;}
+    .breadcrumb a{color:#3b82f6;text-decoration:none;}
+    .page-title{font-size:20px;font-weight:700;margin-bottom:4px;}
+    .page-sub{color:#6b7280;font-size:13px;margin-bottom:20px;}
+
+    /* 탭 */
+    .tabs{display:flex;gap:0;border-bottom:2px solid #e5e7eb;margin-bottom:20px;}
+    .tab{padding:12px 24px;font-size:14px;color:#6b7280;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;font-weight:500;user-select:none;}
+    .tab.active{color:#3b82f6;border-bottom-color:#3b82f6;}
+    .tab:hover{color:#374151;}
+
+    /* 탭 콘텐츠 */
+    .tab-content{display:none;flex:1;}
+    .tab-content.active{display:flex;flex-direction:column;flex:1;}
+
+    /* ====== 개요 탭 ====== */
+    .kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;}
+    .kpi-card{background:white;border:1px solid #e5e7eb;border-radius:12px;padding:16px 20px;}
+    .kpi-label{font-size:12px;color:#6b7280;margin-bottom:6px;}
+    .kpi-value{font-size:24px;font-weight:700;margin-bottom:2px;}
+    .kpi-sub{font-size:11px;color:#9ca3af;}
+    .kpi-change{font-size:11px;margin-top:4px;}
+    .kpi-change.good{color:#16a34a;}
+    .source-tag{display:inline-block;font-size:10px;padding:2px 6px;border-radius:4px;margin:2px 2px 0 0;font-weight:600;}
+    .source-tag.emr{background:#dbeafe;color:#0c4a6e;}
+    .source-tag.wear{background:#dcfce7;color:#14532d;}
+    .source-tag.ema{background:#fce7f3;color:#500724;}
+    .source-tag.ext{background:#fed7aa;color:#7c2d12;}
+
+    .section-card{background:white;border:1px solid #e5e7eb;border-radius:12px;padding:20px;margin-bottom:20px;}
+    .section-card h3{font-size:15px;font-weight:600;margin-bottom:14px;}
+
+    /* 타임라인 */
+    .tl-controls{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px;}
+    .tl-left{display:flex;align-items:center;gap:10px;}
+    .zoom-label{font-size:13px;font-weight:600;color:#374151;}
+    .zoom-btn{padding:4px 8px;background:#f3f4f6;border:1px solid #d1d5db;border-radius:6px;cursor:pointer;font-size:12px;color:#374151;}
+    .source-filters{display:flex;gap:10px;flex-wrap:wrap;}
+    .filter-cb{display:flex;align-items:center;gap:5px;cursor:pointer;font-size:12px;color:#6b7280;}
+    .metric-sel{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+    .metric-sel label{font-size:13px;font-weight:600;color:#374151;}
+    .metric-sel select{padding:6px 10px;border:1px solid #d1d5db;border-radius:6px;font-size:12px;color:#374151;background:white;}
+    .tl-container{background:#f9fafb;border-radius:8px;padding:12px;}
+
+    /* 비교 테이블 */
+    .cmp-table{width:100%;border-collapse:collapse;}
+    .cmp-table th{text-align:left;font-size:12px;color:#6b7280;font-weight:600;padding:10px 12px;border-bottom:2px solid #e5e7eb;background:#f9fafb;}
+    .cmp-table td{padding:10px 12px;font-size:13px;border-bottom:1px solid #f1f5f9;}
+    .cmp-table td:first-child{font-weight:600;color:#374151;}
+    .exp-v{color:#1d4ed8;font-weight:600;font-family:'SF Mono',Monaco,monospace;}
+    .ctrl-v{color:#be185d;font-weight:600;font-family:'SF Mono',Monaco,monospace;}
+    .diff-v{font-weight:700;font-family:'SF Mono',Monaco,monospace;}
+    .diff-v.good{color:#16a34a;}
+    .p-badge{display:inline-block;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:600;font-family:'SF Mono',Monaco,monospace;}
+    .p-badge.sig{background:#dcfce7;color:#166534;}
+    .p-badge.hsig{background:#bbf7d0;color:#14532d;}
+    .p-badge.ns{background:#f3f4f6;color:#6b7280;}
+
+    /* AI */
+    .ai-box{background:linear-gradient(135deg,#faf5ff,#f3e8ff);border:1px solid #ddd6fe;border-radius:12px;padding:20px;margin-bottom:20px;}
+    .ai-box h3{font-size:14px;font-weight:600;color:#6d28d9;margin-bottom:12px;}
+    .ai-item{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid rgba(139,92,246,.1);font-size:13px;}
+    .ai-item:last-child{border-bottom:none;}
+    .ai-tag{display:inline-block;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:600;white-space:nowrap;flex-shrink:0;}
+    .ai-tag.pos{background:#dcfce7;color:#166534;}
+    .ai-tag.alert{background:#fef3c7;color:#92400e;}
+    .ai-tag.ins{background:#dbeafe;color:#1d4ed8;}
+    .hyp-box{margin-top:10px;padding:10px 14px;background:rgba(139,92,246,.08);border-radius:8px;font-size:12px;color:#4c1d95;}
+
+    /* ops */
+    .ops-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;}
+    .ops-card{background:white;border:1px solid #e5e7eb;border-radius:12px;padding:20px;}
+    .ops-card h3{font-size:14px;font-weight:600;margin-bottom:14px;}
+    .ops-bar{height:8px;background:#f3f4f6;border-radius:4px;overflow:hidden;display:flex;margin:8px 0;}
+    .ops-bar-fill{height:100%;}
+    .ops-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #f1f5f9;font-size:13px;}
+    .ops-row:last-child{border-bottom:none;}
+    .ops-label{color:#6b7280;}
+    .ops-val{font-weight:600;font-family:'SF Mono',Monaco,monospace;}
+
+    /* ====== 테이블 탭 ====== */
+    .table-area-wrap{display:flex;flex:1;min-height:0;overflow:hidden;}
+    .table-area{flex:1;min-width:0;overflow:auto;display:flex;flex-direction:column;transition:flex .3s ease;}
+    .table-area.shrunk{flex:0 0 50%;}
+
+    /* 컨트롤 */
+    .ctrl-section{background:white;border:1px solid #e5e7eb;border-radius:12px;padding:14px 20px;margin-bottom:12px;}
+    .ctrl-row{display:flex;gap:14px;align-items:center;flex-wrap:wrap;}
+    .ctrl-group{display:flex;align-items:center;gap:8px;}
+    .ctrl-group label{font-size:12px;color:#6b7280;font-weight:600;}
+    .t-btn{padding:6px 12px;border:1px solid #e5e7eb;border-radius:6px;background:white;color:#6b7280;cursor:pointer;font-size:12px;}
+    .t-btn.active{background:#3b82f6;color:white;border-color:#3b82f6;}
+    .sel-sm{padding:6px 10px;border:1px solid #e5e7eb;border-radius:6px;font-size:12px;color:#374151;background:white;cursor:pointer;}
+    .dn{display:flex;align-items:center;gap:8px;padding:6px 12px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:6px;font-size:12px;color:#374151;}
+    .dn button{background:none;border:none;cursor:pointer;font-size:14px;color:#3b82f6;padding:0 4px;}
+    .search-in{padding:6px 10px;border:1px solid #e5e7eb;border-radius:6px;font-size:12px;width:150px;}
+
+    /* 커스텀 인터벌 */
+    .custom-interval{display:flex;align-items:center;gap:6px;padding:4px 8px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:6px;font-size:12px;}
+    .custom-interval input[type=number]{width:40px;padding:3px 6px;border:1px solid #d1d5db;border-radius:4px;font-size:12px;text-align:center;}
+    .custom-interval select{padding:3px 6px;border:1px solid #d1d5db;border-radius:4px;font-size:12px;background:white;}
+    .custom-interval .ci-label{color:#1d4ed8;font-weight:600;font-size:11px;}
+
+    /* 소스 범례 */
+    .src-legend{display:flex;gap:14px;align-items:center;margin-bottom:8px;font-size:11px;color:#6b7280;}
+    .sd{width:8px;height:8px;border-radius:2px;display:inline-block;}
+    .sd.emr{background:#3b82f6;}.sd.wear{background:#22c55e;}.sd.ema{background:#a855f7;}.sd.ext{background:#f97316;}
+
+    /* 테이블 */
+    .tbl-section{background:white;border:1px solid #e5e7eb;border-radius:12px;overflow:hidden;margin-bottom:12px;flex:1;display:flex;flex-direction:column;}
+    .tbl-wrap{overflow:auto;flex:1;}
+    table.pt-tbl{width:100%;border-collapse:collapse;font-size:13px;}
+    table.pt-tbl thead th{text-align:left;font-size:11px;color:#6b7280;font-weight:600;padding:10px 8px;border-bottom:2px solid #e5e7eb;background:#f9fafb;position:sticky;top:0;z-index:10;white-space:nowrap;cursor:pointer;}
+    table.pt-tbl thead th .cs{display:inline-block;width:6px;height:6px;border-radius:2px;margin-right:4px;vertical-align:middle;}
+    table.pt-tbl tbody td{padding:10px 8px;border-bottom:1px solid #f1f5f9;font-size:12px;}
+    table.pt-tbl tbody tr{cursor:pointer;transition:background .1s;}
+    table.pt-tbl tbody tr:hover{background:#f8fafc;}
+    table.pt-tbl tbody tr.selected{background:#eff6ff;}
+    table.pt-tbl tbody tr.alert-row{background:#fffbeb;}
+    table.pt-tbl tbody tr.alert-row:hover{background:#fef3c7;}
+    .pid{font-weight:600;color:#374151;white-space:nowrap;}
+    .gb{display:inline-block;padding:1px 6px;border-radius:4px;font-size:10px;font-weight:600;margin-left:6px;}
+    .gb.exp{background:#dbeafe;color:#1d4ed8;}.gb.ctrl{background:#fce7f3;color:#be185d;}
+    .sv{display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:6px;}
+    .sv.good{background:#22c55e;}.sv.warn{background:#f59e0b;}.sv.bad{background:#ef4444;}
+    .cd{font-weight:700;font-family:'SF Mono',Monaco,monospace;font-size:12px;}
+    .cd.good{color:#16a34a;}.cd.bad{color:#dc2626;}.cd.neutral{color:#6b7280;}
+    .cr{font-size:11px;color:#9ca3af;display:block;margin-top:1px;}
+    .ce{color:#d1d5db;font-style:italic;}
+
+    /* 페이지네이션 */
+    .pag-row{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;background:white;border:1px solid #e5e7eb;border-radius:12px;font-size:12px;color:#6b7280;margin-bottom:12px;}
+    .pag-btns{display:flex;gap:4px;}
+    .pg-btn{padding:5px 9px;border:1px solid #e5e7eb;border-radius:4px;background:white;color:#6b7280;cursor:pointer;font-size:11px;}
+    .pg-btn.active{background:#3b82f6;color:white;border-color:#3b82f6;}
+
+    /* === 디테일 패널 (오른쪽 슬라이드) === */
+    .detail-panel{width:0;overflow:hidden;border-left:1px solid #e5e7eb;background:white;transition:width .3s ease;flex-shrink:0;display:flex;flex-direction:column;}
+    .detail-panel.open{width:50%;}
+    .dp-header{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid #e5e7eb;background:#f9fafb;flex-shrink:0;}
+    .dp-title{font-size:15px;font-weight:700;color:#374151;display:flex;align-items:center;gap:8px;}
+    .dp-close{padding:6px 10px;border:1px solid #e5e7eb;border-radius:6px;background:white;cursor:pointer;font-size:14px;color:#6b7280;}
+    .dp-close:hover{background:#f3f4f6;}
+    .dp-nav{display:flex;gap:6px;}
+    .dp-nav button{padding:4px 10px;border:1px solid #e5e7eb;border-radius:6px;background:white;cursor:pointer;font-size:12px;color:#374151;}
+    .dp-nav button:hover{background:#f3f4f6;}
+    .dp-body{flex:1;overflow-y:auto;padding:20px;}
+
+    /* 차트 카드 */
+    .chart-card{background:#f9fafb;border:1px solid #e5e7eb;border-radius:10px;padding:16px;margin-bottom:16px;}
+    .chart-title{font-size:12px;font-weight:600;color:#374151;margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+    .chart-title .cs{display:inline-block;width:6px;height:6px;border-radius:2px;}
+    .chart-area{height:100px;}
+    .chart-area svg{width:100%;height:100%;}
+    .chart-x{display:flex;justify-content:space-between;font-size:10px;color:#9ca3af;margin-top:4px;}
+    .chart-summary{display:flex;gap:16px;margin-top:8px;font-size:11px;color:#6b7280;}
+    .chart-summary strong{color:#374151;}
+
+    /* 플로우시트 */
+    .fs-title{font-size:13px;font-weight:600;color:#374151;margin-bottom:10px;}
+    .fs-table{width:100%;border-collapse:collapse;font-size:11px;}
+    .fs-table th{font-size:10px;color:#9ca3af;font-weight:600;padding:5px 6px;border-bottom:1px solid #e5e7eb;text-align:center;}
+    .fs-table th:first-child{text-align:left;}
+    .fs-table td{padding:5px 6px;text-align:center;border-bottom:1px solid #f1f5f9;font-family:'SF Mono',Monaco,monospace;}
+    .fs-table td:first-child{text-align:left;font-weight:600;color:#374151;font-family:-apple-system,sans-serif;}
+    .fg{color:#16a34a;background:rgba(34,197,94,.06);}.fw{color:#d97706;background:rgba(245,158,11,.06);}.fb{color:#dc2626;background:rgba(239,68,68,.06);}
+    .fc{font-weight:700;outline:1.5px solid #3b82f6;border-radius:3px;}
+
+    /* 디자이너 노트 */
+    .dn-section{margin-top:24px;}
+    .dn-section summary{cursor:pointer;font-size:14px;font-weight:600;color:#6b7280;padding:12px 16px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;}
+    .notes-c{margin-top:12px;padding:20px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:12px;font-size:12px;line-height:1.8;color:#374151;}
+    .notes-c h4{font-size:13px;margin:16px 0 8px;color:#1f2937;font-weight:600;}
+    .notes-c h4:first-child{margin-top:0;}
+    .notes-c code{background:#0f172a;color:#a5b4fc;padding:10px;border-radius:6px;display:block;margin:8px 0;font-size:11px;font-family:'SF Mono',Monaco,monospace;white-space:pre-wrap;}
+
+    @media(max-width:1200px){.kpi-grid{grid-template-columns:repeat(2,1fr);}.ops-grid{grid-template-columns:1fr;}.ctrl-row{flex-direction:column;align-items:flex-start;}}
+  </style>
+</head>
+<body>
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar">
+    <div class="logo"><div class="logo-icon">U</div> UniQdata</div>
+    <div class="nav-section"><a class="nav-item"><span>🏠</span> 연구 허브</a></div>
+    <div class="nav-section" style="flex:1;overflow-y:auto;">
+      <div style="font-size:11px;text-transform:uppercase;color:#64748b;padding:8px 12px;letter-spacing:.5px;">내 연구</div>
+      <div style="margin-bottom:2px;">
+        <div class="rn-header"><span style="font-size:14px;">📁</span><span style="flex:1;">대사개선 약물 연구</span><span class="status-dot"></span></div>
+        <div class="rn-sub">
+          <a class="ns-item" id="nav-overview"><span class="sd emr" style="width:6px;height:6px;border-radius:50%;opacity:.5;"></span> 개요</a>
+          <a class="ns-item" id="nav-table"><span class="sd emr" style="width:6px;height:6px;border-radius:50%;opacity:.5;"></span> 테이블</a>
+          <a class="ns-item"><span class="sd emr" style="width:6px;height:6px;border-radius:50%;opacity:.5;"></span> 🔒 클린룸</a>
+        </div>
+      </div>
+    </div>
+    <div class="sidebar-footer"><div class="u-info"><div class="u-av">김</div><div><div style="font-size:14px;color:#e2e8f0;">김연구</div><div style="font-size:12px;color:#64748b;">서울대학교병원</div></div></div></div>
+  </nav>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="content">
+
+      <div class="breadcrumb"><a href="#">연구 관리</a> / <span id="bc-page">대사개선 약물 연구</span></div>
+      <div class="page-title">연구 데이터</div>
+      <div class="page-sub">처방 약물(2.4mg) 대사개선 연구 · OMOP CDM · 다중 소스 통합</div>
+
+      <div class="tabs">
+        <div class="tab active" data-tab="overview" id="tab-overview">개요</div>
+        <div class="tab" data-tab="table" id="tab-table">테이블</div>
+        <div class="tab">🔒 클린룸</div>
+      </div>
+
+      <!-- ==================== 개요 탭 ==================== -->
+      <div class="tab-content active" id="tc-overview">
+
+        <!-- KPI -->
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-label">총 레코드 수</div>
+            <div class="kpi-value">1,892K</div>
+            <div class="kpi-sub"><span class="source-tag emr">EMR 892K</span> <span class="source-tag wear">웨어 845K</span><br><span class="source-tag ema">EMA 143K</span> <span class="source-tag ext">외부 12K</span></div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">기간 커버리지</div>
+            <div class="kpi-value">94<span style="font-size:14px;">%</span></div>
+            <div class="kpi-sub">2020.01 ~ 2026.02 (6년 2개월)</div>
+            <div class="kpi-change good">+2.1% vs 지난주</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">결측률</div>
+            <div class="kpi-value">6.2<span style="font-size:14px;">%</span></div>
+            <div class="kpi-sub"><span class="source-tag wear">웨어 3.1%</span> <span class="source-tag ema">EMA 8.4%</span><br><span class="source-tag ext">외부 12.8%</span></div>
+            <div class="kpi-change good">−0.8% 개선</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">참여자 현황</div>
+            <div class="kpi-value">76<span style="font-size:14px;">/80</span></div>
+            <div class="kpi-sub">실험군 38 · 대조군 38 · 탈락 4</div>
+          </div>
+        </div>
+
+        <!-- 타임라인 -->
+        <div class="section-card">
+          <h3>통합 타임라인</h3>
+          <div class="tl-controls">
+            <div class="tl-left"><span class="zoom-label">줌: 주별</span><button class="zoom-btn">+</button><button class="zoom-btn">−</button></div>
+            <div class="source-filters">
+              <label class="filter-cb"><input type="checkbox" checked> EMR</label>
+              <label class="filter-cb"><input type="checkbox" checked> 웨어러블</label>
+              <label class="filter-cb"><input type="checkbox" checked> EMA</label>
+              <label class="filter-cb"><input type="checkbox" checked> 외부</label>
+            </div>
+          </div>
+          <div class="metric-sel"><label>지표:</label><select class="sel-sm"><option>체중 [EMR]</option><option>심박수 [웨어러블]</option><option>SBP [EMR]</option><option>걸음수 [웨어러블]</option></select></div>
+          <div class="tl-container">
+            <svg viewBox="0 0 800 200" style="width:100%;height:auto;">
+              <rect width="800" height="200" fill="white"/>
+              <line x1="40" y1="10" x2="40" y2="170" stroke="#e5e7eb" stroke-width="1"/>
+              <line x1="40" y1="170" x2="780" y2="170" stroke="#d1d5db" stroke-width="1.5"/>
+              <!-- Y labels -->
+              <text x="32" y="25" fill="#9ca3af" font-size="9" text-anchor="end">90</text>
+              <text x="32" y="65" fill="#9ca3af" font-size="9" text-anchor="end">85</text>
+              <text x="32" y="105" fill="#9ca3af" font-size="9" text-anchor="end">80</text>
+              <text x="32" y="145" fill="#9ca3af" font-size="9" text-anchor="end">75</text>
+              <line x1="40" y1="20" x2="780" y2="20" stroke="#f3f4f6"/>
+              <line x1="40" y1="60" x2="780" y2="60" stroke="#f3f4f6"/>
+              <line x1="40" y1="100" x2="780" y2="100" stroke="#f3f4f6"/>
+              <line x1="40" y1="140" x2="780" y2="140" stroke="#f3f4f6"/>
+              <!-- Division line -->
+              <line x1="640" y1="5" x2="640" y2="175" stroke="#9ca3af" stroke-width="2" stroke-dasharray="5,4"/>
+              <text x="640" y="192" fill="#9ca3af" font-size="9" text-anchor="middle">2026.01.15 신규수집</text>
+              <!-- X labels -->
+              <text x="80" y="188" fill="#9ca3af" font-size="9" text-anchor="middle">2020</text>
+              <text x="200" y="188" fill="#9ca3af" font-size="9" text-anchor="middle">2021</text>
+              <text x="320" y="188" fill="#9ca3af" font-size="9" text-anchor="middle">2022</text>
+              <text x="440" y="188" fill="#9ca3af" font-size="9" text-anchor="middle">2023</text>
+              <text x="560" y="188" fill="#9ca3af" font-size="9" text-anchor="middle">2024</text>
+              <text x="720" y="188" fill="#9ca3af" font-size="9" text-anchor="middle">2026</text>
+              <!-- EMR dots -->
+              <g opacity="0.5"><circle cx="80" cy="35" r="2" fill="#3b82f6"/><circle cx="140" cy="38" r="2" fill="#3b82f6"/><circle cx="200" cy="32" r="2" fill="#3b82f6"/><circle cx="280" cy="36" r="2" fill="#3b82f6"/><circle cx="360" cy="34" r="2" fill="#3b82f6"/><circle cx="440" cy="40" r="2" fill="#3b82f6"/><circle cx="520" cy="37" r="2" fill="#3b82f6"/><circle cx="600" cy="35" r="2" fill="#3b82f6"/></g>
+              <circle cx="680" cy="80" r="2.5" fill="#3b82f6"/><circle cx="740" cy="100" r="2.5" fill="#3b82f6"/>
+              <!-- Wearable line -->
+              <defs><linearGradient id="wg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#22c55e" stop-opacity=".15"/><stop offset="100%" stop-color="#22c55e" stop-opacity="0"/></linearGradient></defs>
+              <polygon points="40,50 120,48 200,45 300,42 400,38 500,35 600,33 640,32 700,80 760,95 780,100 780,170 40,170" fill="url(#wg)"/>
+              <polyline points="40,50 120,48 200,45 300,42 400,38 500,35 600,33 640,32 700,80 760,95" stroke="#22c55e" stroke-width="2" fill="none" stroke-linecap="round"/>
+              <!-- EMA bars -->
+              <g opacity="0.5"><rect x="75" y="130" width="6" height="25" fill="#a855f7" rx="1"/><rect x="155" y="125" width="6" height="30" fill="#a855f7" rx="1"/><rect x="235" y="135" width="6" height="20" fill="#a855f7" rx="1"/><rect x="355" y="128" width="6" height="27" fill="#a855f7" rx="1"/><rect x="475" y="132" width="6" height="23" fill="#a855f7" rx="1"/><rect x="595" y="130" width="6" height="25" fill="#a855f7" rx="1"/></g>
+              <rect x="675" y="125" width="6" height="30" fill="#a855f7" rx="1"/><rect x="735" y="128" width="6" height="27" fill="#a855f7" rx="1"/>
+            </svg>
+          </div>
+        </div>
+
+        <!-- 군간 비교 + p값 -->
+        <div class="section-card">
+          <h3>군간 핵심 변화값</h3>
+          <table class="cmp-table">
+            <thead><tr><th>지표</th><th>실험군 (n=38)</th><th>대조군 (n=38)</th><th>군간 차이</th><th>p값</th></tr></thead>
+            <tbody>
+              <tr><td><span style="font-size:11px;color:#6b7280;">[EMR]</span> Δ 체중</td><td class="exp-v">−6.8 ±2.1</td><td class="ctrl-v">−0.3 ±1.8</td><td class="diff-v good">6.5</td><td><span class="p-badge hsig">p=0.001***</span></td></tr>
+              <tr><td><span style="font-size:11px;color:#6b7280;">[EMR]</span> Δ SBP</td><td class="exp-v">−8.2 ±4.3</td><td class="ctrl-v">+1.1 ±3.9</td><td class="diff-v good">9.3</td><td><span class="p-badge sig">p=0.012*</span></td></tr>
+              <tr><td><span style="font-size:11px;color:#6b7280;">[웨어]</span> Δ 심박수</td><td class="exp-v">−4.2 ±3.1</td><td class="ctrl-v">+0.8 ±2.8</td><td class="diff-v good">5.0</td><td><span class="p-badge sig">p=0.034*</span></td></tr>
+              <tr><td><span style="font-size:11px;color:#6b7280;">[웨어]</span> Δ 걸음수</td><td class="exp-v">+2,340 ±580</td><td class="ctrl-v">+180 ±420</td><td class="diff-v good">2,160</td><td><span class="p-badge hsig">p=0.008**</span></td></tr>
+              <tr><td><span style="font-size:11px;color:#6b7280;">[EMA]</span> 순응도</td><td class="exp-v">91%</td><td class="ctrl-v">87%</td><td class="diff-v" style="color:#6b7280;">4</td><td><span class="p-badge ns">p=0.342</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- AI 인사이트 -->
+        <div class="ai-box">
+          <h3>AI 인사이트 요약</h3>
+          <div class="ai-item"><span class="ai-tag pos">발견</span><span>체중 감소 상위 25% 환자군에서 앱사용시간 2.1배 증가 — 외부 데이터 상관 발견</span></div>
+          <div class="ai-item"><span class="ai-tag alert">주의</span><span>P-007, P-024 웨어러블 데이터 3일 미수집 — 디바이스 연결 확인 필요</span></div>
+          <div class="ai-item"><span class="ai-tag ins">추세</span><span>분기선 이후 실험군 걸음수 +34% 증가 패턴 감지</span></div>
+          <div class="hyp-box"><strong>가설 부합도:</strong> H1(체중) <strong style="color:#16a34a;">84%</strong> · H2(혈압) <strong style="color:#d97706;">62%</strong> · H3(활동) <strong style="color:#16a34a;">71%</strong></div>
+        </div>
+
+        <!-- 수집·예산 -->
+        <div class="ops-grid">
+          <div class="ops-card">
+            <h3>데이터 수집 현황</h3>
+            <div class="ops-bar"><div class="ops-bar-fill" style="width:94%;background:linear-gradient(90deg,#3b82f6,#60a5fa);"></div></div>
+            <div style="display:flex;justify-content:space-between;font-size:10px;color:#9ca3af;"><span>전체 94%</span><span>목표 90%</span></div>
+            <div style="margin-top:10px;">
+              <div class="ops-row"><span class="ops-label">[EMR]</span><span class="ops-val" style="color:#3b82f6;">100%</span></div>
+              <div class="ops-row"><span class="ops-label">[웨어러블]</span><span class="ops-val" style="color:#22c55e;">94%</span></div>
+              <div class="ops-row"><span class="ops-label">[EMA]</span><span class="ops-val" style="color:#a855f7;">87%</span></div>
+              <div class="ops-row"><span class="ops-label">[외부]</span><span class="ops-val" style="color:#f97316;">84.6%</span></div>
+            </div>
+          </div>
+          <div class="ops-card">
+            <h3>예산 현황</h3>
+            <div class="ops-bar"><div class="ops-bar-fill" style="width:26%;background:#3b82f6;"></div><div class="ops-bar-fill" style="width:74%;background:#22c55e;"></div></div>
+            <div style="display:flex;justify-content:space-between;font-size:10px;color:#9ca3af;"><span>지급 26%</span><span>잔여 74%</span></div>
+            <div style="margin-top:10px;">
+              <div class="ops-row"><span class="ops-label">총 예산</span><span class="ops-val">25,000 XRP</span></div>
+              <div class="ops-row"><span class="ops-label">지급완료</span><span class="ops-val" style="color:#3b82f6;">6,500</span></div>
+              <div class="ops-row"><span class="ops-label">잔여</span><span class="ops-val" style="color:#22c55e;">18,500</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== 테이블 탭 ==================== -->
+      <div class="tab-content" id="tc-table">
+
+        <!-- 컨트롤 -->
+        <div class="ctrl-section">
+          <div class="ctrl-row">
+            <div class="ctrl-group">
+              <label>시간 윈도우</label>
+              <div style="display:flex;gap:4px;">
+                <button class="t-btn tw-btn" data-tw="daily">일간</button>
+                <button class="t-btn tw-btn active" data-tw="weekly">주간</button>
+                <button class="t-btn tw-btn" data-tw="monthly">월간</button>
+                <button class="t-btn tw-btn" data-tw="custom" id="customTwBtn">커스텀</button>
+              </div>
+            </div>
+            <!-- 커스텀 인터벌 (숨김 → 커스텀 클릭 시 표시) -->
+            <div class="custom-interval" id="customInterval" style="display:none;">
+              <span class="ci-label">매</span>
+              <input type="number" value="3" min="1" max="90" id="ciNum">
+              <select id="ciUnit">
+                <option value="day">일</option>
+                <option value="week">주</option>
+                <option value="month">월</option>
+              </select>
+              <span class="ci-label">단위로 집계</span>
+            </div>
+            <div class="ctrl-group">
+              <label>소스</label>
+              <select class="sel-sm"><option>전체</option><option>[EMR]</option><option>[웨어러블]</option><option>[EMA]</option></select>
+            </div>
+            <div class="ctrl-group">
+              <div class="dn"><button>◀</button><span id="dateLabel">2월 2주차 (W6)</span><button>▶</button></div>
+            </div>
+            <div class="ctrl-group" style="margin-left:auto;">
+              <input type="text" class="search-in" placeholder="환자 검색...">
+            </div>
+          </div>
+        </div>
+
+        <!-- 소스 범례 -->
+        <div class="src-legend">
+          <span><span class="sd emr"></span> EMR</span>
+          <span><span class="sd wear"></span> 웨어러블</span>
+          <span><span class="sd ema"></span> EMA</span>
+          <span><span class="sd ext"></span> 외부</span>
+          <span style="margin-left:auto;color:#9ca3af;">행 클릭 → 우측 상세 패널</span>
+        </div>
+
+        <!-- 테이블 + 디테일 패널 -->
+        <div class="table-area-wrap">
+          <div class="table-area" id="tableArea">
+            <div class="tbl-section">
+              <div class="tbl-wrap">
+                <table class="pt-tbl">
+                  <thead><tr>
+                    <th style="width:14%;">환자</th>
+                    <th><span class="cs" style="background:#3b82f6;"></span>체중</th>
+                    <th><span class="cs" style="background:#3b82f6;"></span>SBP</th>
+                    <th><span class="cs" style="background:#22c55e;"></span>심박수</th>
+                    <th><span class="cs" style="background:#22c55e;"></span>걸음수</th>
+                    <th><span class="cs" style="background:#22c55e;"></span>수면</th>
+                    <th><span class="cs" style="background:#a855f7;"></span>순응도</th>
+                    <th><span class="cs" style="background:#f97316;"></span>앱사용</th>
+                  </tr></thead>
+                  <tbody id="tBody"></tbody>
+                </table>
+              </div>
+            </div>
+            <div class="pag-row">
+              <span>1-10 / 80명</span>
+              <div class="pag-btns"><button class="pg-btn">◀</button><button class="pg-btn active">1</button><button class="pg-btn">2</button><button class="pg-btn">…</button><button class="pg-btn">8</button><button class="pg-btn">▶</button></div>
+            </div>
+          </div>
+
+          <!-- 디테일 패널 (오른쪽) -->
+          <div class="detail-panel" id="detailPanel">
+            <div class="dp-header">
+              <div class="dp-title" id="dpTitle">P001 김민수</div>
+              <div style="display:flex;gap:8px;align-items:center;">
+                <div class="dp-nav"><button id="dpPrev">▲ 이전</button><button id="dpNext">▼ 다음</button></div>
+                <button class="dp-close" id="dpClose">✕</button>
+              </div>
+            </div>
+            <div class="dp-body" id="dpBody"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 디자이너 노트 -->
+      <div class="dn-section">
+        <details>
+          <summary>디자이너 노트 — v3 전략</summary>
+          <div class="notes-c">
+            <h4>핵심: 두 탭의 역할 완전 분리</h4>
+            <code>개요 = "이 연구 괜찮아?" (코호트 레벨)
+  → KPI, 타임라인 그래프, 군간 비교+p값, AI 인사이트, 운영
+
+테이블 = "이 환자 괜찮아?" (개인 레벨)
+  → 환자 리스트 + 우측 패널로 시계열 상세
+
+겹치는 것 = 없음</code>
+
+            <h4>시간 윈도우 유연성 (v3 핵심 추가)</h4>
+            고정 버켓(일/주/월) 외에 "커스텀" 옵션 추가.<br>
+            커스텀 선택 시: [N] × [일/주/월] 입력 필드 표시.<br>
+            예: "매 3일", "매 2주" 등 연구자가 자유롭게 설정.<br><br>
+            <strong>백엔드:</strong> TimescaleDB의 time_bucket($interval) 또는 동등한 함수 사용.<br>
+            프론트에서 '3 days' → API에 interval='3d' 전달 → DB가 동적 집계.<br><br>
+            <strong>향후 확장:</strong><br>
+            - 스터디 데이 기준 (Day 0부터 상대 시간)<br>
+            - 이벤트 기준 (EMR 방문 전후 N일)<br>
+            - 명명된 기간 (Baseline, Washout, Treatment Phase 1 등)<br>
+            - 소스별 자동 해상도 (EMR=방문 단위, 웨어러블=시간 단위, EMA=응답 단위)<br>
+
+            <h4>디테일 패널: 아코디언 → 오른쪽 슬라이드</h4>
+            - 아코디언(아래 확장)은 테이블 흐름을 끊어 혼란<br>
+            - 오른쪽 패널: 테이블 50% 축소, 패널 50% 슬라이드 인<br>
+            - ▲▼ 버튼으로 환자 간 이동 (테이블 닫지 않고)<br>
+            - 패널 내용: 핵심 차트 3개 + 전체 지표 플로우시트<br>
+
+            <h4>3축 + 다차원 커버리지</h4>
+            <code>축1: 환자 (Patient)  → 테이블 행
+축2: 지표 (Metric)   → 테이블 열 + 패널 차트
+축3: 시간 (Time)     → 날짜 네비 + 패널 차트 + 커스텀 인터벌
+
+추가:
+소스 (Source)  → 열 헤더 컬러 + 소스 필터
+군 (Group)    → 뱃지 + 개요 비교 테이블
+통계 (p값)    → 개요 탭 전담
+AI 인사이트   → 개요 탭 전담</code>
+          </div>
+        </details>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<script>
+// === 탭 전환 ===
+const tabs = document.querySelectorAll('.tab[data-tab]');
+const navOverview = document.getElementById('nav-overview');
+const navTable = document.getElementById('nav-table');
+
+function switchTab(name) {
+  tabs.forEach(t => t.classList.toggle('active', t.dataset.tab === name));
+  document.getElementById('tc-overview').classList.toggle('active', name === 'overview');
+  document.getElementById('tc-table').classList.toggle('active', name === 'table');
+  navOverview.classList.toggle('active', name === 'overview');
+  navTable.classList.toggle('active', name === 'table');
+}
+tabs.forEach(t => t.addEventListener('click', () => { if(t.dataset.tab) switchTab(t.dataset.tab); }));
+navOverview.addEventListener('click', () => switchTab('overview'));
+navTable.addEventListener('click', () => switchTab('table'));
+
+// === 커스텀 시간 윈도우 ===
+document.querySelectorAll('.tw-btn').forEach(btn => {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('.tw-btn').forEach(b => b.classList.remove('active'));
+    this.classList.add('active');
+    document.getElementById('customInterval').style.display = this.dataset.tw === 'custom' ? 'flex' : 'none';
+  });
+});
+
+// === 환자 데이터 ===
+const P = [
+  {id:'P001',nm:'김민수',g:'exp',sv:'good',wt:[87.3,85.8,84.2,82.5,80.8,79.2],sbp:[134,132,128,126,124,122],hr:[72,71,69,68,67,66],steps:[7340,7800,8200,8600,8900,9104],sleep:[6.2,6.5,6.8,7,7.1,7.3],comp:[86,88,90,92,93,94],app:[40,42,48,52,56,62]},
+  {id:'P005',nm:'이수진',g:'exp',sv:'good',wt:[88.3,87.1,85.8,84.5,83.2,82.1],sbp:[132.5,131,129,127,125.5,124],hr:[72,71,70,70,69,69],steps:[6800,7100,7400,7600,7800,7812],sleep:[6,6.2,6.5,6.7,6.9,7],comp:[85,87,88,89,90,90],app:[32,35,38,40,42,45]},
+  {id:'P011',nm:'박지훈',g:'exp',sv:'good',wt:[88.3,86.8,85.2,83.5,82,80.8],sbp:[134.2,132,130,128,126.5,125],hr:[72,71,69,68,68,67],steps:[7000,7500,7800,8100,8300,8512],sleep:[6.5,6.6,6.8,7,7.2,7.4],comp:[86,88,90,91,92,92],app:[36,40,44,48,52,54]},
+  {id:'P018',nm:'최예린',g:'exp',sv:'warn',al:true,wt:[87.4,86.2,85,83.8,82.6,81.6],sbp:[137.9,136,135,138,139,140],hr:[70,69,null,null,68,null],steps:[5800,6000,6100,6200,6200,6234],sleep:[5.8,6,6.2,6,5.9,5.8],comp:[82,84,86,88,89,89],app:[28,30,34,36,40,42]},
+  {id:'P023',nm:'정하늘',g:'exp',sv:'good',wt:[87.6,86.4,85,83.6,82.4,81.2],sbp:[134.1,132,130,129,128,127],hr:[72,71,70,69,68,68],steps:[6900,7200,7500,7800,8000,8234],sleep:[6.3,6.5,6.7,6.9,7.1,7.2],comp:[85,87,89,90,91,91],app:[34,36,40,44,46,48]},
+  {id:'P002',nm:'윤서연',g:'ctrl',sv:'warn',wt:[87.7,87.8,87.9,88,88.1,88.2],sbp:[135.9,136,136.5,137,137.5,138],hr:[72,72,71,71,70,70],steps:[4600,4650,4700,4750,4800,4821],sleep:[6.1,6,6,5.9,5.9,5.8],comp:[85,86,86,87,87,88],app:[null,null,null,null,null,null]},
+  {id:'P008',nm:'한도윤',g:'ctrl',sv:'good',wt:[87.9,87.8,87.6,87.4,87.2,87.1],sbp:[133.1,133.5,133.8,134,134.2,134],hr:[72,72,72,72,72,72],steps:[4200,4200,4180,4190,4200,4201],sleep:[6.5,6.4,6.4,6.3,6.3,6.2],comp:[85,85,86,86,86,86],app:[40,39,38,38,38,38]},
+  {id:'P014',nm:'송지아',g:'ctrl',sv:'good',wt:[87.9,87.8,87.8,87.8,87.8,87.8],sbp:[134.5,134.5,135,135,135,135],hr:[72,72,71,71,71,71],steps:[4500,4520,4550,4580,4600,4621],sleep:[6.2,6.2,6.1,6.1,6,6],comp:[85,85,86,86,87,87],app:[34,34,33,33,32,32]},
+  {id:'P031',nm:'임채원',g:'ctrl',sv:'bad',al:true,wt:[87.9,88,88.3,88.5,88.8,89.1],sbp:[134.2,135,136,137,137.5,138],hr:[73,73,74,74,75,75],steps:[4100,4000,3900,3850,3820,3821],sleep:[5.8,5.7,5.5,5.4,5.3,5.2],comp:[84,82,80,78,75,72],app:[28,26,25,24,23,22]},
+  {id:'P036',nm:'강시우',g:'ctrl',sv:'good',wt:[87,87,86.9,86.9,86.8,86.8],sbp:[131.8,132,132.5,132.8,133,133],hr:[74,74,73,73,72,72],steps:[4400,4420,4450,4480,4500,4521],sleep:[6.4,6.3,6.3,6.2,6.2,6.1],comp:[85,86,86,87,88,88],app:[40,39,38,38,38,38]},
+];
+
+const WK=['W1','W2','W3','W4','W5','W6'];
+const M=[
+  {k:'wt',n:'체중',u:'kg',d:'down',sc:'#3b82f6'},
+  {k:'sbp',n:'SBP',u:'mmHg',d:'down',sc:'#3b82f6'},
+  {k:'hr',n:'심박수',u:'bpm',d:'down',sc:'#22c55e'},
+  {k:'steps',n:'걸음수',u:'보',d:'up',sc:'#22c55e'},
+  {k:'sleep',n:'수면',u:'h',d:'up',sc:'#22c55e'},
+  {k:'comp',n:'순응도',u:'%',d:'up',sc:'#a855f7'},
+  {k:'app',n:'앱사용',u:'분',d:'up',sc:'#f97316'},
+];
+
+function dl(a){if(!a||a[0]==null||a[5]==null)return null;return a[5]-a[0];}
+function fD(d,m){
+  if(d==null)return'<span class="ce">—</span>';
+  const g=(m.d==='down'&&d<0)||(m.d==='up'&&d>0);
+  const b=(m.d==='down'&&d>2)||(m.d==='up'&&d<-2);
+  const ar=d>0?'↑':d<0?'↓':'';
+  const c=g?'good':b?'bad':'neutral';
+  const v=m.k==='steps'?(d>0?'+':'')+Math.round(d).toLocaleString():m.k==='comp'||m.k==='app'?(d>0?'+':'')+d.toFixed(0)+'%':(d>0?'+':'')+d.toFixed(1);
+  return`<span class="cd ${c}">${ar}${v}</span>`;
+}
+function fR(v,m){
+  if(v==null)return'';
+  if(m.k==='steps')return`<span class="cr">${Math.round(v).toLocaleString()}</span>`;
+  if(m.k==='comp'||m.k==='app')return`<span class="cr">${v.toFixed(0)}${m.u}</span>`;
+  return`<span class="cr">${v.toFixed(1)}${m.u}</span>`;
+}
+function cBg(d,m){
+  if(d==null)return'';
+  const g=(m.d==='down'&&d<-2)||(m.d==='up'&&d>2);
+  const b=(m.d==='down'&&d>2)||(m.d==='up'&&d<-5);
+  if(g)return'background:rgba(34,197,94,.05);';if(b)return'background:rgba(239,68,68,.05);';return'';
+}
+
+// SVG 차트
+function mkSVG(arr,color,w,h){
+  const vd=arr.map((v,i)=>v!=null?{v,i}:null).filter(Boolean);
+  if(vd.length<2)return`<svg width="${w}" height="${h}"><text x="${w/2}" y="${h/2+4}" text-anchor="middle" fill="#d1d5db" font-size="10">데이터 없음</text></svg>`;
+  const mn=Math.min(...vd.map(d=>d.v)),mx=Math.max(...vd.map(d=>d.v)),rg=mx-mn||1,pd=8;
+  const pts=vd.map(d=>{const x=pd+(d.i/(arr.length-1))*(w-pd*2);const y=pd+(1-(d.v-mn)/rg)*(h-pd*2);return`${x},${y}`;});
+  const ae=`${pd},${h-pd}`,af=`${pd+(vd[vd.length-1].i/(arr.length-1))*(w-pd*2)},${h-pd}`;
+  return`<svg width="${w}" height="${h}"><polygon points="${ae} ${pts.join(' ')} ${af}" fill="${color}" opacity=".08"/><polyline points="${pts.join(' ')}" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>${vd.map(d=>{const x=pd+(d.i/(arr.length-1))*(w-pd*2);const y=pd+(1-(d.v-mn)/rg)*(h-pd*2);return`<circle cx="${x}" cy="${y}" r="3" fill="white" stroke="${color}" stroke-width="1.5"/>`;}).join('')}</svg>`;
+}
+
+// 테이블 렌더
+const tBody=document.getElementById('tBody');
+let selIdx=null;
+
+P.forEach((p,i)=>{
+  const tr=document.createElement('tr');
+  if(p.al)tr.className='alert-row';
+  let h=`<td class="pid"><span class="sv ${p.sv}"></span>${p.id}${p.al?'⚠️':''}<span class="gb ${p.g}">${p.g==='exp'?'실험':'대조'}</span><br><span style="font-size:11px;color:#9ca3af;font-weight:400;">${p.nm}</span></td>`;
+  M.forEach(m=>{const d=dl(p[m.k]);const v=p[m.k]?p[m.k][5]:null;h+=`<td style="${cBg(d,m)}">${fD(d,m)}${fR(v,m)}</td>`;});
+  tr.innerHTML=h;
+  tr.addEventListener('click',()=>openDetail(i));
+  tBody.appendChild(tr);
+});
+
+// 디테일 패널
+const panel=document.getElementById('detailPanel');
+const tableArea=document.getElementById('tableArea');
+const dpTitle=document.getElementById('dpTitle');
+const dpBody=document.getElementById('dpBody');
+
+function openDetail(i){
+  selIdx=i;
+  const p=P[i];
+  // 선택 표시
+  tBody.querySelectorAll('tr').forEach((r,ri)=>r.classList.toggle('selected',ri===i));
+  // 패널 열기
+  tableArea.classList.add('shrunk');
+  panel.classList.add('open');
+
+  dpTitle.innerHTML=`<span class="sv ${p.sv}"></span>${p.id} ${p.nm} <span class="gb ${p.g}">${p.g==='exp'?'실험':'대조'}</span>`;
+
+  // 차트 3개
+  const cms=[M[0],M[3],M[5]]; // 체중, 걸음수, 순응도
+  let ch=cms.map(m=>{
+    const a=p[m.k]||[];const d=dl(a);
+    const ds=d!=null?(d>0?'+':'')+(m.k==='steps'?Math.round(d).toLocaleString():m.k==='comp'?d.toFixed(0)+'%':d.toFixed(1)+m.u):'—';
+    return`<div class="chart-card"><div class="chart-title"><span class="cs" style="background:${m.sc};"></span>${m.n} (${m.u})</div><div class="chart-area">${mkSVG(a,m.sc,300,100)}</div><div class="chart-x">${WK.map(w=>`<span>${w}</span>`).join('')}</div><div class="chart-summary"><span>W1: <strong>${a[0]!=null?(m.k==='steps'?Math.round(a[0]).toLocaleString():a[0].toFixed(1)):'—'}</strong></span><span>W6: <strong>${a[5]!=null?(m.k==='steps'?Math.round(a[5]).toLocaleString():a[5].toFixed(1)):'—'}</strong></span><span>Δ: <strong>${ds}</strong></span></div></div>`;
+  }).join('');
+
+  // 플로우시트
+  let fs='<div class="fs-title">📋 전체 지표 플로우시트</div><table class="fs-table"><thead><tr><th>지표</th>';
+  WK.forEach(w=>fs+=`<th>${w}</th>`);fs+='</tr></thead><tbody>';
+  M.forEach(m=>{
+    const a=p[m.k]||[];
+    fs+=`<tr><td><span style="display:inline-block;width:6px;height:6px;border-radius:2px;background:${m.sc};margin-right:4px;vertical-align:middle;"></span>${m.n}</td>`;
+    a.forEach((v,j)=>{
+      if(v==null){fs+='<td class="ce">—</td>';return;}
+      const fmt=m.k==='steps'?Math.round(v).toLocaleString():m.k==='comp'||m.k==='app'?v.toFixed(0):v.toFixed(1);
+      let cls='';
+      if(j>0&&a[0]!=null){const dd=v-a[0];const ig=(m.d==='down'&&dd<-1)||(m.d==='up'&&dd>1);const ib=(m.d==='down'&&dd>1)||(m.d==='up'&&dd<-1);cls=ig?'fg':ib?'fb':'';}
+      if(j===5)cls+=' fc';
+      fs+=`<td class="${cls}">${fmt}</td>`;
+    });
+    fs+='</tr>';
+  });
+  fs+='</tbody></table>';
+
+  dpBody.innerHTML=ch+fs;
+}
+
+document.getElementById('dpClose').addEventListener('click',()=>{
+  panel.classList.remove('open');tableArea.classList.remove('shrunk');
+  tBody.querySelectorAll('tr').forEach(r=>r.classList.remove('selected'));selIdx=null;
+});
+document.getElementById('dpPrev').addEventListener('click',()=>{if(selIdx>0)openDetail(selIdx-1);});
+document.getElementById('dpNext').addEventListener('click',()=>{if(selIdx<P.length-1)openDetail(selIdx+1);});
+</script>
+</body>
+</html>
