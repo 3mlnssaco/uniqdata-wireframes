@@ -1,15 +1,29 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>연구 생성 Step 2 - 연구 설계 - Wireframe</title>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: -apple-system, sans-serif; background: #f5f5f5; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, sans-serif;
+      background: #f5f5f5;
+    }
 
     /* ===== 레이아웃 ===== */
-    .layout { display: flex; height: 100vh; width: 100%; overflow: hidden; }
+    .layout {
+      display: flex;
+      height: 100vh;
+      width: 100%;
+      overflow: hidden;
+    }
 
     /* Nav (좌측 사이드바) */
     .sidebar {
@@ -20,32 +34,69 @@
       flex-direction: column;
       flex-shrink: 0;
     }
+
     .logo {
       padding: 20px 24px;
       font-size: 20px;
       font-weight: 700;
-      border-bottom: 1px solid rgba(255,255,255,0.1);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
       display: flex;
       align-items: center;
       gap: 10px;
     }
+
     .logo-icon {
-      width: 32px; height: 32px;
+      width: 32px;
+      height: 32px;
       background: linear-gradient(135deg, #3b82f6, #8b5cf6);
       border-radius: 8px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 16px; font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-weight: bold;
     }
-    .nav-section { padding: 16px 12px; border-bottom: 1px solid rgba(255,255,255,0.05); }
-    .nav-section-title { font-size: 11px; text-transform: uppercase; color: #64748b; padding: 8px 12px; letter-spacing: 0.5px; }
+
+    .nav-section {
+      padding: 16px 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .nav-section-title {
+      font-size: 11px;
+      text-transform: uppercase;
+      color: #64748b;
+      padding: 8px 12px;
+      letter-spacing: 0.5px;
+    }
+
     .nav-item {
-      display: flex; align-items: center; gap: 12px;
-      padding: 10px 12px; border-radius: 8px; color: #94a3b8;
-      cursor: pointer; font-size: 14px; text-decoration: none; transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      color: #94a3b8;
+      cursor: pointer;
+      font-size: 14px;
+      text-decoration: none;
+      transition: all 0.15s;
     }
-    .nav-item:hover { background: rgba(255,255,255,0.05); color: #e2e8f0; }
-    .nav-item.active { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
-    .nav-item .icon { width: 20px; text-align: center; }
+
+    .nav-item:hover {
+      background: rgba(255, 255, 255, 0.05);
+      color: #e2e8f0;
+    }
+
+    .nav-item.active {
+      background: rgba(59, 130, 246, 0.2);
+      color: #60a5fa;
+    }
+
+    .nav-item .icon {
+      width: 20px;
+      text-align: center;
+    }
 
     /* Workspace wrapper */
     .workspace-wrap {
@@ -55,6 +106,7 @@
       min-width: 0;
       min-height: 0;
     }
+
     .workspace {
       flex: 1;
       display: flex;
@@ -69,6 +121,7 @@
       padding: 10px 0;
       flex-shrink: 0;
     }
+
     .step-bar-inner {
       display: flex;
       align-items: center;
@@ -77,12 +130,14 @@
       max-width: 600px;
       margin: 0 auto;
     }
+
     .sb-step {
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 4px;
     }
+
     .sb-num {
       width: 24px;
       height: 24px;
@@ -93,18 +148,47 @@
       font-size: 11px;
       font-weight: 600;
     }
-    .sb-step.done .sb-num { background: #22c55e; color: white; }
-    .sb-step.active .sb-num { background: #8b5cf6; color: white; }
-    .sb-step.pending .sb-num { background: #334155; color: #64748b; }
+
+    .sb-step.done .sb-num {
+      background: #22c55e;
+      color: white;
+    }
+
+    .sb-step.active .sb-num {
+      background: #8b5cf6;
+      color: white;
+    }
+
+    .sb-step.pending .sb-num {
+      background: #334155;
+      color: #64748b;
+    }
+
     .sb-label {
       font-size: 10px;
       color: #64748b;
       white-space: nowrap;
     }
-    .sb-step.active .sb-label { color: #e2e8f0; }
-    a.sb-step { text-decoration: none; color: inherit; cursor: pointer; }
-    a.sb-step:hover .sb-num:not(.active) { transform: scale(1.1); transition: transform 0.15s; }
-    a.sb-step:hover .sb-label { color: #e2e8f0; }
+
+    .sb-step.active .sb-label {
+      color: #e2e8f0;
+    }
+
+    a.sb-step {
+      text-decoration: none;
+      color: inherit;
+      cursor: pointer;
+    }
+
+    a.sb-step:hover .sb-num:not(.active) {
+      transform: scale(1.1);
+      transition: transform 0.15s;
+    }
+
+    a.sb-step:hover .sb-label {
+      color: #e2e8f0;
+    }
+
     .sb-line {
       width: 40px;
       height: 2px;
@@ -112,20 +196,45 @@
       margin: 0 4px;
       margin-bottom: 18px;
     }
-    .sb-line.done { background: #22c55e; }
+
+    .sb-line.done {
+      background: #22c55e;
+    }
 
     .sidebar-footer {
-      margin-top: auto; padding: 16px; border-top: 1px solid rgba(255,255,255,0.05);
+      margin-top: auto;
+      padding: 16px;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
     }
-    .user-info-sidebar { display: flex; align-items: center; gap: 12px; padding: 8px; }
+
+    .user-info-sidebar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px;
+    }
+
     .user-avatar-sidebar {
-      width: 36px; height: 36px;
+      width: 36px;
+      height: 36px;
       background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-      border-radius: 50%; display: flex; align-items: center; justify-content: center;
-      font-size: 14px; color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      color: white;
     }
-    .user-name-sidebar { font-size: 14px; color: #e2e8f0; }
-    .user-org-sidebar { font-size: 12px; color: #64748b; }
+
+    .user-name-sidebar {
+      font-size: 14px;
+      color: #e2e8f0;
+    }
+
+    .user-org-sidebar {
+      font-size: 12px;
+      color: #64748b;
+    }
 
     /* 에디터 패널 (중앙) */
     .editor-panel {
@@ -137,114 +246,520 @@
     }
 
     /* 카드 */
-    .card { background: white; border: 1px solid #e5e7eb; border-radius: 12px; margin-bottom: 20px; overflow: hidden; }
-    .card-header {
-      background: #f9fafb; padding: 14px 20px; border-bottom: 1px solid #e5e7eb;
-      display: flex; justify-content: space-between; align-items: center;
+    .card {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      overflow: hidden;
     }
-    .card-header h3 { font-size: 15px; font-weight: 600; }
-    .ai-badge { font-size: 11px; color: #7c3aed; background: #f3e8ff; padding: 3px 10px; border-radius: 12px; }
-    .card-body { padding: 20px; }
+
+    .card-header {
+      background: #f9fafb;
+      padding: 14px 20px;
+      border-bottom: 1px solid #e5e7eb;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .card-header h3 {
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .ai-badge {
+      font-size: 11px;
+      color: #7c3aed;
+      background: #f3e8ff;
+      padding: 3px 10px;
+      border-radius: 12px;
+    }
+
+    .card-body {
+      padding: 20px;
+    }
 
     /* 상태 뱃지 */
-    .status-badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 500; }
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 500;
+    }
 
     /* 레포트 보기 버튼 (각 섹션 헤더 오른쪽) */
     .report-btn {
-      display: inline-flex; align-items: center; gap: 6px;
-      padding: 6px 14px; border-radius: 8px; font-size: 12px; font-weight: 600;
-      cursor: pointer; border: 1px solid #ddd6fe; background: white; color: #7c3aed;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid #ddd6fe;
+      background: white;
+      color: #7c3aed;
       transition: all 0.15s;
     }
-    .report-btn:hover { background: #f5f3ff; border-color: #a78bfa; }
-    .report-btn .icon { font-size: 14px; }
-    .header-right { display: flex; align-items: center; gap: 8px; }
+
+    .report-btn:hover {
+      background: #f5f3ff;
+      border-color: #a78bfa;
+    }
+
+    .report-btn .icon {
+      font-size: 14px;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
 
     /* 폼 요소 */
-    label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 6px; color: #374151; }
-    .input { width: 100%; height: 42px; border: 1px solid #e5e7eb; border-radius: 8px; padding: 0 12px; font-size: 14px; }
-    .input.ai-filled { border-color: #8b5cf6; background: #faf5ff; }
-    .textarea { width: 100%; border: 1px solid #e5e7eb; border-radius: 8px; padding: 12px; font-size: 13px; line-height: 1.6; resize: vertical; font-family: inherit; }
-    .textarea.ai-filled { border-color: #8b5cf6; background: #faf5ff; }
-    .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
-    .form-group { margin-bottom: 16px; }
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      margin-bottom: 6px;
+      color: #374151;
+    }
+
+    .input {
+      width: 100%;
+      height: 42px;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 0 12px;
+      font-size: 14px;
+    }
+
+    .input.ai-filled {
+      border-color: #8b5cf6;
+      background: #faf5ff;
+    }
+
+    .textarea {
+      width: 100%;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 13px;
+      line-height: 1.6;
+      resize: vertical;
+      font-family: inherit;
+    }
+
+    .textarea.ai-filled {
+      border-color: #8b5cf6;
+      background: #faf5ff;
+    }
+
+    .input-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
 
     /* 연구 방법론 그리드 */
-    .methodology-grid { display: flex; flex-wrap: wrap; gap: 8px; }
-    .methodology-item { padding: 8px 14px; border: 2px solid #e5e7eb; border-radius: 20px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px; }
-    .methodology-item:hover { border-color: #c4b5fd; }
-    .methodology-item.selected { border-color: #8b5cf6; background: #faf5ff; }
-    .methodology-item h4 { font-size: 13px; font-weight: 600; }
-    .methodology-item p { font-size: 11px; color: #6b7280; }
+    .methodology-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .methodology-item {
+      padding: 8px 14px;
+      border: 2px solid #e5e7eb;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .methodology-item:hover {
+      border-color: #c4b5fd;
+    }
+
+    .methodology-item.selected {
+      border-color: #8b5cf6;
+      background: #faf5ff;
+    }
+
+    .methodology-item h4 {
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .methodology-item p {
+      font-size: 11px;
+      color: #6b7280;
+    }
 
     /* 참여자 조건 */
-    .condition-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
-    .condition-row span { color: #6b7280; font-size: 13px; }
-    .input-small { width: 80px; height: 38px; border: 1px solid #e5e7eb; border-radius: 8px; padding: 0 12px; text-align: center; font-size: 13px; }
-    .input-small.ai-filled { border-color: #8b5cf6; background: #faf5ff; }
-    .chip-group { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
-    .chip { padding: 7px 14px; border: 1px solid #e5e7eb; border-radius: 20px; font-size: 12px; cursor: pointer; transition: all 0.2s; }
-    .chip:hover { border-color: #8b5cf6; }
-    .chip.selected { background: #8b5cf6; color: white; border-color: #8b5cf6; }
-    .info-box { background: #eff6ff; border: 1px solid #bfdbfe; padding: 10px 16px; border-radius: 8px; font-size: 13px; color: #1e40af; display: flex; align-items: center; gap: 8px; }
+    .condition-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .condition-row span {
+      color: #6b7280;
+      font-size: 13px;
+    }
+
+    .input-small {
+      width: 80px;
+      height: 38px;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 0 12px;
+      text-align: center;
+      font-size: 13px;
+    }
+
+    .input-small.ai-filled {
+      border-color: #8b5cf6;
+      background: #faf5ff;
+    }
+
+    .chip-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .chip {
+      padding: 7px 14px;
+      border: 1px solid #e5e7eb;
+      border-radius: 20px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .chip:hover {
+      border-color: #8b5cf6;
+    }
+
+    .chip.selected {
+      background: #8b5cf6;
+      color: white;
+      border-color: #8b5cf6;
+    }
+
+    .info-box {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      color: #1e40af;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
 
     /* 가설 박스 */
-    .hypothesis-box { background: #faf5ff; border: 1px solid #ddd6fe; border-radius: 10px; padding: 14px 16px; margin-bottom: 12px; }
-    .hypothesis-box .label { font-size: 11px; font-weight: 600; color: #7c3aed; margin-bottom: 4px; }
-    .hypothesis-box .text { font-size: 13px; color: #374151; line-height: 1.6; }
-    .hypothesis-box .params { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
-    .hypothesis-box .param { font-size: 11px; padding: 3px 8px; border-radius: 4px; background: #ede9fe; color: #6d28d9; }
+    .hypothesis-box {
+      background: #faf5ff;
+      border: 1px solid #ddd6fe;
+      border-radius: 10px;
+      padding: 14px 16px;
+      margin-bottom: 12px;
+    }
+
+    .hypothesis-box .label {
+      font-size: 11px;
+      font-weight: 600;
+      color: #7c3aed;
+      margin-bottom: 4px;
+    }
+
+    .hypothesis-box .text {
+      font-size: 13px;
+      color: #374151;
+      line-height: 1.6;
+    }
+
+    .hypothesis-box .params {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+      flex-wrap: wrap;
+    }
+
+    .hypothesis-box .param {
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      background: #ede9fe;
+      color: #6d28d9;
+    }
 
     /* 버튼 */
-    .btn { padding: 14px 28px; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; border: none; text-align: center; transition: all 0.15s; }
-    .btn-secondary { background: white; border: 1px solid #e5e7eb; color: #374151; }
-    .btn-secondary:hover { background: #f9fafb; }
-    .btn-primary { background: #8b5cf6; color: white; }
-    .btn-primary:hover { background: #7c3aed; }
-    .btn-row { display: flex; justify-content: space-between; align-items: center; margin-top: 24px; padding-top: 24px; border-top: 1px solid #e5e7eb; }
+    .btn {
+      padding: 14px 28px;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      text-align: center;
+      transition: all 0.15s;
+    }
+
+    .btn-secondary {
+      background: white;
+      border: 1px solid #e5e7eb;
+      color: #374151;
+    }
+
+    .btn-secondary:hover {
+      background: #f9fafb;
+    }
+
+    .btn-primary {
+      background: #8b5cf6;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #7c3aed;
+    }
+
+    .btn-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 24px;
+      padding-top: 24px;
+      border-top: 1px solid #e5e7eb;
+    }
 
     /* ===== 모달 오버레이 ===== */
     .modal-overlay {
-      display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.4); z-index: 1000; justify-content: center; align-items: center;
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.4);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
     }
-    .modal-overlay.show { display: flex; }
+
+    .modal-overlay.show {
+      display: flex;
+    }
+
     .modal {
-      background: white; border-radius: 16px; width: 640px; max-height: 80vh;
-      overflow: hidden; box-shadow: 0 25px 50px rgba(0,0,0,0.25);
-      display: flex; flex-direction: column;
+      background: white;
+      border-radius: 16px;
+      width: 640px;
+      max-height: 80vh;
+      overflow: hidden;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+      display: flex;
+      flex-direction: column;
     }
+
     .modal-header {
-      padding: 16px 24px; border-bottom: 1px solid #e5e7eb;
-      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 24px;
+      border-bottom: 1px solid #e5e7eb;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
       background: #f9fafb;
     }
-    .modal-header h3 { font-size: 16px; font-weight: 600; }
-    .modal-header .badge { font-size: 11px; color: #6b7280; background: #f3f4f6; padding: 3px 10px; border-radius: 8px; }
-    .modal-close { width: 32px; height: 32px; border: 1px solid #e5e7eb; border-radius: 8px; background: white; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; }
-    .modal-body { padding: 24px; overflow-y: auto; flex: 1; }
+
+    .modal-header h3 {
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .modal-header .badge {
+      font-size: 11px;
+      color: #6b7280;
+      background: #f3f4f6;
+      padding: 3px 10px;
+      border-radius: 8px;
+    }
+
+    .modal-close {
+      width: 32px;
+      height: 32px;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      background: white;
+      cursor: pointer;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-body {
+      padding: 24px;
+      overflow-y: auto;
+      flex: 1;
+    }
 
     /* 모달 내부 콘텐츠 */
-    .paper-item { display: flex; gap: 12px; padding: 14px; border: 1px solid #e5e7eb; border-radius: 10px; margin-bottom: 10px; transition: background 0.1s; }
-    .paper-item:hover { background: #f9fafb; }
-    .paper-icon { width: 40px; height: 40px; border-radius: 10px; background: #f3f4f6; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
-    .paper-info { flex: 1; }
-    .paper-title { font-size: 13px; font-weight: 600; color: #1e40af; margin-bottom: 4px; line-height: 1.4; }
-    .paper-meta { font-size: 11px; color: #6b7280; }
-    .paper-doi { font-size: 11px; color: #94a3b8; margin-top: 2px; }
+    .paper-item {
+      display: flex;
+      gap: 12px;
+      padding: 14px;
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      margin-bottom: 10px;
+      transition: background 0.1s;
+    }
 
-    .trend-summary { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; padding: 14px 16px; margin-bottom: 16px; font-size: 13px; color: #166534; line-height: 1.6; }
-    .method-stat { display: flex; align-items: center; gap: 16px; padding: 12px 0; border-bottom: 1px solid #f3f4f6; }
-    .method-stat:last-child { border-bottom: none; }
-    .method-stat .pct { font-size: 28px; font-weight: 800; color: #1e293b; min-width: 70px; }
-    .method-stat .info { flex: 1; }
-    .method-stat .info .name { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
-    .method-stat .info .desc { font-size: 12px; color: #6b7280; }
-    .method-note { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 12px 14px; font-size: 12px; color: #1e40af; margin-top: 12px; line-height: 1.6; }
-    .ref-links { margin-top: 16px; padding-top: 14px; border-top: 1px solid #e5e7eb; }
-    .ref-links .ref-title { font-size: 12px; font-weight: 600; color: #374151; margin-bottom: 8px; }
-    .ref-link { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 8px; font-size: 12px; color: #3b82f6; text-decoration: none; margin-bottom: 4px; }
-    .ref-link:hover { background: #eff6ff; }
+    .paper-item:hover {
+      background: #f9fafb;
+    }
+
+    .paper-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: #f3f4f6;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .paper-info {
+      flex: 1;
+    }
+
+    .paper-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #1e40af;
+      margin-bottom: 4px;
+      line-height: 1.4;
+    }
+
+    .paper-meta {
+      font-size: 11px;
+      color: #6b7280;
+    }
+
+    .paper-doi {
+      font-size: 11px;
+      color: #94a3b8;
+      margin-top: 2px;
+    }
+
+    .trend-summary {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-radius: 10px;
+      padding: 14px 16px;
+      margin-bottom: 16px;
+      font-size: 13px;
+      color: #166534;
+      line-height: 1.6;
+    }
+
+    .method-stat {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 12px 0;
+      border-bottom: 1px solid #f3f4f6;
+    }
+
+    .method-stat:last-child {
+      border-bottom: none;
+    }
+
+    .method-stat .pct {
+      font-size: 28px;
+      font-weight: 800;
+      color: #1e293b;
+      min-width: 70px;
+    }
+
+    .method-stat .info {
+      flex: 1;
+    }
+
+    .method-stat .info .name {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+
+    .method-stat .info .desc {
+      font-size: 12px;
+      color: #6b7280;
+    }
+
+    .method-note {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: 8px;
+      padding: 12px 14px;
+      font-size: 12px;
+      color: #1e40af;
+      margin-top: 12px;
+      line-height: 1.6;
+    }
+
+    .ref-links {
+      margin-top: 16px;
+      padding-top: 14px;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    .ref-links .ref-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 8px;
+    }
+
+    .ref-link {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      font-size: 12px;
+      color: #3b82f6;
+      text-decoration: none;
+      margin-bottom: 4px;
+    }
+
+    .ref-link:hover {
+      background: #eff6ff;
+    }
 
     /* AI 채팅 패널 (우측) */
     .chat-panel {
@@ -255,6 +770,7 @@
       border-left: 1px solid #e5e7eb;
       background: #fafafa;
     }
+
     .chat-panel-inner {
       flex: 1;
       display: flex;
@@ -262,105 +778,241 @@
       background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
       color: #e5e7eb;
     }
+
     .chat-header {
       padding: 16px 20px;
       border-bottom: 1px solid #334155;
       background: rgba(139, 92, 246, 0.1);
     }
+
     .chat-header .title {
-      font-size: 15px; font-weight: 700;
-      display: flex; align-items: center; gap: 8px;
+      font-size: 15px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
+
     .chat-header .title .icon {
-      width: 28px; height: 28px;
+      width: 28px;
+      height: 28px;
       background: linear-gradient(135deg, #8b5cf6, #6366f1);
       border-radius: 8px;
-      display: flex; align-items: center; justify-content: center; font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
     }
-    .chat-header .sub { font-size: 12px; color: #94a3b8; margin-top: 4px; }
+
+    .chat-header .sub {
+      font-size: 12px;
+      color: #94a3b8;
+      margin-top: 4px;
+    }
 
     .chat-context {
-      margin: 12px; padding: 12px;
-      background: #1e293b; border: 1px solid #334155; border-radius: 10px;
+      margin: 12px;
+      padding: 12px;
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 10px;
     }
-    .chat-context .label { font-size: 11px; color: #64748b; margin-bottom: 6px; }
-    .chat-context .value { font-size: 13px; color: #e2e8f0; line-height: 1.5; }
-    .chat-context-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+
+    .chat-context .label {
+      font-size: 11px;
+      color: #64748b;
+      margin-bottom: 6px;
+    }
+
+    .chat-context .value {
+      font-size: 13px;
+      color: #e2e8f0;
+      line-height: 1.5;
+    }
+
+    .chat-context-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
     .chat-context-chip {
-      padding: 4px 10px; background: #8b5cf6; border-radius: 12px;
-      font-size: 11px; color: white;
+      padding: 4px 10px;
+      background: #8b5cf6;
+      border-radius: 12px;
+      font-size: 11px;
+      color: white;
     }
 
     .chat-messages {
-      flex: 1; overflow-y: auto; padding: 16px;
-      display: flex; flex-direction: column; gap: 12px;
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
     }
+
     .msg {
-      max-width: 90%; padding: 12px 14px; border-radius: 12px;
-      font-size: 13px; line-height: 1.5;
+      max-width: 90%;
+      padding: 12px 14px;
+      border-radius: 12px;
+      font-size: 13px;
+      line-height: 1.5;
     }
+
     .msg.ai {
-      background: #1e293b; border: 1px solid #334155;
-      align-self: flex-start; border-bottom-left-radius: 4px;
+      background: #1e293b;
+      border: 1px solid #334155;
+      align-self: flex-start;
+      border-bottom-left-radius: 4px;
     }
+
     .msg.user {
-      background: #3b82f6; color: white;
-      align-self: flex-end; border-bottom-right-radius: 4px;
+      background: #3b82f6;
+      color: white;
+      align-self: flex-end;
+      border-bottom-right-radius: 4px;
     }
-    .msg .sender { font-size: 11px; color: #64748b; margin-bottom: 4px; }
-    .msg.user .sender { color: rgba(255,255,255,0.7); }
+
+    .msg .sender {
+      font-size: 11px;
+      color: #64748b;
+      margin-bottom: 4px;
+    }
+
+    .msg.user .sender {
+      color: rgba(255, 255, 255, 0.7);
+    }
 
     .chat-quick {
-      padding: 12px; border-top: 1px solid #334155; background: rgba(0,0,0,0.2);
+      padding: 12px;
+      border-top: 1px solid #334155;
+      background: rgba(0, 0, 0, 0.2);
     }
-    .chat-quick .label { font-size: 11px; color: #64748b; margin-bottom: 8px; }
-    .chat-quick-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+
+    .chat-quick .label {
+      font-size: 11px;
+      color: #64748b;
+      margin-bottom: 8px;
+    }
+
+    .chat-quick-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
     .chat-quick-chip {
-      padding: 6px 12px; background: #334155; border: 1px solid #475569;
-      border-radius: 16px; font-size: 12px; color: #cbd5e1; cursor: pointer;
+      padding: 6px 12px;
+      background: #334155;
+      border: 1px solid #475569;
+      border-radius: 16px;
+      font-size: 12px;
+      color: #cbd5e1;
+      cursor: pointer;
     }
-    .chat-quick-chip:hover { background: #475569; border-color: #8b5cf6; }
+
+    .chat-quick-chip:hover {
+      background: #475569;
+      border-color: #8b5cf6;
+    }
 
     .chat-input {
-      padding: 16px; border-top: 1px solid #334155; background: #0f172a;
+      padding: 16px;
+      border-top: 1px solid #334155;
+      background: #0f172a;
     }
+
     .chat-input-wrapper {
-      display: flex; gap: 8px;
-      background: #1e293b; border: 1px solid #334155;
-      border-radius: 12px; padding: 4px;
+      display: flex;
+      gap: 8px;
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 4px;
     }
-    .chat-input-wrapper:focus-within { border-color: #8b5cf6; }
+
+    .chat-input-wrapper:focus-within {
+      border-color: #8b5cf6;
+    }
+
     .chat-input input {
-      flex: 1; background: transparent; border: none;
-      padding: 10px 12px; font-size: 13px; color: #e2e8f0; outline: none;
+      flex: 1;
+      background: transparent;
+      border: none;
+      padding: 10px 12px;
+      font-size: 13px;
+      color: #e2e8f0;
+      outline: none;
     }
-    .chat-input input::placeholder { color: #64748b; }
+
+    .chat-input input::placeholder {
+      color: #64748b;
+    }
+
     .chat-send-btn {
-      width: 40px; height: 40px;
+      width: 40px;
+      height: 40px;
       background: linear-gradient(135deg, #8b5cf6, #6366f1);
-      border: none; border-radius: 8px; color: white; cursor: pointer;
-      display: flex; align-items: center; justify-content: center; font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      color: white;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
     }
 
     /* 디자이너 노트 (하단 오버레이) */
     .designer-notes {
-      position: fixed; bottom: 0; left: 0; right: 0;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
       background: linear-gradient(135deg, #fdf4ff, #fae8ff);
       border-top: 2px solid #d946ef;
       padding: 20px 32px;
-      max-height: 400px; overflow-y: auto;
+      max-height: 400px;
+      overflow-y: auto;
       z-index: 100;
       display: none;
     }
-    .designer-notes.show { display: block; }
-    .designer-notes h3 { color: #a21caf; margin-bottom: 12px; font-size: 14px; }
-    .designer-notes .content { font-size: 12px; color: #374151; line-height: 1.7; columns: 2; column-gap: 32px; }
+
+    .designer-notes.show {
+      display: block;
+    }
+
+    .designer-notes h3 {
+      color: #a21caf;
+      margin-bottom: 12px;
+      font-size: 14px;
+    }
+
+    .designer-notes .content {
+      font-size: 12px;
+      color: #374151;
+      line-height: 1.7;
+      columns: 2;
+      column-gap: 32px;
+    }
 
     .toggle-notes {
-      position: fixed; bottom: 16px; right: 16px;
-      padding: 10px 16px; background: #d946ef; color: white;
-      border: none; border-radius: 8px; font-size: 13px; font-weight: 600;
-      cursor: pointer; z-index: 101; box-shadow: 0 4px 12px rgba(217,70,239,0.3);
+      position: fixed;
+      bottom: 16px;
+      right: 16px;
+      padding: 10px 16px;
+      background: #d946ef;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      z-index: 101;
+      box-shadow: 0 4px 12px rgba(217, 70, 239, 0.3);
     }
 
     /* ===== Sidebar Navigation CSS Classes ===== */
@@ -373,21 +1025,26 @@
       text-decoration: none;
       margin-bottom: 4px;
     }
+
     .sidebar-nav-link.inactive {
       background: rgba(251, 191, 36, 0.08);
     }
+
     .nav-dot {
       width: 6px;
       height: 6px;
       border-radius: 50%;
       flex-shrink: 0;
     }
+
     .nav-dot.warning {
       background: #fbbf24;
     }
+
     .nav-dot.inactive {
       background: #64748b;
     }
+
     .sidebar-research-title {
       font-size: 12px;
       color: #e2e8f0;
@@ -396,14 +1053,17 @@
       text-overflow: ellipsis;
       font-weight: 600;
     }
+
     .sidebar-research-title.muted {
       color: #94a3b8;
     }
+
     .sidebar-sub-text {
       font-size: 10px;
       color: #64748b;
       margin-top: 2px;
     }
+
     .status-count-badge {
       background: #334155;
       color: #94a3b8;
@@ -411,6 +1071,7 @@
       padding: 2px 6px;
       border-radius: 8px;
     }
+
     .nav-item-flex {
       display: flex;
       align-items: center;
@@ -420,6 +1081,7 @@
       cursor: pointer;
       margin-bottom: 4px;
     }
+
     .sidebar-section-label {
       font-size: 11px;
       font-weight: 600;
@@ -427,11 +1089,13 @@
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
+
     .sidebar-header-flex {
       display: flex;
       align-items: center;
       justify-content: space-between;
     }
+
     .status-badge-blue {
       background: #3b82f6;
       color: white;
@@ -442,70 +1106,160 @@
     }
 
     .skip-link {
-      position: absolute; left: -9999px; top: auto;
-      width: 1px; height: 1px; overflow: hidden;
+      position: absolute;
+      left: -9999px;
+      top: auto;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
     }
+
     .skip-link:focus {
-      position: fixed; top: 10px; left: 10px; z-index: 10000;
-      padding: 8px 16px; background: #3b82f6; color: white;
-      border-radius: 4px; width: auto; height: auto;
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      z-index: 10000;
+      padding: 8px 16px;
+      background: #3b82f6;
+      color: white;
+      border-radius: 4px;
+      width: auto;
+      height: auto;
     }
+
     /* ===== SIDEBAR NAVIGATION STYLES ===== */
-    .sidebar-nav-section { flex: 1; overflow-y: auto; }
-    .sidebar-badge {
-      background: #3b82f6; color: white; font-size: 11px;
-      padding: 2px 8px; border-radius: 10px; font-weight: 600;
+    .sidebar-nav-section {
+      flex: 1;
+      overflow-y: auto;
     }
+
+    .sidebar-badge {
+      background: #3b82f6;
+      color: white;
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-weight: 600;
+    }
+
     .sidebar-research-item {
-      display: flex; align-items: center; gap: 10px;
-      padding: 10px 12px; border-radius: 8px; cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      cursor: pointer;
       margin-bottom: 4px;
     }
-    .sidebar-research-item:hover { background: rgba(255,255,255,0.05); }
-    .sidebar-item-emoji { font-size: 14px; }
+
+    .sidebar-research-item:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .sidebar-item-emoji {
+      font-size: 14px;
+    }
+
     .sidebar-item-name {
-      flex: 1; font-size: 13px; color: #94a3b8;
+      flex: 1;
+      font-size: 13px;
+      color: #94a3b8;
     }
+
     .sidebar-status-dot {
-      width: 8px; height: 8px; border-radius: 50%;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
     }
+
     .sidebar-draft-title {
-      font-size: 11px; font-weight: 600; color: #64748b;
-      text-transform: uppercase; letter-spacing: 0.5px;
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 0 12px; margin-bottom: 8px;
+      font-size: 11px;
+      font-weight: 600;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 12px;
+      margin-bottom: 8px;
     }
+
     .sidebar-draft-badge {
-      background: #334155; color: #94a3b8;
-      font-size: 10px; padding: 2px 6px; border-radius: 8px;
+      background: #334155;
+      color: #94a3b8;
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 8px;
     }
+
     .sidebar-draft-link {
-      display: flex; align-items: center; gap: 10px;
-      padding: 8px 12px; border-radius: 8px;
-      text-decoration: none; margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      border-radius: 8px;
+      text-decoration: none;
+      margin-bottom: 4px;
     }
+
     .sidebar-draft-dot {
-      width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      flex-shrink: 0;
     }
-    .sidebar-draft-meta { flex: 1; min-width: 0; }
+
+    .sidebar-draft-meta {
+      flex: 1;
+      min-width: 0;
+    }
+
     .sidebar-draft-title-text {
-      font-size: 12px; color: #e2e8f0;
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      font-size: 12px;
+      color: #e2e8f0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
+
     .sidebar-draft-meta-text {
-      font-size: 10px; color: #64748b; margin-top: 2px;
+      font-size: 10px;
+      color: #64748b;
+      margin-top: 2px;
     }
-    .user-info-sidebar { display: flex; align-items: center; gap: 12px; padding: 8px; }
+
+    .user-info-sidebar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px;
+    }
+
     .user-avatar-sidebar {
-      width: 36px; height: 36px;
+      width: 36px;
+      height: 36px;
       background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-      border-radius: 50%; display: flex; align-items: center; justify-content: center;
-      font-size: 14px; color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      color: white;
     }
-    .user-name-sidebar { font-size: 14px; color: #e2e8f0; }
-    .user-org-sidebar { font-size: 12px; color: #64748b; }
-    </style>
+
+    .user-name-sidebar {
+      font-size: 14px;
+      color: #e2e8f0;
+    }
+
+    .user-org-sidebar {
+      font-size: 12px;
+      color: #64748b;
+    }
+  </style>
 </head>
+
 <body>
   <a href="#main-content" class="skip-link">본문으로 건너뛰기</a>
   <div class="layout">
@@ -590,15 +1344,30 @@
       <!-- Step Bar -->
       <div class="step-bar">
         <div class="step-bar-inner">
-          <a class="sb-step done" href="create.html"><div class="sb-num">&#x2713;</div><div class="sb-label">AI 인터뷰</div></a>
+          <a class="sb-step done" href="create.html">
+            <div class="sb-num">&#x2713;</div>
+            <div class="sb-label">연구 설계</div>
+          </a>
           <div class="sb-line done"></div>
-          <a class="sb-step active" href="create-step2.html"><div class="sb-num">2</div><div class="sb-label">연구 설계</div></a>
+          <a class="sb-step active" href="create-step2.html">
+            <div class="sb-num">2</div>
+            <div class="sb-label">데이터 탐색</div>
+          </a>
           <div class="sb-line"></div>
-          <a class="sb-step pending" href="create-step3.html"><div class="sb-num">3</div><div class="sb-label">타겟 설정</div></a>
+          <a class="sb-step pending" href="create-step3.html">
+            <div class="sb-num">3</div>
+            <div class="sb-label">데이터 설정</div>
+          </a>
           <div class="sb-line"></div>
-          <a class="sb-step pending" href="create-step4.html"><div class="sb-num">4</div><div class="sb-label">데이터 수집</div></a>
+          <a class="sb-step pending" href="create-step4.html">
+            <div class="sb-num">4</div>
+            <div class="sb-label">참가자</div>
+          </a>
           <div class="sb-line"></div>
-          <a class="sb-step pending" href="create-step5.html"><div class="sb-num">5</div><div class="sb-label">에스크로</div></a>
+          <a class="sb-step pending" href="create-step5.html">
+            <div class="sb-num">5</div>
+            <div class="sb-label">심의·에스크로</div>
+          </a>
         </div>
       </div>
 
@@ -624,7 +1393,8 @@
             <div class="card-body">
               <div class="form-group">
                 <label>연구 제목</label>
-                <textarea class="textarea ai-filled" rows="2" style="resize:none;">생활습관 개입의 만성질환 환자 건강 지표 개선 효과: 무작위 대조 시험</textarea>
+                <textarea class="textarea ai-filled" rows="2"
+                  style="resize:none;">생활습관 개입의 만성질환 환자 건강 지표 개선 효과: 무작위 대조 시험</textarea>
               </div>
               <div class="input-row">
                 <div class="form-group">
@@ -651,7 +1421,8 @@
               </div>
             </div>
             <div class="card-body">
-              <textarea class="textarea ai-filled" rows="5">만성질환 환자에서 건강 지표 변동성(Health Indicator Variability)은 평균 수치와 독립적으로 주요 합병증 위험을 예측하는 중요 지표로 부상하고 있다. 최근 웨어러블 기술의 보급으로 실시간 건강 지표 측정이 가능해졌으나, 생활습관 개입이 건강 지표에 미치는 효과를 웨어러블 기반으로 검증한 RCT는 국내에 3건에 불과하다. 특히 한국의 건강 행동 특성을 고려하면, 생활습관 개입의 실현 가능성과 효과를 동시에 검증할 필요가 있다.</textarea>
+              <textarea class="textarea ai-filled"
+                rows="5">만성질환 환자에서 건강 지표 변동성(Health Indicator Variability)은 평균 수치와 독립적으로 주요 합병증 위험을 예측하는 중요 지표로 부상하고 있다. 최근 웨어러블 기술의 보급으로 실시간 건강 지표 측정이 가능해졌으나, 생활습관 개입이 건강 지표에 미치는 효과를 웨어러블 기반으로 검증한 RCT는 국내에 3건에 불과하다. 특히 한국의 건강 행동 특성을 고려하면, 생활습관 개입의 실현 가능성과 효과를 동시에 검증할 필요가 있다.</textarea>
             </div>
           </div>
 
@@ -667,7 +1438,8 @@
               </div>
             </div>
             <div class="card-body">
-              <textarea class="textarea ai-filled" rows="3">만성질환 환자에서 8주간 생활습관 개입이 웨어러블 기반 주요 건강지표 변동성(주요 바이오마커, 변동계수%)에 미치는 효과를 표준 관리 대조군과 비교하여 무작위 대조 시험으로 검증한다.</textarea>
+              <textarea class="textarea ai-filled"
+                rows="3">만성질환 환자에서 8주간 생활습관 개입이 웨어러블 기반 주요 건강지표 변동성(주요 바이오마커, 변동계수%)에 미치는 효과를 표준 관리 대조군과 비교하여 무작위 대조 시험으로 검증한다.</textarea>
             </div>
           </div>
 
@@ -685,7 +1457,8 @@
             <div class="card-body">
               <div class="hypothesis-box">
                 <div class="label">주 가설 (Primary)</div>
-                <div class="text">8주간 생활습관 개입군은 표준 관리 대조군 대비 웨어러블 기반 주요 바이오마커(Mean Amplitude of Indicator Excursions)가 유의하게 감소할 것이다 (효과크기 d&#x2265;0.6, &#x03B1;=0.05).</div>
+                <div class="text">8주간 생활습관 개입군은 표준 관리 대조군 대비 웨어러블 기반 주요 바이오마커(Mean Amplitude of Indicator Excursions)가
+                  유의하게 감소할 것이다 (효과크기 d&#x2265;0.6, &#x03B1;=0.05).</div>
                 <div class="params">
                   <span class="param">효과크기 d=0.6</span>
                   <span class="param">&#x03B1;=0.05</span>
@@ -694,7 +1467,8 @@
               </div>
               <div class="hypothesis-box">
                 <div class="label">부 가설 (Secondary)</div>
-                <div class="text">생활습관 개입군은 대조군 대비 변동계수(Coefficient of Variation)가 유의하게 감소하고, 주요 측정 시점 건강 지표 피크가 유의하게 낮을 것이다.</div>
+                <div class="text">생활습관 개입군은 대조군 대비 변동계수(Coefficient of Variation)가 유의하게 감소하고, 주요 측정 시점 건강 지표 피크가 유의하게 낮을
+                  것이다.</div>
                 <div class="params">
                   <span class="param">CV% 감소</span>
                   <span class="param">식후 2h 피크</span>
@@ -703,184 +1477,7 @@
             </div>
           </div>
 
-          <!-- ===== 5. 수집 지표 설계 ===== -->
-          <div class="card">
-            <div class="card-header">
-              <h3>&#x1F4CA; 수집 지표 설계</h3>
-              <div class="header-right">
-                <span class="ai-badge">AI 추천</span>
-                <button class="report-btn" onclick="openModal('metrics-modal')">
-                  <span class="icon">&#x1F9EC;</span> CDM 매핑
-                </button>
-              </div>
-            </div>
-            <div class="card-body">
-              <div style="font-size:12px; color:#6b7280; margin-bottom:12px; line-height:1.5;">
-                연구에서 필요한 데이터 지표를 정의합니다. 이 지표 설계를 기반으로 데이터 수집 전략과 방법론이 결정됩니다.
-              </div>
-
-              <!-- 메트릭 테이블 -->
-              <table style="width:100%; border-collapse:collapse; font-size:12px; margin-bottom:12px;">
-                <thead>
-                  <tr style="background:#f9fafb; border-bottom:2px solid #e5e7eb;">
-                    <th style="padding:8px 10px; text-align:left; font-weight:600; color:#374151;">지표명</th>
-                    <th style="padding:8px 10px; text-align:left; font-weight:600; color:#374151;">단위</th>
-                    <th style="padding:8px 10px; text-align:left; font-weight:600; color:#374151;">CDM Domain</th>
-                    <th style="padding:8px 10px; text-align:left; font-weight:600; color:#374151;">데이터 유형</th>
-                    <th style="padding:8px 10px; text-align:left; font-weight:600; color:#374151;">우선순위</th>
-                    <th style="padding:8px 10px; text-align:left; font-weight:600; color:#374151;">시각화</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr style="border-bottom:1px solid #f3f4f6;">
-                    <td style="padding:8px 10px;"><span style="color:#0072B2;">&#x25A0;</span> 체중</td>
-                    <td style="padding:8px 10px; color:#6b7280;">kg</td>
-                    <td style="padding:8px 10px;"><span style="font-size:10px; padding:2px 6px; background:#dbeafe; color:#1e40af; border-radius:4px;">measurement</span></td>
-                    <td style="padding:8px 10px; color:#6b7280;">numeric</td>
-                    <td style="padding:8px 10px;"><span style="font-size:10px; padding:2px 6px; background:#fef3c7; color:#92400e; border-radius:4px; font-weight:600;">Primary</span></td>
-                    <td style="padding:8px 10px; color:#9ca3af; font-size:10px;">numeric_line</td>
-                  </tr>
-                  <tr style="border-bottom:1px solid #f3f4f6; background:#fafafa;">
-                    <td style="padding:8px 10px;"><span style="color:#0072B2;">&#x25A0;</span> SBP</td>
-                    <td style="padding:8px 10px; color:#6b7280;">mmHg</td>
-                    <td style="padding:8px 10px;"><span style="font-size:10px; padding:2px 6px; background:#dbeafe; color:#1e40af; border-radius:4px;">measurement</span></td>
-                    <td style="padding:8px 10px; color:#6b7280;">numeric</td>
-                    <td style="padding:8px 10px;"><span style="font-size:10px; padding:2px 6px; background:#e0e7ff; color:#3730a3; border-radius:4px;">Secondary</span></td>
-                    <td style="padding:8px 10px; color:#9ca3af; font-size:10px;">numeric_line</td>
-                  </tr>
-                  <tr style="border-bottom:1px solid #f3f4f6;">
-                    <td style="padding:8px 10px;"><span style="color:#10b981;">&#x25A0;</span> TIR</td>
-                    <td style="padding:8px 10px; color:#6b7280;">%</td>
-                    <td style="padding:8px 10px;"><span style="font-size:10px; padding:2px 6px; background:#d1fae5; color:#065f46; border-radius:4px;">device_exposure</span></td>
-                    <td style="padding:8px 10px; color:#6b7280;">proportion</td>
-                    <td style="padding:8px 10px;"><span style="font-size:10px; padding:2px 6px; background:#e0e7ff; color:#3730a3; border-radius:4px;">Secondary</span></td>
-                    <td style="padding:8px 10px; color:#9ca3af; font-size:10px;">severity_zone</td>
-                  </tr>
-                  <tr style="border-bottom:1px solid #f3f4f6; background:#fafafa;">
-                    <td style="padding:8px 10px;"><span style="color:#a855f7;">&#x25A0;</span> 피부상태</td>
-                    <td style="padding:8px 10px; color:#6b7280;">점</td>
-                    <td style="padding:8px 10px;"><span style="font-size:10px; padding:2px 6px; background:#ede9fe; color:#5b21b6; border-radius:4px;">observation</span></td>
-                    <td style="padding:8px 10px; color:#6b7280;">categorical</td>
-                    <td style="padding:8px 10px;"><span style="font-size:10px; padding:2px 6px; background:#f3f4f6; color:#6b7280; border-radius:4px;">Exploratory</span></td>
-                    <td style="padding:8px 10px; color:#9ca3af; font-size:10px;">image_gallery</td>
-                  </tr>
-                  <tr style="border-bottom:1px solid #f3f4f6;">
-                    <td style="padding:8px 10px;"><span style="color:#CC79A7;">&#x25A0;</span> 순응도</td>
-                    <td style="padding:8px 10px; color:#6b7280;">%</td>
-                    <td style="padding:8px 10px;"><span style="font-size:10px; padding:2px 6px; background:#ede9fe; color:#5b21b6; border-radius:4px;">observation</span></td>
-                    <td style="padding:8px 10px; color:#6b7280;">numeric</td>
-                    <td style="padding:8px 10px;"><span style="font-size:10px; padding:2px 6px; background:#f3f4f6; color:#6b7280; border-radius:4px;">Operational</span></td>
-                    <td style="padding:8px 10px; color:#9ca3af; font-size:10px;">numeric_line</td>
-                  </tr>
-                </tbody>
-              </table>
-
-              <!-- 지표 추가 버튼 -->
-              <div style="display:flex; gap:8px; align-items:center;">
-                <button style="padding:8px 14px; border:1px dashed #d1d5db; border-radius:8px; background:white; color:#6b7280; font-size:12px; cursor:pointer; display:flex; align-items:center; gap:4px;">
-                  &#x2795; 지표 추가
-                </button>
-                <button style="padding:8px 14px; border:1px solid #ddd6fe; border-radius:8px; background:#faf5ff; color:#7c3aed; font-size:12px; cursor:pointer; display:flex; align-items:center; gap:4px;">
-                  &#x2728; AI 자동 추천
-                </button>
-              </div>
-
-              <!-- 자동 렌더러 안내 -->
-              <div style="margin-top:12px; padding:10px 14px; background:#f9fafb; border:1px solid #e5e7eb; border-radius:8px;">
-                <div style="font-size:10px; color:#6b7280; line-height:1.6;">
-                  시각화는 <strong>domain &#xD7; value_type</strong>에 따라 자동 결정됩니다:
-                  numeric &#x2192; 라인차트 &nbsp;|&nbsp;
-                  proportion &#x2192; 스택바 &nbsp;|&nbsp;
-                  categorical &#x2192; 갤러리 &nbsp;|&nbsp;
-                  binary &#x2192; 도트맵
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- ===== 6. 데이터 수집 전략 ===== -->
-          <div class="card">
-            <div class="card-header">
-              <h3>&#x1F4E6; 데이터 수집 전략</h3>
-              <div class="header-right">
-                <span class="ai-badge">AI 추천</span>
-              </div>
-            </div>
-            <div class="card-body">
-              <div style="font-size:12px; color:#6b7280; margin-bottom:14px; line-height:1.5;">
-                위에서 설계한 지표 데이터를 어떻게 확보할지 결정합니다. 이 선택에 따라 연구 방법론과 분석 도구가 달라집니다.
-              </div>
-
-              <div style="display:flex; gap:10px; margin-bottom:16px;">
-                <!-- A) 과거 데이터만 -->
-                <div class="data-strategy-card" data-ds="past_only" onclick="selectDataStrategy('past_only')" style="flex:1; padding:14px 16px; border:2px solid #e5e7eb; border-radius:10px; cursor:pointer; background:white; transition:all .2s;">
-                  <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
-                    <span style="font-size:20px;">&#x1F4C1;</span>
-                    <span style="font-size:13px; font-weight:700; color:#374151;">과거 데이터만 구매</span>
-                  </div>
-                  <div style="font-size:11px; color:#6b7280; line-height:1.5; margin-bottom:8px;">
-                    참여자의 기존 건강 데이터(EMR, CDM)를 구매하여 분석합니다.
-                  </div>
-                  <div style="display:flex; gap:4px; flex-wrap:wrap;">
-                    <span style="font-size:9px; padding:2px 6px; background:#eef2ff; color:#4338ca; border-radius:4px;">후향적 분석</span>
-                    <span style="font-size:9px; padding:2px 6px; background:#eef2ff; color:#4338ca; border-radius:4px;">CDM/EMR</span>
-                    <span style="font-size:9px; padding:2px 6px; background:#eef2ff; color:#4338ca; border-radius:4px;">즉시 분석 가능</span>
-                  </div>
-                </div>
-
-                <!-- B) 미래 데이터 수집 -->
-                <div class="data-strategy-card selected" data-ds="future_only" onclick="selectDataStrategy('future_only')" style="flex:1; padding:14px 16px; border:2px solid #0072B2; border-radius:10px; cursor:pointer; background:#f0f9ff; transition:all .2s;">
-                  <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
-                    <span style="font-size:20px;">&#x1F4F1;</span>
-                    <span style="font-size:13px; font-weight:700; color:#0072B2;">앞으로 데이터 수집</span>
-                  </div>
-                  <div style="font-size:11px; color:#6b7280; line-height:1.5; margin-bottom:8px;">
-                    참여자를 모집하고 앞으로 새 데이터를 수집합니다. 웨어러블, 앱 기록, 방문 측정 등.
-                  </div>
-                  <div style="display:flex; gap:4px; flex-wrap:wrap;">
-                    <span style="font-size:9px; padding:2px 6px; background:#dbeafe; color:#1e40af; border-radius:4px;">전향적 연구</span>
-                    <span style="font-size:9px; padding:2px 6px; background:#dbeafe; color:#1e40af; border-radius:4px;">실시간 모니터링</span>
-                    <span style="font-size:9px; padding:2px 6px; background:#dbeafe; color:#1e40af; border-radius:4px;">실험군/대조군</span>
-                  </div>
-                </div>
-
-                <!-- C) 과거 + 미래 동시 -->
-                <div class="data-strategy-card" data-ds="both" onclick="selectDataStrategy('both')" style="flex:1; padding:14px 16px; border:2px solid #e5e7eb; border-radius:10px; cursor:pointer; background:white; transition:all .2s;">
-                  <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
-                    <span style="font-size:20px;">&#x1F504;</span>
-                    <span style="font-size:13px; font-weight:700; color:#374151;">과거 + 미래 동시</span>
-                  </div>
-                  <div style="font-size:11px; color:#6b7280; line-height:1.5; margin-bottom:8px;">
-                    과거 데이터가 있는 참여자한테서 과거 기록 + 앞으로의 데이터를 함께 수집합니다.
-                  </div>
-                  <div style="display:flex; gap:4px; flex-wrap:wrap;">
-                    <span style="font-size:9px; padding:2px 6px; background:#f5f3ff; color:#6d28d9; border-radius:4px;">양방향 코호트</span>
-                    <span style="font-size:9px; padding:2px 6px; background:#f5f3ff; color:#6d28d9; border-radius:4px;">풍부한 데이터</span>
-                    <span style="font-size:9px; padding:2px 6px; background:#f5f3ff; color:#6d28d9; border-radius:4px;">기저치 확보</span>
-                  </div>
-                </div>
-              </div>
-
-              <!-- 선택에 따른 안내 -->
-              <div id="ds-note-past" style="display:none;">
-                <div class="info-box" style="background:#eef2ff; border-color:#c7d2fe; color:#4338ca;">
-                  &#x1F4C1; 과거 데이터 구매: 이미 존재하는 CDM/EMR 데이터를 분석합니다. 모집 없이 바로 분석 시작 가능. 후향적 코호트, Case-control, CDM 네트워크 분석에 적합합니다.
-                </div>
-              </div>
-              <div id="ds-note-future">
-                <div class="info-box">
-                  &#x1F4F1; 미래 데이터 수집: 참여자를 새로 모집하고 데이터를 수집합니다. RCT, 전향적 코호트, 단일군 연구에 적합합니다. 타임라인에 '오늘' 마커가 표시됩니다.
-                </div>
-              </div>
-              <div id="ds-note-both" style="display:none;">
-                <div class="info-box" style="background:#f5f3ff; border-color:#ddd6fe; color:#6d28d9;">
-                  &#x1F504; 양방향 수집: 과거 데이터 보유자를 대상으로 기존 기록(기저치)과 새 데이터를 동시에 확보합니다. 기저치 대비 변화량 분석이 가능하고, 더 풍부한 데이터셋을 구축할 수 있습니다.
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- ===== 7. 연구 방법론 (+ 방법론 비교 버튼) ===== -->
+          <!-- ===== 5. 연구 방법론 (+ 방법론 비교 버튼) ===== -->
           <div class="card">
             <div class="card-header">
               <h3>&#x1F4CB; 연구 방법론</h3>
@@ -1080,7 +1677,8 @@
       </div>
       <div class="modal-body">
         <div class="trend-summary">
-          생활습관 개입과 만성질환 건강 지표 관리에 대한 <strong>핵심 선행연구 5건</strong>을 분석했습니다. 국내 연구는 3건에 불과하며, 웨어러블 기기 기반 측정을 적용한 연구는 1건뿐입니다.
+          생활습관 개입과 만성질환 건강 지표 관리에 대한 <strong>핵심 선행연구 5건</strong>을 분석했습니다. 국내 연구는 3건에 불과하며, 웨어러블 기기 기반 측정을 적용한 연구는
+          1건뿐입니다.
         </div>
 
         <div style="font-size: 13px; font-weight: 600; margin-bottom: 12px; color: #374151;">핵심 선행연구</div>
@@ -1091,17 +1689,21 @@
             <div class="paper-title">한국인 만성질환 환자의 생활습관 개입 순응도와 건강 지표 개선</div>
             <div class="paper-meta">이영희 외 2025 | <span style="color: #059669; font-weight: 600;">대한당뇨병학회지</span></div>
             <div class="paper-doi">DOI: 10.4093/dmj.2025.0031</div>
-            <div style="font-size: 11px; color: #6b7280; margin-top: 4px;">&#x2192; 국내 유일 웨어러블+생활습관 RCT. 6주, n=60. 주요 지표 유의 개선, 변동성 측정</div>
+            <div style="font-size: 11px; color: #6b7280; margin-top: 4px;">&#x2192; 국내 유일 웨어러블+생활습관 RCT. 6주, n=60. 주요 지표
+              유의 개선, 변동성 측정</div>
           </div>
         </div>
 
         <div class="paper-item">
           <div class="paper-icon">&#x1F4C4;</div>
           <div class="paper-info">
-            <div class="paper-title">Intensive lifestyle intervention and health indicator variability in chronic disease: Systematic review</div>
-            <div class="paper-meta">Sainsbury et al. 2024 | <span style="font-weight: 600;">Diabetes Obes Metab</span></div>
+            <div class="paper-title">Intensive lifestyle intervention and health indicator variability in chronic
+              disease: Systematic review</div>
+            <div class="paper-meta">Sainsbury et al. 2024 | <span style="font-weight: 600;">Diabetes Obes Metab</span>
+            </div>
             <div class="paper-doi">DOI: 10.1111/dom.2024.15432</div>
-            <div style="font-size: 11px; color: #6b7280; margin-top: 4px;">&#x2192; 12개 RCT 메타분석. 주요 바이오마커 평균 15% 감소 (p&lt;0.01)</div>
+            <div style="font-size: 11px; color: #6b7280; margin-top: 4px;">&#x2192; 12개 RCT 메타분석. 주요 바이오마커 평균 15% 감소
+              (p&lt;0.01)</div>
           </div>
         </div>
 
@@ -1111,7 +1713,8 @@
             <div class="paper-title">웨어러블 기반 건강 지표 변동성의 임상적 의의</div>
             <div class="paper-meta">박정수 외 2024 | <span style="font-weight: 600;">내분비대사학회지</span></div>
             <div class="paper-doi">DOI: 10.3803/EnM.2024.0192</div>
-            <div style="font-size: 11px; color: #6b7280; margin-top: 4px;">&#x2192; 주요 바이오마커, 변동계수, 범위 비교. 주요 바이오마커가 임상 위험 예측에 가장 우수</div>
+            <div style="font-size: 11px; color: #6b7280; margin-top: 4px;">&#x2192; 주요 바이오마커, 변동계수, 범위 비교. 주요 바이오마커가 임상
+              위험 예측에 가장 우수</div>
           </div>
         </div>
 
@@ -1121,7 +1724,8 @@
             <div class="paper-title">한국인 생활습관 특성을 고려한 생활습관 개입 프로토콜 개발</div>
             <div class="paper-meta">김민정 외 2023 | <span style="font-weight: 600;">Korean J Nutr</span></div>
             <div class="paper-doi">DOI: 10.4163/jnh.2023.56.5.412</div>
-            <div style="font-size: 11px; color: #6b7280; margin-top: 4px;">&#x2192; 전형적인 식습관에서 생활습관 개입 목표 달성 가능한 대체 방안 제시</div>
+            <div style="font-size: 11px; color: #6b7280; margin-top: 4px;">&#x2192; 전형적인 식습관에서 생활습관 개입 목표 달성 가능한 대체 방안
+              제시</div>
           </div>
         </div>
 
@@ -1131,17 +1735,20 @@
             <div class="paper-title">Lifestyle modification and cardiovascular risk markers in chronic disease</div>
             <div class="paper-meta">Westman et al. 2023 | <span style="font-weight: 600;">Am J Clin Nutr</span></div>
             <div class="paper-doi">DOI: 10.1016/j.ajcnut.2023.08.019</div>
-            <div style="font-size: 11px; color: #6b7280; margin-top: 4px;">&#x2192; 12주 RCT, n=120. 주요 지표 변화 확인 + 건강 변동성 개선 확인</div>
+            <div style="font-size: 11px; color: #6b7280; margin-top: 4px;">&#x2192; 12주 RCT, n=120. 주요 지표 변화 확인 + 건강 변동성
+              개선 확인</div>
           </div>
         </div>
 
         <div style="font-size: 11px; color: #94a3b8; margin-top: 12px; text-align: center;">
-          PubMed &middot; KoreaMed &middot; Google Scholar 기반 RAG 검색 &middot; 최근 3년 &middot; 키워드: 생활습관, 만성질환, 웨어러블, 건강 지표, 한국
+          PubMed &middot; KoreaMed &middot; Google Scholar 기반 RAG 검색 &middot; 최근 3년 &middot; 키워드: 생활습관, 만성질환, 웨어러블, 건강
+          지표, 한국
         </div>
 
         <div class="ref-links">
           <div class="ref-title">관련 참고 링크</div>
-          <a class="ref-link" href="#" onclick="return false">&#x1F4C4; PubMed: "lifestyle intervention chronic disease wearable" 검색 결과 (41건)</a>
+          <a class="ref-link" href="#" onclick="return false">&#x1F4C4; PubMed: "lifestyle intervention chronic disease
+            wearable" 검색 결과 (41건)</a>
           <a class="ref-link" href="#" onclick="return false">&#x1F4CA; KoreaMed: 국내 생활습관 만성질환 연구 목록 (3건)</a>
           <a class="ref-link" href="#" onclick="return false">&#x1F517; Cochrane Library: 식이 개입 체계적 문헌고찰</a>
         </div>
@@ -1166,19 +1773,28 @@
 
         <div style="font-size: 13px; font-weight: 600; margin-bottom: 12px; color: #374151;">식별된 연구 갭</div>
 
-        <div style="background: #fefce8; border: 1px solid #fde68a; border-radius: 10px; padding: 14px; margin-bottom: 10px;">
-          <div style="font-size: 13px; font-weight: 700; color: #92400e; margin-bottom: 4px;">Gap 1. 국내 웨어러블 기반 건강 지표 변동 연구 부족</div>
-          <div style="font-size: 12px; color: #78716c; line-height: 1.5;">국내 생활습관 개입 RCT 3건 중 웨어러블 기반 건강 지표(주요 바이오마커, 변동계수%)를 1차 결과변수로 사용한 연구는 <strong>0건</strong>. 기존 연구는 단순 측정값 중심.</div>
+        <div
+          style="background: #fefce8; border: 1px solid #fde68a; border-radius: 10px; padding: 14px; margin-bottom: 10px;">
+          <div style="font-size: 13px; font-weight: 700; color: #92400e; margin-bottom: 4px;">Gap 1. 국내 웨어러블 기반 건강 지표 변동
+            연구 부족</div>
+          <div style="font-size: 12px; color: #78716c; line-height: 1.5;">국내 생활습관 개입 RCT 3건 중 웨어러블 기반 건강 지표(주요 바이오마커,
+            변동계수%)를 1차 결과변수로 사용한 연구는 <strong>0건</strong>. 기존 연구는 단순 측정값 중심.</div>
         </div>
 
-        <div style="background: #fefce8; border: 1px solid #fde68a; border-radius: 10px; padding: 14px; margin-bottom: 10px;">
-          <div style="font-size: 13px; font-weight: 700; color: #92400e; margin-bottom: 4px;">Gap 2. 한국인 생활습관 맞춤 프로토콜 부재</div>
-          <div style="font-size: 12px; color: #78716c; line-height: 1.5;">해외 RCT의 생활습관 개입 프로토콜은 서구식 생활습관 기반. <strong>한국인 생활 특성</strong>에서 개입 목표를 달성하는 실현 가능한 프로토콜 검증 연구 없음.</div>
+        <div
+          style="background: #fefce8; border: 1px solid #fde68a; border-radius: 10px; padding: 14px; margin-bottom: 10px;">
+          <div style="font-size: 13px; font-weight: 700; color: #92400e; margin-bottom: 4px;">Gap 2. 한국인 생활습관 맞춤 프로토콜 부재
+          </div>
+          <div style="font-size: 12px; color: #78716c; line-height: 1.5;">해외 RCT의 생활습관 개입 프로토콜은 서구식 생활습관 기반. <strong>한국인
+              생활 특성</strong>에서 개입 목표를 달성하는 실현 가능한 프로토콜 검증 연구 없음.</div>
         </div>
 
-        <div style="background: #fefce8; border: 1px solid #fde68a; border-radius: 10px; padding: 14px; margin-bottom: 10px;">
-          <div style="font-size: 13px; font-weight: 700; color: #92400e; margin-bottom: 4px;">Gap 3. 건강 지표와 개입 순응도 간 매개 경로 미검증</div>
-          <div style="font-size: 12px; color: #78716c; line-height: 1.5;">개입 준수도 증가 &#x2192; 건강 지표 개선의 <strong>용량-반응 관계</strong>를 매개 분석(mediation analysis)으로 검증한 연구 부재.</div>
+        <div
+          style="background: #fefce8; border: 1px solid #fde68a; border-radius: 10px; padding: 14px; margin-bottom: 10px;">
+          <div style="font-size: 13px; font-weight: 700; color: #92400e; margin-bottom: 4px;">Gap 3. 건강 지표와 개입 순응도 간 매개
+            경로 미검증</div>
+          <div style="font-size: 12px; color: #78716c; line-height: 1.5;">개입 준수도 증가 &#x2192; 건강 지표 개선의 <strong>용량-반응
+              관계</strong>를 매개 분석(mediation analysis)으로 검증한 연구 부재.</div>
         </div>
 
         <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; padding: 14px;">
@@ -1192,7 +1808,8 @@
 
         <div class="ref-links">
           <div class="ref-title">관련 참고 링크</div>
-          <a class="ref-link" href="#" onclick="return false">&#x1F4C4; NIH Reporter: wearable + lifestyle intervention 진행 중 연구 (12건)</a>
+          <a class="ref-link" href="#" onclick="return false">&#x1F4C4; NIH Reporter: wearable + lifestyle intervention
+            진행 중 연구 (12건)</a>
           <a class="ref-link" href="#" onclick="return false">&#x1F4CA; ClinicalTrials.gov: 생활습관 만성질환 RCT 등록 현황</a>
           <a class="ref-link" href="#" onclick="return false">&#x1F517; 대한의학회: 연구 동향 보고서 (2025)</a>
         </div>
@@ -1212,7 +1829,8 @@
       </div>
       <div class="modal-body">
         <div class="trend-summary">
-          최근 3년간 생활습관 개입과 건강 지표 변동 관련 연구는 <strong>RCT 중심</strong>으로 전환되는 추세. 2023~2025년 사이 41건의 RCT가 등록되었으며, 웨어러블 기반 측정이 표준화되고 있음. 특히 <strong>주요 바이오마커(Mean Amplitude of Health Indicator Excursions)</strong>를 주요 지표로 사용하는 연구가 증가 중.
+          최근 3년간 생활습관 개입과 건강 지표 변동 관련 연구는 <strong>RCT 중심</strong>으로 전환되는 추세. 2023~2025년 사이 41건의 RCT가 등록되었으며, 웨어러블 기반 측정이
+          표준화되고 있음. 특히 <strong>주요 바이오마커(Mean Amplitude of Health Indicator Excursions)</strong>를 주요 지표로 사용하는 연구가 증가 중.
         </div>
 
         <div style="font-size: 13px; font-weight: 600; margin-bottom: 12px; color: #374151;">관련 논문</div>
@@ -1220,8 +1838,10 @@
         <div class="paper-item">
           <div class="paper-icon">&#x1F4C4;</div>
           <div class="paper-info">
-            <div class="paper-title">Lifestyle modification and health indicator variability in chronic disease: A systematic review</div>
-            <div class="paper-meta">Kim et al. 2025 | <span style="color: #059669; font-weight: 600;">Diabetes Care</span></div>
+            <div class="paper-title">Lifestyle modification and health indicator variability in chronic disease: A
+              systematic review</div>
+            <div class="paper-meta">Kim et al. 2025 | <span style="color: #059669; font-weight: 600;">Diabetes
+                Care</span></div>
             <div class="paper-doi">DOI: 10.2337/dc25-0142</div>
           </div>
         </div>
@@ -1230,7 +1850,8 @@
           <div class="paper-icon">&#x1F4C4;</div>
           <div class="paper-info">
             <div class="paper-title">Wearable-based outcomes in lifestyle intervention trials: A meta-analysis</div>
-            <div class="paper-meta">Park &amp; Lee 2024 | <span style="font-weight: 600;">J Clin Endocrinol Metab</span></div>
+            <div class="paper-meta">Park &amp; Lee 2024 | <span style="font-weight: 600;">J Clin Endocrinol Metab</span>
+            </div>
             <div class="paper-doi">DOI: 10.1210/jc.2024-0891</div>
           </div>
         </div>
@@ -1248,19 +1869,23 @@
           <div class="paper-icon">&#x1F4C4;</div>
           <div class="paper-info">
             <div class="paper-title">Superiority of RCT design for lifestyle health indicator studies</div>
-            <div class="paper-meta">Chen et al. 2026 | <span style="color: #059669; font-weight: 600;">BMJ Open</span></div>
+            <div class="paper-meta">Chen et al. 2026 | <span style="color: #059669; font-weight: 600;">BMJ Open</span>
+            </div>
             <div class="paper-doi">DOI: 10.1136/bmjopen-2025-078432</div>
           </div>
         </div>
 
         <div style="font-size: 11px; color: #94a3b8; margin-top: 12px; text-align: center;">
-          PubMed &middot; Google Scholar &middot; Semantic Scholar 기반 RAG 검색 &middot; 최근 3년 &middot; 키워드: lifestyle, health indicators, wearable, variability, RCT
+          PubMed &middot; Google Scholar &middot; Semantic Scholar 기반 RAG 검색 &middot; 최근 3년 &middot; 키워드: lifestyle,
+          health indicators, wearable, variability, RCT
         </div>
 
         <div class="ref-links">
           <div class="ref-title">관련 참고 링크</div>
-          <a class="ref-link" href="#" onclick="return false">&#x1F4C8; Semantic Scholar: health indicator variability + lifestyle intervention 트렌드</a>
-          <a class="ref-link" href="#" onclick="return false">&#x1F4C4; Google Scholar: health indicator improvement lifestyle 최신 논문</a>
+          <a class="ref-link" href="#" onclick="return false">&#x1F4C8; Semantic Scholar: health indicator variability +
+            lifestyle intervention 트렌드</a>
+          <a class="ref-link" href="#" onclick="return false">&#x1F4C4; Google Scholar: health indicator improvement
+            lifestyle 최신 논문</a>
           <a class="ref-link" href="#" onclick="return false">&#x1F517; WHO: 만성질환 관리 가이드라인 (2025 개정)</a>
         </div>
       </div>
@@ -1283,7 +1908,8 @@
         <div class="method-stat">
           <div class="pct" style="color: #7c3aed;">62%</div>
           <div class="info">
-            <div class="name">RCT <span style="font-size: 11px; color: #059669; font-weight: 400; margin-left: 6px;">&#x2713; AI 추천</span></div>
+            <div class="name">RCT <span
+                style="font-size: 11px; color: #059669; font-weight: 400; margin-left: 6px;">&#x2713; AI 추천</span></div>
             <div class="desc">무작위 배정으로 교란변수 통제 &middot; 식이 개입 효과 검증에 가장 적합</div>
           </div>
         </div>
@@ -1303,7 +1929,8 @@
         </div>
 
         <div class="method-note">
-          <strong>RCT 추천 근거:</strong> 해당 연구 질문에 가장 적합. 개입 효과를 인과적으로 검증 가능. 유사 연구 중 62%가 RCT를 채택했으며, 최근 웨어러블 기반 RCT가 급증하는 추세.
+          <strong>RCT 추천 근거:</strong> 해당 연구 질문에 가장 적합. 개입 효과를 인과적으로 검증 가능. 유사 연구 중 62%가 RCT를 채택했으며, 최근 웨어러블 기반 RCT가 급증하는
+          추세.
         </div>
 
         <div class="ref-links">
@@ -1332,12 +1959,14 @@
         </div>
 
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
-          <div style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 10px; padding: 16px; text-align: center;">
+          <div
+            style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 10px; padding: 16px; text-align: center;">
             <div style="font-size: 11px; color: #6b7280; margin-bottom: 4px;">최소 필요 표본</div>
             <div style="font-size: 28px; font-weight: 800; color: #1e293b;">84명</div>
             <div style="font-size: 12px; color: #6b7280;">군당 42명</div>
           </div>
-          <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; padding: 16px; text-align: center;">
+          <div
+            style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; padding: 16px; text-align: center;">
             <div style="font-size: 11px; color: #059669; margin-bottom: 4px;">추천 표본 (탈락 20% 반영)</div>
             <div style="font-size: 28px; font-weight: 800; color: #059669;">100명</div>
             <div style="font-size: 12px; color: #059669;">군당 50명 &#x2713;</div>
@@ -1380,7 +2009,8 @@
         <div class="ref-links">
           <div class="ref-title">관련 참고 링크</div>
           <a class="ref-link" href="#" onclick="return false">&#x1F9EE; G*Power 3.1: 검정력 분석 도구 (다운로드)</a>
-          <a class="ref-link" href="#" onclick="return false">&#x1F4C4; Chow et al. (2018): Sample Size Calculations in Clinical Research</a>
+          <a class="ref-link" href="#" onclick="return false">&#x1F4C4; Chow et al. (2018): Sample Size Calculations in
+            Clinical Research</a>
           <a class="ref-link" href="#" onclick="return false">&#x1F517; FDA: 임상시험 표본 크기 가이던스</a>
         </div>
       </div>
@@ -1388,119 +2018,6 @@
   </div>
 
   <!-- ========== 모달: CDM 매핑 (수집 지표) ========== -->
-  <div class="modal-overlay" id="metrics-modal" onclick="if(event.target===this)closeModal('metrics-modal')">
-    <div class="modal" style="width:720px;">
-      <div class="modal-header">
-        <h3>&#x1F9EC; CDM 매핑 가이드</h3>
-        <div style="display:flex; align-items:center; gap: 8px;">
-          <span class="badge">OHDSI CDM v5.4</span>
-          <button class="modal-close" onclick="closeModal('metrics-modal')">&#x2715;</button>
-        </div>
-      </div>
-      <div class="modal-body">
-        <div class="trend-summary" style="background: #eef2ff; border-color: #c7d2fe; color: #4338ca;">
-          수집 지표는 OHDSI CDM 표준 domain에 매핑됩니다. 이를 통해 <strong>다기관 CDM 네트워크(FEEDER-NET 등)</strong>와의 데이터 호환성을 확보합니다.
-        </div>
-
-        <div style="font-size: 13px; font-weight: 600; margin-bottom: 12px; color: #374151;">CDM Domain &#x2192; 데이터 유형 &#x2192; 자동 시각화 매트릭스</div>
-
-        <table style="width:100%; border-collapse:collapse; font-size:11px; margin-bottom:16px;">
-          <thead>
-            <tr style="background:#f9fafb; border-bottom:2px solid #e5e7eb;">
-              <th style="padding:6px 8px; text-align:left;">CDM Domain</th>
-              <th style="padding:6px 8px; text-align:left;">저장 대상</th>
-              <th style="padding:6px 8px; text-align:left;">numeric</th>
-              <th style="padding:6px 8px; text-align:left;">proportion</th>
-              <th style="padding:6px 8px; text-align:left;">categorical</th>
-              <th style="padding:6px 8px; text-align:left;">binary</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr style="border-bottom:1px solid #f3f4f6;">
-              <td style="padding:6px 8px;"><span style="padding:2px 6px; background:#dbeafe; color:#1e40af; border-radius:3px; font-size:10px;">measurement</span></td>
-              <td style="padding:6px 8px; color:#6b7280;">수치 검사/측정</td>
-              <td style="padding:6px 8px; color:#059669;">numeric_line</td>
-              <td style="padding:6px 8px; color:#059669;">severity_zone</td>
-              <td style="padding:6px 8px; color:#9ca3af;">&#x2014;</td>
-              <td style="padding:6px 8px; color:#9ca3af;">&#x2014;</td>
-            </tr>
-            <tr style="border-bottom:1px solid #f3f4f6; background:#fafafa;">
-              <td style="padding:6px 8px;"><span style="padding:2px 6px; background:#ede9fe; color:#5b21b6; border-radius:3px; font-size:10px;">observation</span></td>
-              <td style="padding:6px 8px; color:#6b7280;">비수치 관찰</td>
-              <td style="padding:6px 8px; color:#059669;">numeric_line</td>
-              <td style="padding:6px 8px; color:#9ca3af;">&#x2014;</td>
-              <td style="padding:6px 8px; color:#059669;">image_gallery</td>
-              <td style="padding:6px 8px; color:#059669;">binary_strip</td>
-            </tr>
-            <tr style="border-bottom:1px solid #f3f4f6;">
-              <td style="padding:6px 8px;"><span style="padding:2px 6px; background:#fce7f3; color:#9d174d; border-radius:3px; font-size:10px;">drug_exposure</span></td>
-              <td style="padding:6px 8px; color:#6b7280;">약물 투여</td>
-              <td style="padding:6px 8px; color:#059669;">numeric_line</td>
-              <td style="padding:6px 8px; color:#9ca3af;">&#x2014;</td>
-              <td style="padding:6px 8px; color:#9ca3af;">&#x2014;</td>
-              <td style="padding:6px 8px; color:#059669;">binary_strip</td>
-            </tr>
-            <tr style="border-bottom:1px solid #f3f4f6; background:#fafafa;">
-              <td style="padding:6px 8px;"><span style="padding:2px 6px; background:#fef9c3; color:#854d0e; border-radius:3px; font-size:10px;">condition_occurrence</span></td>
-              <td style="padding:6px 8px; color:#6b7280;">진단/증상</td>
-              <td style="padding:6px 8px; color:#059669;">histogram</td>
-              <td style="padding:6px 8px; color:#9ca3af;">&#x2014;</td>
-              <td style="padding:6px 8px; color:#059669;">event_strip</td>
-              <td style="padding:6px 8px; color:#9ca3af;">&#x2014;</td>
-            </tr>
-            <tr style="border-bottom:1px solid #f3f4f6;">
-              <td style="padding:6px 8px;"><span style="padding:2px 6px; background:#d1fae5; color:#065f46; border-radius:3px; font-size:10px;">device_exposure</span></td>
-              <td style="padding:6px 8px; color:#6b7280;">기기 데이터</td>
-              <td style="padding:6px 8px; color:#059669;">numeric_line</td>
-              <td style="padding:6px 8px; color:#059669;">severity_zone</td>
-              <td style="padding:6px 8px; color:#9ca3af;">&#x2014;</td>
-              <td style="padding:6px 8px; color:#9ca3af;">&#x2014;</td>
-            </tr>
-            <tr style="background:#fafafa;">
-              <td style="padding:6px 8px;"><span style="padding:2px 6px; background:#fce7f3; color:#9d174d; border-radius:3px; font-size:10px;">procedure_occurrence</span></td>
-              <td style="padding:6px 8px; color:#6b7280;">시술/수술</td>
-              <td style="padding:6px 8px; color:#9ca3af;">&#x2014;</td>
-              <td style="padding:6px 8px; color:#9ca3af;">&#x2014;</td>
-              <td style="padding:6px 8px; color:#9ca3af;">&#x2014;</td>
-              <td style="padding:6px 8px; color:#059669;">binary_strip</td>
-            </tr>
-          </tbody>
-        </table>
-
-        <div style="font-size: 13px; font-weight: 600; margin-bottom: 10px; color: #374151;">우선순위 분류 (CDISC ADaM 기반)</div>
-        <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px;">
-          <div style="flex:1; min-width:120px; padding:10px; background:#fef3c7; border:1px solid #fde68a; border-radius:8px;">
-            <div style="font-size:11px; font-weight:700; color:#92400e;">Primary</div>
-            <div style="font-size:10px; color:#78716c;">1차 종료점. 연구의 핵심 가설 검증용</div>
-          </div>
-          <div style="flex:1; min-width:120px; padding:10px; background:#e0e7ff; border:1px solid #c7d2fe; border-radius:8px;">
-            <div style="font-size:11px; font-weight:700; color:#3730a3;">Secondary</div>
-            <div style="font-size:10px; color:#78716c;">2차 종료점. 보조 가설 검증</div>
-          </div>
-          <div style="flex:1; min-width:120px; padding:10px; background:#f3f4f6; border:1px solid #e5e7eb; border-radius:8px;">
-            <div style="font-size:11px; font-weight:700; color:#374151;">Exploratory</div>
-            <div style="font-size:10px; color:#78716c;">탐색적. 추가 인사이트 도출</div>
-          </div>
-          <div style="flex:1; min-width:120px; padding:10px; background:#fef2f2; border:1px solid #fecaca; border-radius:8px;">
-            <div style="font-size:11px; font-weight:700; color:#991b1b;">Safety</div>
-            <div style="font-size:10px; color:#78716c;">안전성 지표. SAE/AE 모니터링</div>
-          </div>
-        </div>
-
-        <div class="method-note">
-          <strong>Concept Hint:</strong> 각 지표에 concept_hint(예: body_weight, systolic_bp)가 부여되어, 추후 실제 CDM 연동 시 LOINC/SNOMED 코드와 자동 매핑됩니다.
-        </div>
-
-        <div class="ref-links">
-          <div class="ref-title">관련 참고 링크</div>
-          <a class="ref-link" href="#" onclick="return false">&#x1F4CA; OHDSI CDM v5.4 공식 문서</a>
-          <a class="ref-link" href="#" onclick="return false">&#x1F3E5; FEEDER-NET: 한국 47개 병원 CDM 네트워크</a>
-          <a class="ref-link" href="#" onclick="return false">&#x1F517; CDISC ADaM: 분석 데이터 모델 가이드</a>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <!-- 디자이너 노트 토글 -->
   <button class="toggle-notes" onclick="toggleNotes()">&#x1F4CB; 디자이너 노트</button>
 
@@ -1515,55 +2032,25 @@
       document.getElementById(id).classList.remove('show');
     }
     // ESC로 모달 닫기
-    document.addEventListener('keydown', function(e) {
+    document.addEventListener('keydown', function (e) {
       if (e.key === 'Escape') {
-        document.querySelectorAll('.modal-overlay.show').forEach(function(m) { m.classList.remove('show'); });
+        document.querySelectorAll('.modal-overlay.show').forEach(function (m) { m.classList.remove('show'); });
       }
     });
 
-    // 데이터 수집 전략 선택
-    function selectDataStrategy(ds) {
-      // 카드 스타일 초기화
-      document.querySelectorAll('.data-strategy-card').forEach(function(c) {
-        c.style.border = '2px solid #e5e7eb';
-        c.style.background = 'white';
-        c.classList.remove('selected');
-      });
-      // 선택된 카드 활성화
-      var sel = document.querySelector('.data-strategy-card[data-ds="'+ds+'"]');
-      if (ds === 'past_only') {
-        sel.style.border = '2px solid #6366f1'; sel.style.background = '#eef2ff';
-      } else if (ds === 'future_only') {
-        sel.style.border = '2px solid #0072B2'; sel.style.background = '#f0f9ff';
-      } else {
-        sel.style.border = '2px solid #8b5cf6'; sel.style.background = '#faf5ff';
-      }
-      sel.classList.add('selected');
-
-      // 안내 노트 전환
-      document.getElementById('ds-note-past').style.display = ds === 'past_only' ? '' : 'none';
-      document.getElementById('ds-note-future').style.display = ds === 'future_only' ? '' : 'none';
-      document.getElementById('ds-note-both').style.display = ds === 'both' ? '' : 'none';
-
-      // 방법론 그리드 전환
-      document.getElementById('prosp-methods').style.display = ds === 'future_only' ? '' : 'none';
-      document.getElementById('retro-methods').style.display = ds === 'past_only' ? '' : 'none';
-      document.getElementById('both-methods').style.display = ds === 'both' ? '' : 'none';
-    }
-
     // 방법론 선택 (각 그리드 내에서)
-    document.querySelectorAll('.methodology-grid').forEach(function(grid) {
-      grid.querySelectorAll('.methodology-item').forEach(function(item) {
-        item.addEventListener('click', function() {
-          grid.querySelectorAll('.methodology-item').forEach(function(i) { i.classList.remove('selected'); });
+    document.querySelectorAll('.methodology-grid').forEach(function (grid) {
+      grid.querySelectorAll('.methodology-item').forEach(function (item) {
+        item.addEventListener('click', function () {
+          grid.querySelectorAll('.methodology-item').forEach(function (i) { i.classList.remove('selected'); });
           this.classList.add('selected');
         });
       });
     });
 
     // 칩 토글 (건강 조건)
-    document.querySelectorAll('.chip').forEach(function(chip) {
-      chip.addEventListener('click', function() {
+    document.querySelectorAll('.chip').forEach(function (chip) {
+      chip.addEventListener('click', function () {
         this.classList.toggle('selected');
       });
     });
@@ -1598,4 +2085,5 @@
   <link rel="stylesheet" href="../tooltip-spec.css">
   <script src="../tooltip-spec.js"></script>
 </body>
+
 </html>

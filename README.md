@@ -138,7 +138,7 @@ uniqdata-wireframes/
 
 | 레포 | 설명 |
 |------|------|
-| [uniqdata-core](https://github.com/SportiQue-UniQdata/uniqdata-core) | NestJS 백엔드 |
+| [uniqdata-core](https://github.com/SportiQue-UniQdata/uniqdata-core) | FastAPI + SQLAlchemy 백엔드 |
 | [uniqdata-enterprise-backend](https://github.com/SportiQue-UniQdata/uniqdata-enterprise-backend) | Spring Boot 비즈니스 엔진 |
 | [uniqdata-enterprise-web](https://github.com/SportiQue-UniQdata/uniqdata-enterprise-web) | 연구자 웹 프론트 |
 | [uniqdata-app](https://github.com/SportiQue-UniQdata/uniqdata-app) | 개인용 모바일 앱 |
