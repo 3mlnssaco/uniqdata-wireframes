@@ -173,25 +173,24 @@
       <div style="background: linear-gradient(135deg, #f5f3ff, #ede9fe); border: 2px solid #8b5cf6; border-radius: 12px; padding: 16px; margin-top: 12px;">
         <h3 style="color: #6d28d9; margin-bottom: 12px; font-size: 14px;">🔗 백엔드 호출</h3>
         <div style="font-size: 11px; font-family: 'SF Mono', Monaco, monospace; color: #374151; line-height: 1.8;">
-          <strong style="font-family: -apple-system, sans-serif;">1. 이메일 중복 확인:</strong><br>
+          <strong style="font-family: -apple-system, sans-serif;">1. 이메일 형식 검증(클라이언트):</strong><br>
           <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
-POST /api/v2/auth/email/check<br>
-{ "email": "researcher@example.com" }<br>
-→ { "available": true }
+없음 (클라이언트 형식/도메인 검증)<br>
+※ 최종 중복 검증은 /auth/email/register 시 서버에서 수행
           </code>
 
           <strong style="font-family: -apple-system, sans-serif;">2. 인증 코드 발송:</strong><br>
           <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
-POST /api/v2/auth/email/send-code<br>
+POST /api/v1/auth/email/send-code<br>
 { "email": "researcher@example.com" }<br>
-→ { "expires_at": "2026-02-01T10:05:00Z" }
+→ { "expiresAt": "2026-02-01T10:05:00Z" }
           </code>
 
           <strong style="font-family: -apple-system, sans-serif;">3. 인증 코드 검증:</strong><br>
           <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
-POST /api/v2/auth/email/verify<br>
+POST /api/v1/auth/email/verify-code<br>
 { "email": "...", "code": "382145" }<br>
-→ { "verified": true, "token": "email_verify_xxx" }
+→ { "verified": true, "email": "..." }
           </code>
         </div>
       </div>

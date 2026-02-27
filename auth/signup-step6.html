@@ -177,9 +177,9 @@
         <h3 style="color: #6d28d9; margin-bottom: 12px; font-size: 14px;">🔗 백엔드 호출</h3>
         <div style="font-size: 11px; font-family: 'SF Mono', Monaco, monospace; color: #374151; line-height: 1.8;">
           <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
-POST /api/v2/auth/signup/complete<br>
+POST /api/v1/auth/email/register<br>
 { ... }<br>
-→ { "user_id": "uuid", "access_token": "jwt..." }
+→ { "access_token": "jwt...", "refresh_token": "...", "user": {...} }
           </code>
         </div>
       </div>

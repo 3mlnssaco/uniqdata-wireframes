@@ -249,21 +249,21 @@
         <div style="font-size: 11px; font-family: 'SF Mono', Monaco, monospace; color: #374151; line-height: 1.8;">
           <strong style="font-family: -apple-system, sans-serif;">1. 앵커링 챌린지 요청:</strong><br>
           <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
-POST /api/v2/xrpl/anchor/challenge<br>
+POST /api/v1/xrpl/anchor/challenge<br>
 { "wallet_address": "rN7n3...", "credential_id": "xxx" }<br>
 → { "challenge": "random32bytes", "memo_data": "..." }
           </code>
 
           <strong style="font-family: -apple-system, sans-serif;">2. 서명된 TX 제출:</strong><br>
           <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
-POST /api/v2/xrpl/anchor/submit<br>
+POST /api/v1/xrpl/anchor/submit<br>
 { "signed_tx": "1200002280..." }<br>
 → { "tx_hash": "A1B2C3...", "ledger_index": 12345678 }
           </code>
 
           <strong style="font-family: -apple-system, sans-serif;">3. 앵커링 확인:</strong><br>
           <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
-GET /api/v2/xrpl/anchor/verify/{tx_hash}<br>
+GET /api/v1/xrpl/anchor/verify/{tx_hash}<br>
 → { "verified": true, "timestamp": "2026-02-01T10:00:00Z" }
           </code>
         </div>

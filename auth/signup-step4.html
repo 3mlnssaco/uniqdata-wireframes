@@ -282,10 +282,10 @@ const wallet = xrpl.Wallet.generate()<br>
 → { classicAddress: "rN7n3...", seed: "sn3nxiW9v..." }
           </code>
 
-          <strong style="font-family: -apple-system, sans-serif;">2. WebAuthn 등록 옵션:</strong><br>
+          <strong style="font-family: -apple-system, sans-serif;">2. Passkey 등록 옵션:</strong><br>
           <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
-POST /api/v2/auth/webauthn/register-options<br>
-{ "user_id": "temp_xxx", "email": "user@example.com" }<br>
+POST /api/v1/auth/passkey/register/options<br>
+{ "email": "user@example.com" }<br>
 → { "challenge": "...", "rp": {...}, "extensions": { "prf": {} } }
           </code>
 
@@ -295,18 +295,25 @@ POST /api/v2/auth/webauthn/register-options<br>
 const prfKey = credential.getClientExtensionResults().prf.results.first
           </code>
 
-          <strong style="font-family: -apple-system, sans-serif;">4. 시드 암호화 + 등록 완료:</strong><br>
+          <strong style="font-family: -apple-system, sans-serif;">4. 패스키 등록 완료:</strong><br>
           <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
-POST /api/v2/auth/webauthn/register<br>
+POST /api/v1/auth/passkey/register/complete<br>
 {<br>
-&nbsp;&nbsp;"credential": {...},<br>
-&nbsp;&nbsp;"xrpl_wallet": {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;"address": "rN7n3...",<br>
-&nbsp;&nbsp;&nbsp;&nbsp;"encrypted_seed": "base64...",<br>
-&nbsp;&nbsp;&nbsp;&nbsp;"encryption_iv": "base64..."<br>
-&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;"challengeId": "...",<br>
+&nbsp;&nbsp;"credentialId": "...",<br>
+&nbsp;&nbsp;"rawId": "...",<br>
+&nbsp;&nbsp;"attestationObject": "...",<br>
+&nbsp;&nbsp;"clientDataJson": "..."<br>
 }<br>
-→ { "success": true, "credential_id": "xxx" }
+→ { "access_token": "...", "refresh_token": "...", "wallet_challenge": "..." }
+          </code>
+
+          <strong style="font-family: -apple-system, sans-serif;">5. PRF 지갑 등록:</strong><br>
+          <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
+POST /api/v1/auth/wallet/prf/register<br>
+Authorization: Bearer {access_token}<br>
+{ "credentialId": "...", "address": "rN7n3...", "publicKey": "...", "encryptedSeedPrf": "...", "bindingSignature": "...", "signedChallenge": "..." }<br>
+→ { "walletId": "...", "address": "rN7n3...", "anchorTxHash": "..." }
           </code>
         </div>
       </div>

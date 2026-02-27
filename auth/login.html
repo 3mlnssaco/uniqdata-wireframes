@@ -180,23 +180,23 @@
         <div style="font-size: 11px; font-family: 'SF Mono', Monaco, monospace; color: #374151; line-height: 1.8;">
           <strong style="font-family: -apple-system, sans-serif;">1. 패스키 인증 옵션:</strong><br>
           <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
-POST /api/v2/auth/passkey/auth-options<br>
+POST /api/v1/auth/passkey/authenticate/options<br>
 { "email": "researcher@example.com" } // 또는 빈 객체 (Resident Key)<br>
 → { challenge, rpId, allowCredentials, extensions: { prf: true } }
           </code>
 
           <strong style="font-family: -apple-system, sans-serif;">2. 패스키 인증 완료:</strong><br>
           <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
-POST /api/v2/auth/passkey/authenticate<br>
+POST /api/v1/auth/passkey/authenticate/complete<br>
 { "credential": { id, type, response, clientExtensionResults } }<br>
 → { "access_token": "jwt...", "refresh_token": "...", "user": {...} }
           </code>
 
           <strong style="font-family: -apple-system, sans-serif;">3. 이메일 + 비밀번호 로그인:</strong><br>
           <code style="background: #1f2937; color: #a5b4fc; padding: 6px 10px; border-radius: 6px; display: block; margin: 6px 0;">
-POST /api/v2/auth/login<br>
+POST /api/v1/auth/email/login<br>
 { "email": "...", "password": "..." }<br>
-→ { "requires_email_code": true, "session_token": "temp..." }
+→ { "access_token": "jwt...", "refresh_token": "...", "user": {...} }
           </code>
         </div>
       </div>

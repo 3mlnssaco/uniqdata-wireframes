@@ -146,7 +146,7 @@
 <body>
 
 <h1>UniQdata Architecture v6</h1>
-<p class="subtitle">2-Server · 2-DB · XRPL · Full Schema · 14 Internal APIs · 8 Webhooks</p>
+<p class="subtitle">2-Server · 2-DB · XRPL · Full Schema · Internal API 13개 · Core Push 5개</p>
 
 <div class="nav-links">
   <a href="../index.html">← 와이어프레임 목록</a>
@@ -159,7 +159,7 @@
   <div class="title">📐 분리 원칙 (한 줄 규칙)</div>
   <div class="content">
     <strong>"환자의 몸에서 나온 데이터, 환자의 지갑, 환자의 동의는 Core. 그 외 비즈니스는 Business."</strong><br><br>
-    <code>🟢 Core (NestJS:3000)</code> = Core Team → 사용자 인증 + 건강 데이터 + XRPL + 동의 관리<br>
+    <code>🟢 Core (FastAPI:8000)</code> = Core Team → 사용자 인증 + 건강 데이터 + XRPL + 동의 관리<br>
     <code>🔵 Business (Spring Boot:8080)</code> = 백엔드팀 → 연구 프로젝트 + IRB + 정산 + 기관 관리
   </div>
 </div>
@@ -211,7 +211,7 @@
 <table class="matrix">
   <tr>
     <th class="label-col">판단 기준</th>
-    <th style="background: #4c1d95; color: #e9d5ff;">🟢 Core (NestJS:3000)</th>
+    <th style="background: #4c1d95; color: #e9d5ff;">🟢 Core (FastAPI:8000)</th>
     <th style="background: #064e3b; color: #a7f3d0;">🔵 Business (Spring:8080)</th>
   </tr>
   <tr>
@@ -246,7 +246,7 @@
   </tr>
   <tr>
     <td class="label-col">기술 스택</td>
-    <td class="core-col">TypeScript, xrpl.js, @simplewebauthn</td>
+    <td class="core-col">Python 3.11, FastAPI, SQLAlchemy, xrpl-py, python-fido2</td>
     <td class="biz-col">Kotlin, Spring JPA, Claude API</td>
   </tr>
 </table>
@@ -258,13 +258,13 @@
 <pre style="font-size: 11px; line-height: 1.6; color: #e6edf3;">
 ┌──────────────────────────────────────────────────────────────────────────┐
 │                        <span style="color:#fbbf24;">API Gateway (nginx)</span>                               │
-│  /api/v1/auth/**,health/**,consents/**,wallets/**  → <span style="color:#a78bfa;">🟢 Core:3000</span>      │
+│  /api/v1/auth/**,data/**,consents/**,wallet/**,...  → <span style="color:#a78bfa;">🟢 Core:8000</span>      │
 │  /api/v1/projects/**,irb/**,enterprises/**         → <span style="color:#34d399;">🔵 Business:8080</span>  │
 └──────────┬─────────────────────────────────────────────┬────────────────┘
            │                                             │
            ▼                                             ▼
 ┌───────────────────────────────┐    ┌────────────────────────────────────┐
-│  <span style="color:#a78bfa;">🟢 Core (NestJS:3000)</span>          │    │  <span style="color:#34d399;">🔵 Business (Spring Boot:8080)</span>      │
+│  <span style="color:#a78bfa;">🟢 Core (FastAPI:8000)</span>          │    │  <span style="color:#34d399;">🔵 Business (Spring Boot:8080)</span>      │
 │                               │    │                                    │
 │  Auth (Passkey/PRF/JWT)       │    │  Research (프로젝트/마일스톤)       │
 │  Health (데이터 입력/리포트)   │◄───│  IRB (제출/심의/문서/워크플로우)    │
@@ -288,7 +288,7 @@
   <div class="server-box core">
     <div class="server-header">
       🟢 uniqdata-core
-      <div class="tech">NestJS (TypeScript) · Port 3000 · Core Team 담당</div>
+      <div class="tech">FastAPI (Python) · Port 8000(default) · Core Team 담당</div>
     </div>
     <div class="server-body">
       <ul>
@@ -297,7 +297,7 @@
         <li><div class="label">Consent ⭐</div><div class="desc">동의서 생성/서명(ed25519)/범위 관리/철회 + XRPL CONSENT_GRANT/REVOKE 앵커링</div></li>
         <li><div class="label">XRPL / UQD</div><div class="desc">EscrowCreate/Finish/Cancel, UQD 관리, DATA_INPUT/DATA_ACCESS 앵커링</div></li>
         <li><div class="label">Notification</div><div class="desc">푸시 알림 통합 관리 (Core + Business 요청 모두)</div></li>
-        <li><div class="label">Internal API</div><div class="desc">14개 엔드포인트: /internal/v1/users/*, /consents/*, /data/*, /escrow/*, /notifications/*</div></li>
+        <li><div class="label">Internal API</div><div class="desc">실코드 기준 13개 엔드포인트: /api/v1/internal/matching/*, /tier1/*, /token/*, /escrow/*, /health</div></li>
       </ul>
     </div>
   </div>
@@ -314,7 +314,7 @@
         <li><div class="label">Settlement ⭐</div><div class="desc">보상 계산, settlement_batches/items 생성 → Core에 EscrowFinish 요청</div></li>
         <li><div class="label">Enterprise</div><div class="desc">기관 등록/관리, 구성원 관리, OWNER/PI/IRB_MEMBER/STAFF 역할</div></li>
         <li><div class="label">Synthetic/FL (Phase 2)</div><div class="desc">합성데이터셋 생성, FL 라운드 관리</div></li>
-        <li><div class="label">Webhook 수신</div><div class="desc">Core → data.submitted, consent.granted/revoked, escrow.*, user.kyc_updated, wallet.created</div></li>
+        <li><div class="label">Core Push 수신</div><div class="desc">Core → /api/enterprise/project/{id}/participant, /dataset(라이브), /dataset/batch, participant DELETE, /settlement(목표)</div></li>
       </ul>
     </div>
   </div>
@@ -807,49 +807,45 @@
 </div>
 
 <!-- ====== 통신 구조 ====== -->
-<div class="section-divider"><span>🔄 서버 간 통신 (14 API + 8 Webhook)</span></div>
+<div class="section-divider"><span>🔄 서버 간 통신 (Internal API 13 + Core Push 5)</span></div>
 
 <div style="display: flex; gap: 16px; margin-bottom: 24px;">
   <!-- Business → Core (Internal API) -->
   <div style="flex: 1; background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 16px;">
     <div style="font-size: 13px; font-weight: 700; color: #58a6ff; margin-bottom: 12px;">
-      🔵 Business → 🟢 Core (Internal API REST) — 14개
+      🔵 Business → 🟢 Core (Internal API REST) — 13개 (실코드 기준)
     </div>
     <table style="width: 100%; font-size: 10px; border-collapse: collapse;">
-      <tr><td style="padding: 5px 0; color: #8b949e;">사용자 조회</td><td style="color: #a78bfa;"><code>GET /internal/v1/users/{id}</code></td></tr>
-      <tr><td style="padding: 5px 0; color: #8b949e;">다수 사용자</td><td style="color: #a78bfa;"><code>POST /internal/v1/users/batch</code></td></tr>
-      <tr><td style="padding: 5px 0; color: #8b949e;">지갑 조회</td><td style="color: #a78bfa;"><code>GET /internal/v1/users/{id}/wallet</code></td></tr>
-      <tr><td style="padding: 5px 0; color: #8b949e;">동의 기반 데이터</td><td style="color: #a78bfa;"><code>POST /internal/v1/data/query</code></td></tr>
-      <tr><td style="padding: 5px 0; color: #8b949e;">데이터 통계</td><td style="color: #a78bfa;"><code>GET /internal/v1/data/stats/{userId}</code></td></tr>
-      <tr><td style="padding: 5px 0; color: #8b949e;">동의 유효성</td><td style="color: #a78bfa;"><code>GET /internal/v1/consents/verify</code></td></tr>
-      <tr><td style="padding: 5px 0; color: #8b949e;">프로젝트 동의 목록</td><td style="color: #a78bfa;"><code>GET /internal/v1/consents/project/{id}</code></td></tr>
-      <tr><td style="padding: 5px 0; color: #8b949e;">동의 요청 (알림)</td><td style="color: #a78bfa;"><code>POST /internal/v1/consents/request</code></td></tr>
-      <tr><td style="padding: 5px 0; color: #8b949e;">에스크로 생성</td><td style="color: #a78bfa;"><code>POST /internal/v1/escrow/create</code></td></tr>
-      <tr><td style="padding: 5px 0; color: #8b949e;">에스크로 완료</td><td style="color: #a78bfa;"><code>POST /internal/v1/escrow/finish</code></td></tr>
-      <tr><td style="padding: 5px 0; color: #8b949e;">에스크로 취소</td><td style="color: #a78bfa;"><code>POST /internal/v1/escrow/cancel</code></td></tr>
-      <tr><td style="padding: 5px 0; color: #8b949e;">감사추적 앵커</td><td style="color: #a78bfa;"><code>POST /internal/v1/anchoring/record</code></td></tr>
-      <tr><td style="padding: 5px 0; color: #8b949e;">알림 발송</td><td style="color: #a78bfa;"><code>POST /internal/v1/notifications/send</code></td></tr>
-      <tr><td style="padding: 5px 0; color: #8b949e;">일괄 알림</td><td style="color: #a78bfa;"><code>POST /internal/v1/notifications/batch</code></td></tr>
+      <tr><td style="padding: 5px 0; color: #8b949e;">적격자 추정</td><td style="color: #a78bfa;"><code>POST /api/v1/internal/matching/estimate</code></td></tr>
+      <tr><td style="padding: 5px 0; color: #8b949e;">모집 시작</td><td style="color: #a78bfa;"><code>POST /api/v1/internal/matching/recruit</code></td></tr>
+      <tr><td style="padding: 5px 0; color: #8b949e;">개요 집계</td><td style="color: #a78bfa;"><code>POST /api/v1/internal/tier1/overview</code></td></tr>
+      <tr><td style="padding: 5px 0; color: #8b949e;">테이블 집계</td><td style="color: #a78bfa;"><code>POST /api/v1/internal/tier1/table</code></td></tr>
+      <tr><td style="padding: 5px 0; color: #8b949e;">분포 집계</td><td style="color: #a78bfa;"><code>POST /api/v1/internal/tier1/distribution</code></td></tr>
+      <tr><td style="padding: 5px 0; color: #8b949e;">링킹코드 프리뷰</td><td style="color: #a78bfa;"><code>POST /api/v1/internal/token/preview</code></td></tr>
+      <tr><td style="padding: 5px 0; color: #8b949e;">링킹코드 장바구니</td><td style="color: #a78bfa;"><code>POST /api/v1/internal/token/cart</code></td></tr>
+      <tr><td style="padding: 5px 0; color: #8b949e;">동의 요청 발송</td><td style="color: #a78bfa;"><code>POST /api/v1/internal/token/send-consent</code></td></tr>
+      <tr><td style="padding: 5px 0; color: #8b949e;">코드 해석</td><td style="color: #a78bfa;"><code>POST /api/v1/internal/token/resolve</code></td></tr>
+      <tr><td style="padding: 5px 0; color: #8b949e;">에스크로 생성</td><td style="color: #a78bfa;"><code>POST /api/v1/internal/escrow/create</code></td></tr>
+      <tr><td style="padding: 5px 0; color: #8b949e;">보상 지급</td><td style="color: #a78bfa;"><code>POST /api/v1/internal/escrow/release</code></td></tr>
+      <tr><td style="padding: 5px 0; color: #8b949e;">에스크로 종료정산</td><td style="color: #a78bfa;"><code>POST /api/v1/internal/escrow/finalize</code></td></tr>
+      <tr><td style="padding: 5px 0; color: #8b949e;">헬스체크</td><td style="color: #a78bfa;"><code>GET /api/v1/internal/health</code></td></tr>
     </table>
-    <div style="margin-top: 8px; font-size: 9px; color: #8b949e;">인증: X-Internal-API-Key 헤더 (환경변수)</div>
+    <div style="margin-top: 8px; font-size: 9px; color: #8b949e;">인증: X-Service-Auth (+ X-Request-Id / X-Idempotency-Key 권장)</div>
   </div>
 
-  <!-- Core → Business (Webhook) -->
+  <!-- Core → Business (Push API) -->
   <div style="flex: 1; background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 16px;">
     <div style="font-size: 13px; font-weight: 700; color: #fbbf24; margin-bottom: 12px;">
-      🟢 Core → 🔵 Business (Webhook) — 8개
+      🟢 Core → 🔵 Business (Push API) — 5개 (2 라이브 + 3 목표)
     </div>
     <table style="width: 100%; font-size: 10px; border-collapse: collapse;">
-      <tr><td style="padding: 5px 0; color: #8b949e;">데이터 제출</td><td style="color: #fbbf24;"><code>data.submitted</code></td><td style="color: #484f58; font-size: 9px;">→ 마일스톤 업데이트</td></tr>
-      <tr><td style="padding: 5px 0; color: #8b949e;">동의 승인</td><td style="color: #fbbf24;"><code>consent.granted</code></td><td style="color: #484f58; font-size: 9px;">→ participants → CONSENTED</td></tr>
-      <tr><td style="padding: 5px 0; color: #8b949e;">동의 철회</td><td style="color: #fbbf24;"><code>consent.revoked</code></td><td style="color: #484f58; font-size: 9px;">→ participants → WITHDRAWN</td></tr>
-      <tr><td style="padding: 5px 0; color: #8b949e;">에스크로 입금</td><td style="color: #fbbf24;"><code>escrow.deposited</code></td><td style="color: #484f58; font-size: 9px;">→ projects → RECRUITING</td></tr>
-      <tr><td style="padding: 5px 0; color: #8b949e;">에스크로 완료</td><td style="color: #fbbf24;"><code>escrow.finished</code></td><td style="color: #484f58; font-size: 9px;">→ settlement_items → PAID</td></tr>
-      <tr><td style="padding: 5px 0; color: #8b949e;">에스크로 취소</td><td style="color: #fbbf24;"><code>escrow.cancelled</code></td><td style="color: #484f58; font-size: 9px;">→ settlement_batches → FAILED</td></tr>
-      <tr><td style="padding: 5px 0; color: #8b949e;">KYC 변경</td><td style="color: #fbbf24;"><code>user.kyc_updated</code></td><td style="color: #484f58; font-size: 9px;">→ 적격 기준 재평가</td></tr>
-      <tr><td style="padding: 5px 0; color: #8b949e;">지갑 생성</td><td style="color: #fbbf24;"><code>wallet.created</code></td><td style="color: #484f58; font-size: 9px;">→ 로깅</td></tr>
+      <tr><td style="padding: 5px 0; color: #8b949e;">참여자 등록 (라이브)</td><td style="color: #fbbf24;"><code>POST /api/enterprise/project/{id}/participant</code></td><td style="color: #484f58; font-size: 9px;">participant upsert</td></tr>
+      <tr><td style="padding: 5px 0; color: #8b949e;">데이터 전송 (라이브)</td><td style="color: #fbbf24;"><code>POST /api/enterprise/project/{id}/dataset</code></td><td style="color: #484f58; font-size: 9px;">dataset insert</td></tr>
+      <tr><td style="padding: 5px 0; color: #8b949e;">배치 전송 (목표)</td><td style="color: #fbbf24;"><code>POST /api/enterprise/project/{id}/dataset/batch</code></td><td style="color: #484f58; font-size: 9px;">표준 배치 경로</td></tr>
+      <tr><td style="padding: 5px 0; color: #8b949e;">참여 철회 동기화 (목표)</td><td style="color: #fbbf24;"><code>DELETE /api/enterprise/project/{id}/participant/{num}</code></td><td style="color: #484f58; font-size: 9px;">withdraw cascade</td></tr>
+      <tr><td style="padding: 5px 0; color: #8b949e;">정산 푸시 (목표)</td><td style="color: #fbbf24;"><code>POST /api/enterprise/project/{id}/settlement</code></td><td style="color: #484f58; font-size: 9px;">settlement ledger</td></tr>
     </table>
-    <div style="margin-top: 8px; font-size: 9px; color: #8b949e;">인증: X-Webhook-Secret + HMAC-SHA256 서명</div>
+    <div style="margin-top: 8px; font-size: 9px; color: #8b949e;">인증: X-Service-Auth (Phase 2에서 HMAC 병행 예정)</div>
   </div>
 </div>
 
@@ -860,10 +856,11 @@
   <thead><tr><th>경로 패턴</th><th>서버</th><th>설명</th><th>사용자</th></tr></thead>
   <tbody>
     <tr><td><code>/api/v1/auth/*</code></td><td><span class="tag tag-core">Core</span></td><td>Passkey 등록/인증, JWT 발급</td><td>전체</td></tr>
-    <tr><td><code>/api/v1/health/*</code></td><td><span class="tag tag-core">Core</span></td><td>건강 데이터 입력, 대시보드</td><td>앱 사용자</td></tr>
-    <tr><td><code>/api/v1/consents/*</code></td><td><span class="tag tag-core">Core</span></td><td>동의 서명/철회/조회</td><td>앱 사용자</td></tr>
-    <tr><td><code>/api/v1/wallets/*</code></td><td><span class="tag tag-core">Core</span></td><td>지갑 생성, 잔액, 출금</td><td>앱 사용자</td></tr>
-    <tr><td><code>/api/v1/notifications/*</code></td><td><span class="tag tag-core">Core</span></td><td>알림 조회, 읽음 처리</td><td>전체</td></tr>
+    <tr><td><code>/api/v1/data/*</code></td><td><span class="tag tag-core">Core</span></td><td>건강 데이터 입력/조회</td><td>앱 사용자</td></tr>
+    <tr><td><code>/api/v1/consents/*</code></td><td><span class="tag tag-core">Core</span></td><td>동의 생성/승인/철회/조회</td><td>앱 사용자</td></tr>
+    <tr><td><code>/api/v1/wallet/*</code></td><td><span class="tag tag-core">Core</span></td><td>지갑 등록/조회</td><td>앱 사용자</td></tr>
+    <tr><td><code>/api/v1/enrollment/*</code></td><td><span class="tag tag-core">Core</span></td><td>연구 참여 등록/철회</td><td>앱 사용자</td></tr>
+    <tr><td><code>/api/v1/token/*, /api/v1/xrpl/*, /api/v1/health/*</code></td><td><span class="tag tag-core">Core</span></td><td>링킹토큰, XRPL 앵커, 건강 리포트</td><td>앱 사용자</td></tr>
     <tr><td colspan="4" style="text-align:center;color:#30363d;">───────────────────────────────</td></tr>
     <tr><td><code>/api/v1/projects/*</code></td><td><span class="tag tag-business">Business</span></td><td>프로젝트 CRUD, 마일스톤, 참여자</td><td>연구자</td></tr>
     <tr><td><code>/api/v1/irb/*</code></td><td><span class="tag tag-business">Business</span></td><td>IRB 제출/심의/문서</td><td>연구자/IRB 위원</td></tr>
@@ -877,19 +874,19 @@
 <div class="section-divider"><span>📋 핵심 데이터 흐름 (3 시나리오)</span></div>
 
 <div class="example-box">
-  <div class="example-title">🔥 시나리오 1: 환자 데이터 입력 → XRPL 앵커링 → Webhook</div>
+  <div class="example-title">🔥 시나리오 1: 환자 데이터 입력 → XRPL 앵커링 → Enterprise Push</div>
   <div class="example-step"><div class="step-num" style="background:#8b5cf6;">1</div><div class="step-content"><span class="server" style="color:#93c5fd;">[📱 App]</span> <span class="action">환자가 건강데이터 입력 (혈압, 혈당 등) → POST /api/v1/health/data</span></div></div>
   <div class="example-step"><div class="step-num" style="background:#a78bfa;">2</div><div class="step-content"><span class="server core">[Core]</span> <span class="action">Passkey 인증 → 데이터 검증 → AES-256-GCM 암호화 → <code>health_db.data_points</code> 저장</span></div></div>
   <div class="example-step"><div class="step-num" style="background:#a78bfa;">3</div><div class="step-content"><span class="server core">[Core]</span> <span class="action">SHA-256 해시 → XRPL DATA_INPUT 앵커링 → <code>xrpl_transactions</code> 기록</span></div></div>
   <div class="example-step"><div class="step-num" style="background:#f59e0b;">4</div><div class="step-content"><span class="server" style="color:#fbbf24;">[XRPL]</span> <span class="action">EscrowCreate (UQD 크레딧 적립)</span></div></div>
-  <div class="example-step"><div class="step-num" style="background:#a78bfa;">5</div><div class="step-content"><span class="server core">[Core]</span> → <span class="server business">[Business]</span> <span class="action">Webhook <code>data.submitted</code></span></div></div>
+  <div class="example-step"><div class="step-num" style="background:#a78bfa;">5</div><div class="step-content"><span class="server core">[Core]</span> → <span class="server business">[Business]</span> <span class="action">Push <code>POST /api/enterprise/project/{id}/dataset</code></span></div></div>
   <div class="example-step"><div class="step-num" style="background:#34d399;">6</div><div class="step-content"><span class="server business">[Business]</span> <span class="action"><code>webhook_events</code> 기록 → 참여 프로젝트 <code>project_milestones</code> 업데이트</span></div></div>
 </div>
 
 <div class="example-box">
   <div class="example-title">연구자 데이터 요청 (B2B)</div>
   <div class="example-step"><div class="step-num" style="background:#34d399;">1</div><div class="step-content"><span class="server business">[Business]</span> <span class="action">데이터 접근 요청 (IRB 승인 번호 포함) → <code>data_requests</code> 생성</span></div></div>
-  <div class="example-step"><div class="step-num" style="background:#34d399;">2</div><div class="step-content"><span class="server business">[Business]</span> → <span class="server core">[Core]</span> <span class="action"><code>POST /internal/v1/consents/verify</code> + <code>POST /internal/v1/data/query</code></span></div></div>
+  <div class="example-step"><div class="step-num" style="background:#34d399;">2</div><div class="step-content"><span class="server business">[Business]</span> → <span class="server core">[Core]</span> <span class="action"><code>POST /api/v1/internal/tier1/overview</code> + <code>POST /api/v1/internal/tier1/table</code></span></div></div>
   <div class="example-step"><div class="step-num" style="background:#a78bfa;">3</div><div class="step-content"><span class="server core">[Core]</span> <span class="action">동의 스코프 검증 → health_db 조회 → 가명처리 (k-anonymity k≥5) → XRPL DATA_ACCESS 앵커링</span></div></div>
   <div class="example-step"><div class="step-num" style="background:#34d399;">4</div><div class="step-content"><span class="server business">[Business]</span> <span class="action">가명 데이터 수신 → <code>settlement_batches</code> + <code>settlement_items</code> 생성 → Core에 EscrowFinish 요청</span></div></div>
 </div>
@@ -900,7 +897,7 @@
   <div class="example-step"><div class="step-num" style="background:#8b5cf6;">2</div><div class="step-content"><span class="server" style="color:#93c5fd;">[📱 App]</span> <span class="action">ed25519.sign(SHA256(consent_payload), derived_key) → 서명 + 동의 내용 서버 전송</span></div></div>
   <div class="example-step"><div class="step-num" style="background:#a78bfa;">3</div><div class="step-content"><span class="server core">[Core]</span> <span class="action">공개키로 서명 검증 → <code>consents</code> + <code>consent_scopes</code> 저장 → <code>consent_audit_trail</code> 기록</span></div></div>
   <div class="example-step"><div class="step-num" style="background:#f59e0b;">4</div><div class="step-content"><span class="server" style="color:#fbbf24;">[XRPL]</span> <span class="action">CONSENT_GRANT 앵커링 + EscrowCreate (보상분)</span></div></div>
-  <div class="example-step"><div class="step-num" style="background:#a78bfa;">5</div><div class="step-content"><span class="server core">[Core]</span> → <span class="server business">[Business]</span> <span class="action">Webhook <code>consent.granted</code></span></div></div>
+  <div class="example-step"><div class="step-num" style="background:#a78bfa;">5</div><div class="step-content"><span class="server core">[Core]</span> → <span class="server business">[Business]</span> <span class="action">Push <code>POST /api/enterprise/project/{id}/participant</code></span></div></div>
   <div class="example-step"><div class="step-num" style="background:#34d399;">6</div><div class="step-content"><span class="server business">[Business]</span> <span class="action"><code>participants.status</code> → CONSENTED → 프로젝트 참여자 수 업데이트</span></div></div>
 </div>
 
@@ -956,7 +953,7 @@
 <div style="background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 20px; margin-bottom: 24px;">
   <div style="display: flex; justify-content: center; gap: 24px; flex-wrap: wrap;">
     <div style="background: #2e1065; border: 1px solid #a78bfa; padding: 12px 20px; border-radius: 8px; font-size: 11px; color: #e9d5ff; text-align: center;">
-      🟢 core-server<br>NestJS · Port 3000<br><span style="font-size: 9px; color: #8b949e;">RAM: 256MB~ · $5/월</span>
+      🟢 core-server<br>FastAPI · Port 8000(default)<br><span style="font-size: 9px; color: #8b949e;">RAM: 256MB~ · $5/월</span>
     </div>
     <div style="background: #022c22; border: 1px solid #34d399; padding: 12px 20px; border-radius: 8px; font-size: 11px; color: #a7f3d0; text-align: center;">
       🔵 business-server<br>Spring Boot · Port 8080<br><span style="font-size: 9px; color: #8b949e;">RAM: 1GB~ · $10-15/월</span>
@@ -1002,13 +999,13 @@
   <div class="faq-q">Q: 정산은 어디서?</div>
   <div class="faq-a">A: 정산 <strong>계산</strong>(대상자 산정, 금액 계산, settlement_batches 생성) → <code>🔵 Business</code><br>
   정산 <strong>실행</strong>(XRPL EscrowFinish, UQD 크레딧 적립) → <code>🟢 Core</code><br>
-  Business가 <code>POST /internal/v1/escrow/finish</code>로 요청 → Core가 실행 → tx_hash 반환</div>
+  Business가 <code>POST /api/v1/internal/escrow/finalize</code>로 요청 → Core가 실행 → tx_hash 반환</div>
 </div>
 
 <div class="faq-item">
-  <div class="faq-q">Q: Internal API와 Webhook 갯수는?</div>
-  <div class="faq-a">A: Business→Core <strong>Internal API: 14개</strong> (REST, X-Internal-API-Key 인증)<br>
-  Core→Business <strong>Webhook: 8개</strong> (HMAC-SHA256 서명)</div>
+  <div class="faq-q">Q: Internal API와 Core Push 갯수는?</div>
+  <div class="faq-a">A: Business→Core <strong>Internal API: 13개</strong> (REST, X-Service-Auth 인증)<br>
+  Core→Business <strong>Push API: 5개</strong> (현재 2개 라이브, 3개 목표)</div>
 </div>
 
 <!-- ====== 레포 ====== -->
@@ -1016,7 +1013,7 @@
 
 <div class="repo-links">
   <a href="https://github.com/SportiQue-UniQdata/uniqdata-core" class="repo-link core" target="_blank">
-    uniqdata-core (NestJS)
+    uniqdata-core (FastAPI)
   </a>
   <a href="https://github.com/SportiQue-UniQdata/uniqdata-enterprise-backend" class="repo-link business" target="_blank">
     uniqdata-enterprise-backend (Spring)
@@ -1024,7 +1021,7 @@
 </div>
 
 <p style="text-align: center; color: #6b7280; font-size: 11px; margin-top: 32px;">
-  v6.0 | 2026-02-12 | 전면 리뉴얼: 31 Tables DDL · 14 Internal APIs · 8 Webhooks · Decision Matrix · 보안 계층 · RBAC
+  v6.1 | 2026-02-27 | Core 실코드 정합 업데이트: 31 Tables DDL · Internal API 13개 · Core Push 5개 · Decision Matrix · 보안 계층 · RBAC
 </p>
 
 <script>
