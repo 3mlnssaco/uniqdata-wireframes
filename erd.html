@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>UniQData ERD v6 — 2-Server Architecture</title>
+  <title>UniQData ERD v8 — 2-Server Architecture (Core+Enterprise)</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -252,13 +252,13 @@
 const { useState, useEffect, useCallback, useRef } = React;
 
 // ============================================================
-// DATA DEFINITIONS — v6 2-Server Architecture (31 Tables)
+// DATA DEFINITIONS — v8 2-Server Architecture (Core+Enterprise schema snapshot)
 // ============================================================
 
 const SERVERS = {
-  all: { label: "전체 UniQData", icon: "🗄️", color: "#64748b", desc: "31 tables" },
-  health_db: { label: "Core (health_db)", icon: "🟣", color: "#7c3aed", desc: "NestJS:3000 · 15 tables" },
-  uniqdata_db: { label: "Business (uniqdata_db)", icon: "🟢", color: "#059669", desc: "Spring Boot:8080 · 16 tables" },
+  all: { label: "전체 UniQData", icon: "🗄️", color: "#64748b", desc: "Core+Enterprise schema" },
+  health_db: { label: "Core (health_db)", icon: "🟣", color: "#7c3aed", desc: "FastAPI:8000 · core_auth/uq_cdm/uq_mapping" },
+  uniqdata_db: { label: "Business (uniqdata_db)", icon: "🟢", color: "#059669", desc: "Spring Boot:8080 · research schema" },
 };
 
 const DOMAINS = {
@@ -422,7 +422,7 @@ const API_ENDPOINTS = {
 };
 
 // ============================================================
-// TABLE DEFINITIONS (31 Tables)
+// TABLE DEFINITIONS (Core+Enterprise schema snapshot)
 // ============================================================
 
 const TABLES = [
@@ -923,7 +923,7 @@ function App() {
             <span className="secondary">Data</span>
           </div>
           <span className="header-stats">
-            ERD v6 · {visible.length} tables
+            ERD v8 · {visible.length} tables
             {server !== "all" && ` · ${SERVERS[server].desc}`}
             {api !== "all" && API_ENDPOINTS[server] && API_ENDPOINTS[server][api] && ` · ${API_ENDPOINTS[server][api].label}`}
           </span>

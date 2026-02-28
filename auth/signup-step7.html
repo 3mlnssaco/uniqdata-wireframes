@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>회원가입 완료 | UniQdata</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: linear-gradient(135deg, #f0f9ff, #ecfeff);
+      color: #0f172a;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .card {
+      width: min(640px, 100%);
+      background: #ffffff;
+      border: 1px solid #bae6fd;
+      border-radius: 16px;
+      padding: 28px;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+    }
+    .badge {
+      display: inline-block;
+      background: #dcfce7;
+      color: #166534;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 999px;
+      margin-bottom: 12px;
+    }
+    h1 {
+      margin: 0 0 10px;
+      font-size: 28px;
+      line-height: 1.25;
+    }
+    p {
+      margin: 0 0 14px;
+      color: #334155;
+      line-height: 1.6;
+      font-size: 15px;
+    }
+    ul {
+      margin: 0 0 18px 18px;
+      padding: 0;
+      color: #334155;
+      font-size: 14px;
+      line-height: 1.7;
+    }
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 8px;
+    }
+    .btn {
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 600;
+      border-radius: 10px;
+      padding: 10px 14px;
+      border: 1px solid #0ea5e9;
+    }
+    .btn.primary {
+      background: #0ea5e9;
+      color: white;
+    }
+    .btn.ghost {
+      background: white;
+      color: #0369a1;
+    }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <span class="badge">Step 7 / 7</span>
+    <h1>회원가입이 완료되었습니다</h1>
+    <p>이메일 인증, 패스키 등록, 지갑 연동(XRPL 앵커링)까지 완료되었습니다. 이제 연구자 포털 기능을 사용할 수 있습니다.</p>
+    <ul>
+      <li>인증 경로: <code>/api/v1/auth/*</code></li>
+      <li>문서 진입점: Core/Enterprise 모두 <code>/api</code></li>
+      <li>탈퇴 API: 프로젝트 탈퇴 / 플랫폼 탈퇴 분리</li>
+    </ul>
+    <div class="actions">
+      <a class="btn primary" href="login.html">로그인으로 이동</a>
+      <a class="btn ghost" href="../index.html">와이어프레임 목록</a>
+      <a class="btn ghost" href="../research/SportiQue_Architecture_v8.html">아키텍처 v8 보기</a>
+    </div>
+  </main>
+</body>
+</html>

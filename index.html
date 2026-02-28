@@ -292,7 +292,7 @@
       <button class="view-tab" data-tab="phase" role="tab" aria-selected="false">Phase별 보기</button>
       <button class="view-tab" data-tab="schema" role="tab" aria-selected="false">스키마</button>
     </div>
-    <a class="arch-button" href="research/SportiQue_Architecture_v6.html">아키텍처 보기</a>
+    <a class="arch-button" href="research/SportiQue_Architecture_v8.html">아키텍처 보기</a>
   </div>
 
   <section class="tab-section is-active" data-tab="concept">
@@ -300,11 +300,11 @@
     <h2 id="by-concept">🧩 컨셉별 보기</h2>
     <div class="group-title">0) 아키텍처 (최우선 진입)</div>
     <div class="grid">
-    <a href="research/SportiQue_Architecture_v6.html" class="card highlight">
-      <h3>UniQdata 아키텍처 v6</h3>
-      <p>2-Server Model: Core (NestJS:3000) + Business (Spring Boot:8080) · 31 Tables</p>
+    <a href="research/SportiQue_Architecture_v8.html" class="card highlight">
+      <h3>UniQdata 아키텍처 v8</h3>
+      <p>2-Server Model: Core (FastAPI:8000) + Business (Spring Boot:8080) · 5-DB · 운영 패치 반영</p>
       <span class="badge p0">Phase 0</span>
-      <span class="badge new">v6</span>
+      <span class="badge new">v8</span>
     </a>
     </div>
     <div class="group-note">현재 우선순위 흐름: 연구 세션 생성 → 수집 데이터 확정 → 데이터 구매</div>
@@ -465,11 +465,11 @@
     <h2 id="by-phase">🧭 Phase별 보기</h2>
     <div class="group-title">Architecture (진입 우선)</div>
     <div class="grid">
-    <a href="research/SportiQue_Architecture_v6.html" class="card highlight">
-      <h3>UniQdata 아키텍처 v6</h3>
-      <p>2-Server Model: Core (NestJS:3000) + Business (Spring Boot:8080) · 31 Tables</p>
+    <a href="research/SportiQue_Architecture_v8.html" class="card highlight">
+      <h3>UniQdata 아키텍처 v8</h3>
+      <p>2-Server Model: Core (FastAPI:8000) + Business (Spring Boot:8080) · 5-DB · 운영 패치 반영</p>
       <span class="badge p0">Phase 0</span>
-      <span class="badge new">v6</span>
+      <span class="badge new">v8</span>
     </a>
     </div>
 
@@ -604,6 +604,10 @@
 
   <section class="tab-section" data-tab="schema">
     <h2 id="by-schema">🗂️ 스키마 / ERD</h2>
+    <div style="margin-bottom: 12px; padding: 10px 12px; background: #ecfeff; border: 1px solid #67e8f9; border-radius: 8px; font-size: 12px; color: #155e75;">
+      최신 스키마/통신 계약 SSOT는 <a href="research/SportiQue_Architecture_v8.html" target="_blank" style="color: #0c4a6e; font-weight: 600;">Architecture v8</a> 기준입니다.
+      (Core /api 문서 진입, Withdraw 2종 분리, Settlement Batch API 반영)
+    </div>
     <div style="width: 100%; height: calc(100vh - 180px); min-height: 700px; background: #0f0f1a; border-radius: 12px; overflow: hidden;">
       <iframe
         src="erd.html"
@@ -613,6 +617,7 @@
     </div>
     <div class="schema-links" style="margin-top: 16px;">
       <a href="erd.html" target="_blank">🔗 전체 화면으로 보기</a>
+      <a href="research/SportiQue_Architecture_v8.html" target="_blank">🏗️ Architecture v8 (최신)</a>
       <a href="schema.dbml" target="_blank">📄 DBML 소스</a>
       <a href="https://dbdiagram.io/e/6988bf35bd82f5fce206dacd/6988bf73bd82f5fce206df68" target="_blank">📊 dbdiagram.io (기존)</a>
     </div>
