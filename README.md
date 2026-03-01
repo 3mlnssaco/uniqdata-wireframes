@@ -1,18 +1,18 @@
-# UniQdata 연구자 포털 와이어프레임
+# UniQdata Enterprise Portal 와이어프레임
 
-> 의료 데이터 마켓플레이스 - 연구자/기업용 웹 포털 UI 설계
+> 양면 건강데이터 플랫폼 - 연구자/기업용 웹 포털 UI 설계
 
 **Live Preview:** https://3mlnssaco.github.io/uniqdata-wireframes/
 
 ---
 
-## 📋 페이지 구성
+## 페이지 구성
 
 ### 1. 연구 생성 플로우 (5단계)
 
 | 단계 | 페이지 | 설명 |
 |------|--------|------|
-| Step 1 | [create.html](research/create.html) | AI 연구 설계 - 자연어로 연구 목적 입력 → AI가 설계 초안 생성 |
+| Step 1 | [create.html](research/create.html) | AI 연구 설계 - 자연어로 연구 목적 입력, AI가 설계 초안 생성 |
 | Step 2 | [create-step2.html](research/create-step2.html) | 설계 확인 - AI 생성 설계 검토 및 수정 |
 | Step 3 | [create-step3.html](research/create-step3.html) | 데이터 수집 - 수집 항목, 빈도, 기간 설정 |
 | Step 4 | [create-step4.html](research/create-step4.html) | 예산 설정 - 프로젝트 지갑 생성, 참여자 보상 설정 |
@@ -50,7 +50,7 @@
 
 ---
 
-## 🎨 디자인 시스템
+## 디자인 시스템
 
 ### 색상
 
@@ -72,7 +72,7 @@
 
 ---
 
-## 📐 UX 설계 원칙
+## UX 설계 원칙
 
 ### 모든 UI 요소는 답해야 함
 
@@ -99,13 +99,13 @@ DO   - 그래서 뭘 해야 하는가?
 
 | 등급 | 조건 | 대응 |
 |------|------|------|
-| 🚨 Critical | 활성률 <50%, 예산 <5% | 당일 조치 |
-| ⚠️ Warning | 활성률 50-70%, 품질 <75% | 주간 내 |
-| ℹ️ Info | 목표 달성, 분석 완료 | 확인 |
+| Critical | 활성률 <50%, 예산 <5% | 당일 조치 |
+| Warning | 활성률 50-70%, 품질 <75% | 주간 내 |
+| Info | 목표 달성, 분석 완료 | 확인 |
 
 ---
 
-## 📁 폴더 구조
+## 폴더 구조
 
 ```
 uniqdata-wireframes/
@@ -127,30 +127,38 @@ uniqdata-wireframes/
 ├── billing.html            # 결제
 ├── team.html               # 팀 관리
 ├── erd.html                # ERD
-├── schema*.dbml            # DB 스키마
-├── DATA_FLOWS.md           # 데이터 흐름 문서
+├── schema.dbml             # 통합 DB 스키마 (51 tables)
+├── schema-auth.dbml        # 인증 상세 스키마
+├── schema-data.dbml        # 데이터 상세 스키마
+├── schema-org.dbml         # 기관 상세 스키마
+├── schema-research.dbml    # 연구 상세 스키마
+├── DATA_FLOWS.md           # Core-Enterprise 데이터 흐름
 └── WIREFRAME_CHANGES.md    # 변경 이력
 ```
 
 ---
 
-## 🔗 관련 리포지토리
+## 스키마 문서
 
-| 레포 | 설명 |
+| 파일 | 내용 |
 |------|------|
-| [uniqdata-core](https://github.com/SportiQue-UniQdata/uniqdata-core) | FastAPI + SQLAlchemy 백엔드 |
-| [uniqdata-enterprise-backend](https://github.com/SportiQue-UniQdata/uniqdata-enterprise-backend) | Spring Boot 비즈니스 엔진 |
-| [uniqdata-enterprise-web](https://github.com/SportiQue-UniQdata/uniqdata-enterprise-web) | 연구자 웹 프론트 |
-| [uniqdata-app](https://github.com/SportiQue-UniQdata/uniqdata-app) | 개인용 모바일 앱 |
+| `schema.dbml` | 통합 ERD: health_db 33테이블 (4스키마) + uniqdata_db 18테이블 |
+| `DATA_FLOWS.md` | Core Internal API 데이터 흐름, 3계층 ID, k-anonymity |
+| `schema-auth.dbml` | 인증 상세 (참고용, schema.dbml에 통합) |
+| `schema-data.dbml` | 데이터 상세 (참고용, schema.dbml에 통합) |
+| `schema-org.dbml` | 기관 상세 (참고용, schema.dbml에 통합) |
+| `schema-research.dbml` | 연구 상세 (참고용, schema.dbml에 통합) |
 
 ---
 
-## 📝 변경 이력
+## 변경 이력
 
 | 날짜 | 변경 |
 |------|------|
+| 2026-03-01 | schema.dbml v7: Core 4스키마 33테이블 반영, FastAPI 기준, Internal API 13개 매핑 |
+| 2026-03-01 | DATA_FLOWS.md 전면 개편: Internal API 기반, 3계층 ID, k-anonymity, Linking Token |
 | 2026-02-11 | action-center.html 추가, data-intent 속성 적용 |
-| 2026-02-11 | 5단계 플로우로 재구성 (Step 4 AI 도구 → AI 허브로 통합) |
+| 2026-02-11 | 5단계 플로우로 재구성 (Step 4 AI 도구 -> AI 허브로 통합) |
 | 2026-02-10 | AI 허브 통합, 프로젝트 지갑 이원화 |
 | 2026-02-07 | 초기 와이어프레임 |
 

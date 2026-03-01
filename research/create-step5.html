@@ -1495,6 +1495,53 @@
         opacity: 0.4;
       }
     }
+  
+
+    /* Hover reveal AI panel (Step 2-5) */
+    .chat-panel.hover-reveal {
+      width: 28px !important;
+      min-width: 28px !important;
+      overflow: hidden;
+      position: relative;
+      transition: width 0.22s ease;
+    }
+    .chat-panel.hover-reveal:hover {
+      width: 360px !important;
+      min-width: 360px !important;
+    }
+    .chat-panel.hover-reveal .chat-panel-inner {
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.18s ease;
+    }
+    .chat-panel.hover-reveal:hover .chat-panel-inner {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .chat-panel.hover-reveal .chat-hover-handle {
+      position: absolute;
+      top: 14px;
+      right: 0;
+      width: 28px;
+      height: 128px;
+      border-radius: 8px 0 0 8px;
+      background: linear-gradient(180deg, #8b5cf6, #6366f1);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      writing-mode: vertical-rl;
+      text-orientation: mixed;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.4px;
+      z-index: 5;
+      box-shadow: -4px 0 16px rgba(99, 102, 241, 0.25);
+    }
+    .chat-panel.hover-reveal:hover .chat-hover-handle {
+      display: none;
+    }
+
   </style>
 </head>
 
@@ -1584,22 +1631,22 @@
         <div class="step-bar-inner">
           <a class="sb-step done" href="create.html">
             <div class="sb-num">&#x2713;</div>
-            <div class="sb-label">연구 설계</div>
+            <div class="sb-label">AI 연구상담</div>
           </a>
           <div class="sb-line done"></div>
           <a class="sb-step done" href="create-step2.html">
             <div class="sb-num">&#x2713;</div>
-            <div class="sb-label">데이터 탐색</div>
+            <div class="sb-label">연구 세팅</div>
           </a>
           <div class="sb-line done"></div>
           <a class="sb-step done" href="create-step3.html">
             <div class="sb-num">&#x2713;</div>
-            <div class="sb-label">데이터 설정</div>
+            <div class="sb-label">데이터 수집</div>
           </a>
           <div class="sb-line done"></div>
           <a class="sb-step done" href="create-step4.html">
             <div class="sb-num">&#x2713;</div>
-            <div class="sb-label">참가자</div>
+            <div class="sb-label">참가자 설정</div>
           </a>
           <div class="sb-line done"></div>
           <a class="sb-step active" href="create-step5.html">
@@ -1776,7 +1823,7 @@
                 </div>
                 <div
                   style="display: grid; grid-template-columns: 2.5fr 1fr 0.6fr 1fr; padding: 10px 12px; font-size: 12px; color: #374151;">
-                  <span>조기 참여 인센티브 <span style="font-size: 9px; color: #9ca3af;">Step3</span></span><span>20
+                  <span>조기 참여 인센티브 <span style="font-size: 9px; color: #9ca3af;">Step4</span></span><span>20
                     XRP</span><span>20명</span><span style="text-align: right; font-weight: 600;">400 XRP</span>
                 </div>
                 <div
@@ -2063,7 +2110,8 @@
         </div><!-- /.editor-panel -->
 
         <!-- AI 에스크로 어시스턴트 -->
-        <div class="chat-panel">
+        <div class="chat-panel hover-reveal">
+          <div class="chat-hover-handle">🤖 AI</div>
           <div class="chat-panel-inner">
             <div class="chat-header">
               <div class="title">

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>UniQData ERD v8 — 2-Server Architecture (Core+Enterprise)</title>
+  <title>UniQData ERD v9 — 2-Server Architecture (Core 33T + Enterprise 22T)</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -252,171 +252,214 @@
 const { useState, useEffect, useCallback, useRef } = React;
 
 // ============================================================
-// DATA DEFINITIONS — v8 2-Server Architecture (Core+Enterprise schema snapshot)
+// DATA DEFINITIONS — v9 2-Server Architecture (Core 33T + Enterprise 22T = 55 Tables)
 // ============================================================
 
 const SERVERS = {
-  all: { label: "전체 UniQData", icon: "🗄️", color: "#64748b", desc: "Core+Enterprise schema" },
-  health_db: { label: "Core (health_db)", icon: "🟣", color: "#7c3aed", desc: "FastAPI:8000 · core_auth/uq_cdm/uq_mapping" },
-  uniqdata_db: { label: "Business (uniqdata_db)", icon: "🟢", color: "#059669", desc: "Spring Boot:8080 · research schema" },
+  all: { label: "전체 UniQData", icon: "🗄️", color: "#64748b", desc: "Core 33T + Enterprise 22T = 55 Tables" },
+  health_db: { label: "Core (health_db)", icon: "🟣", color: "#7c3aed", desc: "FastAPI:8000 · 4 schemas · 33 tables" },
+  uniqdata_db: { label: "Business (uniqdata_db)", icon: "🟢", color: "#059669", desc: "Spring Boot:8080 · research schema · 22 tables" },
 };
 
 const DOMAINS = {
   all: { label: "전체", color: "#64748b" },
-  auth: { label: "Auth / Profile", color: "#818cf8" },
-  wallet: { label: "Wallet / XRPL", color: "#f59e0b" },
-  health: { label: "Health Data", color: "#a855f7" },
+  core_member: { label: "core_member (인증)", color: "#7c3aed" },
+  core_auth: { label: "core_auth (지갑)", color: "#8b5cf6" },
+  cdm: { label: "uq_cdm (OMOP CDM)", color: "#6366f1" },
   consent: { label: "Consent", color: "#ec4899" },
-  notify: { label: "Notification", color: "#06b6d4" },
-  org: { label: "Enterprise", color: "#10b981" },
-  research: { label: "Research", color: "#3b82f6" },
+  mapping: { label: "uq_mapping (ID매핑)", color: "#a78bfa" },
+  cdm_system: { label: "CDM System", color: "#475569" },
+  org: { label: "Institution (기관)", color: "#10b981" },
+  research: { label: "Research (연구)", color: "#3b82f6" },
+  design: { label: "Design (연구설계)", color: "#0ea5e9" },
   irb: { label: "IRB", color: "#f97316" },
-  finance: { label: "Settlement", color: "#ef4444" },
-  phase2: { label: "Phase 2", color: "#6b7280" },
-  system: { label: "System", color: "#475569" },
+  finance: { label: "Settlement (정산)", color: "#ef4444" },
+  push: { label: "Core Integration", color: "#a855f7" },
 };
 
-// Server → Table mapping
+// Server → Table mapping (2026-03-01 기준: Core 33T + Enterprise 22T)
 const SERVER_TABLES = {
   all: null,
   health_db: [
-    "users", "passkey_credentials", "user_profiles", "refresh_tokens",
-    "user_wallets", "wallet_recovery_configs",
-    "data_points", "data_point_tags", "data_access_logs",
-    "consents", "consent_scopes", "consent_audit_trail",
-    "xrpl_transactions",
-    "notifications", "notification_preferences"
+    // core_member (2)
+    "user_email", "user_passkey",
+    // core_auth (5)
+    "user_wallet", "wallet_secret", "wallet_credential_binding", "wallet_recovery_request", "escrow_secret",
+    // uq_cdm (22)
+    "cdm_person", "observation_period", "device_registry",
+    "cdm_measurement", "cdm_measurement_highfreq", "cdm_observation",
+    "cdm_condition_occurrence", "cdm_drug_exposure", "cdm_device_exposure", "cdm_note",
+    "cdm_episode", "cdm_episode_event",
+    "consent", "cdm_consent_scope",
+    "anchor_log", "audit_log", "data_anchor_batch",
+    "record_revision", "quality_audit", "dataset_registry", "uniqdata_concept", "feature_flag",
+    // uq_mapping (4)
+    "research_participant", "institution_registry", "linking_token", "deletion_audit_log"
   ],
   uniqdata_db: [
-    "enterprises", "enterprise_members",
-    "projects", "project_milestones", "participants", "participation_criteria", "data_requests",
-    "irb_submissions", "irb_documents", "irb_review_comments", "irb_workflow_history",
-    "settlement_batches", "settlement_items",
-    "synthetic_datasets", "fl_rounds",
-    "webhook_events"
+    // Institution (3)
+    "institution", "institution_member", "institution_wallet",
+    // Project (7)
+    "project", "project_institution", "project_member",
+    "project_wallet", "project_budget", "project_participant",
+    "project_milestone", "project_milestone_log",
+    // Design (4)
+    "project_design", "project_data_requirement", "project_irb_content", "project_eligibility",
+    // Data (2)
+    "project_dataset", "reference_dataset",
+    // IRB (1)
+    "irb_submission",
+    // Settlement (3)
+    "settlement", "settlement_batch", "settlement_item",
+    // Core Integration (1)
+    "core_push_event"
   ],
 };
 
-// API Endpoints
+// API Endpoints (2026-03-01 기준: Core Internal 13 + Enterprise 11)
 const API_ENDPOINTS = {
   health_db: {
-    all: { label: "전체 API", tables: null, method: "", color: "#64748b", desc: "Core Server 전체 테이블" },
-    get_user: {
-      label: "GET /internal/users/:id",
-      tables: ["users", "user_profiles", "passkey_credentials"],
-      method: "GET", color: "#3b82f6",
-      desc: "사용자 정보 + 프로필 + 패스키 목록 조회"
-    },
-    verify_kyc: {
-      label: "POST /internal/users/:id/verify-kyc",
-      tables: ["users"],
+    all: { label: "전체 API", tables: null, method: "", color: "#64748b", desc: "Core Server (FastAPI:8000) 전체" },
+    matching_estimate: {
+      label: "POST /internal/matching/estimate",
+      tables: ["cdm_person", "cdm_measurement", "cdm_condition_occurrence"],
       method: "POST", color: "#22c55e",
-      desc: "KYC 레벨 업데이트"
+      desc: "적격 대상자 수 추정 (person_id 미반환)"
     },
-    get_wallet: {
-      label: "GET /internal/wallets/by-user/:id",
-      tables: ["user_wallets"],
-      method: "GET", color: "#3b82f6",
-      desc: "사용자 지갑 조회 (잔액, 주소)"
-    },
-    create_escrow: {
-      label: "POST /internal/wallets/:id/escrow",
-      tables: ["user_wallets", "xrpl_transactions"],
+    matching_recruit: {
+      label: "POST /internal/matching/recruit",
+      tables: ["cdm_person", "linking_token"],
       method: "POST", color: "#22c55e",
-      desc: "XRPL 에스크로 생성"
+      desc: "모집 알림 발송 (FCM 푸시)"
     },
-    release_escrow: {
-      label: "POST /internal/wallets/:id/release",
-      tables: ["user_wallets", "xrpl_transactions"],
+    tier1_overview: {
+      label: "POST /internal/tier1/overview",
+      tables: ["cdm_measurement", "cdm_observation", "research_participant"],
+      method: "POST", color: "#3b82f6",
+      desc: "시계열 집계 (그래프용, k-anonymous)"
+    },
+    tier1_table: {
+      label: "POST /internal/tier1/table",
+      tables: ["cdm_measurement", "research_participant", "audit_log"],
+      method: "POST", color: "#3b82f6",
+      desc: "참여자별 요약 (participant_number만)"
+    },
+    tier1_distribution: {
+      label: "POST /internal/tier1/distribution",
+      tables: ["cdm_measurement", "research_participant"],
+      method: "POST", color: "#3b82f6",
+      desc: "값 분포 히스토그램 (k-anonymity 적용)"
+    },
+    token_preview: {
+      label: "POST /internal/token/preview",
+      tables: ["linking_token", "cdm_person"],
       method: "POST", color: "#22c55e",
-      desc: "에스크로 해제 (정산)"
+      desc: "토큰 미리보기 (성별/연령 힌트)"
     },
-    query_data: {
-      label: "POST /internal/data/query",
-      tables: ["data_points", "data_point_tags", "data_access_logs", "consents"],
+    token_cart: {
+      label: "POST /internal/token/cart",
+      tables: ["linking_token"],
       method: "POST", color: "#22c55e",
-      desc: "건강 데이터 조회 (동의 검증 후)"
+      desc: "토큰 카트 추가 (active→carted)"
     },
-    pseudonymize: {
-      label: "POST /internal/data/pseudonymize",
-      tables: ["data_points", "data_access_logs"],
+    token_consent: {
+      label: "POST /internal/token/send-consent",
+      tables: ["linking_token", "consent"],
       method: "POST", color: "#22c55e",
-      desc: "데이터 비식별화 처리"
+      desc: "동의 요청 발송 (carted→pending_consent)"
     },
-    create_consent: {
-      label: "POST /internal/consents",
-      tables: ["consents", "consent_scopes", "consent_audit_trail", "xrpl_transactions"],
+    token_resolve: {
+      label: "POST /internal/token/resolve",
+      tables: ["linking_token", "research_participant"],
+      method: "POST", color: "#3b82f6",
+      desc: "토큰→participant_number 벌크 변환"
+    },
+    escrow_create: {
+      label: "POST /internal/escrow/create",
+      tables: ["escrow_secret", "user_wallet"],
       method: "POST", color: "#22c55e",
-      desc: "연구 참여 동의 생성 + XRPL 앵커링"
+      desc: "프로젝트 지갑 생성 (시드 KMS 암호화)"
     },
-    check_consent: {
-      label: "GET /internal/consents/check",
-      tables: ["consents", "consent_scopes"],
-      method: "GET", color: "#3b82f6",
-      desc: "동의 유효성 검증"
-    },
-    revoke_consent: {
-      label: "PUT /internal/consents/:id/revoke",
-      tables: ["consents", "consent_audit_trail", "xrpl_transactions"],
-      method: "PUT", color: "#f59e0b",
-      desc: "동의 철회 + XRPL 앵커링"
-    },
-    send_notification: {
-      label: "POST /internal/notifications",
-      tables: ["notifications", "notification_preferences"],
+    escrow_release: {
+      label: "POST /internal/escrow/release",
+      tables: ["escrow_secret", "user_wallet", "research_participant", "anchor_log"],
       method: "POST", color: "#22c55e",
-      desc: "알림 발송 (Push/Email/In-App)"
+      desc: "참여자 보상 지급 (XRPL 전송)"
+    },
+    escrow_finalize: {
+      label: "POST /internal/escrow/finalize",
+      tables: ["escrow_secret", "anchor_log"],
+      method: "POST", color: "#22c55e",
+      desc: "프로젝트 종료 정산 (수수료+환불)"
+    },
+    health_check: {
+      label: "GET /internal/health",
+      tables: [],
+      method: "GET", color: "#64748b",
+      desc: "Core 서버 헬스체크"
     },
   },
   uniqdata_db: {
-    all: { label: "전체 API", tables: null, method: "", color: "#64748b", desc: "Business Server 전체 테이블" },
+    all: { label: "전체 API", tables: null, method: "", color: "#64748b", desc: "Business Server (Spring:8080) 전체" },
     create_project: {
-      label: "POST /api/projects",
-      tables: ["projects", "project_milestones", "participation_criteria", "enterprises"],
+      label: "POST /enterprise/projects",
+      tables: ["project", "project_design", "project_data_requirement", "project_eligibility", "project_irb_content"],
       method: "POST", color: "#22c55e",
-      desc: "연구 프로젝트 생성 + 마일스톤 + 참여 기준"
+      desc: "연구 프로젝트 5-Step 생성"
     },
     list_projects: {
-      label: "GET /api/projects",
-      tables: ["projects", "enterprises", "enterprise_members"],
+      label: "GET /enterprise/projects",
+      tables: ["project", "project_institution", "institution"],
       method: "GET", color: "#3b82f6",
       desc: "내가 속한 프로젝트 목록 조회"
     },
-    request_data: {
-      label: "POST /api/data-requests",
-      tables: ["data_requests", "projects", "participants"],
+    matching: {
+      label: "POST /enterprise/projects/:id/matching/estimate",
+      tables: ["project", "project_eligibility"],
       method: "POST", color: "#22c55e",
-      desc: "데이터 요청 → Core Internal API 호출"
+      desc: "적격 환자 추정 (→ Core Internal API 위임)"
+    },
+    tokens: {
+      label: "POST /enterprise/projects/:id/tokens/*",
+      tables: ["project", "project_participant"],
+      method: "POST", color: "#22c55e",
+      desc: "Linking Token 관리 (preview/cart/consent/resolve → Core)"
+    },
+    milestones: {
+      label: "GET/POST /enterprise/projects/:id/milestones",
+      tables: ["project_milestone", "project_milestone_log"],
+      method: "GET", color: "#3b82f6",
+      desc: "연구 마일스톤 CRUD + 참여자 완료 로그"
     },
     submit_irb: {
-      label: "POST /api/irb/submissions",
-      tables: ["irb_submissions", "irb_documents", "projects", "enterprises"],
-      method: "POST", color: "#22c55e",
-      desc: "IRB 심의 제출 (AI 자동 생성 포함)"
+      label: "POST /enterprise/projects/:id/irb/submit",
+      tables: ["irb_submission", "project_design", "project_irb_content"],
+      method: "POST", color: "#f97316",
+      desc: "IRB 심의 제출 (AI 자동 생성)"
     },
-    review_irb: {
-      label: "PUT /api/irb/:id/review",
-      tables: ["irb_submissions", "irb_review_comments", "irb_workflow_history"],
-      method: "PUT", color: "#f59e0b",
-      desc: "IRB 심의 결정 (승인/수정/반려)"
+    settlement: {
+      label: "POST /enterprise/projects/:id/settlement-batches",
+      tables: ["settlement_batch", "settlement_item", "settlement", "project_wallet"],
+      method: "POST", color: "#ef4444",
+      desc: "정산 배치 생성→승인→실행 (Core 에스크로)"
     },
-    create_settlement: {
-      label: "POST /api/settlements/batch",
-      tables: ["settlement_batches", "settlement_items", "participants", "projects"],
-      method: "POST", color: "#22c55e",
-      desc: "정산 배치 생성 → Core 에스크로 해제 요청"
+    push_participant: {
+      label: "POST /api/enterprise/project/:id/participant",
+      tables: ["project_participant", "core_push_event"],
+      method: "PUSH", color: "#a855f7",
+      desc: "Core→Enterprise: 참여자 등록 (participant_number만)"
     },
-    wh_data_submitted: {
-      label: "🔔 data.submitted",
-      tables: ["webhook_events", "data_requests"],
-      method: "WEBHOOK", color: "#a855f7",
-      desc: "Core → Business: 새 데이터 제출 알림"
+    push_dataset: {
+      label: "POST /api/enterprise/project/:id/dataset",
+      tables: ["project_dataset", "core_push_event"],
+      method: "PUSH", color: "#a855f7",
+      desc: "Core→Enterprise: 비식별 데이터 전송"
     },
-    wh_consent_granted: {
-      label: "🔔 consent.granted",
-      tables: ["webhook_events", "participants", "projects"],
-      method: "WEBHOOK", color: "#a855f7",
-      desc: "Core → Business: 연구 동의 완료 → 참여자 등록"
+    push_withdrawal: {
+      label: "DELETE /api/enterprise/project/:id/participant/:pn",
+      tables: ["project_participant", "project_dataset", "core_push_event"],
+      method: "PUSH", color: "#ef4444",
+      desc: "Core→Enterprise: 동의 철회 (데이터+참여자 삭제)"
     },
   },
 };
@@ -426,205 +469,339 @@ const API_ENDPOINTS = {
 // ============================================================
 
 const TABLES = [
-  // ─── health_db: Auth / Profile ───
-  { name: "users", domain: "auth", server: "health_db", cols: [
-    { n: "id", t: "uuid", pk: true }, { n: "email", t: "varchar", }, { n: "phone", t: "varchar" },
-    { n: "display_name", t: "varchar" }, { n: "role", t: "enum" }, { n: "kyc_level", t: "smallint" },
-    { n: "status", t: "varchar" }, { n: "last_login_at", t: "ts" }, { n: "created_at", t: "ts" }
+  // ═══ health_db: core_member (인증 2테이블) ═══
+  { name: "user_email", domain: "core_member", server: "health_db", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "person_id", t: "uuid", fk: "cdm_person" },
+    { n: "email", t: "varchar" }, { n: "password_hash", t: "varchar" },
+    { n: "display_name", t: "varchar" }, { n: "is_active", t: "bool" }, { n: "created_at", t: "ts" }
   ]},
-  { name: "passkey_credentials", domain: "auth", server: "health_db", cols: [
-    { n: "id", t: "uuid", pk: true }, { n: "user_id", t: "uuid", fk: "users" },
-    { n: "credential_id", t: "text" }, { n: "public_key", t: "text" },
-    { n: "sign_count", t: "bigint" }, { n: "prf_supported", t: "bool" }, { n: "prf_salt", t: "bytea" }
-  ]},
-  { name: "user_profiles", domain: "auth", server: "health_db", cols: [
-    { n: "id", t: "uuid", pk: true }, { n: "user_id", t: "uuid", fk: "users" },
-    { n: "birth_date", t: "date" }, { n: "gender", t: "varchar" },
-    { n: "height_cm", t: "decimal" }, { n: "weight_kg", t: "decimal" },
-    { n: "chronic_conditions", t: "text" }, { n: "medications", t: "jsonb" }
-  ]},
-  { name: "refresh_tokens", domain: "auth", server: "health_db", cols: [
-    { n: "id", t: "uuid", pk: true }, { n: "user_id", t: "uuid", fk: "users" },
-    { n: "token_hash", t: "varchar" }, { n: "device_info", t: "jsonb" },
-    { n: "expires_at", t: "ts" }, { n: "revoked", t: "bool" }
+  { name: "user_passkey", domain: "core_member", server: "health_db", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "person_id", t: "uuid", fk: "cdm_person" },
+    { n: "credential_id", t: "varchar" }, { n: "public_key", t: "bytea" },
+    { n: "sign_count", t: "bigint" }, { n: "aaguid", t: "varchar" },
+    { n: "prf_hash", t: "varchar" }, { n: "is_active", t: "bool" }
   ]},
 
-  // ─── health_db: Wallet / XRPL ───
-  { name: "user_wallets", domain: "wallet", server: "health_db", cols: [
-    { n: "id", t: "uuid", pk: true }, { n: "user_id", t: "uuid", fk: "users" },
-    { n: "xrpl_address", t: "varchar" }, { n: "xrpl_public_key", t: "varchar" },
-    { n: "wallet_type", t: "enum" }, { n: "derivation_method", t: "varchar" },
-    { n: "uqd_balance", t: "decimal" }, { n: "xrp_balance", t: "decimal" }, { n: "status", t: "varchar" }
+  // ═══ health_db: core_auth (지갑 격리 5테이블) ═══
+  { name: "user_wallet", domain: "core_auth", server: "health_db", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "person_id", t: "uuid" },
+    { n: "wallet_address", t: "varchar" }, { n: "wallet_type", t: "varchar" },
+    { n: "encrypted_seed", t: "bytea" }, { n: "created_at", t: "ts" }
   ]},
-  { name: "wallet_recovery_configs", domain: "wallet", server: "health_db", cols: [
-    { n: "id", t: "uuid", pk: true }, { n: "user_id", t: "uuid", fk: "users" },
-    { n: "recovery_method", t: "varchar" }, { n: "config", t: "jsonb" }, { n: "created_at", t: "ts" }
+  { name: "wallet_secret", domain: "core_auth", server: "health_db", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "wallet_id", t: "uuid", fk: "user_wallet" },
+    { n: "encrypted_seed_prf", t: "bytea" }, { n: "prf_salt", t: "bytea" },
+    { n: "encrypted_seed_hsm", t: "bytea" }, { n: "hsm_key_id", t: "varchar" }
   ]},
-  { name: "xrpl_transactions", domain: "wallet", server: "health_db", cols: [
-    { n: "id", t: "uuid", pk: true }, { n: "tx_hash", t: "varchar" },
-    { n: "tx_type", t: "enum" }, { n: "from_address", t: "varchar" }, { n: "to_address", t: "varchar" },
+  { name: "wallet_credential_binding", domain: "core_auth", server: "health_db", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "wallet_id", t: "uuid", fk: "user_wallet" },
+    { n: "credential_id", t: "varchar" }, { n: "encrypted_seed_prf", t: "bytea" },
+    { n: "status", t: "varchar" }, { n: "xrpl_tx_hash", t: "varchar" }
+  ]},
+  { name: "wallet_recovery_request", domain: "core_auth", server: "health_db", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "wallet_id", t: "uuid", fk: "user_wallet" },
+    { n: "status", t: "varchar" }, { n: "kyc_verified", t: "bool" },
+    { n: "admin_approved_by", t: "uuid" }, { n: "new_passkey_id", t: "uuid" }
+  ]},
+  { name: "escrow_secret", domain: "core_auth", server: "health_db", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "project_id", t: "uuid" },
+    { n: "wallet_address", t: "varchar" }, { n: "encrypted_seed", t: "bytea" },
+    { n: "encryption_key_id", t: "varchar" }
+  ]},
+
+  // ═══ health_db: uq_cdm (OMOP CDM 골든 테이블) ═══
+  { name: "cdm_person", domain: "cdm", server: "health_db", cols: [
+    { n: "person_id", t: "uuid", pk: true }, { n: "gender_concept_id", t: "int" },
+    { n: "year_of_birth", t: "int" }, { n: "month_of_birth", t: "int" },
+    { n: "race_concept_id", t: "int" }, { n: "auth_user_id", t: "uuid" }
+  ]},
+  { name: "observation_period", domain: "cdm", server: "health_db", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "person_id", t: "uuid", fk: "cdm_person" },
+    { n: "start_date", t: "date" }, { n: "end_date", t: "date" }, { n: "type_concept_id", t: "int" }
+  ]},
+  { name: "device_registry", domain: "cdm", server: "health_db", cols: [
+    { n: "device_id", t: "uuid", pk: true }, { n: "person_id", t: "uuid", fk: "cdm_person" },
+    { n: "device_type", t: "varchar" }, { n: "manufacturer", t: "varchar" },
+    { n: "trust_grade", t: "varchar" }, { n: "is_active", t: "bool" }
+  ]},
+  { name: "cdm_measurement", domain: "cdm", server: "health_db", cols: [
+    { n: "measurement_id", t: "uuid", pk: true }, { n: "person_id", t: "uuid", fk: "cdm_person" },
+    { n: "measurement_concept_id", t: "int" }, { n: "value_as_number", t: "decimal" },
+    { n: "unit_concept_id", t: "int" }, { n: "occurred_at", t: "ts" },
+    { n: "trust_level", t: "varchar" }, { n: "record_hash", t: "varchar" }
+  ]},
+  { name: "cdm_measurement_highfreq", domain: "cdm", server: "health_db", cols: [
+    { n: "measurement_id", t: "uuid", pk: true }, { n: "person_id", t: "uuid" },
+    { n: "measurement_concept_id", t: "int" }, { n: "value_as_number", t: "decimal" },
+    { n: "occurred_at", t: "ts" }, { n: "trust_level", t: "varchar" }
+  ]},
+  { name: "cdm_observation", domain: "cdm", server: "health_db", cols: [
+    { n: "observation_id", t: "uuid", pk: true }, { n: "person_id", t: "uuid", fk: "cdm_person" },
+    { n: "observation_concept_id", t: "int" }, { n: "value_as_number", t: "decimal" },
+    { n: "value_as_string", t: "text" }, { n: "symptom_detail", t: "jsonb" },
+    { n: "occurred_at", t: "ts" }, { n: "record_hash", t: "varchar" }
+  ]},
+  { name: "cdm_condition_occurrence", domain: "cdm", server: "health_db", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "person_id", t: "uuid", fk: "cdm_person" },
+    { n: "condition_concept_id", t: "int" }, { n: "condition_start_date", t: "date" },
+    { n: "condition_end_date", t: "date" }, { n: "source_value", t: "varchar" }
+  ]},
+  { name: "cdm_drug_exposure", domain: "cdm", server: "health_db", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "person_id", t: "uuid", fk: "cdm_person" },
+    { n: "drug_concept_id", t: "int" }, { n: "drug_exposure_start_date", t: "date" },
+    { n: "quantity", t: "decimal" }, { n: "days_supply", t: "int" }, { n: "sig", t: "text" }
+  ]},
+  { name: "cdm_device_exposure", domain: "cdm", server: "health_db", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "person_id", t: "uuid", fk: "cdm_person" },
+    { n: "device_concept_id", t: "int" }, { n: "unique_device_id", t: "varchar" },
+    { n: "occurred_at", t: "ts" }
+  ]},
+  { name: "cdm_note", domain: "cdm", server: "health_db", cols: [
+    { n: "note_id", t: "uuid", pk: true }, { n: "person_id", t: "uuid", fk: "cdm_person" },
+    { n: "note_type_concept_id", t: "int" }, { n: "note_text", t: "text" },
+    { n: "note_date", t: "date" }, { n: "sensitivity_level", t: "varchar" }
+  ]},
+  { name: "cdm_episode", domain: "cdm", server: "health_db", cols: [
+    { n: "episode_id", t: "uuid", pk: true }, { n: "person_id", t: "uuid", fk: "cdm_person" },
+    { n: "episode_concept_id", t: "int" }, { n: "episode_start_date", t: "date" },
+    { n: "severity", t: "varchar" }
+  ]},
+  { name: "cdm_episode_event", domain: "cdm", server: "health_db", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "episode_id", t: "uuid", fk: "cdm_episode" },
+    { n: "event_id", t: "uuid" }, { n: "event_table", t: "varchar" }, { n: "event_type", t: "varchar" }
+  ]},
+
+  // ═══ health_db: uq_cdm Consent ═══
+  { name: "consent", domain: "consent", server: "health_db", cols: [
+    { n: "consent_id", t: "uuid", pk: true }, { n: "person_id", t: "uuid", fk: "cdm_person" },
+    { n: "scope", t: "varchar" }, { n: "status", t: "varchar" },
+    { n: "xrpl_tx_hash", t: "varchar" }, { n: "revocation_tx_hash", t: "varchar" },
+    { n: "approved_at", t: "ts" }, { n: "revoked_at", t: "ts" }
+  ]},
+  { name: "cdm_consent_scope", domain: "consent", server: "health_db", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "person_id", t: "uuid", fk: "cdm_person" },
+    { n: "research_project_id", t: "uuid" }, { n: "consent_type", t: "varchar" },
+    { n: "domains", t: "jsonb" }, { n: "purposes", t: "jsonb" }, { n: "is_active", t: "bool" }
+  ]},
+
+  // ═══ health_db: uq_cdm System ═══
+  { name: "anchor_log", domain: "cdm_system", server: "health_db", cols: [
+    { n: "anchor_id", t: "uuid", pk: true }, { n: "person_id", t: "uuid" },
+    { n: "anchor_type", t: "varchar" }, { n: "tx_hash", t: "varchar" }, { n: "created_at", t: "ts" }
+  ]},
+  { name: "audit_log", domain: "cdm_system", server: "health_db", cols: [
+    { n: "audit_id", t: "uuid", pk: true }, { n: "user_id", t: "uuid" },
+    { n: "action", t: "varchar" }, { n: "category", t: "varchar" },
+    { n: "record_count", t: "int" }, { n: "created_at", t: "ts" }
+  ]},
+  { name: "data_anchor_batch", domain: "cdm_system", server: "health_db", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "batch_number", t: "bigint" },
+    { n: "record_count", t: "int" }, { n: "merkle_root", t: "varchar" },
+    { n: "xrpl_tx_hash", t: "varchar" }, { n: "status", t: "varchar" }
+  ]},
+  { name: "record_revision", domain: "cdm_system", server: "health_db", cols: [
+    { n: "revision_id", t: "uuid", pk: true }, { n: "source_table", t: "varchar" },
+    { n: "original_record_id", t: "uuid" }, { n: "version", t: "int" }
+  ]},
+  { name: "quality_audit", domain: "cdm_system", server: "health_db", cols: [
+    { n: "audit_id", t: "uuid", pk: true }, { n: "source_table", t: "varchar" },
+    { n: "source_record_id", t: "uuid" }, { n: "checks_passed", t: "text" },
+    { n: "outlier_zscore", t: "decimal" }, { n: "details", t: "jsonb" }
+  ]},
+  { name: "dataset_registry", domain: "cdm_system", server: "health_db", cols: [
+    { n: "dataset_id", t: "uuid", pk: true }, { n: "dataset_name", t: "varchar" },
+    { n: "source_url", t: "text" }, { n: "license", t: "varchar" },
+    { n: "total_records", t: "int" }, { n: "trust_level_default", t: "varchar" }
+  ]},
+  { name: "uniqdata_concept", domain: "cdm_system", server: "health_db", cols: [
+    { n: "concept_id", t: "int", pk: true }, { n: "concept_name", t: "varchar" },
+    { n: "concept_name_kr", t: "varchar" }, { n: "domain_id", t: "varchar" },
+    { n: "vocabulary_id", t: "varchar" }
+  ]},
+  { name: "feature_flag", domain: "cdm_system", server: "health_db", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "flag_name", t: "varchar" },
+    { n: "enabled", t: "bool" }, { n: "environment", t: "varchar" }, { n: "description", t: "text" }
+  ]},
+
+  // ═══ health_db: uq_mapping (ID 매핑 4테이블) ═══
+  { name: "research_participant", domain: "mapping", server: "health_db", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "person_id", t: "uuid", fk: "cdm_person" },
+    { n: "project_id", t: "uuid" }, { n: "participant_number", t: "varchar" },
+    { n: "status", t: "varchar" }, { n: "enrolled_at", t: "ts" }
+  ]},
+  { name: "institution_registry", domain: "mapping", server: "health_db", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "institution_code", t: "varchar" },
+    { n: "institution_name", t: "varchar" }, { n: "is_active", t: "bool" }
+  ]},
+  { name: "linking_token", domain: "mapping", server: "health_db", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "person_id", t: "uuid" },
+    { n: "token_hash", t: "varchar" }, { n: "token_prefix", t: "varchar" },
+    { n: "status", t: "varchar" }, { n: "project_id", t: "uuid" },
+    { n: "participant_number", t: "varchar" }, { n: "expires_at", t: "ts" }
+  ]},
+  { name: "deletion_audit_log", domain: "mapping", server: "health_db", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "person_id", t: "uuid" },
+    { n: "deletion_type", t: "varchar" }, { n: "tables_affected", t: "jsonb" },
+    { n: "records_deleted", t: "int" }, { n: "status", t: "varchar" }
+  ]},
+
+  // ═══════════════════════════════════════════════════════
+  // uniqdata_db.research — Enterprise Backend (22 테이블)
+  // ═══════════════════════════════════════════════════════
+
+  // ═══ uniqdata_db: Institution (기관 3테이블) ═══
+  { name: "institution", domain: "org", server: "uniqdata_db", cols: [
+    { n: "institution_id", t: "uuid", pk: true }, { n: "name", t: "varchar" },
+    { n: "type", t: "varchar" }, { n: "allowed_domains", t: "text[]" },
+    { n: "irb_board_name", t: "varchar" }, { n: "country", t: "varchar" },
+    { n: "contact_email", t: "varchar" }, { n: "status", t: "varchar" }
+  ]},
+  { name: "institution_member", domain: "org", server: "uniqdata_db", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "institution_id", t: "uuid", fk: "institution" },
+    { n: "person_id", t: "uuid" }, { n: "role", t: "varchar" },
+    { n: "department", t: "varchar" }, { n: "status", t: "varchar" }
+  ]},
+  { name: "institution_wallet", domain: "org", server: "uniqdata_db", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "institution_id", t: "uuid", fk: "institution" },
+    { n: "wallet_address", t: "varchar" }, { n: "wallet_type", t: "varchar" },
+    { n: "signer_list", t: "jsonb" }, { n: "quorum", t: "smallint" }, { n: "status", t: "varchar" }
+  ]},
+
+  // ═══ uniqdata_db: Project (프로젝트 7테이블) ═══
+  { name: "project", domain: "research", server: "uniqdata_db", cols: [
+    { n: "project_id", t: "uuid", pk: true }, { n: "project_code", t: "varchar" },
+    { n: "title", t: "varchar" }, { n: "description", t: "text" },
+    { n: "pi_name", t: "varchar" }, { n: "irb_status", t: "varchar" },
+    { n: "participant_prefix", t: "varchar" }, { n: "max_participants", t: "int" },
+    { n: "data_domains", t: "jsonb" }, { n: "status", t: "varchar" },
+    { n: "context_type", t: "varchar" }, { n: "owner_person_id", t: "uuid" }
+  ]},
+  { name: "project_institution", domain: "research", server: "uniqdata_db", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "project_id", t: "uuid", fk: "project" },
+    { n: "institution_id", t: "uuid", fk: "institution" },
+    { n: "role", t: "varchar" }, { n: "budget_allocated", t: "decimal" }, { n: "status", t: "varchar" }
+  ]},
+  { name: "project_member", domain: "research", server: "uniqdata_db", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "project_id", t: "uuid", fk: "project" },
+    { n: "person_id", t: "uuid" }, { n: "institution_id", t: "uuid", fk: "institution" },
+    { n: "role", t: "varchar" }, { n: "permissions", t: "jsonb" }, { n: "status", t: "varchar" }
+  ]},
+  { name: "project_wallet", domain: "research", server: "uniqdata_db", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "project_id", t: "uuid", fk: "project" },
+    { n: "wallet_address", t: "varchar" }, { n: "wallet_type", t: "varchar" },
+    { n: "signer_list", t: "jsonb" }, { n: "quorum", t: "smallint" },
+    { n: "total_deposited", t: "decimal" }, { n: "total_spent", t: "decimal" }, { n: "status", t: "varchar" }
+  ]},
+  { name: "project_budget", domain: "research", server: "uniqdata_db", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "project_id", t: "uuid", fk: "project" },
+    { n: "institution_id", t: "uuid", fk: "institution" },
+    { n: "action", t: "varchar" }, { n: "amount", t: "decimal" },
+    { n: "currency", t: "varchar" }, { n: "tx_hash", t: "varchar" }, { n: "memo", t: "text" }
+  ]},
+  { name: "project_participant", domain: "research", server: "uniqdata_db", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "project_id", t: "uuid", fk: "project" },
+    { n: "participant_number", t: "varchar" }, { n: "age_group", t: "varchar" },
+    { n: "gender", t: "varchar" }, { n: "condition_category", t: "varchar" },
+    { n: "enrolled_at", t: "ts" }, { n: "status", t: "varchar" }
+  ]},
+  { name: "project_milestone", domain: "research", server: "uniqdata_db", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "project_id", t: "uuid", fk: "project" },
+    { n: "label", t: "varchar" }, { n: "milestone_type", t: "varchar" },
+    { n: "scheduled_date", t: "date" }, { n: "study_day", t: "int" },
+    { n: "window_before", t: "int" }, { n: "window_after", t: "int" },
+    { n: "status", t: "varchar" }, { n: "sort_order", t: "int" }
+  ]},
+  { name: "project_milestone_log", domain: "research", server: "uniqdata_db", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "milestone_id", t: "uuid", fk: "project_milestone" },
+    { n: "participant_number", t: "varchar" }, { n: "actual_date", t: "date" }, { n: "notes", t: "text" }
+  ]},
+
+  // ═══ uniqdata_db: Design (연구설계 4테이블) ═══
+  { name: "project_design", domain: "design", server: "uniqdata_db", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "project_id", t: "uuid", fk: "project" },
+    { n: "background", t: "text" }, { n: "purpose", t: "text" },
+    { n: "hypothesis", t: "text" }, { n: "ai_generated", t: "bool" }, { n: "ai_prompt_log", t: "jsonb" }
+  ]},
+  { name: "project_data_requirement", domain: "design", server: "uniqdata_db", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "project_id", t: "uuid", fk: "project" },
+    { n: "data_domain", t: "varchar" }, { n: "concept_id", t: "int" },
+    { n: "concept_name", t: "varchar" }, { n: "frequency", t: "varchar" },
+    { n: "is_required", t: "bool" }, { n: "sensitivity_cap", t: "int" }, { n: "ai_recommended", t: "bool" }
+  ]},
+  { name: "project_irb_content", domain: "design", server: "uniqdata_db", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "project_id", t: "uuid", fk: "project" },
+    { n: "study_procedures", t: "text" }, { n: "risk_assessment", t: "text" },
+    { n: "consent_process", t: "text" }, { n: "compensation_plan", t: "text" },
+    { n: "data_security_plan", t: "text" }, { n: "analysis_plan", t: "text" },
+    { n: "ai_generated", t: "bool" }, { n: "ai_version", t: "int" }
+  ]},
+  { name: "project_eligibility", domain: "design", server: "uniqdata_db", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "project_id", t: "uuid", fk: "project" },
+    { n: "criteria_type", t: "varchar" }, { n: "field_name", t: "varchar" },
+    { n: "operator", t: "varchar" }, { n: "value_text", t: "text" },
+    { n: "value_json", t: "jsonb" }, { n: "concept_id", t: "int" }, { n: "priority", t: "int" }
+  ]},
+
+  // ═══ uniqdata_db: Data (연구 데이터 2테이블) ═══
+  { name: "project_dataset", domain: "research", server: "uniqdata_db", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "project_id", t: "uuid", fk: "project" },
+    { n: "participant_number", t: "varchar" }, { n: "data_type", t: "varchar" },
+    { n: "value_numeric", t: "double" }, { n: "value_text", t: "varchar" },
+    { n: "concept_id", t: "int" }, { n: "occurred_at", t: "ts" },
+    { n: "source_type", t: "varchar" }, { n: "quality_flag", t: "smallint" }
+  ]},
+  { name: "reference_dataset", domain: "research", server: "uniqdata_db", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "project_id", t: "uuid", fk: "project" },
+    { n: "dataset_name", t: "varchar" }, { n: "source_url", t: "varchar" },
+    { n: "license", t: "varchar" }, { n: "file_format", t: "varchar" },
+    { n: "record_count", t: "int" }, { n: "column_schema", t: "jsonb" }
+  ]},
+
+  // ═══ uniqdata_db: IRB (심의 1테이블) ═══
+  { name: "irb_submission", domain: "irb", server: "uniqdata_db", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "project_id", t: "uuid", fk: "project" },
+    { n: "submission_type", t: "varchar" }, { n: "irb_board", t: "varchar" },
+    { n: "submitted_at", t: "ts" }, { n: "decision", t: "varchar" },
+    { n: "conditions", t: "text" }, { n: "document_path", t: "varchar" }, { n: "ai_generated", t: "bool" }
+  ]},
+
+  // ═══ uniqdata_db: Settlement (정산 3테이블) ═══
+  { name: "settlement", domain: "finance", server: "uniqdata_db", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "project_id", t: "uuid", fk: "project" },
+    { n: "participant_number", t: "varchar" }, { n: "settlement_type", t: "varchar" },
     { n: "amount", t: "decimal" }, { n: "currency", t: "varchar" },
-    { n: "memo_data", t: "jsonb" }, { n: "status", t: "varchar" },
-    { n: "related_user_id", t: "uuid" }, { n: "related_consent_id", t: "uuid" }
+    { n: "status", t: "varchar" }, { n: "batch_id", t: "uuid", fk: "settlement_batch" },
+    { n: "tx_hash", t: "varchar" }
   ]},
-
-  // ─── health_db: Health Data ───
-  { name: "data_points", domain: "health", server: "health_db", cols: [
-    { n: "id", t: "uuid", pk: true }, { n: "user_id", t: "uuid", fk: "users" },
-    { n: "category", t: "varchar" }, { n: "sub_category", t: "varchar" },
-    { n: "value", t: "jsonb" }, { n: "source", t: "varchar" },
-    { n: "measured_at", t: "ts" }, { n: "data_hash", t: "varchar" },
-    { n: "xrpl_anchored", t: "bool" }, { n: "quality_score", t: "decimal" }
-  ]},
-  { name: "data_point_tags", domain: "health", server: "health_db", cols: [
-    { n: "id", t: "uuid", pk: true }, { n: "data_point_id", t: "uuid", fk: "data_points" },
-    { n: "tag_key", t: "varchar" }, { n: "tag_value", t: "varchar" }
-  ]},
-  { name: "data_access_logs", domain: "health", server: "health_db", cols: [
-    { n: "id", t: "uuid", pk: true }, { n: "data_point_ids", t: "text" },
-    { n: "accessor_type", t: "varchar" }, { n: "accessor_id", t: "uuid" },
-    { n: "project_id", t: "uuid" }, { n: "consent_id", t: "uuid", fk: "consents" },
-    { n: "record_count", t: "int" }, { n: "pseudonymized", t: "bool" }
-  ]},
-
-  // ─── health_db: Consent ───
-  { name: "consents", domain: "consent", server: "health_db", cols: [
-    { n: "id", t: "uuid", pk: true }, { n: "user_id", t: "uuid", fk: "users" },
-    { n: "consent_type", t: "varchar" }, { n: "status", t: "varchar" },
-    { n: "signature_hash", t: "varchar" }, { n: "grant_tx_hash", t: "varchar" },
-    { n: "revoke_tx_hash", t: "varchar" }, { n: "project_id", t: "uuid" },
-    { n: "irb_number", t: "varchar" }, { n: "version", t: "int" }
-  ]},
-  { name: "consent_scopes", domain: "consent", server: "health_db", cols: [
-    { n: "id", t: "uuid", pk: true }, { n: "consent_id", t: "uuid", fk: "consents" },
-    { n: "scope_type", t: "varchar" }, { n: "scope_key", t: "varchar" }, { n: "scope_value", t: "text" }
-  ]},
-  { name: "consent_audit_trail", domain: "consent", server: "health_db", cols: [
-    { n: "id", t: "uuid", pk: true }, { n: "consent_id", t: "uuid", fk: "consents" },
-    { n: "action", t: "varchar" }, { n: "actor_id", t: "uuid" },
-    { n: "changes", t: "jsonb" }, { n: "xrpl_tx_hash", t: "varchar" }
-  ]},
-
-  // ─── health_db: Notification ───
-  { name: "notifications", domain: "notify", server: "health_db", cols: [
-    { n: "id", t: "uuid", pk: true }, { n: "user_id", t: "uuid", fk: "users" },
-    { n: "type", t: "varchar" }, { n: "title", t: "varchar" },
-    { n: "body", t: "text" }, { n: "channel", t: "varchar" },
-    { n: "read", t: "bool" }, { n: "metadata", t: "jsonb" }
-  ]},
-  { name: "notification_preferences", domain: "notify", server: "health_db", cols: [
-    { n: "id", t: "uuid", pk: true }, { n: "user_id", t: "uuid", fk: "users" },
-    { n: "push_enabled", t: "bool" }, { n: "email_enabled", t: "bool" },
-    { n: "health_alerts", t: "bool" }, { n: "research_updates", t: "bool" }
-  ]},
-
-  // ═══ uniqdata_db: Enterprise ═══
-  { name: "enterprises", domain: "org", server: "uniqdata_db", cols: [
-    { n: "id", t: "uuid", pk: true }, { n: "name", t: "varchar" },
-    { n: "enterprise_type", t: "enum" }, { n: "business_number", t: "varchar" },
-    { n: "irb_committee_id", t: "uuid" }, { n: "status", t: "varchar" }
-  ]},
-  { name: "enterprise_members", domain: "org", server: "uniqdata_db", cols: [
-    { n: "id", t: "uuid", pk: true }, { n: "enterprise_id", t: "uuid", fk: "enterprises" },
-    { n: "user_id", t: "uuid" }, { n: "role", t: "enum" }, { n: "status", t: "varchar" }
-  ]},
-
-  // ═══ uniqdata_db: Research ═══
-  { name: "projects", domain: "research", server: "uniqdata_db", cols: [
-    { n: "id", t: "uuid", pk: true }, { n: "enterprise_id", t: "uuid", fk: "enterprises" },
-    { n: "title", t: "varchar" }, { n: "project_type", t: "enum" },
-    { n: "status", t: "varchar" }, { n: "pi_user_id", t: "uuid" },
-    { n: "irb_number", t: "varchar" }, { n: "target_participant_count", t: "int" },
-    { n: "reward_per_participant", t: "decimal" }, { n: "total_reward_budget", t: "decimal" }
-  ]},
-  { name: "project_milestones", domain: "research", server: "uniqdata_db", cols: [
-    { n: "id", t: "uuid", pk: true }, { n: "project_id", t: "uuid", fk: "projects" },
-    { n: "milestone_type", t: "varchar" }, { n: "status", t: "varchar" },
-    { n: "target_date", t: "date" }, { n: "completed_at", t: "ts" }
-  ]},
-  { name: "participants", domain: "research", server: "uniqdata_db", cols: [
-    { n: "id", t: "uuid", pk: true }, { n: "project_id", t: "uuid", fk: "projects" },
-    { n: "user_id", t: "uuid" }, { n: "consent_id", t: "uuid" },
-    { n: "status", t: "varchar" }, { n: "reward_earned", t: "decimal" }, { n: "reward_paid", t: "decimal" }
-  ]},
-  { name: "participation_criteria", domain: "research", server: "uniqdata_db", cols: [
-    { n: "id", t: "uuid", pk: true }, { n: "project_id", t: "uuid", fk: "projects" },
-    { n: "criteria_type", t: "varchar" }, { n: "field", t: "varchar" },
-    { n: "operator", t: "varchar" }, { n: "value", t: "jsonb" }
-  ]},
-  { name: "data_requests", domain: "research", server: "uniqdata_db", cols: [
-    { n: "id", t: "uuid", pk: true }, { n: "project_id", t: "uuid", fk: "projects" },
-    { n: "requester_id", t: "uuid" }, { n: "request_type", t: "varchar" },
-    { n: "data_categories", t: "text" }, { n: "status", t: "varchar" },
-    { n: "core_request_id", t: "uuid" }
-  ]},
-
-  // ═══ uniqdata_db: IRB ═══
-  { name: "irb_submissions", domain: "irb", server: "uniqdata_db", cols: [
-    { n: "id", t: "uuid", pk: true }, { n: "project_id", t: "uuid", fk: "projects" },
-    { n: "enterprise_id", t: "uuid", fk: "enterprises" },
-    { n: "submission_type", t: "varchar" }, { n: "status", t: "varchar" },
-    { n: "version", t: "int" }, { n: "ai_generated", t: "bool" },
-    { n: "approval_valid_until", t: "date" }
-  ]},
-  { name: "irb_documents", domain: "irb", server: "uniqdata_db", cols: [
-    { n: "id", t: "uuid", pk: true }, { n: "submission_id", t: "uuid", fk: "irb_submissions" },
-    { n: "doc_type", t: "varchar" }, { n: "title", t: "varchar" },
-    { n: "content", t: "text" }, { n: "version", t: "int" },
-    { n: "generated_by", t: "varchar" }, { n: "previous_version_id", t: "uuid", fk: "irb_documents" }
-  ]},
-  { name: "irb_review_comments", domain: "irb", server: "uniqdata_db", cols: [
-    { n: "id", t: "uuid", pk: true }, { n: "submission_id", t: "uuid", fk: "irb_submissions" },
-    { n: "reviewer_id", t: "uuid" }, { n: "review_type", t: "varchar" },
-    { n: "decision", t: "varchar" }, { n: "comment", t: "text" },
-    { n: "is_confidential", t: "bool" }
-  ]},
-  { name: "irb_workflow_history", domain: "irb", server: "uniqdata_db", cols: [
-    { n: "id", t: "uuid", pk: true }, { n: "submission_id", t: "uuid", fk: "irb_submissions" },
-    { n: "from_status", t: "varchar" }, { n: "to_status", t: "varchar" },
-    { n: "changed_by", t: "uuid" }, { n: "reason", t: "text" }
-  ]},
-
-  // ═══ uniqdata_db: Settlement ═══
-  { name: "settlement_batches", domain: "finance", server: "uniqdata_db", cols: [
-    { n: "id", t: "uuid", pk: true }, { n: "project_id", t: "uuid", fk: "projects" },
-    { n: "batch_type", t: "varchar" }, { n: "status", t: "varchar" },
+  { name: "settlement_batch", domain: "finance", server: "uniqdata_db", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "project_id", t: "uuid", fk: "project" },
+    { n: "batch_key", t: "varchar" }, { n: "trigger_type", t: "varchar" },
+    { n: "status", t: "varchar" }, { n: "item_count", t: "int" },
     { n: "total_amount", t: "decimal" }, { n: "currency", t: "varchar" },
-    { n: "item_count", t: "int" }, { n: "escrow_tx_hash", t: "varchar" }
+    { n: "metadata", t: "jsonb" }
   ]},
-  { name: "settlement_items", domain: "finance", server: "uniqdata_db", cols: [
-    { n: "id", t: "uuid", pk: true }, { n: "batch_id", t: "uuid", fk: "settlement_batches" },
-    { n: "recipient_user_id", t: "uuid" }, { n: "recipient_wallet_address", t: "varchar" },
-    { n: "amount", t: "decimal" }, { n: "calculation_basis", t: "jsonb" },
-    { n: "status", t: "varchar" }, { n: "paid_tx_hash", t: "varchar" }
-  ]},
-
-  // ═══ uniqdata_db: Phase 2 ═══
-  { name: "synthetic_datasets", domain: "phase2", server: "uniqdata_db", cols: [
-    { n: "id", t: "uuid", pk: true }, { n: "project_id", t: "uuid", fk: "projects" },
-    { n: "generation_method", t: "varchar" }, { n: "row_count", t: "int" },
-    { n: "quality_score", t: "decimal" }, { n: "reidentification_risk", t: "decimal" },
-    { n: "status", t: "varchar" }
-  ]},
-  { name: "fl_rounds", domain: "phase2", server: "uniqdata_db", cols: [
-    { n: "id", t: "uuid", pk: true }, { n: "project_id", t: "uuid", fk: "projects" },
-    { n: "round_number", t: "int" }, { n: "participating_nodes", t: "int" },
-    { n: "dp_epsilon", t: "decimal" }, { n: "aggregation_method", t: "varchar" },
-    { n: "status", t: "varchar" }
+  { name: "settlement_item", domain: "finance", server: "uniqdata_db", cols: [
+    { n: "id", t: "uuid", pk: true }, { n: "batch_id", t: "uuid", fk: "settlement_batch" },
+    { n: "project_id", t: "uuid", fk: "project" },
+    { n: "participant_number", t: "varchar" }, { n: "settlement_type", t: "varchar" },
+    { n: "amount", t: "decimal" }, { n: "currency", t: "varchar" },
+    { n: "status", t: "varchar" }, { n: "tx_hash", t: "varchar" }
   ]},
 
-  // ═══ uniqdata_db: System ═══
-  { name: "webhook_events", domain: "system", server: "uniqdata_db", cols: [
+  // ═══ uniqdata_db: Core Integration (1테이블) ═══
+  { name: "core_push_event", domain: "push", server: "uniqdata_db", cols: [
     { n: "id", t: "uuid", pk: true }, { n: "event_type", t: "varchar" },
-    { n: "source", t: "varchar" }, { n: "payload", t: "jsonb" },
+    { n: "source", t: "varchar" }, { n: "project_id", t: "uuid", fk: "project" },
+    { n: "idempotency_key", t: "varchar" }, { n: "payload", t: "jsonb" },
     { n: "status", t: "varchar" }, { n: "retry_count", t: "int" }, { n: "error_message", t: "text" }
   ]},
 ];
 
 // 1:1 relations
 const ONE_TO_ONE = new Set([
-  "user_profiles→users",
-  "notification_preferences→users",
+  "project_design→project",
+  "project_irb_content→project",
+  "project_wallet→project",
 ]);
 
 // Build relations
@@ -644,54 +821,80 @@ TABLES.forEach(t => {
 // ============================================================
 
 const AREA_LAYOUT = {
-  // === Col 0: Auth ===
-  users:                    { col: 0, row: 0 },
-  passkey_credentials:      { col: 0, row: 1 },
-  user_profiles:            { col: 0, row: 2 },
-  refresh_tokens:           { col: 0, row: 3 },
+  // === Col 0: core_member (인증) ===
+  user_email:               { col: 0, row: 0 },
+  user_passkey:             { col: 0, row: 1 },
 
-  // === Col 1: Wallet / XRPL ===
-  user_wallets:             { col: 1, row: 0 },
-  wallet_recovery_configs:  { col: 1, row: 1 },
-  xrpl_transactions:        { col: 1, row: 2 },
+  // === Col 1: core_auth (지갑) ===
+  user_wallet:              { col: 1, row: 0 },
+  wallet_secret:            { col: 1, row: 1 },
+  wallet_credential_binding:{ col: 1, row: 2 },
+  wallet_recovery_request:  { col: 1, row: 3 },
+  escrow_secret:            { col: 1, row: 4 },
 
-  // === Col 2: Health Data ===
-  data_points:              { col: 2, row: 0 },
-  data_point_tags:          { col: 2, row: 1 },
-  data_access_logs:         { col: 2, row: 2 },
+  // === Col 2: uq_cdm (환자 데이터) ===
+  cdm_person:               { col: 2, row: 0 },
+  observation_period:       { col: 2, row: 1 },
+  device_registry:          { col: 2, row: 2 },
+  cdm_measurement:          { col: 2, row: 3 },
+  cdm_measurement_highfreq: { col: 2, row: 4 },
+  cdm_observation:          { col: 2, row: 5 },
 
-  // === Col 3: Consent ===
-  consents:                 { col: 3, row: 0 },
-  consent_scopes:           { col: 3, row: 1 },
-  consent_audit_trail:      { col: 3, row: 2 },
+  // === Col 3: uq_cdm (임상+동의) ===
+  cdm_condition_occurrence: { col: 3, row: 0 },
+  cdm_drug_exposure:        { col: 3, row: 1 },
+  cdm_device_exposure:      { col: 3, row: 2 },
+  cdm_note:                 { col: 3, row: 3 },
+  cdm_episode:              { col: 3, row: 4 },
+  cdm_episode_event:        { col: 3, row: 5 },
+  consent:                  { col: 3, row: 6 },
+  cdm_consent_scope:        { col: 3, row: 7 },
 
-  // === Col 4: Notification ===
-  notifications:            { col: 4, row: 0 },
-  notification_preferences: { col: 4, row: 1 },
+  // === Col 4: System + Mapping ===
+  anchor_log:               { col: 4, row: 0 },
+  audit_log:                { col: 4, row: 1 },
+  data_anchor_batch:        { col: 4, row: 2 },
+  record_revision:          { col: 4, row: 3 },
+  quality_audit:            { col: 4, row: 4 },
+  dataset_registry:         { col: 4, row: 5 },
+  uniqdata_concept:         { col: 4, row: 6 },
+  feature_flag:             { col: 4, row: 7 },
 
-  // === Col 5: Enterprise ===
-  enterprises:              { col: 5, row: 0 },
-  enterprise_members:       { col: 5, row: 1 },
+  // === Col 5: uq_mapping (ID매핑) ===
+  research_participant:     { col: 5, row: 0 },
+  institution_registry:     { col: 5, row: 1 },
+  linking_token:            { col: 5, row: 2 },
+  deletion_audit_log:       { col: 5, row: 3 },
 
-  // === Col 6: Research ===
-  projects:                 { col: 6, row: 0 },
-  project_milestones:       { col: 6, row: 1 },
-  participants:             { col: 6, row: 2 },
-  participation_criteria:   { col: 6, row: 3 },
-  data_requests:            { col: 6, row: 4 },
+  // === Col 6: Institution ===
+  institution:              { col: 6, row: 0 },
+  institution_member:       { col: 6, row: 1 },
+  institution_wallet:       { col: 6, row: 2 },
 
-  // === Col 7: IRB ===
-  irb_submissions:          { col: 7, row: 0 },
-  irb_documents:            { col: 7, row: 1 },
-  irb_review_comments:      { col: 7, row: 2 },
-  irb_workflow_history:     { col: 7, row: 3 },
+  // === Col 7: Project ===
+  project:                  { col: 7, row: 0 },
+  project_institution:      { col: 7, row: 1 },
+  project_member:           { col: 7, row: 2 },
+  project_wallet:           { col: 7, row: 3 },
+  project_budget:           { col: 7, row: 4 },
+  project_participant:      { col: 7, row: 5 },
+  project_milestone:        { col: 7, row: 6 },
+  project_milestone_log:    { col: 7, row: 7 },
 
-  // === Col 8: Settlement / Phase2 / System ===
-  settlement_batches:       { col: 8, row: 0 },
-  settlement_items:         { col: 8, row: 1 },
-  synthetic_datasets:       { col: 8, row: 2 },
-  fl_rounds:                { col: 8, row: 3 },
-  webhook_events:           { col: 8, row: 4 },
+  // === Col 8: Design + Data ===
+  project_design:           { col: 8, row: 0 },
+  project_data_requirement: { col: 8, row: 1 },
+  project_irb_content:      { col: 8, row: 2 },
+  project_eligibility:      { col: 8, row: 3 },
+  project_dataset:          { col: 8, row: 4 },
+  reference_dataset:        { col: 8, row: 5 },
+
+  // === Col 9: IRB + Settlement + System ===
+  irb_submission:           { col: 9, row: 0 },
+  settlement:               { col: 9, row: 1 },
+  settlement_batch:         { col: 9, row: 2 },
+  settlement_item:          { col: 9, row: 3 },
+  core_push_event:          { col: 9, row: 4 },
 };
 
 function calculateLayout(server, domain, api = "all") {
@@ -754,7 +957,7 @@ function calculateLayout(server, domain, api = "all") {
     });
   } else if (domain === "all") {
     const colHeights = {};
-    for (let i = 0; i < 9; i++) colHeights[i] = 0;
+    for (let i = 0; i < 10; i++) colHeights[i] = 0;
 
     const sortedTables = [...visible].sort((a, b) => {
       const posA = AREA_LAYOUT[a.name] || { col: 4, row: 5 };
