@@ -158,7 +158,7 @@
 <div class="principle-banner">
   <div class="title">📐 분리 원칙 (한 줄 규칙)</div>
   <div class="content">
-    <strong>"환자의 몸에서 나온 데이터, 환자의 지갑, 환자의 동의는 Core. 그 외 비즈니스는 UniQLab Backend."</strong><br><br>
+    <strong>"환자의 몸에서 나온 데이터, 환자의 지갑, 환자의 동의는 Core. 그 외 연구/기관 워크플로우는 UniQLab Backend."</strong><br><br>
     <code>🟢 Core (FastAPI:8000)</code> = Core Team → 사용자 인증 + 건강 데이터 + XRPL + 동의 관리<br>
     <code>🔵 UniQLab Backend (Spring Boot:8080)</code> = 백엔드팀 → 연구 프로젝트 + IRB + 정산 + 기관 관리
   </div>
@@ -959,10 +959,10 @@
       🔵 uniqlab-backend<br>Spring Boot · Port 8080<br><span style="font-size: 9px; color: #8b949e;">RAM: 1GB~ · $10-15/월</span>
     </div>
     <div style="background: #1e1b4b; border: 1px solid #818cf8; padding: 12px 20px; border-radius: 8px; font-size: 11px; color: #c7d2fe; text-align: center;">
-      📦 health-db<br>PostgreSQL 15<br><span style="font-size: 9px; color: #8b949e;">2GB · $10/월</span>
+      📦 uniqdata-db<br>PostgreSQL 15<br><span style="font-size: 9px; color: #8b949e;">2GB · $10/월</span>
     </div>
     <div style="background: #1e293b; border: 1px solid #64748b; padding: 12px 20px; border-radius: 8px; font-size: 11px; color: #cbd5e1; text-align: center;">
-      📦 uniqdata-db<br>PostgreSQL 15<br><span style="font-size: 9px; color: #8b949e;">1GB · $5/월</span>
+      📦 uniqlab-db<br>PostgreSQL 15<br><span style="font-size: 9px; color: #8b949e;">1GB · $5/월</span>
     </div>
     <div style="background: #7f1d1d; border: 1px solid #ef4444; padding: 12px 20px; border-radius: 8px; font-size: 11px; color: #fca5a5; text-align: center;">
       🔴 Redis<br>세션/캐시<br><span style="font-size: 9px; color: #8b949e;">$5/월</span>
@@ -986,7 +986,7 @@
 </div>
 
 <div class="faq-item">
-  <div class="faq-q">Q: uniqdata_db에는 총 몇 개 테이블?</div>
+  <div class="faq-q">Q: uniqlab_db에는 총 몇 개 테이블?</div>
   <div class="faq-a">A: <code>16개</code> (Phase 2 포함). institutions, institution_members, projects, project_milestones, participants, participation_criteria, data_requests, irb_submissions, irb_documents, irb_review_comments, irb_workflow_history, settlement_batches, settlement_items, synthetic_datasets(Ph2), fl_rounds(Ph2), webhook_events</div>
 </div>
 
@@ -1012,7 +1012,7 @@
 <div class="section-divider"><span>🔗 레포지토리</span></div>
 
 <div class="repo-links">
-  <a href="https://github.com/SportiQue-App/backend" class="repo-link core" target="_blank">
+  <a href="https://github.com/UniQdata/backend" class="repo-link core" target="_blank">
     backend (FastAPI)
   </a>
   <a href="https://github.com/UniQ-Lab/backend" class="repo-link business" target="_blank">
