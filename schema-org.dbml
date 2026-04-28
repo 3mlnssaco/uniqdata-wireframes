@@ -30,7 +30,7 @@ Table institutions {
 Table workspaces {
   id uuid [pk]
   name varchar
-  type enum [note: 'individual|team|enterprise']
+  type enum [note: 'individual|team|institution']
   status enum [note: 'pending|active|suspended|archived']
   institution_id uuid [ref: > institutions.id]
   description text

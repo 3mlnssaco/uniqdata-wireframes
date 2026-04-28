@@ -750,7 +750,7 @@
         <div style="font-size: 11px; font-family: 'SF Mono', Monaco, monospace; color: #374151; line-height: 1.8;">
           <strong style="font-family: -apple-system, sans-serif;">1. 변경심의 유형 판단 (AI):</strong><br>
           <code style="background: #1f2937; color: #a5b4fc; padding: 8px 12px; border-radius: 6px; display: block; margin: 6px 0;">
-POST /enterprise/irb/amendment/pre-review<br>
+POST /uniqlab/irb/amendment/pre-review<br>
 {<br>
 &nbsp;&nbsp;"project_id": "uuid",<br>
 &nbsp;&nbsp;"reasons": ["data_collection_change"],<br>
@@ -769,7 +769,7 @@ POST /enterprise/irb/amendment/pre-review<br>
 
           <strong style="font-family: -apple-system, sans-serif;">2. 변경심의 서류 생성 (AI):</strong><br>
           <code style="background: #1f2937; color: #a5b4fc; padding: 8px 12px; border-radius: 6px; display: block; margin: 6px 0;">
-POST /enterprise/irb/amendment/documents<br>
+POST /uniqlab/irb/amendment/documents<br>
 { "project_id": "uuid", "changes": {...} }<br>
 → {<br>
 &nbsp;&nbsp;"documents": [<br>
@@ -783,7 +783,7 @@ POST /enterprise/irb/amendment/documents<br>
 
           <strong style="font-family: -apple-system, sans-serif;">3. 변경심의 제출 + 추가 에스크로:</strong><br>
           <code style="background: #1f2937; color: #a5b4fc; padding: 8px 12px; border-radius: 6px; display: block; margin: 6px 0;">
-POST /enterprise/irb/amendment/submit<br>
+POST /uniqlab/irb/amendment/submit<br>
 {<br>
 &nbsp;&nbsp;"project_id": "uuid",<br>
 &nbsp;&nbsp;"parent_submission_id": "original-irb-uuid",<br>
@@ -800,7 +800,7 @@ POST /enterprise/irb/amendment/submit<br>
 
           <strong style="font-family: -apple-system, sans-serif;">4. 승인 후 재동의 요청:</strong><br>
           <code style="background: #1f2937; color: #a5b4fc; padding: 8px 12px; border-radius: 6px; display: block; margin: 6px 0;">
-POST /enterprise/projects/:id/re-consent<br>
+POST /uniqlab/projects/:id/re-consent<br>
 {<br>
 &nbsp;&nbsp;"amendment_id": "uuid",<br>
 &nbsp;&nbsp;"target_participants": "all_active",<br>

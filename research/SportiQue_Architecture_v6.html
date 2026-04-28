@@ -158,15 +158,15 @@
 <div class="principle-banner">
   <div class="title">📐 분리 원칙 (한 줄 규칙)</div>
   <div class="content">
-    <strong>"환자의 몸에서 나온 데이터, 환자의 지갑, 환자의 동의는 Core. 그 외 비즈니스는 Business."</strong><br><br>
+    <strong>"환자의 몸에서 나온 데이터, 환자의 지갑, 환자의 동의는 Core. 그 외 비즈니스는 UniQLab Backend."</strong><br><br>
     <code>🟢 Core (FastAPI:8000)</code> = Core Team → 사용자 인증 + 건강 데이터 + XRPL + 동의 관리<br>
-    <code>🔵 Business (Spring Boot:8080)</code> = 백엔드팀 → 연구 프로젝트 + IRB + 정산 + 기관 관리
+    <code>🔵 UniQLab Backend (Spring Boot:8080)</code> = 백엔드팀 → 연구 프로젝트 + IRB + 정산 + 기관 관리
   </div>
 </div>
 
 <!-- ====== 판단 기준: "이 데이터가 유출되면 환자가 직접 피해를 보는가?" ====== -->
 <div style="background: #450a0a; border: 1px solid #ef4444; border-radius: 8px; padding: 12px; margin-bottom: 24px; text-align: center; font-size: 12px; color: #fca5a5;">
-  ⚠️ 경계 판단 질문: <strong>"이 데이터가 유출되면 환자가 직접 피해를 보는가?"</strong> → Yes면 Core, No면 Business
+  ⚠️ 경계 판단 질문: <strong>"이 데이터가 유출되면 환자가 직접 피해를 보는가?"</strong> → Yes면 Core, No면 UniQLab Backend
 </div>
 
 <!-- ====== DB 접근 매트릭스 ====== -->
@@ -177,7 +177,7 @@
     <thead>
       <tr>
         <th style="background: #21262d; padding: 12px; border-bottom: 1px solid #30363d;"></th>
-        <th style="background: #4c1d95; padding: 12px; border-bottom: 1px solid #30363d; color: #e9d5ff;">health_db</th>
+        <th style="background: #4c1d95; padding: 12px; border-bottom: 1px solid #30363d; color: #e9d5ff;">uniqdata_db</th>
         <th style="background: #064e3b; padding: 12px; border-bottom: 1px solid #30363d; color: #a7f3d0;">uniqdata_db</th>
         <th style="background: #312e81; padding: 12px; border-bottom: 1px solid #30363d; color: #c7d2fe;">XRPL</th>
         <th style="background: #7f1d1d; padding: 12px; border-bottom: 1px solid #30363d; color: #fca5a5;">Redis</th>
@@ -192,7 +192,7 @@
         <td style="padding: 12px; color: #4ade80; font-weight: 700; border-bottom: 1px solid #21262d;">R/W ✅</td>
       </tr>
       <tr>
-        <td style="padding: 12px; font-weight: 700; color: #a7f3d0; border-bottom: 1px solid #21262d;">🔵 Business</td>
+        <td style="padding: 12px; font-weight: 700; color: #a7f3d0; border-bottom: 1px solid #21262d;">🔵 UniQLab Backend</td>
         <td style="padding: 12px; color: #fbbf24; font-size: 11px; border-bottom: 1px solid #21262d;">Internal API 경유<br><strong>Read만</strong></td>
         <td style="padding: 12px; color: #4ade80; font-weight: 700; border-bottom: 1px solid #21262d;">R/W ✅</td>
         <td style="padding: 12px; color: #fbbf24; font-size: 11px; border-bottom: 1px solid #21262d;">Core 경유<br><strong>요청만</strong></td>
@@ -201,7 +201,7 @@
     </tbody>
   </table>
   <div style="margin-top: 12px; font-size: 10px; color: #8b949e; text-align: center;">
-    🔴 절대 규칙: Business는 health_db 커넥션 스트링을 갖지 않음 · Core는 uniqdata_db에 접근 안 함 · XRPL 라이브러리는 Core만 import
+    🔴 절대 규칙: UniQLab Backend는 uniqdata_db 커넥션 스트링을 갖지 않음 · Core는 uniqlab_db에 접근 안 함 · XRPL 라이브러리는 Core만 import
   </div>
 </div>
 
@@ -212,7 +212,7 @@
   <tr>
     <th class="label-col">판단 기준</th>
     <th style="background: #4c1d95; color: #e9d5ff;">🟢 Core (FastAPI:8000)</th>
-    <th style="background: #064e3b; color: #a7f3d0;">🔵 Business (Spring:8080)</th>
+    <th style="background: #064e3b; color: #a7f3d0;">🔵 UniQLab Backend (Spring:8080)</th>
   </tr>
   <tr>
     <td class="label-col">데이터 민감도</td>
@@ -236,7 +236,7 @@
   </tr>
   <tr>
     <td class="label-col">장애 격리</td>
-    <td class="core-col">Business 장애 시에도 환자 데이터 안전</td>
+    <td class="core-col">UniQLab Backend 장애 시에도 환자 데이터 안전</td>
     <td class="biz-col">Core 장애 시 IRB/정산 불가 (데이터 안전)</td>
   </tr>
   <tr>
@@ -259,20 +259,20 @@
 ┌──────────────────────────────────────────────────────────────────────────┐
 │                        <span style="color:#fbbf24;">API Gateway (nginx)</span>                               │
 │  /api/v1/auth/**,data/**,consents/**,wallet/**,...  → <span style="color:#a78bfa;">🟢 Core:8000</span>      │
-│  /api/v1/projects/**,irb/**,enterprises/**         → <span style="color:#34d399;">🔵 Business:8080</span>  │
+│  /api/v1/projects/**,irb/**,institutions/**         → <span style="color:#34d399;">🔵 UniQLab:8080</span>  │
 └──────────┬─────────────────────────────────────────────┬────────────────┘
            │                                             │
            ▼                                             ▼
 ┌───────────────────────────────┐    ┌────────────────────────────────────┐
-│  <span style="color:#a78bfa;">🟢 Core (FastAPI:8000)</span>          │    │  <span style="color:#34d399;">🔵 Business (Spring Boot:8080)</span>      │
+│  <span style="color:#a78bfa;">🟢 Core (FastAPI:8000)</span>          │    │  <span style="color:#34d399;">🔵 UniQLab Backend (Spring Boot:8080)</span>      │
 │                               │    │                                    │
 │  Auth (Passkey/PRF/JWT)       │    │  Research (프로젝트/마일스톤)       │
 │  Health (데이터 입력/리포트)   │◄───│  IRB (제출/심의/문서/워크플로우)    │
 │  Consent (동의/스코프/감사)    │ API│  Settlement (정산 계산/배치)        │
-│  XRPL (지갑/에스크로/앵커)    │───►│  Enterprise (기관/팀/구성원)        │
+│  XRPL (지갑/에스크로/앵커)    │───►│  UniQLab (기관/팀/구성원)        │
 │  Notification (알림)          │ WH │  FL/Marketplace (Phase 2)           │
 │                               │    │                                    │
-│  📦 <span style="color:#a78bfa;">health_db</span> (15 tables)     │    │  📦 <span style="color:#34d399;">uniqdata_db</span> (16 tables)         │
+│  📦 <span style="color:#a78bfa;">uniqdata_db</span> (15 tables)     │    │  📦 <span style="color:#34d399;">uniqdata_db</span> (16 tables)         │
 │  📦 Redis (세션/캐시)         │    │                                    │
 └──────────┬────────────────────┘    └────────────────────────────────────┘
            │
@@ -293,10 +293,10 @@
     <div class="server-body">
       <ul>
         <li><div class="label">Auth (Passkey/PRF)</div><div class="desc">WebAuthn Level 3, PRF 키 파생, JWT 발급/갱신, JWKS 엔드포인트 제공</div></li>
-        <li><div class="label">Data Input ⭐</div><div class="desc">건강 데이터 수신 → 검증 → AES-256-GCM 암호화 → health_db.data_points 저장 → XRPL 앵커링</div></li>
+        <li><div class="label">Data Input ⭐</div><div class="desc">건강 데이터 수신 → 검증 → AES-256-GCM 암호화 → uniqdata_db.data_points 저장 → XRPL 앵커링</div></li>
         <li><div class="label">Consent ⭐</div><div class="desc">동의서 생성/서명(ed25519)/범위 관리/철회 + XRPL CONSENT_GRANT/REVOKE 앵커링</div></li>
         <li><div class="label">XRPL / UQD</div><div class="desc">EscrowCreate/Finish/Cancel, UQD 관리, DATA_INPUT/DATA_ACCESS 앵커링</div></li>
-        <li><div class="label">Notification</div><div class="desc">푸시 알림 통합 관리 (Core + Business 요청 모두)</div></li>
+        <li><div class="label">Notification</div><div class="desc">푸시 알림 통합 관리 (Core + UniQLab Backend 요청 모두)</div></li>
         <li><div class="label">Internal API</div><div class="desc">실코드 기준 13개 엔드포인트: /api/v1/internal/matching/*, /tier1/*, /token/*, /escrow/*, /health</div></li>
       </ul>
     </div>
@@ -304,7 +304,7 @@
 
   <div class="server-box business">
     <div class="server-header">
-      📊 uniqdata-enterprise-backend
+      📊 uniqlab-backend
       <div class="tech">Spring Boot (Kotlin) · Port 8080 · 백엔드팀 담당</div>
     </div>
     <div class="server-body">
@@ -312,16 +312,16 @@
         <li><div class="label">Research ⭐</div><div class="desc">프로젝트 CRUD, 마일스톤 추적, 참여자 매칭, 적격 기준, 데이터 요청</div></li>
         <li><div class="label">IRB ⭐</div><div class="desc">제출/심의/문서 관리/워크플로우 히스토리, AI 문서 생성(Claude API)</div></li>
         <li><div class="label">Settlement ⭐</div><div class="desc">보상 계산, settlement_batches/items 생성 → Core에 EscrowFinish 요청</div></li>
-        <li><div class="label">Enterprise</div><div class="desc">기관 등록/관리, 구성원 관리, OWNER/PI/IRB_MEMBER/STAFF 역할</div></li>
+        <li><div class="label">UniQLab</div><div class="desc">기관 등록/관리, 구성원 관리, OWNER/PI/IRB_MEMBER/STAFF 역할</div></li>
         <li><div class="label">Synthetic/FL (Phase 2)</div><div class="desc">합성데이터셋 생성, FL 라운드 관리</div></li>
-        <li><div class="label">Core Push 수신</div><div class="desc">Core → /api/enterprise/project/{id}/participant, /dataset(라이브), /dataset/batch, participant DELETE, /settlement(목표)</div></li>
+        <li><div class="label">Core Push 수신</div><div class="desc">Core → /api/uniqlab/project/{id}/participant, /dataset(라이브), /dataset/batch, participant DELETE, /settlement(목표)</div></li>
       </ul>
     </div>
   </div>
 </div>
 
-<!-- ====== health_db 스키마 (15 tables) ====== -->
-<div class="section-divider"><span>🟢 health_db — 15 Tables (Core 전용)</span></div>
+<!-- ====== uniqdata_db 스키마 (15 tables) ====== -->
+<div class="section-divider"><span>🟢 uniqdata_db — 15 Tables (Core 전용)</span></div>
 
 <div style="display: flex; gap: 16px; margin-bottom: 16px; flex-wrap: wrap;">
   <div style="background: #2e1065; border: 1px solid #a78bfa; padding: 12px 20px; border-radius: 8px; font-size: 12px; color: #e9d5ff; text-align: center;">
@@ -357,7 +357,7 @@
   <tr><td>15</td><td style="color:#e9d5ff;"><strong>refresh_tokens</strong></td><td>JWT 리프레시 토큰</td><td>token_hash, device_info, expires_at, revoked</td><td>~30K</td></tr>
 </table>
 
-<!-- health_db CREATE TABLE statements (collapsible) -->
+<!-- uniqdata_db CREATE TABLE statements (collapsible) -->
 <button class="collapse-btn" onclick="toggle('hdb-auth')"><span class="arrow">▶</span> users + passkey_credentials + user_profiles DDL</button>
 <div class="collapse-body" id="hdb-auth">
 <div class="sql-block"><span class="kw">CREATE TABLE</span> <span class="tn">users</span> (
@@ -465,7 +465,7 @@
     signature_method <span class="ty">VARCHAR(30)</span>,       <span class="cm">-- PASSKEY_PRF | E_SIGNATURE | MANUAL</span>
     grant_tx_hash   <span class="ty">VARCHAR(64)</span>,        <span class="cm">-- CONSENT_GRANT XRPL tx</span>
     revoke_tx_hash  <span class="ty">VARCHAR(64)</span>,        <span class="cm">-- CONSENT_REVOKE XRPL tx</span>
-    project_id      <span class="ty">UUID</span>,              <span class="cm">-- Business에서 전달받은 프로젝트 ID</span>
+    project_id      <span class="ty">UUID</span>,              <span class="cm">-- UniQLab Backend에서 전달받은 프로젝트 ID</span>
     irb_number      <span class="ty">VARCHAR(50)</span>,
     version         <span class="ty">INT</span> DEFAULT 1,
     created_at      <span class="ty">TIMESTAMP</span> DEFAULT NOW()
@@ -476,7 +476,7 @@
     consent_id      <span class="ty">UUID</span> <span class="ct">REFERENCES consents(id)</span>,
     scope_type      <span class="ty">VARCHAR(30)</span>,
                     <span class="cm">-- DATA_CATEGORY | PURPOSE | RECIPIENT | DURATION | GEOGRAPHY</span>
-    scope_key       <span class="ty">VARCHAR(50)</span>,   <span class="cm">-- "vitals", "drug_research", "enterprise_id:xxxx"</span>
+    scope_key       <span class="ty">VARCHAR(50)</span>,   <span class="cm">-- "vitals", "drug_research", "institution_id:xxxx"</span>
     scope_value     <span class="ty">TEXT</span>
 );
 
@@ -573,7 +573,7 @@
 </div>
 
 <!-- ====== uniqdata_db 스키마 (16 tables) ====== -->
-<div class="section-divider"><span>🔵 uniqdata_db — 16 Tables (Business 전용)</span></div>
+<div class="section-divider"><span>🔵 uniqlab_db — 16 Tables (UniQLab Backend 전용)</span></div>
 
 <div style="display: flex; gap: 16px; margin-bottom: 16px; flex-wrap: wrap;">
   <div style="background: #022c22; border: 1px solid #34d399; padding: 12px 20px; border-radius: 8px; font-size: 12px; color: #a7f3d0; text-align: center;">
@@ -592,8 +592,8 @@
 
 <table class="db-table">
   <tr><th style="color:#6ee7b7;">#</th><th style="color:#6ee7b7;">테이블</th><th style="color:#6ee7b7;">설명</th><th style="color:#6ee7b7;">주요 컬럼</th><th style="color:#6ee7b7;">예상/년</th></tr>
-  <tr><td>1</td><td style="color:#a7f3d0;"><strong>enterprises</strong></td><td>기관 (병원, 제약사, CRO)</td><td>name, enterprise_type, irb_committee_id</td><td>~200</td></tr>
-  <tr><td>2</td><td style="color:#a7f3d0;"><strong>enterprise_members</strong></td><td>기관 구성원</td><td>user_id, role (OWNER|PI|IRB_MEMBER|STAFF)</td><td>~2K</td></tr>
+  <tr><td>1</td><td style="color:#a7f3d0;"><strong>institutions</strong></td><td>기관 (병원, 제약사, CRO)</td><td>name, institution_type, irb_committee_id</td><td>~200</td></tr>
+  <tr><td>2</td><td style="color:#a7f3d0;"><strong>institution_members</strong></td><td>기관 구성원</td><td>user_id, role (OWNER|PI|IRB_MEMBER|STAFF)</td><td>~2K</td></tr>
   <tr><td>3</td><td style="color:#fbbf24;font-weight:700;">projects ⭐</td><td>연구 프로젝트</td><td>project_type, status, pi_user_id, irb_number, reward_budget</td><td>~500</td></tr>
   <tr><td>4</td><td style="color:#a7f3d0;"><strong>project_milestones</strong></td><td>마일스톤 추적</td><td>milestone_type, status, target_date</td><td>~2.5K</td></tr>
   <tr><td>5</td><td style="color:#a7f3d0;"><strong>participants</strong></td><td>연구 참여자 매핑</td><td>user_id, consent_id, status, reward_earned</td><td>~15K</td></tr>
@@ -611,12 +611,12 @@
 </table>
 
 <!-- uniqdata_db CREATE TABLE statements (collapsible) -->
-<button class="collapse-btn" onclick="toggle('udb-enterprise')"><span class="arrow">▶</span> enterprises + enterprise_members DDL</button>
-<div class="collapse-body" id="udb-enterprise">
-<div class="sql-block"><span class="kw">CREATE TABLE</span> <span class="tn">enterprises</span> (
+<button class="collapse-btn" onclick="toggle('udb-institution')"><span class="arrow">▶</span> institutions + institution_members DDL</button>
+<div class="collapse-body" id="udb-institution">
+<div class="sql-block"><span class="kw">CREATE TABLE</span> <span class="tn">institutions</span> (
     id              <span class="ty">UUID PRIMARY KEY</span>,
     name            <span class="ty">VARCHAR(200)</span> NOT NULL,
-    enterprise_type <span class="ty">VARCHAR(30)</span>,
+    institution_type <span class="ty">VARCHAR(30)</span>,
                     <span class="cm">-- HOSPITAL | PHARMA | CRO | UNIVERSITY | INSURANCE | GOVERNMENT</span>
     business_number <span class="ty">VARCHAR(20)</span>,
     irb_committee_id <span class="ty">UUID</span>,
@@ -624,23 +624,23 @@
     created_at      <span class="ty">TIMESTAMP</span> DEFAULT NOW()
 );
 
-<span class="kw">CREATE TABLE</span> <span class="tn">enterprise_members</span> (
+<span class="kw">CREATE TABLE</span> <span class="tn">institution_members</span> (
     id              <span class="ty">UUID PRIMARY KEY</span>,
-    enterprise_id   <span class="ty">UUID</span> <span class="ct">REFERENCES enterprises(id)</span>,
-    user_id         <span class="ty">UUID</span> NOT NULL,     <span class="cm">-- health_db.users.id</span>
+    institution_id   <span class="ty">UUID</span> <span class="ct">REFERENCES institutions(id)</span>,
+    user_id         <span class="ty">UUID</span> NOT NULL,     <span class="cm">-- uniqdata_db.users.id</span>
     role            <span class="ty">VARCHAR(20)</span>,
                     <span class="cm">-- OWNER | PI | IRB_MEMBER | STAFF | VIEWER</span>
     status          <span class="ty">VARCHAR(20)</span> DEFAULT 'ACTIVE',
     created_at      <span class="ty">TIMESTAMP</span> DEFAULT NOW()
 );
-<span class="kw">CREATE UNIQUE INDEX</span> ON enterprise_members(enterprise_id, user_id);</div>
+<span class="kw">CREATE UNIQUE INDEX</span> ON institution_members(institution_id, user_id);</div>
 </div>
 
 <button class="collapse-btn" onclick="toggle('udb-project')"><span class="arrow">▶</span> projects + participants + milestones + criteria + data_requests DDL</button>
 <div class="collapse-body" id="udb-project">
 <div class="sql-block"><span class="kw">CREATE TABLE</span> <span class="tn">projects</span> (
     id              <span class="ty">UUID PRIMARY KEY</span>,
-    enterprise_id   <span class="ty">UUID</span> <span class="ct">REFERENCES enterprises(id)</span>,
+    institution_id   <span class="ty">UUID</span> <span class="ct">REFERENCES institutions(id)</span>,
     title           <span class="ty">VARCHAR(300)</span> NOT NULL,
     project_type    <span class="ty">VARCHAR(30)</span>,
                     <span class="cm">-- CLINICAL_TRIAL | OBSERVATIONAL | RETROSPECTIVE |</span>
@@ -648,7 +648,7 @@
     status          <span class="ty">VARCHAR(30)</span> DEFAULT 'DRAFT',
                     <span class="cm">-- DRAFT | IRB_PENDING | IRB_APPROVED | RECRUITING |</span>
                     <span class="cm">-- ACTIVE | DATA_LOCKED | ANALYSIS | COMPLETED</span>
-    pi_user_id      <span class="ty">UUID</span> NOT NULL,     <span class="cm">-- 연구책임자 (health_db.users.id)</span>
+    pi_user_id      <span class="ty">UUID</span> NOT NULL,     <span class="cm">-- 연구책임자 (uniqdata_db.users.id)</span>
     irb_number      <span class="ty">VARCHAR(50)</span>,
     target_participant_count <span class="ty">INT</span>,
     required_data_categories <span class="ty">TEXT[]</span>,   <span class="cm">-- ['VITALS','LAB_RESULT']</span>
@@ -661,8 +661,8 @@
 <span class="kw">CREATE TABLE</span> <span class="tn">participants</span> (
     id              <span class="ty">UUID PRIMARY KEY</span>,
     project_id      <span class="ty">UUID</span> <span class="ct">REFERENCES projects(id)</span>,
-    user_id         <span class="ty">UUID</span> NOT NULL,     <span class="cm">-- health_db.users.id</span>
-    consent_id      <span class="ty">UUID</span>,             <span class="cm">-- health_db.consents.id</span>
+    user_id         <span class="ty">UUID</span> NOT NULL,     <span class="cm">-- uniqdata_db.users.id</span>
+    consent_id      <span class="ty">UUID</span>,             <span class="cm">-- uniqdata_db.consents.id</span>
     status          <span class="ty">VARCHAR(20)</span> DEFAULT 'INVITED',
                     <span class="cm">-- INVITED | CONSENTED | ENROLLED | ACTIVE |</span>
                     <span class="cm">-- COMPLETED | WITHDRAWN | EXCLUDED</span>
@@ -710,7 +710,7 @@
 <div class="sql-block"><span class="kw">CREATE TABLE</span> <span class="tn">irb_submissions</span> (
     id              <span class="ty">UUID PRIMARY KEY</span>,
     project_id      <span class="ty">UUID</span> <span class="ct">REFERENCES projects(id)</span>,
-    enterprise_id   <span class="ty">UUID</span> <span class="ct">REFERENCES enterprises(id)</span>,
+    institution_id   <span class="ty">UUID</span> <span class="ct">REFERENCES institutions(id)</span>,
     submission_type <span class="ty">VARCHAR(30)</span>,
                     <span class="cm">-- INITIAL | AMENDMENT | CONTINUING_REVIEW | CLOSURE</span>
     status          <span class="ty">VARCHAR(30)</span> DEFAULT 'DRAFT',
@@ -782,7 +782,7 @@
 <span class="kw">CREATE TABLE</span> <span class="tn">settlement_items</span> (
     id              <span class="ty">UUID PRIMARY KEY</span>,
     batch_id        <span class="ty">UUID</span> <span class="ct">REFERENCES settlement_batches(id)</span>,
-    recipient_user_id <span class="ty">UUID</span>,         <span class="cm">-- health_db.users.id</span>
+    recipient_user_id <span class="ty">UUID</span>,         <span class="cm">-- uniqdata_db.users.id</span>
     recipient_wallet_address <span class="ty">VARCHAR(60)</span>,
     amount          <span class="ty">DECIMAL(18,6)</span>,
     calculation_basis <span class="ty">JSONB</span>,
@@ -810,10 +810,10 @@
 <div class="section-divider"><span>🔄 서버 간 통신 (Internal API 13 + Core Push 5)</span></div>
 
 <div style="display: flex; gap: 16px; margin-bottom: 24px;">
-  <!-- Business → Core (Internal API) -->
+  <!-- UniQLab Backend → Core (Internal API) -->
   <div style="flex: 1; background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 16px;">
     <div style="font-size: 13px; font-weight: 700; color: #58a6ff; margin-bottom: 12px;">
-      🔵 Business → 🟢 Core (Internal API REST) — 13개 (실코드 기준)
+      🔵 UniQLab Backend → 🟢 Core (Internal API REST) — 13개 (실코드 기준)
     </div>
     <table style="width: 100%; font-size: 10px; border-collapse: collapse;">
       <tr><td style="padding: 5px 0; color: #8b949e;">적격자 추정</td><td style="color: #a78bfa;"><code>POST /api/v1/internal/matching/estimate</code></td></tr>
@@ -833,17 +833,17 @@
     <div style="margin-top: 8px; font-size: 9px; color: #8b949e;">인증: X-Service-Auth (+ X-Request-Id / X-Idempotency-Key 권장)</div>
   </div>
 
-  <!-- Core → Business (Push API) -->
+  <!-- Core → UniQLab Backend (Push API) -->
   <div style="flex: 1; background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 16px;">
     <div style="font-size: 13px; font-weight: 700; color: #fbbf24; margin-bottom: 12px;">
-      🟢 Core → 🔵 Business (Push API) — 5개 (2 라이브 + 3 목표)
+      🟢 Core → 🔵 UniQLab Backend (Push API) — 5개 (2 라이브 + 3 목표)
     </div>
     <table style="width: 100%; font-size: 10px; border-collapse: collapse;">
-      <tr><td style="padding: 5px 0; color: #8b949e;">참여자 등록 (라이브)</td><td style="color: #fbbf24;"><code>POST /api/enterprise/project/{id}/participant</code></td><td style="color: #484f58; font-size: 9px;">participant upsert</td></tr>
-      <tr><td style="padding: 5px 0; color: #8b949e;">데이터 전송 (라이브)</td><td style="color: #fbbf24;"><code>POST /api/enterprise/project/{id}/dataset</code></td><td style="color: #484f58; font-size: 9px;">dataset insert</td></tr>
-      <tr><td style="padding: 5px 0; color: #8b949e;">배치 전송 (목표)</td><td style="color: #fbbf24;"><code>POST /api/enterprise/project/{id}/dataset/batch</code></td><td style="color: #484f58; font-size: 9px;">표준 배치 경로</td></tr>
-      <tr><td style="padding: 5px 0; color: #8b949e;">참여 철회 동기화 (목표)</td><td style="color: #fbbf24;"><code>DELETE /api/enterprise/project/{id}/participant/{num}</code></td><td style="color: #484f58; font-size: 9px;">withdraw cascade</td></tr>
-      <tr><td style="padding: 5px 0; color: #8b949e;">정산 푸시 (목표)</td><td style="color: #fbbf24;"><code>POST /api/enterprise/project/{id}/settlement</code></td><td style="color: #484f58; font-size: 9px;">settlement ledger</td></tr>
+      <tr><td style="padding: 5px 0; color: #8b949e;">참여자 등록 (라이브)</td><td style="color: #fbbf24;"><code>POST /api/uniqlab/project/{id}/participant</code></td><td style="color: #484f58; font-size: 9px;">participant upsert</td></tr>
+      <tr><td style="padding: 5px 0; color: #8b949e;">데이터 전송 (라이브)</td><td style="color: #fbbf24;"><code>POST /api/uniqlab/project/{id}/dataset</code></td><td style="color: #484f58; font-size: 9px;">dataset insert</td></tr>
+      <tr><td style="padding: 5px 0; color: #8b949e;">배치 전송 (목표)</td><td style="color: #fbbf24;"><code>POST /api/uniqlab/project/{id}/dataset/batch</code></td><td style="color: #484f58; font-size: 9px;">표준 배치 경로</td></tr>
+      <tr><td style="padding: 5px 0; color: #8b949e;">참여 철회 동기화 (목표)</td><td style="color: #fbbf24;"><code>DELETE /api/uniqlab/project/{id}/participant/{num}</code></td><td style="color: #484f58; font-size: 9px;">withdraw cascade</td></tr>
+      <tr><td style="padding: 5px 0; color: #8b949e;">정산 푸시 (목표)</td><td style="color: #fbbf24;"><code>POST /api/uniqlab/project/{id}/settlement</code></td><td style="color: #484f58; font-size: 9px;">settlement ledger</td></tr>
     </table>
     <div style="margin-top: 8px; font-size: 9px; color: #8b949e;">인증: X-Service-Auth (Phase 2에서 HMAC 병행 예정)</div>
   </div>
@@ -862,11 +862,11 @@
     <tr><td><code>/api/v1/enrollment/*</code></td><td><span class="tag tag-core">Core</span></td><td>연구 참여 등록/철회</td><td>앱 사용자</td></tr>
     <tr><td><code>/api/v1/token/*, /api/v1/xrpl/*, /api/v1/health/*</code></td><td><span class="tag tag-core">Core</span></td><td>링킹토큰, XRPL 앵커, 건강 리포트</td><td>앱 사용자</td></tr>
     <tr><td colspan="4" style="text-align:center;color:#30363d;">───────────────────────────────</td></tr>
-    <tr><td><code>/api/v1/projects/*</code></td><td><span class="tag tag-business">Business</span></td><td>프로젝트 CRUD, 마일스톤, 참여자</td><td>연구자</td></tr>
-    <tr><td><code>/api/v1/irb/*</code></td><td><span class="tag tag-business">Business</span></td><td>IRB 제출/심의/문서</td><td>연구자/IRB 위원</td></tr>
-    <tr><td><code>/api/v1/enterprises/*</code></td><td><span class="tag tag-business">Business</span></td><td>기관 관리, 구성원</td><td>기관 관리자</td></tr>
-    <tr><td><code>/api/v1/settlements/*</code></td><td><span class="tag tag-business">Business</span></td><td>정산 조회, 배치 관리</td><td>연구자/앱 사용자</td></tr>
-    <tr><td><code>/api/v1/my/projects/*</code></td><td><span class="tag tag-business">Business</span></td><td>내 참여 프로젝트</td><td>앱 사용자</td></tr>
+    <tr><td><code>/api/v1/projects/*</code></td><td><span class="tag tag-business">UniQLab</span></td><td>프로젝트 CRUD, 마일스톤, 참여자</td><td>연구자</td></tr>
+    <tr><td><code>/api/v1/irb/*</code></td><td><span class="tag tag-business">UniQLab</span></td><td>IRB 제출/심의/문서</td><td>연구자/IRB 위원</td></tr>
+    <tr><td><code>/uniqlab/institutions/*</code></td><td><span class="tag tag-business">UniQLab</span></td><td>기관 관리, 구성원</td><td>기관 관리자</td></tr>
+    <tr><td><code>/api/v1/settlements/*</code></td><td><span class="tag tag-business">UniQLab</span></td><td>정산 조회, 배치 관리</td><td>연구자/앱 사용자</td></tr>
+    <tr><td><code>/api/v1/my/projects/*</code></td><td><span class="tag tag-business">UniQLab</span></td><td>내 참여 프로젝트</td><td>앱 사용자</td></tr>
   </tbody>
 </table>
 
@@ -874,21 +874,21 @@
 <div class="section-divider"><span>📋 핵심 데이터 흐름 (3 시나리오)</span></div>
 
 <div class="example-box">
-  <div class="example-title">🔥 시나리오 1: 환자 데이터 입력 → XRPL 앵커링 → Enterprise Push</div>
+  <div class="example-title">🔥 시나리오 1: 환자 데이터 입력 → XRPL 앵커링 → UniQLab Push</div>
   <div class="example-step"><div class="step-num" style="background:#8b5cf6;">1</div><div class="step-content"><span class="server" style="color:#93c5fd;">[📱 App]</span> <span class="action">환자가 건강데이터 입력 (혈압, 혈당 등) → POST /api/v1/health/data</span></div></div>
-  <div class="example-step"><div class="step-num" style="background:#a78bfa;">2</div><div class="step-content"><span class="server core">[Core]</span> <span class="action">Passkey 인증 → 데이터 검증 → AES-256-GCM 암호화 → <code>health_db.data_points</code> 저장</span></div></div>
+  <div class="example-step"><div class="step-num" style="background:#a78bfa;">2</div><div class="step-content"><span class="server core">[Core]</span> <span class="action">Passkey 인증 → 데이터 검증 → AES-256-GCM 암호화 → <code>uniqdata_db.data_points</code> 저장</span></div></div>
   <div class="example-step"><div class="step-num" style="background:#a78bfa;">3</div><div class="step-content"><span class="server core">[Core]</span> <span class="action">SHA-256 해시 → XRPL DATA_INPUT 앵커링 → <code>xrpl_transactions</code> 기록</span></div></div>
   <div class="example-step"><div class="step-num" style="background:#f59e0b;">4</div><div class="step-content"><span class="server" style="color:#fbbf24;">[XRPL]</span> <span class="action">EscrowCreate (UQD 크레딧 적립)</span></div></div>
-  <div class="example-step"><div class="step-num" style="background:#a78bfa;">5</div><div class="step-content"><span class="server core">[Core]</span> → <span class="server business">[Business]</span> <span class="action">Push <code>POST /api/enterprise/project/{id}/dataset</code></span></div></div>
-  <div class="example-step"><div class="step-num" style="background:#34d399;">6</div><div class="step-content"><span class="server business">[Business]</span> <span class="action"><code>webhook_events</code> 기록 → 참여 프로젝트 <code>project_milestones</code> 업데이트</span></div></div>
+  <div class="example-step"><div class="step-num" style="background:#a78bfa;">5</div><div class="step-content"><span class="server core">[Core]</span> → <span class="server business">[UniQLab]</span> <span class="action">Push <code>POST /api/uniqlab/project/{id}/dataset</code></span></div></div>
+  <div class="example-step"><div class="step-num" style="background:#34d399;">6</div><div class="step-content"><span class="server business">[UniQLab]</span> <span class="action"><code>webhook_events</code> 기록 → 참여 프로젝트 <code>project_milestones</code> 업데이트</span></div></div>
 </div>
 
 <div class="example-box">
   <div class="example-title">연구자 데이터 요청 (B2B)</div>
-  <div class="example-step"><div class="step-num" style="background:#34d399;">1</div><div class="step-content"><span class="server business">[Business]</span> <span class="action">데이터 접근 요청 (IRB 승인 번호 포함) → <code>data_requests</code> 생성</span></div></div>
-  <div class="example-step"><div class="step-num" style="background:#34d399;">2</div><div class="step-content"><span class="server business">[Business]</span> → <span class="server core">[Core]</span> <span class="action"><code>POST /api/v1/internal/tier1/overview</code> + <code>POST /api/v1/internal/tier1/table</code></span></div></div>
-  <div class="example-step"><div class="step-num" style="background:#a78bfa;">3</div><div class="step-content"><span class="server core">[Core]</span> <span class="action">동의 스코프 검증 → health_db 조회 → 가명처리 (k-anonymity k≥5) → XRPL DATA_ACCESS 앵커링</span></div></div>
-  <div class="example-step"><div class="step-num" style="background:#34d399;">4</div><div class="step-content"><span class="server business">[Business]</span> <span class="action">가명 데이터 수신 → <code>settlement_batches</code> + <code>settlement_items</code> 생성 → Core에 EscrowFinish 요청</span></div></div>
+  <div class="example-step"><div class="step-num" style="background:#34d399;">1</div><div class="step-content"><span class="server business">[UniQLab]</span> <span class="action">데이터 접근 요청 (IRB 승인 번호 포함) → <code>data_requests</code> 생성</span></div></div>
+  <div class="example-step"><div class="step-num" style="background:#34d399;">2</div><div class="step-content"><span class="server business">[UniQLab]</span> → <span class="server core">[Core]</span> <span class="action"><code>POST /api/v1/internal/tier1/overview</code> + <code>POST /api/v1/internal/tier1/table</code></span></div></div>
+  <div class="example-step"><div class="step-num" style="background:#a78bfa;">3</div><div class="step-content"><span class="server core">[Core]</span> <span class="action">동의 스코프 검증 → uniqdata_db 조회 → 가명처리 (k-anonymity k≥5) → XRPL DATA_ACCESS 앵커링</span></div></div>
+  <div class="example-step"><div class="step-num" style="background:#34d399;">4</div><div class="step-content"><span class="server business">[UniQLab]</span> <span class="action">가명 데이터 수신 → <code>settlement_batches</code> + <code>settlement_items</code> 생성 → Core에 EscrowFinish 요청</span></div></div>
 </div>
 
 <div class="example-box">
@@ -897,8 +897,8 @@
   <div class="example-step"><div class="step-num" style="background:#8b5cf6;">2</div><div class="step-content"><span class="server" style="color:#93c5fd;">[📱 App]</span> <span class="action">ed25519.sign(SHA256(consent_payload), derived_key) → 서명 + 동의 내용 서버 전송</span></div></div>
   <div class="example-step"><div class="step-num" style="background:#a78bfa;">3</div><div class="step-content"><span class="server core">[Core]</span> <span class="action">공개키로 서명 검증 → <code>consents</code> + <code>consent_scopes</code> 저장 → <code>consent_audit_trail</code> 기록</span></div></div>
   <div class="example-step"><div class="step-num" style="background:#f59e0b;">4</div><div class="step-content"><span class="server" style="color:#fbbf24;">[XRPL]</span> <span class="action">CONSENT_GRANT 앵커링 + EscrowCreate (보상분)</span></div></div>
-  <div class="example-step"><div class="step-num" style="background:#a78bfa;">5</div><div class="step-content"><span class="server core">[Core]</span> → <span class="server business">[Business]</span> <span class="action">Push <code>POST /api/enterprise/project/{id}/participant</code></span></div></div>
-  <div class="example-step"><div class="step-num" style="background:#34d399;">6</div><div class="step-content"><span class="server business">[Business]</span> <span class="action"><code>participants.status</code> → CONSENTED → 프로젝트 참여자 수 업데이트</span></div></div>
+  <div class="example-step"><div class="step-num" style="background:#a78bfa;">5</div><div class="step-content"><span class="server core">[Core]</span> → <span class="server business">[UniQLab]</span> <span class="action">Push <code>POST /api/uniqlab/project/{id}/participant</code></span></div></div>
+  <div class="example-step"><div class="step-num" style="background:#34d399;">6</div><div class="step-content"><span class="server business">[UniQLab]</span> <span class="action"><code>participants.status</code> → CONSENTED → 프로젝트 참여자 수 업데이트</span></div></div>
 </div>
 
 <!-- ====== 보안 ====== -->
@@ -910,11 +910,11 @@
 1. 사용자 → 🟢 Core: Passkey 인증 (WebAuthn Level 3 + PRF Extension)
 2. 🟢 Core → 사용자: Access Token (JWT, 15분) + Refresh Token (7일)
 3. 사용자 → Gateway: Authorization: Bearer {access_token}
-4. Gateway → 🟢 Core 또는 🔵 Business: 요청 전달
+4. Gateway → 🟢 Core 또는 🔵 UniQLab Backend: 요청 전달
 
 <span style="color:#fbbf24;">[JWT 검증]</span>
 🟢 Core:     직접 검증 (signing key 보유)
-🔵 Business: JWKS 공개키로 검증 (Core가 /.well-known/jwks.json 제공)
+🔵 UniQLab Backend: JWKS 공개키로 검증 (Core가 /.well-known/jwks.json 제공)
 </pre>
 </div>
 
@@ -931,19 +931,19 @@
 <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 24px;">
   <div style="background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 12px; font-size: 11px;">
     <div style="font-weight: 700; color: #e9d5ff; margin-bottom: 4px;">PATIENT</div>
-    <div style="color: #8b949e;">Core: 본인 데이터 R/W, 동의 R/W, 지갑 R<br>Business: 본인 참여 프로젝트 R</div>
+    <div style="color: #8b949e;">Core: 본인 데이터 R/W, 동의 R/W, 지갑 R<br>UniQLab Backend: 본인 참여 프로젝트 R</div>
   </div>
   <div style="background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 12px; font-size: 11px;">
     <div style="font-weight: 700; color: #a7f3d0; margin-bottom: 4px;">RESEARCHER</div>
-    <div style="color: #8b949e;">Core: —<br>Business: 소속 기관 프로젝트 R/W, IRB R/W</div>
+    <div style="color: #8b949e;">Core: —<br>UniQLab Backend: 소속 기관 프로젝트 R/W, IRB R/W</div>
   </div>
   <div style="background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 12px; font-size: 11px;">
     <div style="font-weight: 700; color: #93c5fd; margin-bottom: 4px;">IRB_MEMBER</div>
-    <div style="color: #8b949e;">Core: —<br>Business: 배정 프로젝트 R, 심의 의견 W</div>
+    <div style="color: #8b949e;">Core: —<br>UniQLab Backend: 배정 프로젝트 R, 심의 의견 W</div>
   </div>
   <div style="background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 12px; font-size: 11px;">
     <div style="font-weight: 700; color: #f87171; margin-bottom: 4px;">ADMIN</div>
-    <div style="color: #8b949e;">Core: 모든 사용자 R<br>Business: 모든 기관/프로젝트 R/W</div>
+    <div style="color: #8b949e;">Core: 모든 사용자 R<br>UniQLab Backend: 모든 기관/프로젝트 R/W</div>
   </div>
 </div>
 
@@ -956,7 +956,7 @@
       🟢 core-server<br>FastAPI · Port 8000(default)<br><span style="font-size: 9px; color: #8b949e;">RAM: 256MB~ · $5/월</span>
     </div>
     <div style="background: #022c22; border: 1px solid #34d399; padding: 12px 20px; border-radius: 8px; font-size: 11px; color: #a7f3d0; text-align: center;">
-      🔵 business-server<br>Spring Boot · Port 8080<br><span style="font-size: 9px; color: #8b949e;">RAM: 1GB~ · $10-15/월</span>
+      🔵 uniqlab-backend<br>Spring Boot · Port 8080<br><span style="font-size: 9px; color: #8b949e;">RAM: 1GB~ · $10-15/월</span>
     </div>
     <div style="background: #1e1b4b; border: 1px solid #818cf8; padding: 12px 20px; border-radius: 8px; font-size: 11px; color: #c7d2fe; text-align: center;">
       📦 health-db<br>PostgreSQL 15<br><span style="font-size: 9px; color: #8b949e;">2GB · $10/월</span>
@@ -977,46 +977,46 @@
   <div class="faq-q">Q: 분리 기준이 "민감/비민감 데이터"인가?</div>
   <div class="faq-a">A: 핵심 기준은 <strong>"환자에 대한 정보 vs 활동에 대한 정보"</strong>.<br>
   사람 <em>자체</em>에 대한 것(건강, 신원, 키, 동의, 지갑) → Core<br>
-  사람이 참여하는 <em>활동</em>에 대한 것(프로젝트, IRB, 정산, 기관) → Business</div>
+  사람이 참여하는 <em>활동</em>에 대한 것(프로젝트, IRB, 정산, 기관) → UniQLab Backend</div>
 </div>
 
 <div class="faq-item">
-  <div class="faq-q">Q: health_db에는 총 몇 개 테이블?</div>
+  <div class="faq-q">Q: uniqdata_db에는 총 몇 개 테이블?</div>
   <div class="faq-a">A: <code>15개</code>. users, passkey_credentials, user_profiles, user_wallets, wallet_recovery_configs, data_points, data_point_tags, data_access_logs, consents, consent_scopes, consent_audit_trail, xrpl_transactions, notifications, notification_preferences, refresh_tokens</div>
 </div>
 
 <div class="faq-item">
   <div class="faq-q">Q: uniqdata_db에는 총 몇 개 테이블?</div>
-  <div class="faq-a">A: <code>16개</code> (Phase 2 포함). enterprises, enterprise_members, projects, project_milestones, participants, participation_criteria, data_requests, irb_submissions, irb_documents, irb_review_comments, irb_workflow_history, settlement_batches, settlement_items, synthetic_datasets(Ph2), fl_rounds(Ph2), webhook_events</div>
+  <div class="faq-a">A: <code>16개</code> (Phase 2 포함). institutions, institution_members, projects, project_milestones, participants, participation_criteria, data_requests, irb_submissions, irb_documents, irb_review_comments, irb_workflow_history, settlement_batches, settlement_items, synthetic_datasets(Ph2), fl_rounds(Ph2), webhook_events</div>
 </div>
 
 <div class="faq-item">
   <div class="faq-q">Q: IRB 관련 테이블은 어디에?</div>
-  <div class="faq-a">A: <code>🔵 uniqdata_db</code>에 4개: irb_submissions, irb_documents, irb_review_comments, irb_workflow_history. IRB는 연구 "활동"이므로 Business 담당.</div>
+  <div class="faq-a">A: <code>🔵 uniqlab_db</code>에 4개: irb_submissions, irb_documents, irb_review_comments, irb_workflow_history. IRB는 연구 "활동"이므로 UniQLab Backend 담당.</div>
 </div>
 
 <div class="faq-item">
   <div class="faq-q">Q: 정산은 어디서?</div>
-  <div class="faq-a">A: 정산 <strong>계산</strong>(대상자 산정, 금액 계산, settlement_batches 생성) → <code>🔵 Business</code><br>
+  <div class="faq-a">A: 정산 <strong>계산</strong>(대상자 산정, 금액 계산, settlement_batches 생성) → <code>🔵 UniQLab Backend</code><br>
   정산 <strong>실행</strong>(XRPL EscrowFinish, UQD 크레딧 적립) → <code>🟢 Core</code><br>
-  Business가 <code>POST /api/v1/internal/escrow/finalize</code>로 요청 → Core가 실행 → tx_hash 반환</div>
+  UniQLab Backend가 <code>POST /api/v1/internal/escrow/finalize</code>로 요청 → Core가 실행 → tx_hash 반환</div>
 </div>
 
 <div class="faq-item">
   <div class="faq-q">Q: Internal API와 Core Push 갯수는?</div>
-  <div class="faq-a">A: Business→Core <strong>Internal API: 13개</strong> (REST, X-Service-Auth 인증)<br>
-  Core→Business <strong>Push API: 5개</strong> (현재 2개 라이브, 3개 목표)</div>
+  <div class="faq-a">A: UniQLab Backend→Core <strong>Internal API: 13개</strong> (REST, X-Service-Auth 인증)<br>
+  Core→UniQLab Backend <strong>Push API: 5개</strong> (현재 2개 라이브, 3개 목표)</div>
 </div>
 
 <!-- ====== 레포 ====== -->
 <div class="section-divider"><span>🔗 레포지토리</span></div>
 
 <div class="repo-links">
-  <a href="https://github.com/SportiQue-UniQdata/uniqdata-core" class="repo-link core" target="_blank">
-    uniqdata-core (FastAPI)
+  <a href="https://github.com/SportiQue-App/backend" class="repo-link core" target="_blank">
+    backend (FastAPI)
   </a>
-  <a href="https://github.com/SportiQue-UniQdata/uniqdata-enterprise-backend" class="repo-link business" target="_blank">
-    uniqdata-enterprise-backend (Spring)
+  <a href="https://github.com/UniQ-Lab/backend" class="repo-link business" target="_blank">
+    backend (Spring)
   </a>
 </div>
 

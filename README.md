@@ -1,6 +1,6 @@
-# UniQdata Enterprise Portal 와이어프레임
+# UniQLab Workspace 와이어프레임
 
-> 양면 건강데이터 플랫폼 - 연구자/기업용 웹 포털 UI 설계
+> UniQLab - 연구자/기관용 웹 워크스페이스 UI 설계
 
 **Live Preview:** https://3mlnssaco.github.io/uniqdata-wireframes/
 
@@ -132,7 +132,7 @@ uniqdata-wireframes/
 ├── schema-data.dbml        # 데이터 상세 스키마
 ├── schema-org.dbml         # 기관 상세 스키마
 ├── schema-research.dbml    # 연구 상세 스키마
-├── DATA_FLOWS.md           # Core-Enterprise 데이터 흐름
+├── DATA_FLOWS.md           # Core-UniQLab 데이터 흐름
 └── WIREFRAME_CHANGES.md    # 변경 이력
 ```
 
@@ -142,7 +142,7 @@ uniqdata-wireframes/
 
 | 파일 | 내용 |
 |------|------|
-| `schema.dbml` | 통합 ERD: health_db 33테이블 (4스키마) + uniqdata_db 18테이블 |
+| `schema.dbml` | 통합 ERD: uniqdata_db 33테이블 (4스키마) + uniqlab_db 18테이블 |
 | `DATA_FLOWS.md` | Core Internal API 데이터 흐름, 3계층 ID, k-anonymity |
 | `schema-auth.dbml` | 인증 상세 (참고용, schema.dbml에 통합) |
 | `schema-data.dbml` | 데이터 상세 (참고용, schema.dbml에 통합) |

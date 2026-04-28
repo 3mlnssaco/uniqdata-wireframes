@@ -71,9 +71,9 @@
 
       • 입금/출금 내역 → `project_wallet_transactions` (tx_type: DEPOSIT|WITHDRAWAL|REWARD_PAYOUT|REFUND)
 
-      • 개인 지갑 잔액 → `user_wallets` (health_db, cross-DB API 조회)
+      • 개인 지갑 잔액 → `user_wallets` (uniqdata_db, cross-DB API 조회)
 
-      • XRPL 트랜잭션 → `xrpl_transactions` (health_db, tx_type=ESCROW_CREATE)
+      • XRPL 트랜잭션 → `xrpl_transactions` (uniqdata_db, tx_type=ESCROW_CREATE)
 
       • 지갑 생성 흐름: IRB 승인 → project_wallets INSERT (status=CREATED) → 입금 → FUNDED → 에스크로 → ACTIVE
     
@@ -249,7 +249,7 @@ POST /api/v2/projects/:id/escrow/create
       **4. 모집 시작:**
 
       
-POST /enterprise/projects/:id/recruitment/start
+POST /uniqlab/projects/:id/recruitment/start
 
 {
 

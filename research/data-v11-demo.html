@@ -3176,18 +3176,18 @@ document.getElementById('dpNext').addEventListener('click',()=>{if(selIdx<ALL.le
 // CLEAN ROOM TAB (carried from v9, enhanced)
 // ===============================================
 const CR_SCHEMA=[
-  {name:'data_points',domain:'health',server:'health_db',icon:'📊',cols:[{n:'id',t:'uuid',pk:true},{n:'user_id',t:'uuid',fk:'users'},{n:'category',t:'varchar'},{n:'sub_category',t:'varchar'},{n:'value',t:'jsonb'},{n:'source',t:'varchar'},{n:'measured_at',t:'ts'},{n:'visit_id',t:'varchar'},{n:'data_hash',t:'varchar'},{n:'xrpl_anchored',t:'bool'},{n:'quality_score',t:'decimal'}]},
-  {name:'users',domain:'auth',server:'health_db',icon:'👤',cols:[{n:'id',t:'uuid',pk:true},{n:'email',t:'varchar'},{n:'display_name',t:'varchar'},{n:'role',t:'enum'},{n:'status',t:'varchar'},{n:'created_at',t:'ts'}]},
-  {name:'user_profiles',domain:'auth',server:'health_db',icon:'📋',cols:[{n:'id',t:'uuid',pk:true},{n:'user_id',t:'uuid',fk:'users'},{n:'birth_date',t:'date'},{n:'gender',t:'varchar'},{n:'height_cm',t:'decimal'},{n:'weight_kg',t:'decimal'},{n:'medications',t:'jsonb'}]},
-  {name:'consents',domain:'consent',server:'health_db',icon:'✅',cols:[{n:'id',t:'uuid',pk:true},{n:'user_id',t:'uuid',fk:'users'},{n:'consent_type',t:'varchar'},{n:'status',t:'varchar'},{n:'project_id',t:'uuid'},{n:'irb_number',t:'varchar'},{n:'version',t:'int'}]},
+  {name:'data_points',domain:'health',server:'uniqdata_db',icon:'📊',cols:[{n:'id',t:'uuid',pk:true},{n:'user_id',t:'uuid',fk:'users'},{n:'category',t:'varchar'},{n:'sub_category',t:'varchar'},{n:'value',t:'jsonb'},{n:'source',t:'varchar'},{n:'measured_at',t:'ts'},{n:'visit_id',t:'varchar'},{n:'data_hash',t:'varchar'},{n:'xrpl_anchored',t:'bool'},{n:'quality_score',t:'decimal'}]},
+  {name:'users',domain:'auth',server:'uniqdata_db',icon:'👤',cols:[{n:'id',t:'uuid',pk:true},{n:'email',t:'varchar'},{n:'display_name',t:'varchar'},{n:'role',t:'enum'},{n:'status',t:'varchar'},{n:'created_at',t:'ts'}]},
+  {name:'user_profiles',domain:'auth',server:'uniqdata_db',icon:'📋',cols:[{n:'id',t:'uuid',pk:true},{n:'user_id',t:'uuid',fk:'users'},{n:'birth_date',t:'date'},{n:'gender',t:'varchar'},{n:'height_cm',t:'decimal'},{n:'weight_kg',t:'decimal'},{n:'medications',t:'jsonb'}]},
+  {name:'consents',domain:'consent',server:'uniqdata_db',icon:'✅',cols:[{n:'id',t:'uuid',pk:true},{n:'user_id',t:'uuid',fk:'users'},{n:'consent_type',t:'varchar'},{n:'status',t:'varchar'},{n:'project_id',t:'uuid'},{n:'irb_number',t:'varchar'},{n:'version',t:'int'}]},
   {name:'study_config',domain:'research',server:'uniqdata_db',icon:'⚙️',cols:[{n:'id',t:'uuid',pk:true},{n:'project_id',t:'uuid',fk:'projects'},{n:'study_type',t:'enum'},{n:'has_control_arm',t:'bool'},{n:'num_arms',t:'int'},{n:'duration_days',t:'int'},{n:'visit_windows',t:'jsonb'},{n:'metric_templates',t:'jsonb'}]},
   {name:'visit_windows',domain:'research',server:'uniqdata_db',icon:'📅',cols:[{n:'id',t:'uuid',pk:true},{n:'study_config_id',t:'uuid',fk:'study_config'},{n:'visit_id',t:'varchar'},{n:'target_day',t:'int'},{n:'window_min',t:'int'},{n:'window_max',t:'int'},{n:'label',t:'varchar'}]},
   {name:'projects',domain:'research',server:'uniqdata_db',icon:'🔬',cols:[{n:'id',t:'uuid',pk:true},{n:'title',t:'varchar'},{n:'project_type',t:'enum'},{n:'status',t:'varchar'},{n:'pi_user_id',t:'uuid'},{n:'irb_number',t:'varchar'},{n:'target_participant_count',t:'int'}]},
   {name:'participants',domain:'research',server:'uniqdata_db',icon:'🧑‍🔬',cols:[{n:'id',t:'uuid',pk:true},{n:'project_id',t:'uuid',fk:'projects'},{n:'user_id',t:'uuid'},{n:'status',t:'varchar'},{n:'group_assignment',t:'varchar'},{n:'reward_earned',t:'decimal'}]},
-  {name:'adverse_events',domain:'safety',server:'health_db',icon:'🛡️',cols:[{n:'id',t:'uuid',pk:true},{n:'participant_id',t:'uuid',fk:'participants'},{n:'visit_id',t:'varchar'},{n:'ae_term',t:'varchar'},{n:'severity',t:'enum'},{n:'related',t:'bool'},{n:'serious',t:'bool'},{n:'outcome',t:'varchar'},{n:'reported_at',t:'ts'}]},
+  {name:'adverse_events',domain:'safety',server:'uniqdata_db',icon:'🛡️',cols:[{n:'id',t:'uuid',pk:true},{n:'participant_id',t:'uuid',fk:'participants'},{n:'visit_id',t:'varchar'},{n:'ae_term',t:'varchar'},{n:'severity',t:'enum'},{n:'related',t:'bool'},{n:'serious',t:'bool'},{n:'outcome',t:'varchar'},{n:'reported_at',t:'ts'}]},
   {name:'metric_templates',domain:'research',server:'uniqdata_db',icon:'📐',cols:[{n:'id',t:'uuid',pk:true},{n:'study_config_id',t:'uuid',fk:'study_config'},{n:'metric_key',t:'varchar'},{n:'name',t:'varchar'},{n:'unit',t:'varchar'},{n:'direction',t:'enum'},{n:'renderer',t:'varchar'},{n:'derive_from',t:'jsonb'}]},
   {name:'project_milestones',domain:'research',server:'uniqdata_db',icon:'🎯',cols:[{n:'id',t:'uuid',pk:true},{n:'project_id',t:'uuid',fk:'projects'},{n:'milestone_type',t:'varchar'},{n:'status',t:'varchar'},{n:'target_date',t:'date'},{n:'completed_at',t:'ts'}]},
-  {name:'data_access_logs',domain:'health',server:'health_db',icon:'📝',cols:[{n:'id',t:'uuid',pk:true},{n:'accessor_id',t:'uuid'},{n:'project_id',t:'uuid'},{n:'record_count',t:'int'},{n:'pseudonymized',t:'bool'},{n:'agg_tier',t:'varchar'}]},
+  {name:'data_access_logs',domain:'health',server:'uniqdata_db',icon:'📝',cols:[{n:'id',t:'uuid',pk:true},{n:'accessor_id',t:'uuid'},{n:'project_id',t:'uuid'},{n:'record_count',t:'int'},{n:'pseudonymized',t:'bool'},{n:'agg_tier',t:'varchar'}]},
 ];
 
 const PSEUDO_MAP={};let pseudoCounter=1;
@@ -3264,7 +3264,7 @@ function buildSchemaPanel(){
   const list=document.getElementById('spList');let html='',curServer='';
   document.getElementById('spCount').textContent=CR_SCHEMA.length+' 테이블';
   CR_SCHEMA.forEach(s=>{
-    if(s.server!==curServer){curServer=s.server;html+=`<div class="sp-server">${curServer==='health_db'?'🗄️ health_db':'🗄️ uniqdata_db'}</div>`;}
+    if(s.server!==curServer){curServer=s.server;html+=`<div class="sp-server">${curServer==='uniqdata_db'?'🗄️ uniqdata_db':'🗄️ uniqdata_db'}</div>`;}
     const rc=CR_DATA_CACHE[s.name]?CR_DATA_CACHE[s.name].length:'—';
     html+=`<div class="sp-table${s.name===crCurrentTable?' active':''}" data-table="${s.name}"><span class="sp-icon">${s.icon}</span><span>${s.name}</span><span class="sp-count">${rc}</span></div>`;
   });

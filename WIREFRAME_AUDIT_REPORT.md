@@ -166,10 +166,10 @@ DATA_FLOWS.md가 참조하는 테이블명이 schema.dbml과 **전혀 맞지 않
 | `accounts` | `users` | 이름 다름 |
 | `account_logins` | `passkey_credentials` | 이름 다름 |
 | `sessions` | `refresh_tokens` | 이름 다름 |
-| `owners` | `enterprise_members` | 개념 다름 |
-| `institutions` | `enterprises` | 이름 다름 |
+| `owners` | `institution_members` | 개념 다름 |
+| `institutions` | `institutions` | 이름 정합 |
 | `research_projects` | `projects` | 이름 다름 |
-| `team_members` | `enterprise_members` (+ 역할 기반) | 구조 다름 |
+| `team_members` | `institution_members` (+ 역할 기반) | 구조 다름 |
 | `wallets` | `user_wallets` | 이름 다름 |
 | `project_wallets` | *(존재하지 않음)* | 누락 |
 | `project_wallet_deposits` | *(존재하지 않음)* | 누락 |
@@ -179,7 +179,7 @@ DATA_FLOWS.md가 참조하는 테이블명이 schema.dbml과 **전혀 맞지 않
 | `escrows` | `settlement_batches` + XRPL tx | 구조 다름 |
 | `data_collection_configs` | *(존재하지 않음)* | 누락 |
 
-**또한 2-서버 아키텍처 위반:** DATA_FLOWS.md에서 `SELECT users.* FROM users JOIN data_points`같은 크로스-DB JOIN을 사용하고 있는데, schema.dbml은 users(health_db)와 projects(uniqdata_db)가 별도 DB이므로 직접 JOIN이 불가능합니다.
+**또한 2-서버 아키텍처 위반:** DATA_FLOWS.md에서 `SELECT users.* FROM users JOIN data_points`같은 크로스-DB JOIN을 사용하고 있는데, schema.dbml은 users(uniqdata_db)와 projects(uniqdata_db)가 별도 DB이므로 직접 JOIN이 불가능합니다.
 
 **권고:** DATA_FLOWS.md를 schema.dbml v6 기준으로 전면 재작성하거나, "더 이상 유효하지 않음" 표시를 해야 합니다.
 
@@ -244,16 +244,16 @@ projects 테이블에는 title, project_type, status 등 기본 필드만 있고
 |------|---------|
 | **team.html** 와이어프레임 | 프로젝트 레벨 팀: `GET /api/v2/projects/:id/team` |
 | **team.html** 역할 | Owner / Member / Viewer |
-| **schema.dbml** enterprise_members | 기관 레벨: `enterprise_id + user_id + role` |
-| **schema.dbml** enterprise_members.role | OWNER / PI / IRB_MEMBER / STAFF / VIEWER |
+| **schema.dbml** institution_members | 기관 레벨: `institution_id + user_id + role` |
+| **schema.dbml** institution_members.role | OWNER / PI / IRB_MEMBER / STAFF / VIEWER |
 
 **문제점:**
 - 와이어프레임은 **프로젝트 단위** 팀 관리인데, ERD는 **기관 단위** 멤버 관리
 - 역할명도 다름: team.html의 "Member"는 ERD의 어떤 역할에 매핑되는지 불명확
 - "PI(연구책임자)" 역할이 와이어프레임에 없음
-- 프로젝트별 팀 멤버를 저장할 테이블이 ERD에 없음 (enterprise_members는 기관 레벨)
+- 프로젝트별 팀 멤버를 저장할 테이블이 ERD에 없음 (institution_members는 기관 레벨)
 
-**권고:** `project_members` 테이블을 추가하거나, enterprise_members의 scope를 프로젝트 레벨까지 확장해야 합니다.
+**권고:** `project_members` 테이블을 추가하거나, institution_members의 scope를 프로젝트 레벨까지 확장해야 합니다.
 
 ---
 

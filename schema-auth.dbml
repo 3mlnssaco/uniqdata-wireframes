@@ -4,7 +4,7 @@
 // ===== 🔑 Core Auth =====
 Table accounts {
   id uuid [pk]
-  type enum [note: 'user|enterprise|researcher|admin|auditor']
+  type enum [note: 'user|institution|researcher|admin|auditor']
   status enum [note: 'active|suspended|deleted']
   identity_hash varchar [unique, note: 'KYC용 1인1계정']
   kyc_verified_at timestamp

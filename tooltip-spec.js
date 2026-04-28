@@ -1,5 +1,5 @@
 /**
- * UniQdata Enterprise - Wireframe Spec Tooltip System
+ * UniQLab - Wireframe Spec Tooltip System
  * 호버 시 동적 툴팁 생성 (겹침 방지)
  */
 

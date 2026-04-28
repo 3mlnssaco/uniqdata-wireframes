@@ -111,7 +111,7 @@ GET /users/search?q=만성질환&tags=t2dm&platform=uniqdata
       **2. 타겟 설정 저장:**
 
       
-POST /enterprise/projects/:id/target/config
+POST /uniqlab/projects/:id/target/config
 
 {
 

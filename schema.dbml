@@ -1,12 +1,12 @@
 // UniQdata v7 Complete ERD — 51 Tables (2-Server Architecture)
-// health_db (Core, 4 schemas, 33 tables) + uniqdata_db (Business, 18 tables)
+// uniqdata_db (Core, 4 schemas, 33 tables) + uniqlab_db (UniQLab Backend, 18 tables)
 // 2026-03-01 Core v2.6.0 기준 전면 리뉴얼
 
 // ═══════════════════════════════════════
 // TableGroup 선언 (레이아웃 그룹핑)
 // ═══════════════════════════════════════
 
-// --- health_db: Core Server ---
+// --- uniqdata_db: Core Server ---
 
 TableGroup core_member [headercolor: #7c3aed] {
   user_email
@@ -62,11 +62,11 @@ TableGroup uq_mapping [headercolor: #a78bfa] {
   deletion_audit_log
 }
 
-// --- uniqdata_db: Business Server ---
+// --- uniqlab_db: UniQLab Backend ---
 
-TableGroup biz_enterprise [headercolor: #059669] {
-  enterprises
-  enterprise_members
+TableGroup biz_institution [headercolor: #059669] {
+  institutions
+  institution_members
 }
 
 TableGroup biz_research [headercolor: #059669] {
@@ -108,7 +108,7 @@ TableGroup biz_system [headercolor: #059669] {
 }
 
 // ═══════════════════════════════════════════════════════
-// ░░░ health_db — Core Server (FastAPI:8000) ░░░
+// ░░░ uniqdata_db — Core Server (FastAPI:8000) ░░░
 // 33 Tables · 4 Schemas · PostgreSQL 15
 // core_member(2) + core_auth(5) + uq_cdm(22) + uq_mapping(4)
 // ═══════════════════════════════════════════════════════
@@ -207,7 +207,7 @@ Table wallet_recovery_request [headercolor: #8b5cf6] {
 
 Table escrow_secret [headercolor: #8b5cf6] {
   id uuid [pk]
-  project_id uuid [unique, not null, note: '논리참조 → uniqdata_db.research.project']
+  project_id uuid [unique, not null, note: '논리참조 → uniqlab_db.research.project']
   wallet_address varchar(60) [unique, not null]
   encrypted_seed bytea [not null, note: 'KMS 암호화']
   encryption_key_id varchar(100)
@@ -460,7 +460,7 @@ Table cdm_consent_scope [headercolor: #6366f1] {
   id uuid [pk]
   consent_id uuid
   person_id uuid [ref: > cdm_person.person_id]
-  research_project_id uuid [note: '논리참조 → uniqdata_db.research.project']
+  research_project_id uuid [note: '논리참조 → uniqlab_db.research.project']
   consent_type varchar(30)
   domains jsonb [note: '허용 도메인 목록']
   purposes jsonb [note: '허용 목적 목록']
@@ -582,8 +582,8 @@ Table feature_flag [headercolor: #6366f1] {
 Table research_participant [headercolor: #a78bfa] {
   id uuid [pk]
   person_id uuid [not null, note: 'FK → cdm_person.person_id']
-  project_id uuid [not null, note: '논리참조 → uniqdata_db.research.project']
-  participant_number varchar(20) [not null, note: 'P001, P002... Enterprise가 보는 유일한 ID']
+  project_id uuid [not null, note: '논리참조 → uniqlab_db.research.project']
+  participant_number varchar(20) [not null, note: 'P001, P002... UniQLab Backend가 보는 유일한 ID']
   participant_hash varchar(64)
   enrolled_at timestamp
   withdrawn_at timestamp
@@ -599,7 +599,7 @@ Table institution_registry [headercolor: #a78bfa] {
   id uuid [pk]
   institution_code varchar(20) [unique, not null]
   institution_name varchar(200)
-  enterprise_institution_id uuid [note: '논리참조 → uniqdata_db.enterprise.institution']
+  uniqlab_institution_id uuid [note: '논리참조 → uniqlab_db.research.institution']
   is_active boolean [default: true]
   registered_at timestamp [default: `NOW()`]
 }
@@ -646,9 +646,9 @@ Table deletion_audit_log [headercolor: #a78bfa] {
 // ║                                                                                ║
 // ║   여기서부터 별도 DB — 직접 JOIN 불가 — Internal API로만 통신                   ║
 // ║                                                                                ║
-// ║   Core (health_db, FastAPI:8000) <── REST API ──> Business (uniqdata_db, Spring:8080)  ║
+// ║   Core (uniqdata_db, FastAPI:8000) <── REST API ──> UniQLab Backend (uniqlab_db, Spring:8080)   ║
 // ║                                                                                ║
-// ║   Enterprise → Core 호출 (X-Service-Auth):                                     ║
+// ║   UniQLab Backend → Core 호출 (X-Service-Auth):                                ║
 // ║     POST /internal/matching/estimate        적격 대상자 추정                    ║
 // ║     POST /internal/matching/recruit          모집 알림 발송                     ║
 // ║     POST /internal/tier1/overview            시계열 집계 (그래프)               ║
@@ -663,43 +663,43 @@ Table deletion_audit_log [headercolor: #a78bfa] {
 // ║     POST /internal/escrow/finalize           프로젝트 종료 정산                 ║
 // ║     GET  /internal/health                    헬스체크                            ║
 // ║                                                                                ║
-// ║   Core → Enterprise 푸시:                                                      ║
-// ║     POST   /api/enterprise/project/{id}/participant    참여자 등록              ║
-// ║     POST   /api/enterprise/project/{id}/dataset        데이터 전송              ║
-// ║     DELETE /api/enterprise/project/{id}/participant/{n} 동의 철회               ║
-// ║     POST   /enterprise/push/withdrawal                 회원 탈퇴               ║
+// ║   Core → UniQLab Backend 푸시:                                                 ║
+// ║     POST   /api/uniqlab/project/{id}/participant    참여자 등록              ║
+// ║     POST   /api/uniqlab/project/{id}/dataset        데이터 전송              ║
+// ║     DELETE /api/uniqlab/project/{id}/participant/{n} 동의 철회               ║
+// ║     POST   /api/uniqlab/project/internal/push/withdrawal                 회원 탈퇴               ║
 // ║                                                                                ║
-// ║   cross-DB FK는 없음. person_id는 Core에만, participant_number만 Enterprise에   ║
+// ║   cross-DB FK는 없음. person_id는 Core에만, participant_number만 UniQLab에      ║
 // ║                                                                                ║
 // ╚══════════════════════════════════════════════════════════════════════════════════╝
 
 // ═══════════════════════════════════════════════════
-// ░░░ uniqdata_db — Business Server (Spring:8080) ░░░
+// ░░░ uniqlab_db — UniQLab Backend (Spring:8080) ░░░
 // 18 Tables · PostgreSQL 15 · research schema
 // ═══════════════════════════════════════════════════
 
 // ─── 7. 기관 ───
 
-Table enterprises [headercolor: #059669] {
+Table institutions [headercolor: #059669] {
   id uuid [pk]
   name varchar(200) [not null]
-  enterprise_type varchar(30) [note: 'HOSPITAL|PHARMA|CRO|UNIVERSITY|INSURANCE|GOVERNMENT']
+  institution_type varchar(30) [note: 'HOSPITAL|PHARMA|CRO|UNIVERSITY|INSURANCE|GOVERNMENT']
   business_number varchar(20)
   irb_committee_id uuid
   status varchar(20) [default: 'ACTIVE']
   created_at timestamp [default: `NOW()`]
 }
 
-Table enterprise_members [headercolor: #059669] {
+Table institution_members [headercolor: #059669] {
   id uuid [pk]
-  enterprise_id uuid [ref: > enterprises.id]
-  user_id uuid [not null, note: 'Enterprise 자체 인증 유저 ID (Core user_id 아님)']
+  institution_id uuid [ref: > institutions.id]
+  user_id uuid [not null, note: 'UniQLab 자체 인증 유저 ID (Core user_id 아님)']
   role varchar(20) [note: 'OWNER|PI|IRB_MEMBER|STAFF|VIEWER']
   status varchar(20) [default: 'ACTIVE']
   created_at timestamp [default: `NOW()`]
 
   indexes {
-    (enterprise_id, user_id) [unique]
+    (institution_id, user_id) [unique]
   }
 }
 
@@ -707,11 +707,11 @@ Table enterprise_members [headercolor: #059669] {
 
 Table projects [headercolor: #059669] {
   id uuid [pk]
-  enterprise_id uuid [ref: > enterprises.id]
+  institution_id uuid [ref: > institutions.id]
   title varchar(300) [not null]
   project_type varchar(30) [note: 'CLINICAL_TRIAL|OBSERVATIONAL|RETROSPECTIVE|REGISTRY|DATA_ANALYSIS']
   status varchar(30) [default: 'DRAFT', note: 'DRAFT|IRB_PENDING|IRB_APPROVED|RECRUITING|ACTIVE|DATA_LOCKED|ANALYSIS|COMPLETED']
-  pi_user_id uuid [not null, note: '연구책임자 (Enterprise user_id)']
+  pi_user_id uuid [not null, note: '연구책임자 (UniQLab user_id)']
   irb_number varchar(50)
   target_participant_count int
   required_data_categories text [note: 'TEXT[] 배열']
@@ -804,7 +804,7 @@ Table data_requests [headercolor: #059669] {
 Table irb_submissions [headercolor: #059669] {
   id uuid [pk]
   project_id uuid [ref: > projects.id]
-  enterprise_id uuid [ref: > enterprises.id]
+  institution_id uuid [ref: > institutions.id]
   submission_type varchar(30) [note: 'INITIAL|AMENDMENT|CONTINUING_REVIEW|CLOSURE']
   status varchar(30) [default: 'DRAFT', note: 'DRAFT|SUBMITTED|PRELIMINARY_REVIEW|FULL_BOARD_REVIEW|REVISION_REQUESTED|APPROVED|CONDITIONALLY_APPROVED|REJECTED']
   version int [default: 1]
@@ -861,7 +861,7 @@ Table project_wallets [headercolor: #059669] {
   status varchar(20) [default: 'CREATED', note: 'CREATED|FUNDED|ACTIVE|DEPLETED|CLOSED']
   created_at timestamp [default: `NOW()`]
 
-  Note: '지갑 시드는 Core core_auth.escrow_secret에 KMS 암호화 저장. Enterprise는 주소만 알고 있음.'
+  Note: '지갑 시드는 Core core_auth.escrow_secret에 KMS 암호화 저장. UniQLab은 주소만 알고 있음.'
 }
 
 Table project_wallet_transactions [headercolor: #059669] {

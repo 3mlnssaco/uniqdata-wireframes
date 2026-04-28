@@ -97,7 +97,7 @@ POST /api/v2/ai/irb-type-recommend
       **2. IRB 심의 접수 + 심사비 결제:**
 
       
-POST /enterprise/irb/submit
+POST /uniqlab/irb/submit
 
 { "project_id": "uuid", "irb_type": "STANDARD|EXPEDITED|EXEMPT", "fee_xrp": 400 }
 
@@ -108,7 +108,7 @@ POST /enterprise/irb/submit
       **3. 자동 승인 (간이 심의):**
 
       
-POST /enterprise/irb/expedited-approve
+POST /uniqlab/irb/expedited-approve
 
 { "irb_id": "IRB-2026-xxx" }
 

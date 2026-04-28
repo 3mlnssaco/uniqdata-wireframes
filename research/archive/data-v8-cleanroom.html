@@ -217,37 +217,37 @@ table.dg-tbl tbody tr:hover{background:#f8fafc;}
 <script>
 // ===== ERD 기반 스키마 정의 =====
 const SCHEMA = [
-  // health_db
-  {name:'users',domain:'auth',server:'health_db',icon:'👤',cols:[
+  // uniqdata_db
+  {name:'users',domain:'auth',server:'uniqdata_db',icon:'👤',cols:[
     {n:'id',t:'uuid',pk:true},{n:'email',t:'varchar'},{n:'phone',t:'varchar'},{n:'display_name',t:'varchar'},
     {n:'role',t:'enum'},{n:'kyc_level',t:'smallint'},{n:'status',t:'varchar'},{n:'last_login_at',t:'ts'},{n:'created_at',t:'ts'}
   ]},
-  {name:'user_profiles',domain:'auth',server:'health_db',icon:'📋',cols:[
+  {name:'user_profiles',domain:'auth',server:'uniqdata_db',icon:'📋',cols:[
     {n:'id',t:'uuid',pk:true},{n:'user_id',t:'uuid',fk:'users'},{n:'birth_date',t:'date'},{n:'gender',t:'varchar'},
     {n:'height_cm',t:'decimal'},{n:'weight_kg',t:'decimal'},{n:'chronic_conditions',t:'text'},{n:'medications',t:'jsonb'}
   ]},
-  {name:'data_points',domain:'health',server:'health_db',icon:'📊',cols:[
+  {name:'data_points',domain:'health',server:'uniqdata_db',icon:'📊',cols:[
     {n:'id',t:'uuid',pk:true},{n:'user_id',t:'uuid',fk:'users'},{n:'category',t:'varchar'},{n:'sub_category',t:'varchar'},
     {n:'value',t:'jsonb'},{n:'source',t:'varchar'},{n:'measured_at',t:'ts'},{n:'data_hash',t:'varchar'},{n:'xrpl_anchored',t:'bool'},{n:'quality_score',t:'decimal'}
   ]},
-  {name:'data_point_tags',domain:'health',server:'health_db',icon:'🏷️',cols:[
+  {name:'data_point_tags',domain:'health',server:'uniqdata_db',icon:'🏷️',cols:[
     {n:'id',t:'uuid',pk:true},{n:'data_point_id',t:'uuid',fk:'data_points'},{n:'tag_key',t:'varchar'},{n:'tag_value',t:'varchar'}
   ]},
-  {name:'data_access_logs',domain:'health',server:'health_db',icon:'📝',cols:[
+  {name:'data_access_logs',domain:'health',server:'uniqdata_db',icon:'📝',cols:[
     {n:'id',t:'uuid',pk:true},{n:'data_point_ids',t:'text'},{n:'accessor_type',t:'varchar'},{n:'accessor_id',t:'uuid'},
     {n:'project_id',t:'uuid'},{n:'consent_id',t:'uuid',fk:'consents'},{n:'record_count',t:'int'},{n:'pseudonymized',t:'bool'}
   ]},
-  {name:'consents',domain:'consent',server:'health_db',icon:'✅',cols:[
+  {name:'consents',domain:'consent',server:'uniqdata_db',icon:'✅',cols:[
     {n:'id',t:'uuid',pk:true},{n:'user_id',t:'uuid',fk:'users'},{n:'consent_type',t:'varchar'},{n:'status',t:'varchar'},
     {n:'signature_hash',t:'varchar'},{n:'grant_tx_hash',t:'varchar'},{n:'project_id',t:'uuid'},{n:'irb_number',t:'varchar'},{n:'version',t:'int'}
   ]},
-  {name:'consent_audit_trail',domain:'consent',server:'health_db',icon:'🔍',cols:[
+  {name:'consent_audit_trail',domain:'consent',server:'uniqdata_db',icon:'🔍',cols:[
     {n:'id',t:'uuid',pk:true},{n:'consent_id',t:'uuid',fk:'consents'},{n:'action',t:'varchar'},{n:'actor_id',t:'uuid'},
     {n:'changes',t:'jsonb'},{n:'xrpl_tx_hash',t:'varchar'}
   ]},
   // uniqdata_db
   {name:'projects',domain:'research',server:'uniqdata_db',icon:'🔬',cols:[
-    {n:'id',t:'uuid',pk:true},{n:'enterprise_id',t:'uuid',fk:'enterprises'},{n:'title',t:'varchar'},{n:'project_type',t:'enum'},
+    {n:'id',t:'uuid',pk:true},{n:'institution_id',t:'uuid',fk:'institutions'},{n:'title',t:'varchar'},{n:'project_type',t:'enum'},
     {n:'status',t:'varchar'},{n:'pi_user_id',t:'uuid'},{n:'irb_number',t:'varchar'},{n:'target_participant_count',t:'int'},
     {n:'reward_per_participant',t:'decimal'},{n:'total_reward_budget',t:'decimal'}
   ]},
@@ -260,7 +260,7 @@ const SCHEMA = [
     {n:'status',t:'varchar'},{n:'target_date',t:'date'},{n:'completed_at',t:'ts'}
   ]},
   {name:'irb_submissions',domain:'irb',server:'uniqdata_db',icon:'📑',cols:[
-    {n:'id',t:'uuid',pk:true},{n:'project_id',t:'uuid',fk:'projects'},{n:'enterprise_id',t:'uuid',fk:'enterprises'},
+    {n:'id',t:'uuid',pk:true},{n:'project_id',t:'uuid',fk:'projects'},{n:'institution_id',t:'uuid',fk:'institutions'},
     {n:'submission_type',t:'varchar'},{n:'status',t:'varchar'},{n:'version',t:'int'},{n:'ai_generated',t:'bool'},{n:'approval_valid_until',t:'date'}
   ]},
   {name:'irb_documents',domain:'irb',server:'uniqdata_db',icon:'📄',cols:[
@@ -284,7 +284,7 @@ function fakeDate(base,offsetDays){const d=new Date(base);d.setDate(d.getDate()+
 // ===== 더미 데이터 생성기 =====
 const PATIENT_IDS=Array.from({length:10},()=>fakeUUID());
 const PROJECT_ID=fakeUUID();
-const ENTERPRISE_ID=fakeUUID();
+const INSTITUTION_ID=fakeUUID();
 const CATEGORIES=['weight','sbp','dbp','heart_rate','steps','sleep_duration','compliance','app_usage'];
 const SOURCES=['EMR_SNUH','Fitbit_Charge5','EMA_App','Manual_Input'];
 const BASE_DATE='2025-12-27';
@@ -368,7 +368,7 @@ function buildSchemaPanel(){
   SCHEMA.forEach(s=>{
     if(s.server!==curServer){
       curServer=s.server;
-      html+=`<div class="sp-server">${curServer==='health_db'?'🗄️ health_db (Core)':'🗄️ uniqdata_db (Business)'}</div>`;
+      html+=`<div class="sp-server">${curServer==='uniqdata_db'?'🗄️ uniqdata_db (Core)':'🗄️ uniqlab_db (UniQLab Backend)'}</div>`;
     }
     const rowCount=DATA_CACHE[s.name]?DATA_CACHE[s.name].length:'—';
     const domCls=s.domain;
